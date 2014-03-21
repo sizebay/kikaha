@@ -4,7 +4,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import lombok.RequiredArgsConstructor;
 
-import com.texoit.undertow.standalone.api.DrowningException;
+import com.texoit.undertow.standalone.api.UndertowStandaloneException;
 import com.texoit.undertow.standalone.api.RequestHook;
 import com.texoit.undertow.standalone.api.RequestHookChain;
 
@@ -15,11 +15,11 @@ public class ResourceHandlerHook implements RequestHook {
 
 	@Override
 	public void execute( RequestHookChain chain, HttpServerExchange exchange )
-			throws DrowningException {
+			throws UndertowStandaloneException {
 		try {
 			this.resourceHandler.handleRequest( exchange );
 		} catch ( Exception cause ) {
-			throw new DrowningException( cause );
+			throw new UndertowStandaloneException( cause );
 		}
 	}
 

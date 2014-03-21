@@ -11,32 +11,40 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import lombok.extern.java.Log;
 
+import com.texoit.undertow.standalone.api.Configuration;
 import com.texoit.undertow.standalone.api.DeploymentContext;
 import com.texoit.undertow.standalone.api.DeploymentHook;
-import com.texoit.undertow.standalone.api.DrowningException;
+import com.texoit.undertow.standalone.api.UndertowStandaloneException;
 import com.texoit.undertow.standalone.api.Path;
 import com.texoit.undertow.standalone.api.RequestHook;
 
 @Log
+@Getter
+@Accessors( fluent=true )
 @RequiredArgsConstructor
 public class DeploymentAnalyzer {
 
-	final Collection<RequestHook> hooks = new ArrayList<>();
-	final Collection<DeploymentHook> deploymentHooks = new ArrayList<>();
-	final PathHandler uris = Handlers.path();
-	final LibraryClassPathImporter availableClasses = new LibraryClassPathImporter( Configuration.instance().libraryPath() );
+	@Getter( lazy=true )
+	private final LibraryClassPathImporter availableClasses = new LibraryClassPathImporter( configuration() );
+	private final Collection<RequestHook> hooks = new ArrayList<>();
+	private final Collection<DeploymentHook> deploymentHooks = new ArrayList<>();
+	private final PathHandler uris = Handlers.path();
 
-	public DeploymentContext analyze() throws DrowningException {
+	private final Configuration configuration;
+
+	public DeploymentContext analyze() throws UndertowStandaloneException {
 		try {
-			Collection<Class<?>> retrievedAvailableClasses = availableClasses.retrieve();
+			Collection<Class<?>> retrievedAvailableClasses = availableClasses().retrieve();
 			analyze( retrievedAvailableClasses );
 			memorizeDefaultResourceHandler();
-			return DefaultDeploymentContext.with( this.hooks, this.deploymentHooks, this.uris, retrievedAvailableClasses );
+			return DefaultDeploymentContext.with( this.hooks(), this.deploymentHooks(), this.uris(), retrievedAvailableClasses );
 		} catch (IOException e) {
-			throw new DrowningException(e);
+			throw new UndertowStandaloneException(e);
 		}
 	}
 
@@ -55,7 +63,7 @@ public class DeploymentAnalyzer {
 	}
 
 	public File retrieveWebAppFolder() {
-		File location = new File( Configuration.instance().resourcesPath() );
+		File location = new File( configuration().resourcesPath() );
 		if ( !location.exists() )
 			location.mkdir();
 		return location;
@@ -65,13 +73,13 @@ public class DeploymentAnalyzer {
 		for ( Class<?> clazz : availableClasses )
 			try {
 				tryMemorizeClass( clazz );
-			} catch ( DrowningException cause ) {
+			} catch ( UndertowStandaloneException cause ) {
 				cause.printStackTrace();
 			}
 	}
 
 	@SuppressWarnings( "unchecked" )
-	private void tryMemorizeClass( Class<?> clazz ) throws DrowningException {
+	private void tryMemorizeClass( Class<?> clazz ) throws UndertowStandaloneException {
 		if ( isHttpHandler( clazz ) )
 			memorizeHandler( (Class<? extends HttpHandler>)clazz );
 		else if ( isHook( clazz ) )
@@ -85,7 +93,7 @@ public class DeploymentAnalyzer {
 				&& clazz.isAnnotationPresent( Path.class );
 	}
 
-	private void memorizeHandler( Class<? extends HttpHandler> clazz ) throws DrowningException {
+	private void memorizeHandler( Class<? extends HttpHandler> clazz ) throws UndertowStandaloneException {
 		HttpHandler instance = instantiate( clazz );
 		Path path = clazz.getAnnotation( Path.class );
 		log.info( "Registering " + instance.getClass().getCanonicalName() + " at " + path.value() + "." );
@@ -98,7 +106,7 @@ public class DeploymentAnalyzer {
 				&& !clazz.isInterface();
 	}
 
-	private void memorizeHook( Class<? extends RequestHook> clazz ) throws DrowningException {
+	private void memorizeHook( Class<? extends RequestHook> clazz ) throws UndertowStandaloneException {
 		RequestHook instance = instantiate( clazz );
 		log.info( "Registering request hook " + instance.getClass().getCanonicalName() + "." );
 		this.hooks.add( instance );
@@ -109,16 +117,16 @@ public class DeploymentAnalyzer {
 				&& !clazz.isInterface();
 	}
 
-	private void memorizeDeploymentHook( Class<? extends DeploymentHook> clazz ) throws DrowningException {
+	private void memorizeDeploymentHook( Class<? extends DeploymentHook> clazz ) throws UndertowStandaloneException {
 		DeploymentHook instance = instantiate( clazz );
 		this.deploymentHooks.add( instance );
 	}
 
-	private <T> T instantiate( Class<T> clazz ) throws DrowningException {
+	private <T> T instantiate( Class<T> clazz ) throws UndertowStandaloneException {
 		try {
 			return clazz.newInstance();
 		} catch ( InstantiationException | IllegalAccessException cause ) {
-			throw new DrowningException( cause );
+			throw new UndertowStandaloneException( cause );
 		}
 	}
 }

@@ -8,21 +8,18 @@ import java.util.concurrent.locks.ReentrantLock;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
-import com.texoit.undertow.standalone.api.DrowningException;
+import com.texoit.undertow.standalone.api.UndertowStandaloneException;
 
 @RequiredArgsConstructor
 public class Main {
 
-	final Lock lock = new ReentrantLock();
+	private final Lock lock = new ReentrantLock();
 
-	final String host;
-	final int port;
+	private UndertowServer undertowServer;
 
-	UndertowServer undertowServer;
-
-	public void start() throws DrowningException {
+	public void start() throws UndertowStandaloneException {
 		lock.lock();
-		undertowServer = new UndertowServer(host, port);
+		undertowServer = new UndertowServer( DefaultConfiguration.instance() );
 		undertowServer.start();
 	}
 
@@ -31,7 +28,7 @@ public class Main {
 		lock.unlock();
 	}
 
-	public void mainloop() throws InterruptedException, DrowningException{
+	public void mainloop() throws InterruptedException, UndertowStandaloneException {
 		Condition newCondition = lock.newCondition();
 		start();
 
@@ -43,9 +40,8 @@ public class Main {
 		}
 	}
 
-	public static void main(String[] args) throws InterruptedException, DrowningException, IOException, ClassNotFoundException {
-		val configuration = Configuration.instance();
-		val main = new Main( configuration.host(), configuration.port() );
+	public static void main(String[] args) throws InterruptedException, UndertowStandaloneException, IOException, ClassNotFoundException {
+		val main = new Main();
 		main.mainloop();
 	}
 }

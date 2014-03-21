@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import lombok.RequiredArgsConstructor;
 
-import com.texoit.undertow.standalone.api.DrowningException;
+import com.texoit.undertow.standalone.api.UndertowStandaloneException;
 import com.texoit.undertow.standalone.api.RequestHook;
 import com.texoit.undertow.standalone.api.RequestHookChain;
 
@@ -17,14 +17,14 @@ public class DefaultRequestHookChain implements RequestHookChain {
 	final HttpServerExchange exchange;
 
 	@Override
-	public void executeNext() throws DrowningException {
+	public void executeNext() throws UndertowStandaloneException {
 		RequestHook hook = getNextHookClass();
 		hook.execute( this, this.exchange );
 	}
 
-	public RequestHook getNextHookClass() throws DrowningException {
+	public RequestHook getNextHookClass() throws UndertowStandaloneException {
 		if ( !this.hooks.hasNext() )
-			throw new DrowningException( "No hook available found." );
+			throw new UndertowStandaloneException( "No hook available found." );
 		RequestHook next = this.hooks.next();
 		return next;
 	}

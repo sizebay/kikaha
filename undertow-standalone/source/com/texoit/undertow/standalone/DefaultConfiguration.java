@@ -2,17 +2,19 @@ package com.texoit.undertow.standalone;
 
 import java.io.File;
 
+import com.texoit.undertow.standalone.api.Configuration;
+
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
 @Accessors(fluent=true)
-public class Configuration {
-	
-	private static Configuration instance = new Configuration();
+public class DefaultConfiguration implements Configuration {
+
+	private static Configuration instance = new DefaultConfiguration();
 
 	@Getter(lazy=true)
 	private final String libraryPath = getLibraryPath();
-	
+
 	@Getter(lazy=true)
 	private final String resourcesPath = getResourcesPath();
 

@@ -8,21 +8,28 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import lombok.RequiredArgsConstructor;
+import com.texoit.undertow.standalone.api.Configuration;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
+
+@Getter
+@Accessors( fluent=true )
 @RequiredArgsConstructor
 public class LibraryClassPathImporter {
 
+	private static final String WEB_APPLICATION_LIBRARIES_DIR = "/WEB-INF/lib";
 	private static final String CLASS_EXTENSION = ".class";
-	final List<File> urls = new ArrayList<>();
-	final List<Class<?>> classes = new ArrayList<>();
-	final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 
-	final String libDirectory;
+	private final List<Class<?>> classes = new ArrayList<>();
+	private final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+	private final Configuration configuration;
 
 	public List<Class<?>> retrieve() throws IOException {
-		searchForJars( libDirectory );
-		return classes;
+		searchForJars( configuration.libraryPath() );
+		searchForJars( configuration.resourcesPath() + WEB_APPLICATION_LIBRARIES_DIR );
+		return classes();
 	}
 
 	public void searchForJars( String directory ) throws IOException {
@@ -30,9 +37,9 @@ public class LibraryClassPathImporter {
 	}
 
 	public void searchForJars( File directory ) throws IOException {
-		if ( directory.isDirectory() )
-		for ( String fileName : directory.list() )
-			memorizeFileOrRecursivelySearchAgain(directory, fileName);
+		if ( directory.exists() && directory.isDirectory() )
+			for ( String fileName : directory.list() )
+				memorizeFileOrRecursivelySearchAgain(directory, fileName);
 	}
 
 	private void memorizeFileOrRecursivelySearchAgain(File directory, String fileName) throws IOException  {
@@ -61,8 +68,8 @@ public class LibraryClassPathImporter {
 
 	private void memorizeClass(final String parsedName) {
 		try {
-			Class<?> loadedClass = classLoader.loadClass(parsedName);
-			classes.add(loadedClass);
+			Class<?> loadedClass = classLoader().loadClass(parsedName);
+			classes().add(loadedClass);
 		} catch (ClassNotFoundException e) {
 		}
 	}
