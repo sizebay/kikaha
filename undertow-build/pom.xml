@@ -23,7 +23,12 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+    				<finalName>undertow-standalone-${project.version}</finalName>
+    				<appendAssemblyId>false</appendAssemblyId>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
 </project>

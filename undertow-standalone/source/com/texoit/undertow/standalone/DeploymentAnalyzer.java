@@ -22,7 +22,7 @@ import com.texoit.undertow.standalone.api.RequestHook;
 
 @Log
 @RequiredArgsConstructor
-public class DrowningDeploymentAnalyzer {
+public class DeploymentAnalyzer {
 
 	final Collection<RequestHook> hooks = new ArrayList<>();
 	final Collection<DeploymentHook> deploymentHooks = new ArrayList<>();

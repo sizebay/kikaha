@@ -18,11 +18,11 @@ public class Main {
 	final String host;
 	final int port;
 
-	DrowningUndertowServer undertowServer;
+	UndertowServer undertowServer;
 
 	public void start() throws DrowningException {
 		lock.lock();
-		undertowServer = new DrowningUndertowServer(host, port);
+		undertowServer = new UndertowServer(host, port);
 		undertowServer.start();
 	}
 

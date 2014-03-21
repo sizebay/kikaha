@@ -10,7 +10,7 @@ import com.texoit.undertow.standalone.api.DrowningException;
 
 @Log
 @RequiredArgsConstructor
-public class DrowningUndertowServer {
+public class UndertowServer {
 
 	final String host;
 	final int port;
@@ -18,8 +18,15 @@ public class DrowningUndertowServer {
 	DeploymentContext deploymentContext;
 	Undertow server;
 
+	public void start() throws DrowningException {
+		bootstrap();
+		this.server = createServer();
+		this.server.start();
+		log.info( "Server was started listening at " + host + ":" + port );
+	}
+
 	public void bootstrap() throws DrowningException {
-		DrowningDeploymentAnalyzer deploymentAnalyzer = new DrowningDeploymentAnalyzer();
+		DeploymentAnalyzer deploymentAnalyzer = new DeploymentAnalyzer();
 		this.deploymentContext = deploymentAnalyzer.analyze();
 		doDeploy( this.deploymentContext );
 	}
@@ -29,13 +36,6 @@ public class DrowningUndertowServer {
 			log.info( "Dispatching deployment hook: " + hook.getClass().getCanonicalName() );
 			hook.onDeploy( deploymentContext );
 		}
-	}
-
-	public void start() throws DrowningException {
-		bootstrap();
-		this.server = createServer();
-		this.server.start();
-		log.info( "Server was started listening at " + host + ":" + port );
 	}
 
 	private Undertow createServer() {
