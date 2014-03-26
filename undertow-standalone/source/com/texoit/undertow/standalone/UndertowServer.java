@@ -22,10 +22,13 @@ public class UndertowServer {
 	private Undertow server;
 
 	public void start() throws UndertowStandaloneException {
+		long start = System.currentTimeMillis();
 		bootstrap();
 		this.server = createServer();
 		this.server.start();
-		log.info( "Server was started listening at " + configuration().host() + ":" + configuration().port() );
+		long elapsed = System.currentTimeMillis() - start;
+		log.info( "Server started in " + elapsed + "ms." );
+		log.info( "Server is listening at " + configuration().host() + ":" + configuration().port() );
 	}
 
 	public void bootstrap() throws UndertowStandaloneException {

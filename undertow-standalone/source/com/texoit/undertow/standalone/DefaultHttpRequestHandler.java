@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 import com.texoit.undertow.standalone.api.DeploymentContext;
 import com.texoit.undertow.standalone.api.RequestHookChain;
+import com.texoit.undertow.standalone.api.UndertowStandaloneException;
 
 @RequiredArgsConstructor
 public class DefaultHttpRequestHandler implements HttpHandler {
@@ -14,7 +15,23 @@ public class DefaultHttpRequestHandler implements HttpHandler {
 
 	@Override
 	public void handleRequest(HttpServerExchange exchange) throws Exception {
-		RequestHookChain chain = new DefaultRequestHookChain( context.requestHooks().iterator(), exchange );
-		chain.executeNext();
+		if ( exchange.isInIoThread() ) {
+			exchange.dispatch(this);
+			return;
+		}
+		
+		createAndExecuteRequestChain(exchange);
+	}
+
+	private void createAndExecuteRequestChain(HttpServerExchange exchange) throws UndertowStandaloneException {
+		try {
+			RequestHookChain chain = new DefaultRequestHookChain(
+					context.requestHooks().iterator(), exchange, context );
+			chain.executeNext();
+		} finally {
+//			if ( !exchange.isComplete() )
+//				exchange.endExchange();
+			System.out.println("Should I've flushed the exchange? " + (!exchange.isComplete()) );
+		}
 	}
 }

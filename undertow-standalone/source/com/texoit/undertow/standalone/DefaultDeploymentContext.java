@@ -4,6 +4,8 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.PathHandler;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class DefaultDeploymentContext implements DeploymentContext {
 	final Collection<DeploymentHook> deploymentHooks;
 	final PathHandler uris;
 	final Collection<Class<?>> availableClasses;
+	final Map<Class<?>,Object> attributes = new HashMap<>();
 
 	@Override
 	public DeploymentContext register( RequestHook hook ) {
@@ -32,5 +35,17 @@ public class DefaultDeploymentContext implements DeploymentContext {
 	public DeploymentContext register( String uri, HttpHandler handler ) {
 		this.uris.addPrefixPath( uri, handler );
 		return this;
+	}
+
+	@Override
+	public <T> DeploymentContext attribute(Class<T> clazz, T object) {
+		attributes.put(clazz, object);
+		return this;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T attribute(Class<T> clazz) {
+		return (T) attributes.get(clazz);
 	}
 }

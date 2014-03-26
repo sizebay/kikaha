@@ -20,6 +20,8 @@ public class ResourceHandlerHook implements RequestHook {
 			this.resourceHandler.handleRequest( exchange );
 		} catch ( Exception cause ) {
 			throw new UndertowStandaloneException( cause );
+		} finally {
+//			exchange.endExchange();
 		}
 	}
 
