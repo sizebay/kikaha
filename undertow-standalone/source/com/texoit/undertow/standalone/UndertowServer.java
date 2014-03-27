@@ -39,7 +39,7 @@ public class UndertowServer {
 
 	private void doDeploy( DeploymentContext deploymentContext ) {
 		for ( DeploymentHook hook : deploymentContext.deploymentHooks() ) {
-			log.info( "Dispatching deployment hook: " + hook.getClass().getCanonicalName() );
+			log.fine( "Dispatching deployment hook: " + hook.getClass().getCanonicalName() );
 			hook.onDeploy( deploymentContext );
 		}
 	}
