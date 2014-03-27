@@ -32,7 +32,7 @@ public class DefaultHttpRequestHandler implements HttpHandler {
 			RequestHookChain chain = new DefaultRequestHookChain( iterator, exchange, context );
 			chain.executeNext();
 		} finally {
-			System.out.println("Should I've flushed the exchange? " + (!exchange.isComplete()) );
+//			System.out.println("Should I've flushed the exchange? " + (!exchange.isComplete()) );
 		}
 	}
 

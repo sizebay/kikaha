@@ -29,5 +29,4 @@ LIB_CLASSPATH=`ls ${LIBDIR}/*.jar | tr '\n' ' ' | sed 's/  */ /g' | tr ' ' ':'`
 WEBLIB_CLASSPATH=`ls ${WEBLIB}/*.jar | tr '\n' ' ' | sed 's/  */ /g' | tr ' ' ':'`
 CLASSPATH=${LIB_CLASSPATH}:${WEBLIB_CLASSPATH}:${WEBCLASSES}
 
-echo "${JAVA} ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS}"
 ${JAVA} ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS}
