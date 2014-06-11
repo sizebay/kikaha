@@ -2,8 +2,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.texoit.undertow</groupId>
-	<version>1.0-SNAPSHOT</version>
+	<groupId>io.skullabs.undertow</groupId>
+	<version>1.1-SNAPSHOT</version>
 	<artifactId>undertow-parent</artifactId>
 	<name>Undertow Standalone Extensions</name>
 	<packaging>pom</packaging>
@@ -24,14 +24,14 @@
 
 	<distributionManagement>
 		<repository>
-			<id>texo-release-repository</id>
+			<id>release-repository</id>
 			<name>Texo Release Repository</name>
-			<url>http://repository.texoit.com:8081/content/repositories/PublicRelease/</url>
+			<url>http://skullabs.io:8081/content/repositories/PublicRelease/</url>
 		</repository>
 		<snapshotRepository>
-			<id>texo-snapshot-repository</id>
+			<id>snapshot-repository</id>
 			<name>Texo Snapshot Repository</name>
-			<url>http://repository.texoit.com:8081/content/repositories/PublicSnapshot/</url>
+			<url>http://skullabs.io:8081/content/repositories/PublicSnapshot/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -55,6 +55,8 @@
 		<version.lombok>1.12.4</version.lombok>
 		<version.mockito>1.9.5</version.mockito>
 		<version.undertow>1.0.1.Final</version.undertow>
+		<version.trip>0.10.1</version.trip>
+		<version.config>1.2.0</version.config>
 		<!-- Plugin's Versions -->
 		<version.eclipse.plugin>2.9</version.eclipse.plugin>
 		<version.maven.plugin>2.3.2</version.maven.plugin>
@@ -84,12 +86,29 @@
 				<version>${version.lombok}</version>
 				<scope>provided</scope>
 			</dependency>
+			<dependency>
+				<groupId>io.skullabs.trip</groupId>
+				<artifactId>trip-processor</artifactId>
+				<version>${version.trip}</version>
+				<scope>provided</scope>
+			</dependency>
 			<!-- Main project dependencies -->
+			<dependency>
+				<groupId>io.skullabs.trip</groupId>
+				<artifactId>trip-core</artifactId>
+				<version>${version.trip}</version>
+				<scope>compile</scope>
+			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<version>${project.version}</version>
 				<artifactId>undertow-standalone</artifactId>
 				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.typesafe</groupId>
+				<artifactId>config</artifactId>
+				<version>${version.config}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.undertow</groupId>
@@ -112,6 +131,10 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.skullabs.trip</groupId>
+			<artifactId>trip-processor</artifactId>
 		</dependency>
 	</dependencies>
 

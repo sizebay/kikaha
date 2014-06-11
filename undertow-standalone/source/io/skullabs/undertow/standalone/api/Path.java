@@ -1,4 +1,4 @@
-package com.texoit.undertow.standalone.api;
+package io.skullabs.undertow.standalone.api;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

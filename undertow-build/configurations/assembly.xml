@@ -15,13 +15,7 @@
 			<outputDirectory>/</outputDirectory>
 			<excludes>
 				<exclude>assembly.xml</exclude>
-				<exclude>bin</exclude>
 			</excludes>
-		</fileSet>
-		<fileSet>
-			<directory>${project.basedir}/configurations/bin/</directory>
-			<outputDirectory>/bin/</outputDirectory>
-			<fileMode>0755</fileMode>
 		</fileSet>
 	</fileSets>
 	

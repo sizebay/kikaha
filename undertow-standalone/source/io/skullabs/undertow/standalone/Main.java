@@ -1,4 +1,6 @@
-package com.texoit.undertow.standalone;
+package io.skullabs.undertow.standalone;
+
+import io.skullabs.undertow.standalone.api.UndertowStandaloneException;
 
 import java.io.IOException;
 import java.util.concurrent.locks.Condition;
@@ -8,18 +10,15 @@ import java.util.concurrent.locks.ReentrantLock;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
-import com.texoit.undertow.standalone.api.UndertowStandaloneException;
-
 @RequiredArgsConstructor
 public class Main {
 
 	private final Lock lock = new ReentrantLock();
-
 	private UndertowServer undertowServer;
 
 	public void start() throws UndertowStandaloneException {
 		lock.lock();
-		undertowServer = new UndertowServer( DefaultConfiguration.instance() );
+		undertowServer = new UndertowServer( DefaultConfiguration.loadDefaultConfiguration() );
 		undertowServer.start();
 	}
 

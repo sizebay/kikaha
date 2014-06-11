@@ -12,7 +12,7 @@ PORT=9000
 # RUNTIME VARIABLES
 JAVA=java
 JAVA_OPTS=
-MAIN_CLASS=com.texoit.undertow.standalone.Main
+MAIN_CLASS=io.skullabs.undertow.standalone.Main
 
 # READ CUSTOM CONFIGURATIONS
 if [ -e bin/undertow.conf ]; then
@@ -20,11 +20,6 @@ if [ -e bin/undertow.conf ]; then
 fi
 
 # MAIN
-JAVA_OPTS="-Dundertow.standalone.libdir=${LIBDIR} \
-	-Dundertow.standalone.appdir=${APPDIR} \
-	-Dundertow.standalone.host=${HOST} \
-	-Dundertow.standalone.port=${PORT} ${JAVA_OPTS}"
-
 LIB_CLASSPATH=`ls ${LIBDIR}/*.jar | tr '\n' ' ' | sed 's/  */ /g' | tr ' ' ':'`
 WEBLIB_CLASSPATH=`ls ${WEBLIB}/*.jar | tr '\n' ' ' | sed 's/  */ /g' | tr ' ' ':'`
 CLASSPATH=${LIB_CLASSPATH}:${WEBLIB_CLASSPATH}:${WEBCLASSES}

@@ -1,22 +1,22 @@
-package com.texoit.undertow.standalone.api;
+package io.skullabs.undertow.standalone.api;
 
 import io.undertow.server.HttpHandler;
-
-import java.util.Collection;
 
 public interface DeploymentContext {
 
 	DeploymentContext register( RequestHook hook );
 
-	Collection<Class<?>> availableClasses();
+	Iterable<DeploymentHook> deploymentHooks();
 
-	Collection<DeploymentHook> deploymentHooks();
-
-	Collection<RequestHook> requestHooks();
+	Iterable<RequestHook> requestHooks();
 
 	DeploymentContext register( String uri, HttpHandler handler );
 
 	<T> DeploymentContext attribute( Class<T> clazz, T object );
 
+	DeploymentContext attribute( String key, Object object );
+
 	<T> T attribute( Class<T> clazz );
+
+	Object attribute( String key );
 }

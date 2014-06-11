@@ -1,4 +1,4 @@
-package com.texoit.undertow.standalone.api;
+package io.skullabs.undertow.standalone.api;
 
 import io.undertow.server.HttpServerExchange;
 
