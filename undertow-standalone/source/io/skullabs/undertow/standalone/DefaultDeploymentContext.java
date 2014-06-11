@@ -23,7 +23,20 @@ public class DefaultDeploymentContext implements DeploymentContext {
 	final Iterable<DeploymentHook> deploymentHooks;
 	final List<RequestHook> requestHooks;
 	final PathHandler uris = Handlers.path();
+	final UndertowRoutedResourcesHook undertowRoutedResources = UndertowRoutedResourcesHook.wrap(uris);
 	final Map<String, Object> attributes = new HashMap<String, Object>();
+	
+	/**
+	 * After deployment {@code undertowRoutedResources} will be populated with
+	 * resources that <i>undertow</i> are capable to route. Lets memorize a hook
+	 * with those resources to be called by the {@code RequestHookChain} during requests.
+	 *  
+	 * @return
+	 */
+	public DeploymentContext registerUndertowRoutedResourcesHook(){
+		requestHooks.add(undertowRoutedResources);
+		return this;
+	}
 
 	@Override
 	public DeploymentContext register(RequestHook hook) {

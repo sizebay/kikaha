@@ -1,20 +1,25 @@
 package io.skullabs.undertow.standalone;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import trip.spi.ServiceProvider;
-import trip.spi.ServiceProviderException;
 import io.skullabs.undertow.standalone.api.Configuration;
 import io.skullabs.undertow.standalone.api.DeploymentContext;
 import io.skullabs.undertow.standalone.api.DeploymentHook;
 import io.skullabs.undertow.standalone.api.RequestHook;
 import io.skullabs.undertow.standalone.api.UndertowStandaloneException;
 import io.undertow.Undertow;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.resource.FileResourceManager;
+import io.undertow.server.handlers.resource.ResourceHandler;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.java.Log;
+import trip.spi.ServiceProvider;
+import trip.spi.ServiceProviderException;
 
 @Log
 @Getter
@@ -27,6 +32,11 @@ public class UndertowServer {
 	private DeploymentContext deploymentContext;
 	private Undertow server;
 
+	/**
+	 * Start the Undertow Standalone Server.
+	 * 
+	 * @throws UndertowStandaloneException
+	 */
 	public void start() throws UndertowStandaloneException {
 		long start = System.currentTimeMillis();
 		bootstrap();
@@ -37,30 +47,51 @@ public class UndertowServer {
 		log.info( "Server is listening at " + configuration().host() + ":" + configuration().port() );
 	}
 
+	/**
+	 * Run all life cycle initialization routines of Undertow Standalone.
+	 *  
+	 * @throws UndertowStandaloneException
+	 */
 	protected void bootstrap() throws UndertowStandaloneException {
 		try {
-			this.deploymentContext = createDeploymentContext();
-			doDeploy( this.deploymentContext );
+			DefaultDeploymentContext deploymentContext = createDeploymentContext();
+			runDeploymentHooks( deploymentContext );
+			deployWebResourceFolder( deploymentContext );
+			deploymentContext.registerUndertowRoutedResourcesHook();
+			this.deploymentContext = deploymentContext;
 		} catch ( ServiceProviderException cause ) {
 			throw new UndertowStandaloneException( cause );
 		}
 	}
 
-	protected DeploymentContext createDeploymentContext() throws ServiceProviderException {
+	protected DefaultDeploymentContext createDeploymentContext() throws ServiceProviderException {
 		Iterable<DeploymentHook> deploymentHooks = provider.loadAll( DeploymentHook.class );
 		Iterable<RequestHook> requestHooks = provider.loadAll( RequestHook.class );
 		List<RequestHook> mutableListOfHooks = mutableList( requestHooks );
 		return new DefaultDeploymentContext( deploymentHooks, mutableListOfHooks );
 	}
 
-	static <T> List<T> mutableList( Iterable<T> immutable ) {
-		ArrayList<T> mutableList = new ArrayList<T>();
-		for ( T item : immutable )
-			mutableList.add(item);
-		return mutableList;
+	protected void deployWebResourceFolder( DeploymentContext deploymentContext ) {
+		deploymentContext.register( "/", createResourceManager() );
 	}
 
-	protected void doDeploy( DeploymentContext deploymentContext ) {
+	protected HttpHandler createResourceManager() {
+		File location = retrieveWebAppFolder();
+		FileResourceManager resourceManager = new FileResourceManager( location, 100 );
+		log.info( "Exposing resource files at " + location );
+		return new ResourceHandler()
+				.setResourceManager( resourceManager )
+				.setDirectoryListingEnabled( false );
+	}
+
+	protected File retrieveWebAppFolder() {
+		File location = new File( configuration().resourcesPath() );
+		if ( !location.exists() )
+			location.mkdir();
+		return location;
+	}
+
+	protected void runDeploymentHooks( DeploymentContext deploymentContext ) {
 		for ( DeploymentHook hook : deploymentContext.deploymentHooks() ) {
 			log.fine( "Dispatching deployment hook: " + hook.getClass().getCanonicalName() );
 			hook.onDeploy( deploymentContext );
@@ -77,5 +108,12 @@ public class UndertowServer {
 	public void stop() {
 		this.server().stop();
 		log.info( "Server stopped!" );
+	}
+
+	static <T> List<T> mutableList( Iterable<T> immutable ) {
+		ArrayList<T> mutableList = new ArrayList<T>();
+		for ( T item : immutable )
+			mutableList.add(item);
+		return mutableList;
 	}
 }
