@@ -12,6 +12,8 @@ public interface DeploymentContext {
 
 	DeploymentContext register( String uri, HttpHandler handler );
 
+	DeploymentContext register( String uri, String method, HttpHandler handler );
+
 	<T> DeploymentContext attribute( Class<T> clazz, T object );
 
 	DeploymentContext attribute( String key, Object object );

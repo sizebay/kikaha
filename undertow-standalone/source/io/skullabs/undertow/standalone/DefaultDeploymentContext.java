@@ -5,7 +5,8 @@ import io.skullabs.undertow.standalone.api.DeploymentHook;
 import io.skullabs.undertow.standalone.api.RequestHook;
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.PathHandler;
+import io.undertow.server.RoutingHandler;
+import io.undertow.util.Methods;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ public class DefaultDeploymentContext implements DeploymentContext {
 
 	final Iterable<DeploymentHook> deploymentHooks;
 	final List<RequestHook> requestHooks;
-	final PathHandler uris = Handlers.path();
+	final RoutingHandler uris = Handlers.routing();
 	final UndertowRoutedResourcesHook undertowRoutedResources = UndertowRoutedResourcesHook.wrap(uris);
 	final Map<String, Object> attributes = new HashMap<String, Object>();
 	
@@ -46,7 +47,12 @@ public class DefaultDeploymentContext implements DeploymentContext {
 
 	@Override
 	public DeploymentContext register(String uri, HttpHandler handler) {
-		this.uris.addPrefixPath( uri, handler );
+		return register(uri, Methods.GET_STRING, handler);
+	}
+
+	@Override
+	public DeploymentContext register(String uri, String method, HttpHandler handler) {
+		this.uris.add(method, uri, handler);
 		return this;
 	}
 

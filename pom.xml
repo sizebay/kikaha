@@ -54,7 +54,7 @@
 		<version.junit>4.10</version.junit>
 		<version.lombok>1.12.4</version.lombok>
 		<version.mockito>1.9.5</version.mockito>
-		<version.undertow>1.0.1.Final</version.undertow>
+		<version.undertow>1.1.0.Beta1</version.undertow>
 		<version.trip>0.10.1</version.trip>
 		<version.config>1.2.0</version.config>
 		<!-- Plugin's Versions -->

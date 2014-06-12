@@ -5,8 +5,8 @@ import io.skullabs.undertow.standalone.api.DeploymentContext;
 import io.skullabs.undertow.standalone.api.DeploymentHook;
 import io.skullabs.undertow.standalone.api.RequestHook;
 import io.skullabs.undertow.standalone.api.UndertowStandaloneException;
+import io.undertow.Handlers;
 import io.undertow.Undertow;
-import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 
@@ -75,11 +75,11 @@ public class UndertowServer {
 		deploymentContext.register( "/", createResourceManager() );
 	}
 
-	protected HttpHandler createResourceManager() {
+	protected ResourceHandler createResourceManager() {
 		File location = retrieveWebAppFolder();
 		FileResourceManager resourceManager = new FileResourceManager( location, 100 );
 		log.info( "Exposing resource files at " + location );
-		return new ResourceHandler()
+		return Handlers.resource(resourceManager)
 				.setResourceManager( resourceManager )
 				.setDirectoryListingEnabled( false );
 	}
