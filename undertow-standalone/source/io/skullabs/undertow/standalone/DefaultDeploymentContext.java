@@ -15,7 +15,9 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.extern.java.Log;
 
+@Log
 @Getter
 @Accessors( fluent=true )
 @RequiredArgsConstructor
@@ -52,6 +54,7 @@ public class DefaultDeploymentContext implements DeploymentContext {
 
 	@Override
 	public DeploymentContext register(String uri, String method, HttpHandler handler) {
+		log.info( "Registering route: " + method + ":" + uri + "." );
 		this.uris.add(method, uri, handler);
 		return this;
 	}

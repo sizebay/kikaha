@@ -27,7 +27,7 @@ import trip.spi.ServiceProviderException;
 @RequiredArgsConstructor
 public class UndertowServer {
 
-	private final ServiceProvider provider = new ServiceProvider();
+	private final ServiceProvider provider = newServiceProvider();
 	private final Configuration configuration;
 	private DeploymentContext deploymentContext;
 	private Undertow server;
@@ -108,6 +108,12 @@ public class UndertowServer {
 	public void stop() {
 		this.server().stop();
 		log.info( "Server stopped!" );
+	}
+
+	private ServiceProvider newServiceProvider() {
+		final ServiceProvider serviceProvider = new ServiceProvider();
+		serviceProvider.provideFor(ServiceProvider.class, serviceProvider);
+		return serviceProvider;
 	}
 
 	static <T> List<T> mutableList( Iterable<T> immutable ) {
