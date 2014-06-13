@@ -8,22 +8,18 @@
 		<artifactId>undertow-parent</artifactId>
 	</parent>
 
-	<artifactId>undertow-standalone</artifactId>
-	<name>Undertow Extensions: Standalone Core</name>
+	<artifactId>undertow-urouting</artifactId>
+	<name>Undertow Extensions: uRouting API Implementation</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
 		<dependency>
-			<groupId>io.undertow</groupId>
-			<artifactId>undertow-core</artifactId>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>undertow-standalone</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.typesafe</groupId>
-			<artifactId>config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.skullabs.trip</groupId>
-			<artifactId>trip-core</artifactId>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
 		</dependency>
 	</dependencies>
 </project>

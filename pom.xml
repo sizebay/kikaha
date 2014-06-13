@@ -46,7 +46,7 @@
 	<modules>
 		<module>undertow-standalone</module>
 		<module>undertow-build</module>
-<!-- 		<module>undertow-sample</module> -->
+ 		<module>undertow-urouting</module>
 	</modules>
 
 	<properties>
@@ -118,7 +118,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
-			    <artifactId>jackson-core</artifactId>
+			    <artifactId>jackson-databind</artifactId>
 			    <version>${version.jackson}</version>
 			</dependency>
 		</dependencies>

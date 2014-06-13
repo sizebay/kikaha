@@ -1,6 +1,8 @@
-package io.skullabs.undertow.standalone.xml;
+package io.skullabs.undertow.routing.xml;
 
-import io.skullabs.undertow.standalone.api.Serializer;
+import io.skullabs.undertow.routing.Mimes;
+import io.skullabs.undertow.routing.RoutingException;
+import io.skullabs.undertow.routing.Serializer;
 
 import java.io.Writer;
 
@@ -14,17 +16,17 @@ import trip.spi.Name;
 import trip.spi.Service;
 
 @Service
-@Name( "text/xml" )
+@Name( Mimes.XML )
 @SuppressWarnings("unchecked")
 public class XMLSerializer implements Serializer {
 
 	@Override
-	public <T> void serialize(T object, Writer output) {
+	public <T> void serialize(T object, Writer output) throws RoutingException {
         try {
 			Class<T> clazz = (Class<T>) object.getClass();
 			serialize(clazz, object, output);
-		} catch (JAXBException e) {
-			e.printStackTrace();
+		} catch (JAXBException cause) {
+			throw new RoutingException(cause);
 		}
 	}
 
