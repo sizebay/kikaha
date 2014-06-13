@@ -22,7 +22,7 @@ public class XMLUnserializer implements Unserializer {
 	public <T> T unserialize( Reader input, Class<T> clazz ) throws RoutingException {
 		try {
 			final JAXBContext context = JAXBContext.newInstance( clazz );
-			Unmarshaller unmarshaller = context.createUnmarshaller();
+			final Unmarshaller unmarshaller = context.createUnmarshaller();
 			return (T) unmarshaller.unmarshal( input );
 		} catch ( JAXBException cause ) {
 			throw new RoutingException(cause);
