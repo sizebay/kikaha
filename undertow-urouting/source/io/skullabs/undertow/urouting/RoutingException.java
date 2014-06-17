@@ -1,4 +1,4 @@
-package io.skullabs.undertow.routing;
+package io.skullabs.undertow.urouting;
 
 public class RoutingException extends Exception {
 

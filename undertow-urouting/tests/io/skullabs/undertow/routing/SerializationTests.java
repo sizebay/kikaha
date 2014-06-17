@@ -4,6 +4,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import io.skullabs.undertow.routing.User.Address;
+import io.skullabs.undertow.urouting.Mimes;
+import io.skullabs.undertow.urouting.Serializer;
+import io.skullabs.undertow.urouting.Unserializer;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -38,6 +41,29 @@ public class SerializationTests {
 		String xml = readFile( "serialization.expected-xml.xml" );
 		Unserializer unserializer = provider.load( Unserializer.class, Mimes.XML );
 		User user = unserializer.unserialize( new StringReader(xml), User.class );
+		assertIsValidUser(user);
+	}
+
+	@Test
+	@SneakyThrows
+	public void grantThatSerializeItAsJSON() {
+		Serializer serializer = provider.load( Serializer.class, Mimes.JSON );
+		StringWriter output = new StringWriter();
+		serializer.serialize( user, output );
+		String expected = readFile( "serialization.expected-json.json" );
+		assertThat(output.toString(), is( expected ) );
+	}
+	
+	@Test
+	@SneakyThrows
+	public void grantThatUnserializeJSONIntoObjectAsExpected(){
+		String json = readFile( "serialization.expected-json.json" );
+		Unserializer unserializer = provider.load( Unserializer.class, Mimes.JSON );
+		User user = unserializer.unserialize( new StringReader(json), User.class );
+		assertIsValidUser(user);
+	}
+	
+	void assertIsValidUser( User user ) {
 		assertNotNull(user);
 		assertThat( user.name, is("gerolasdiwn"));
 		assertNotNull( user.addresses );

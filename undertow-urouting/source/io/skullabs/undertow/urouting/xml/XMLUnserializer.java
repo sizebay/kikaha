@@ -1,8 +1,8 @@
-package io.skullabs.undertow.routing.xml;
+package io.skullabs.undertow.urouting.xml;
 
-import io.skullabs.undertow.routing.Mimes;
-import io.skullabs.undertow.routing.RoutingException;
-import io.skullabs.undertow.routing.Unserializer;
+import io.skullabs.undertow.urouting.Mimes;
+import io.skullabs.undertow.urouting.RoutingException;
+import io.skullabs.undertow.urouting.Unserializer;
 
 import java.io.Reader;
 

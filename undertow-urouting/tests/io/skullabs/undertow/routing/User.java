@@ -5,7 +5,9 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement( name="user" )
 public class User {
 
 	public String name;
@@ -13,6 +15,8 @@ public class User {
 	@XmlElementWrapper( name="addresses" )
 	@XmlElement(name = "address")
 	public List<Address> addresses;
+	
+	public User() {}
 
 	public User( String name, Address...addresses ) {
 		this.name = name;
@@ -25,6 +29,8 @@ public class User {
 
 		public String street;
 		public int number;
+		
+		public Address() {}
 		
 		public Address( String street, int number ) {
 			this.street = street;

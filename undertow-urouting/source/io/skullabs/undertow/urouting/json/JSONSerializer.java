@@ -1,4 +1,8 @@
-package io.skullabs.undertow.routing.json;
+package io.skullabs.undertow.urouting.json;
+
+import io.skullabs.undertow.urouting.Mimes;
+import io.skullabs.undertow.urouting.RoutingException;
+import io.skullabs.undertow.urouting.Serializer;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -7,10 +11,6 @@ import trip.spi.Name;
 import trip.spi.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.skullabs.undertow.routing.Mimes;
-import io.skullabs.undertow.routing.RoutingException;
-import io.skullabs.undertow.routing.Serializer;
 
 @Service
 @Name( Mimes.JSON )
