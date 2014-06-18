@@ -1,0 +1,26 @@
+package package io.skullabs.undertow.routing;
+
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import trip.spi.Provided;
+import trip.spi.Service;
+import trip.spi.ServiceProvider;
+import io.skullabs.undertow.standalone.api.WebResource;
+import io.skullabs.undertow.urouting.ResponseWriter;
+import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
+
+@Service( HttpHandler.class )
+@WebResource( value="/hello/world", method="GET" )
+public class GeneratedRoutingMethod123 implements HttpHandler {
+
+	@Provided ServiceProvider serviceProvider;
+	@Provided ResponseWriter responseWriter;
+	@Provided RoutingMethodDataProvider methodDataProvider;
+
+	@Override
+	public void handleRequest( HttpServerExchange exchange ) throws Exception {
+		final io.skullabs.undertow.routing.SampleRoute instance = new io.skullabs.undertow.routing.SampleRoute();
+			instance.renderRelatoMais(  );
+			responseWriter.write( exchange );
+	}
+}

@@ -1,10 +1,12 @@
 package io.skullabs.undertow.routing;
 
+import trip.spi.Provided;
 import urouting.api.*;
 
 @Path( "{contentType}/serasa" )
 public class SampleRoute {
 
+	@Provided
 	@GET
 	@Path( "relatomais" )
 	public void renderRelatoMais(
