@@ -10,10 +10,7 @@ import java.io.Reader;
 import java.nio.channels.Channels;
 import java.util.Queue;
 
-import trip.spi.Provided;
-import trip.spi.Service;
-import trip.spi.ServiceProvider;
-import trip.spi.ServiceProviderException;
+import trip.spi.*;
 import urouting.api.RoutingException;
 import urouting.api.Unserializer;
 
@@ -23,33 +20,97 @@ import urouting.api.Unserializer;
 @Service
 public class RoutingMethodDataProvider {
 
-	@Provided ConverterFactory converterFactory;
-	@Provided ServiceProvider provider;
+	@Provided
+	ConverterFactory converterFactory;
+	@Provided
+	ServiceProvider provider;
 
-	public <T> T getCookie( final HttpServerExchange exchange, final String cookieParam, final Class<T> clazz ) throws ConversionException, InstantiationException, IllegalAccessException {
+	/**
+	 * Get a cookie from request converted to the {@code <T>} type as defined by
+	 * {@code clazz} argument.
+	 * 
+	 * @param exchange
+	 * @param cookieParam
+	 * @param clazz
+	 * @return
+	 * @throws ConversionException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	public <T> T getCookie( final HttpServerExchange exchange, final String cookieParam, final Class<T> clazz ) throws ConversionException,
+			InstantiationException, IllegalAccessException {
 		final Cookie cookie = exchange.getRequestCookies().get( cookieParam );
 		final String value = cookie.getValue();
-		return converterFactory.getConverterFor(clazz).convert(value);
+		return converterFactory.getConverterFor( clazz ).convert( value );
 	}
 
-	public <T> T getQueryParam( final HttpServerExchange exchange, final String queryParam, final Class<T> clazz ) throws ConversionException, InstantiationException, IllegalAccessException {
+	/**
+	 * Get a query parameter from request converted to the {@code <T>} type as
+	 * defined by {@code clazz} argument.
+	 * 
+	 * @param exchange
+	 * @param queryParam
+	 * @param clazz
+	 * @return
+	 * @throws ConversionException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	public <T> T getQueryParam( final HttpServerExchange exchange, final String queryParam, final Class<T> clazz )
+			throws ConversionException, InstantiationException, IllegalAccessException {
 		final Queue<String> queryParams = exchange.getQueryParameters().get( queryParam );
 		final String value = queryParams.peek();
-		return converterFactory.getConverterFor(clazz).convert(value);
-	}
-	
-	public <T> T getHeaderParam( final HttpServerExchange exchange, final String headerParam, final Class<T> clazz ) throws ConversionException, InstantiationException, IllegalAccessException {
-		final Queue<String> headerValues = exchange.getRequestHeaders().get( headerParam );
-		final String value = headerValues.peek();
-		return converterFactory.getConverterFor(clazz).convert(value);
-	}
-	
-	public <T> T getPathParam( final HttpServerExchange exchange, final String pathParam, final Class<T> clazz ) throws ConversionException, InstantiationException, IllegalAccessException {
-		final Queue<String> pathValues = exchange.getPathParameters().get( pathParam );
-		final String value = pathValues.peek();
-		return converterFactory.getConverterFor(clazz).convert(value);
+		return converterFactory.getConverterFor( clazz ).convert( value );
 	}
 
+	/**
+	 * Get a header parameter from request converted to the {@code <T>} type as
+	 * defined by {@code clazz} argument.
+	 * 
+	 * @param exchange
+	 * @param headerParam
+	 * @param clazz
+	 * @return
+	 * @throws ConversionException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	public <T> T getHeaderParam( final HttpServerExchange exchange, final String headerParam, final Class<T> clazz )
+			throws ConversionException, InstantiationException, IllegalAccessException {
+		final Queue<String> headerValues = exchange.getRequestHeaders().get( headerParam );
+		final String value = headerValues.peek();
+		return converterFactory.getConverterFor( clazz ).convert( value );
+	}
+
+	/**
+	 * Get a path parameter from request converted to the {@code <T>} type as
+	 * defined by {@code clazz} argument.
+	 * 
+	 * @param exchange
+	 * @param pathParam
+	 * @param clazz
+	 * @return
+	 * @throws ConversionException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	public <T> T getPathParam( final HttpServerExchange exchange, final String pathParam, final Class<T> clazz )
+			throws ConversionException, InstantiationException, IllegalAccessException {
+		final Queue<String> pathValues = exchange.getPathParameters().get( pathParam );
+		final String value = pathValues.peek();
+		return converterFactory.getConverterFor( clazz ).convert( value );
+	}
+
+	/**
+	 * Get the body of current request and convert to {@code <T>} type as
+	 * defined by {@code clazz} argument.
+	 * 
+	 * @param exchange
+	 * @param clazz
+	 * @return
+	 * @throws ServiceProviderException
+	 * @throws RoutingException
+	 */
 	public <T> T getBody( final HttpServerExchange exchange, final Class<T> clazz ) throws ServiceProviderException, RoutingException {
 		String contentEncoding = exchange.getRequestHeaders().getFirst( Headers.CONTENT_ENCODING_STRING );
 		if ( contentEncoding == null )
