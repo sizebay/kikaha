@@ -1,0 +1,37 @@
+package {{packageName}};
+
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import trip.spi.Provided;
+import trip.spi.Service;
+import trip.spi.ServiceProvider;
+import io.skullabs.undertow.standalone.api.WebResource;
+import io.skullabs.undertow.urouting.ResponseWriter;
+import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
+
+@Service( HttpHandler.class )
+@WebResource( value="{{httpPath}}", method="{{httpMethod}}" )
+public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
+
+	@Provided ServiceProvider serviceProvider;
+	@Provided ResponseWriter responseWriter;
+	@Provided RoutingMethodDataProvider methodDataProvider;
+
+	@Override
+	public void handleRequest( HttpServerExchange exchange ) throws Exception {
+		final {{type}} instance = new {{type}}();
+		{{#returnType}}
+			final {{returnType}} response = instance.{{methodName}}( {{methodParams}} );
+			{{#responseContentType}}
+				responseWriter.write( exchange, "{{responseContentType}}", response );
+			{{/responseContentType}}
+			{{^responseContentType}}
+				responseWriter.write( exchange, response );
+			{{/responseContentType}}
+		{{/returnType}}
+		{{^returnType}}
+			instance.{{methodName}}( {{methodParams}} );
+			responseWriter.write( exchange );
+		{{/returnType}}
+	}
+}
