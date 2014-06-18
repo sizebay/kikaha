@@ -11,6 +11,7 @@ import java.nio.channels.Channels;
 import java.util.Queue;
 
 import trip.spi.*;
+import trip.spi.helpers.KeyValueProviderContext;
 import urouting.api.RoutingException;
 import urouting.api.Unserializer;
 
@@ -120,5 +121,19 @@ public class RoutingMethodDataProvider {
 		final Unserializer unserializer = provider.load( Unserializer.class, contentType );
 		final Reader reader = Channels.newReader( exchange.getRequestChannel(), "UTF-8" );
 		return unserializer.unserialize( reader, clazz );
+	}
+
+	/**
+	 * Retrieve ( or produces ) a request-time object.
+	 * 
+	 * @param exchange
+	 * @param clazz
+	 * @return
+	 * @throws ServiceProviderException
+	 */
+	public <T> T getData( final HttpServerExchange exchange, final Class<T> clazz ) throws ServiceProviderException {
+		KeyValueProviderContext context = new KeyValueProviderContext();
+		context.attribute( HttpServerExchange.class, exchange );
+		return provider.load( clazz, context );
 	}
 }

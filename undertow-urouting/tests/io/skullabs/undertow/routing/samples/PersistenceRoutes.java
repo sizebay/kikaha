@@ -19,4 +19,9 @@ public class PersistenceRoutes {
 	public Response create( User user ) {
 		return null;
 	}
+
+	@DELETE
+	@Path( "{id}" )
+	public void delete( @Data User user ) {
+	}
 }
