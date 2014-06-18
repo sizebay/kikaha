@@ -47,12 +47,12 @@
 						<goals>
 							<goal>testCompile</goal>
 						</goals>
-						<configuration>
-							<annotationProcessors>
-								<annotationProcessor>lombok.core.AnnotationProcessor</annotationProcessor>
-								<annotationProcessor>trip.spi.inject.ProvidedClassesProcessor</annotationProcessor>
-							</annotationProcessors>
-						</configuration>
+<!-- 						<configuration> -->
+<!-- 							<annotationProcessors> -->
+<!-- 								<annotationProcessor>lombok.core.AnnotationProcessor</annotationProcessor> -->
+<!-- 								<annotationProcessor>trip.spi.inject.ProvidedClassesProcessor</annotationProcessor> -->
+<!-- 							</annotationProcessors> -->
+<!-- 						</configuration> -->
 					</execution>
 					<execution>
 						<id>generate-sources</id>

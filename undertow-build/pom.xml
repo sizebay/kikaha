@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-		    <artifactId>undertow-standalone</artifactId>
+			<artifactId>undertow-standalone</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -24,11 +24,26 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-    				<finalName>undertow-standalone-${project.version}</finalName>
-    				<appendAssemblyId>false</appendAssemblyId>
+					<finalName>undertow-standalone-${project.version}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>urouting</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>undertow-urouting</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 
 </project>
