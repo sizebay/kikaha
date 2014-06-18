@@ -37,7 +37,8 @@ public class RoutingMethodDataProvider {
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	public <T> T getCookie( final HttpServerExchange exchange, final String cookieParam, final Class<T> clazz ) throws ConversionException,
+	public <T> T getCookieParam( final HttpServerExchange exchange, final String cookieParam, final Class<T> clazz )
+			throws ConversionException,
 			InstantiationException, IllegalAccessException {
 		final Cookie cookie = exchange.getRequestCookies().get( cookieParam );
 		final String value = cookie.getValue();
