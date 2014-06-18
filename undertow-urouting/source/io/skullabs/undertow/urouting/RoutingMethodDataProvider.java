@@ -17,7 +17,7 @@ import urouting.api.Unserializer;
 /**
  * Provides data to a routing method.
  */
-@Service
+@Service( RoutingMethodDataProvider.class )
 public class RoutingMethodDataProvider {
 
 	@Provided

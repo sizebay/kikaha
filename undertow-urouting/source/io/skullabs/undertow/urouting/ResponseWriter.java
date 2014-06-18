@@ -15,7 +15,7 @@ import urouting.api.Serializer;
 /**
  * A helper class to write responses to the HTTP Client.
  */
-@Service
+@Service( ResponseWriter.class )
 public class ResponseWriter {
 
 	@Provided
@@ -28,6 +28,20 @@ public class ResponseWriter {
 	 */
 	public void write( final HttpServerExchange exchange ) {
 		sendStatusCode( exchange, 204 );
+	}
+
+	/**
+	 * Serialize and send the {@code response} object to the HTTP Client.
+	 * 
+	 * @param exchange
+	 * @param response
+	 * @throws ServiceProviderException
+	 * @throws RoutingException
+	 * @see Response
+	 */
+	public void write( final HttpServerExchange exchange, final Response response )
+			throws ServiceProviderException, RoutingException {
+		write( exchange, getDefaultContentType(), response );
 	}
 
 	/**
@@ -45,21 +59,22 @@ public class ResponseWriter {
 			throws ServiceProviderException, RoutingException {
 		sendStatusCode( exchange, 200 );
 		sendContentTypeHeader( exchange, contentType );
-		sendBodyResponse( exchange, contentType, "UTF-8", response );
+		sendBodyResponse( exchange, contentType, getDefaultEncoding(), response );
 	}
 
 	/**
 	 * Serialize and send the {@code response} object to the HTTP Client.
 	 * 
 	 * @param exchange
+	 * @param contentType
 	 * @param response
 	 * @throws ServiceProviderException
 	 * @throws RoutingException
-	 * @see Response
 	 */
-	public void write( final HttpServerExchange exchange, final Response response )
+	public void write( final HttpServerExchange exchange, final String contentType, final Response response )
 			throws ServiceProviderException, RoutingException {
 		sendStatusCode( exchange, response.statusCode() );
+		sendContentTypeHeader( exchange, contentType );
 		sendHeaders( exchange, response );
 		sendBodyResponse( exchange, response );
 	}
@@ -96,5 +111,13 @@ public class ResponseWriter {
 		final HeaderMap responseHeaders = exchange.getResponseHeaders();
 		responseHeaders.add( new HttpString( Headers.CONTENT_TYPE_STRING ), contentType );
 		return responseHeaders;
+	}
+
+	String getDefaultEncoding() {
+		return "UTF-8";
+	}
+
+	String getDefaultContentType() {
+		return "text/plain";
 	}
 }
