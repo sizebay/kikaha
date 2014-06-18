@@ -45,6 +45,20 @@ public class ResponseWriter {
 	}
 
 	/**
+	 * Serialize and send the {@code response} object to the HTTP Client.
+	 * 
+	 * @param exchange
+	 * @param response
+	 * @throws ServiceProviderException
+	 * @throws RoutingException
+	 * @see Response
+	 */
+	public void write( final HttpServerExchange exchange, final Object response )
+			throws ServiceProviderException, RoutingException {
+		write( exchange, getDefaultContentType(), response );
+	}
+
+	/**
 	 * Serialize and send the {@code response} object to the HTTP Client. The
 	 * HTTP Status Code will always be 200, in this case. Also, it will send use
 	 * <em>UTF-8</em> as default encoding.
