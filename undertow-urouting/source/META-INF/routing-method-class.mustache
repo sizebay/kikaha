@@ -4,7 +4,9 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import trip.spi.Provided;
 import trip.spi.Service;
+{{#serviceInterface}}
 import trip.spi.ServiceProvider;
+{{/serviceInterface}}
 import io.skullabs.undertow.standalone.api.WebResource;
 import io.skullabs.undertow.urouting.ResponseWriter;
 import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
