@@ -11,6 +11,7 @@ import java.nio.channels.Channels;
 import org.xnio.channels.StreamSinkChannel;
 
 import trip.spi.Provided;
+import trip.spi.Service;
 import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
 import urouting.api.Header;
@@ -18,6 +19,7 @@ import urouting.api.Response;
 import urouting.api.RoutingException;
 import urouting.api.Serializer;
 
+@Service
 public class ResponseWriter {
 
 	@Provided ServiceProvider provider;
