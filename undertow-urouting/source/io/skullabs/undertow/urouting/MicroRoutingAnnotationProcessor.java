@@ -9,31 +9,43 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 
 import trip.spi.helpers.filter.Filter;
-import urouting.api.Path;
+import urouting.api.*;
 
 @SupportedAnnotationTypes( "urouting.api.*" )
 public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
 
+	RoutingMethodClassGenerator generator;
+
+	@Override
+	public synchronized void init( ProcessingEnvironment processingEnv ) {
+		super.init( processingEnv );
+		generator = new RoutingMethodClassGenerator( filer() );
+	}
+
 	@Override
 	public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv ) {
 		try {
-			System.out.println( "undertow-standalone::urouting processor" );
-			System.out.println( roundEnv );
-			generateRoutingMethods( roundEnv );
+			System.out.println( "urouting processor::" + roundEnv );
+			generateRoutingMethods( roundEnv, GET.class );
+			generateRoutingMethods( roundEnv, POST.class );
+			generateRoutingMethods( roundEnv, PUT.class );
+			generateRoutingMethods( roundEnv, DELETE.class );
 			return false;
 		} catch ( IOException e ) {
 			throw new IllegalStateException( e );
 		}
 	}
 
-	void generateRoutingMethods( RoundEnvironment roundEnv ) throws IOException {
-		Iterable<Element> elementsAnnotatedWith = retrieveMethodsAnnotatedWith( roundEnv, Path.class );
+	void generateRoutingMethods( RoundEnvironment roundEnv, Class<? extends Annotation> httpMethodAnnotation ) throws IOException {
+		Iterable<Element> elementsAnnotatedWith = retrieveMethodsAnnotatedWith( roundEnv, httpMethodAnnotation );
 		for ( Element method : elementsAnnotatedWith )
-			generateRoutingMethods( (ExecutableElement)method, roundEnv );
+			generateRoutingMethods( (ExecutableElement)method, roundEnv, httpMethodAnnotation );
 	}
 
-	void generateRoutingMethods( ExecutableElement method, RoundEnvironment roundEnv ) {
-
+	void generateRoutingMethods( ExecutableElement method, RoundEnvironment roundEnv,
+			Class<? extends Annotation> httpMethodAnnotation ) throws IOException {
+		System.out.println( "Generating class for method " + method );
+		generator.generate( RoutingMethodData.from( method, httpMethodAnnotation ) );
 	}
 
 	@SuppressWarnings( "unchecked" )

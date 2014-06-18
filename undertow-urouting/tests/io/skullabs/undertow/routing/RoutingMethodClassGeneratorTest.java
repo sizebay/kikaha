@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import io.skullabs.undertow.routing.samples.RetrieveRoutes;
 import io.skullabs.undertow.urouting.RoutingMethodClassGenerator;
 import io.skullabs.undertow.urouting.RoutingMethodData;
 
@@ -26,7 +27,7 @@ public class RoutingMethodClassGeneratorTest extends TestCase {
 	@SneakyThrows
 	public void grantThatGeneratesANewClassForNonResponsesAndParameters() {
 		val generator = new RoutingMethodClassGenerator( filer );
-		RoutingMethodData data = createData( null, "application/json", "" );
+		RoutingMethodData data = createData( null, "application/json", "", "java.lang.String" );
 		data = fixAnIdentier( data, 123 );
 		generator.generate( data );
 		String expectedGeneratedClass = readFile( "routing-method-class-generator.expected-non-response-class.txt" );
@@ -57,10 +58,14 @@ public class RoutingMethodClassGeneratorTest extends TestCase {
 	}
 
 	RoutingMethodData createData( String returnType, String responseContentType, String params ) {
+		return createData( returnType, responseContentType, params, null );
+	}
+
+	RoutingMethodData createData( String returnType, String responseContentType, String params, String serviceInterface ) {
 		return new RoutingMethodData(
-				SampleRoute.class.getCanonicalName(),
-				SampleRoute.class.getPackage().toString(),
-				"renderRelatoMais", params, returnType, responseContentType, "/hello/world", "GET" );
+				RetrieveRoutes.class.getCanonicalName(),
+				RetrieveRoutes.class.getPackage().toString(),
+				"renderRelatoMais", params, returnType, responseContentType, "/hello/world", "GET", serviceInterface );
 	}
 
 	@SneakyThrows

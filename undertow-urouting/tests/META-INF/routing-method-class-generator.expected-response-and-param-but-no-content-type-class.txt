@@ -1,4 +1,4 @@
-package package io.skullabs.undertow.routing;
+package package io.skullabs.undertow.routing.samples;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -13,13 +13,12 @@ import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
 @WebResource( value="/hello/world", method="GET" )
 public class GeneratedRoutingMethod123 implements HttpHandler {
 
-	@Provided ServiceProvider serviceProvider;
 	@Provided ResponseWriter responseWriter;
 	@Provided RoutingMethodDataProvider methodDataProvider;
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
-		final io.skullabs.undertow.routing.SampleRoute instance = new io.skullabs.undertow.routing.SampleRoute();
+			final io.skullabs.undertow.routing.samples.RetrieveRoutes instance = new io.skullabs.undertow.routing.samples.RetrieveRoutes();
 			final String response = instance.renderRelatoMais( true );
 				responseWriter.write( exchange, response );
 	}

@@ -13,15 +13,22 @@ import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
 @WebResource( value="{{httpPath}}", method="{{httpMethod}}" )
 public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 
+	{{#serviceInterface}}
 	@Provided ServiceProvider serviceProvider;
+	{{/serviceInterface}}
 	@Provided ResponseWriter responseWriter;
 	@Provided RoutingMethodDataProvider methodDataProvider;
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
-		final {{type}} instance = new {{type}}();
+		{{#serviceInterface}}
+			final {{type}} instance = serviceProvider.load( {{serviceInterface}}.class );
+		{{/serviceInterface}}
+		{{^serviceInterface}}
+			final {{type}} instance = new {{type}}();
+		{{/serviceInterface}}
 		{{#returnType}}
-			final {{returnType}} response = instance.{{methodName}}( {{methodParams}} );
+			final {{returnType}} response = instance.{{methodName}}( {{{methodParams}}} );
 			{{#responseContentType}}
 				responseWriter.write( exchange, "{{responseContentType}}", response );
 			{{/responseContentType}}
@@ -30,7 +37,7 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 			{{/responseContentType}}
 		{{/returnType}}
 		{{^returnType}}
-			instance.{{methodName}}( {{methodParams}} );
+			instance.{{methodName}}( {{{methodParams}}} );
 			responseWriter.write( exchange );
 		{{/returnType}}
 	}
