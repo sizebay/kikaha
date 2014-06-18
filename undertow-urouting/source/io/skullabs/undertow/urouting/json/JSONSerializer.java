@@ -1,14 +1,14 @@
 package io.skullabs.undertow.urouting.json;
 
 import io.skullabs.undertow.urouting.Mimes;
-import io.skullabs.undertow.urouting.RoutingException;
-import io.skullabs.undertow.urouting.Serializer;
 
 import java.io.IOException;
 import java.io.Writer;
 
 import trip.spi.Name;
 import trip.spi.Service;
+import urouting.api.RoutingException;
+import urouting.api.Serializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
