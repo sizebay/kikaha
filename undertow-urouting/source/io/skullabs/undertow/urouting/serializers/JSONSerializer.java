@@ -1,4 +1,4 @@
-package io.skullabs.undertow.urouting.json;
+package io.skullabs.undertow.urouting.serializers;
 
 import io.skullabs.undertow.urouting.Mimes;
 
