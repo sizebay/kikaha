@@ -103,7 +103,7 @@ public class RoutingMethodData {
 
 	static String extractResponseContentTypeFrom( ExecutableElement method ) {
 		Produces producesAnnotation = method.getAnnotation( Produces.class );
-		if ( producesAnnotation != null )
+		if ( producesAnnotation == null )
 			producesAnnotation = method.getEnclosingElement().getAnnotation( Produces.class );
 		if ( producesAnnotation != null )
 			return producesAnnotation.value();

@@ -3,14 +3,13 @@ package io.skullabs.undertow.urouting;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.*;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.nio.channels.Channels;
 
 import org.xnio.channels.StreamSinkChannel;
 import trip.spi.*;
 import urouting.api.*;
-import urouting.api.RoutingException;
-import urouting.api.Serializer;
 
 /**
  * A helper class to write responses to the HTTP Client.
@@ -37,10 +36,11 @@ public class ResponseWriter {
 	 * @param response
 	 * @throws ServiceProviderException
 	 * @throws RoutingException
+	 * @throws IOException
 	 * @see Response
 	 */
 	public void write( final HttpServerExchange exchange, final Response response )
-			throws ServiceProviderException, RoutingException {
+			throws ServiceProviderException, RoutingException, IOException {
 		write( exchange, getDefaultContentType(), response );
 	}
 
@@ -51,10 +51,11 @@ public class ResponseWriter {
 	 * @param response
 	 * @throws ServiceProviderException
 	 * @throws RoutingException
+	 * @throws IOException
 	 * @see Response
 	 */
 	public void write( final HttpServerExchange exchange, final Object response )
-			throws ServiceProviderException, RoutingException {
+			throws ServiceProviderException, RoutingException, IOException {
 		write( exchange, getDefaultContentType(), response );
 	}
 
@@ -68,9 +69,10 @@ public class ResponseWriter {
 	 * @param response
 	 * @throws ServiceProviderException
 	 * @throws RoutingException
+	 * @throws IOException
 	 */
 	public void write( final HttpServerExchange exchange, final String contentType, final Object response )
-			throws ServiceProviderException, RoutingException {
+			throws ServiceProviderException, RoutingException, IOException {
 		sendStatusCode( exchange, 200 );
 		sendContentTypeHeader( exchange, contentType );
 		sendBodyResponse( exchange, contentType, getDefaultEncoding(), response );
@@ -84,9 +86,10 @@ public class ResponseWriter {
 	 * @param response
 	 * @throws ServiceProviderException
 	 * @throws RoutingException
+	 * @throws IOException
 	 */
 	public void write( final HttpServerExchange exchange, final String contentType, final Response response )
-			throws ServiceProviderException, RoutingException {
+			throws ServiceProviderException, RoutingException, IOException {
 		sendStatusCode( exchange, response.statusCode() );
 		sendContentTypeHeader( exchange, contentType );
 		sendHeaders( exchange, response );
@@ -94,7 +97,7 @@ public class ResponseWriter {
 	}
 
 	void sendBodyResponse( final HttpServerExchange exchange, final Response response )
-			throws ServiceProviderException, RoutingException {
+			throws ServiceProviderException, RoutingException, IOException {
 		sendBodyResponse( exchange,
 				response.contentType(), response.encoding(), response.entity() );
 	}
@@ -102,11 +105,12 @@ public class ResponseWriter {
 	void sendBodyResponse(
 			final HttpServerExchange exchange, final String contentType,
 			final String encoding, final Object serializable )
-			throws ServiceProviderException, RoutingException {
+			throws ServiceProviderException, RoutingException, IOException {
 		final StreamSinkChannel channel = exchange.getResponseChannel();
 		final Writer writer = Channels.newWriter( channel, encoding );
 		final Serializer serializer = provider.load( Serializer.class, contentType );
-		serializer.serialize( serializable, writer );
+		serializer.serialize( serializable, UncloseableWriterWrapper.wrap( writer ) );
+		writer.flush();
 	}
 
 	void sendHeaders( final HttpServerExchange exchange, final Response response ) {
@@ -132,6 +136,6 @@ public class ResponseWriter {
 	}
 
 	String getDefaultContentType() {
-		return "text/plain";
+		return Mimes.PLAIN_TEXT;
 	}
 }

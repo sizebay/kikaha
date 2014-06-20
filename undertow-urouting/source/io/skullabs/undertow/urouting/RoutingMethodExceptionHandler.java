@@ -17,6 +17,7 @@ public class RoutingMethodExceptionHandler {
 
 	@SuppressWarnings( "unchecked" )
 	public <T extends Throwable> Response handle( T cause ) {
+		cause.printStackTrace();
 		Class<?> clazz = cause.getClass();
 		while ( !Object.class.equals( clazz ) ) {
 			ExceptionHandler<T> handler = (ExceptionHandler<T>)handlers().get( clazz );

@@ -21,4 +21,8 @@ public interface DeploymentContext {
 	<T> T attribute( Class<T> clazz );
 
 	Object attribute( String key );
+
+	HttpHandler rootHandler();
+
+	DeploymentContext fallbackHandler( HttpHandler fallbackHandler );
 }
