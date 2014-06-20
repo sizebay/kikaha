@@ -90,7 +90,7 @@ public class RoutingMethodData {
 		CookieParam cookieParam = parameter.getAnnotation( CookieParam.class );
 		if ( cookieParam != null )
 			return getParam( CookieParam.class, cookieParam.value(), targetType );
-		Data dataParam = parameter.getAnnotation( Data.class );
+		Context dataParam = parameter.getAnnotation( Context.class );
 		if ( dataParam != null )
 			return format( "methodDataProvider.getData( exchange, %s.class )", targetType );
 		return format( "methodDataProvider.getBody( exchange, %s.class )", targetType );

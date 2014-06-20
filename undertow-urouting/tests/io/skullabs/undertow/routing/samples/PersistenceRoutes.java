@@ -22,6 +22,6 @@ public class PersistenceRoutes {
 
 	@DELETE
 	@Path( "{id}" )
-	public void delete( @Data User user ) {
+	public void delete( @Context User user ) {
 	}
 }
