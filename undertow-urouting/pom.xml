@@ -47,12 +47,6 @@
 						<goals>
 							<goal>testCompile</goal>
 						</goals>
-<!-- 						<configuration> -->
-<!-- 							<annotationProcessors> -->
-<!-- 								<annotationProcessor>lombok.core.AnnotationProcessor</annotationProcessor> -->
-<!-- 								<annotationProcessor>trip.spi.inject.ProvidedClassesProcessor</annotationProcessor> -->
-<!-- 							</annotationProcessors> -->
-<!-- 						</configuration> -->
 					</execution>
 					<execution>
 						<id>generate-sources</id>
@@ -66,6 +60,16 @@
 								<annotationProcessor>lombok.core.AnnotationProcessor</annotationProcessor>
 								<annotationProcessor>trip.spi.inject.ProvidedClassesProcessor</annotationProcessor>
 							</annotationProcessors>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-test-sources</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+							<proc>only</proc>
 						</configuration>
 					</execution>
 				</executions>

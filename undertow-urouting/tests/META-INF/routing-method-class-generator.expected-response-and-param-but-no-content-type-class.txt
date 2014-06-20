@@ -7,6 +7,7 @@ import trip.spi.Service;
 import io.skullabs.undertow.standalone.api.WebResource;
 import io.skullabs.undertow.urouting.ResponseWriter;
 import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
+import io.skullabs.undertow.urouting.RoutingMethodExceptionHandler;
 
 @Service( HttpHandler.class )
 @WebResource( value="/hello/world", method="GET" )
@@ -14,11 +15,16 @@ public class GeneratedRoutingMethod123 implements HttpHandler {
 
 	@Provided ResponseWriter responseWriter;
 	@Provided RoutingMethodDataProvider methodDataProvider;
+	@Provided RoutingMethodExceptionHandler exceptionHandler;
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
+		try {
 			final io.skullabs.undertow.routing.samples.RetrieveRoutes instance = new io.skullabs.undertow.routing.samples.RetrieveRoutes();
 			final String response = instance.renderRelatoMais( true );
 				responseWriter.write( exchange, response );
+		} catch ( Throwable cause ) {
+			responseWriter.write( exchange, exceptionHandler.handle( cause ) );
+		}
 	}
 }

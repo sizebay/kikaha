@@ -10,6 +10,7 @@ import trip.spi.ServiceProvider;
 import io.skullabs.undertow.standalone.api.WebResource;
 import io.skullabs.undertow.urouting.ResponseWriter;
 import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
+import io.skullabs.undertow.urouting.RoutingMethodExceptionHandler;
 
 @Service( HttpHandler.class )
 @WebResource( value="{{httpPath}}", method="{{httpMethod}}" )
@@ -20,9 +21,11 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 	{{/serviceInterface}}
 	@Provided ResponseWriter responseWriter;
 	@Provided RoutingMethodDataProvider methodDataProvider;
+	@Provided RoutingMethodExceptionHandler exceptionHandler;
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
+		try {
 		{{#serviceInterface}}
 			final {{type}} instance = serviceProvider.load( {{serviceInterface}}.class );
 		{{/serviceInterface}}
@@ -42,5 +45,8 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 			instance.{{methodName}}( {{{methodParams}}} );
 			responseWriter.write( exchange );
 		{{/returnType}}
+		} catch ( Throwable cause ) {
+			responseWriter.write( exchange, exceptionHandler.handle( cause ) );
+		}
 	}
 }
