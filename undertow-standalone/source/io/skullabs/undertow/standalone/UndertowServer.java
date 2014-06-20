@@ -1,12 +1,9 @@
 package io.skullabs.undertow.standalone;
 
-import io.skullabs.undertow.standalone.api.Configuration;
-import io.skullabs.undertow.standalone.api.DeploymentContext;
-import io.skullabs.undertow.standalone.api.DeploymentHook;
-import io.skullabs.undertow.standalone.api.RequestHook;
-import io.skullabs.undertow.standalone.api.UndertowStandaloneException;
+import io.skullabs.undertow.standalone.api.*;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
+import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 
@@ -23,7 +20,7 @@ import trip.spi.ServiceProviderException;
 
 @Log
 @Getter
-@Accessors( fluent=true )
+@Accessors( fluent = true )
 @RequiredArgsConstructor
 public class UndertowServer {
 
@@ -44,12 +41,12 @@ public class UndertowServer {
 		this.server.start();
 		long elapsed = System.currentTimeMillis() - start;
 		log.info( "Server started in " + elapsed + "ms." );
-		log.info( "Server is listening at " + configuration().host() + ":" + configuration().port() );
+		log.info( "Server is listening at " + host() + ":" + configuration().port() );
 	}
 
 	/**
 	 * Run all life cycle initialization routines of Undertow Standalone.
-	 *  
+	 * 
 	 * @throws UndertowStandaloneException
 	 */
 	protected void bootstrap() throws UndertowStandaloneException {
@@ -57,7 +54,7 @@ public class UndertowServer {
 			DefaultDeploymentContext deploymentContext = createDeploymentContext();
 			runDeploymentHooks( deploymentContext );
 			deployWebResourceFolder( deploymentContext );
-			deploymentContext.registerUndertowRoutedResourcesHook();
+			finishDeployment( deploymentContext );
 			this.deploymentContext = deploymentContext;
 		} catch ( ServiceProviderException cause ) {
 			throw new UndertowStandaloneException( cause );
@@ -71,15 +68,22 @@ public class UndertowServer {
 		return new DefaultDeploymentContext( deploymentHooks, mutableListOfHooks );
 	}
 
+	protected void runDeploymentHooks( DeploymentContext deploymentContext ) {
+		for ( DeploymentHook hook : deploymentContext.deploymentHooks() ) {
+			log.fine( "Dispatching deployment hook: " + hook.getClass().getCanonicalName() );
+			hook.onDeploy( deploymentContext );
+		}
+	}
+
 	protected void deployWebResourceFolder( DeploymentContext deploymentContext ) {
-		deploymentContext.register( "/", createResourceManager() );
+		deploymentContext.fallbackHandler( createResourceManager() );
 	}
 
 	protected ResourceHandler createResourceManager() {
 		File location = retrieveWebAppFolder();
 		FileResourceManager resourceManager = new FileResourceManager( location, 100 );
 		log.info( "Exposing resource files at " + location );
-		return Handlers.resource(resourceManager)
+		return Handlers.resource( resourceManager )
 				.setResourceManager( resourceManager )
 				.setDirectoryListingEnabled( false );
 	}
@@ -91,18 +95,24 @@ public class UndertowServer {
 		return location;
 	}
 
-	protected void runDeploymentHooks( DeploymentContext deploymentContext ) {
-		for ( DeploymentHook hook : deploymentContext.deploymentHooks() ) {
-			log.fine( "Dispatching deployment hook: " + hook.getClass().getCanonicalName() );
-			hook.onDeploy( deploymentContext );
-		}
+	protected void finishDeployment( DefaultDeploymentContext deploymentContext ) {
+		HttpHandler rootHandler = deploymentContext.rootHandler();
+		final UndertowRoutedResourcesHook undertowRoutedResources = UndertowRoutedResourcesHook.wrap( rootHandler );
+		deploymentContext.register( undertowRoutedResources );
 	}
 
 	protected Undertow createServer() {
 		return Undertow.builder()
-				.addHttpListener( configuration().port(), configuration().host() )
+				.addHttpListener( configuration().port(), host() )
 				.setHandler( new DefaultHttpRequestHandler( this.deploymentContext() ) )
 				.build();
+	}
+
+	private String host() {
+		String host = configuration().host();
+		if ( host == "*" )
+			host = "0.0.0.0";
+		return host;
 	}
 
 	public void stop() {
@@ -112,14 +122,14 @@ public class UndertowServer {
 
 	private ServiceProvider newServiceProvider() {
 		final ServiceProvider serviceProvider = new ServiceProvider();
-		serviceProvider.provideFor(ServiceProvider.class, serviceProvider);
+		serviceProvider.provideFor( ServiceProvider.class, serviceProvider );
 		return serviceProvider;
 	}
 
 	static <T> List<T> mutableList( Iterable<T> immutable ) {
 		ArrayList<T> mutableList = new ArrayList<T>();
 		for ( T item : immutable )
-			mutableList.add(item);
+			mutableList.add( item );
 		return mutableList;
 	}
 }
