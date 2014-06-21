@@ -17,10 +17,25 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:git@github.com:TexoLabs/undertow-standalone.git</connection>
-		<url>scm:git:git@github.com:TexoLabs/undertow-standalone.git</url>
-		<developerConnection>scm:git:git@github.com:TexoLabs/undertow-standalone.git</developerConnection>
+		<connection>scm:git:git@github.com:Skullabs/undertow-standalone.git</connection>
+		<url>scm:git:git@github.com:Skullabs/undertow-standalone.git</url>
+		<developerConnection>scm:git:git@github.com:Skullabs/undertow-standalone.git</developerConnection>
 	</scm>
+	
+	<repositories>
+		<repository>
+			<id>release-repository</id>
+			<name>Texo Release Repository</name>
+			<url>http://skullabs.io:8081/content/repositories/PublicRelease/</url>
+			<snapshots><enabled>false</enabled></snapshots>
+		</repository>
+		<repository>
+			<id>snapshot-repository</id>
+			<name>Texo Snapshot Repository</name>
+			<url>http://skullabs.io:8081/content/repositories/PublicSnapshot/</url>
+			<releases><enabled>false</enabled></releases>
+		</repository>
+	</repositories>
 
 	<distributionManagement>
 		<repository>
