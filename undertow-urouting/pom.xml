@@ -38,7 +38,10 @@
 							<goal>compile</goal>
 						</goals>
 						<configuration>
-							<proc>none</proc>
+							<annotationProcessors>
+								<annotationProcessor>lombok.core.AnnotationProcessor</annotationProcessor>
+								<annotationProcessor>trip.spi.inject.ProvidedClassesProcessor</annotationProcessor>
+							</annotationProcessors>
 						</configuration>
 					</execution>
 					<execution>

@@ -8,9 +8,13 @@ import javax.lang.model.element.*;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import trip.spi.Service;
 import urouting.api.*;
 
+@Getter
+@RequiredArgsConstructor
 public class RoutingMethodData {
 
 	final static String METHOD_PARAM_EOL = "\n\t\t\t";
@@ -25,19 +29,6 @@ public class RoutingMethodData {
 	final String httpMethod;
 	final String serviceInterface;
 	final Long identifier = System.currentTimeMillis();
-
-	public RoutingMethodData( String type, String packageName, String methodName, String methodParams, String returnType,
-			String responseContentType, String httpPath, String httpMethod, String serviceInterface ) {
-		this.type = type;
-		this.packageName = packageName;
-		this.methodName = methodName;
-		this.methodParams = methodParams;
-		this.returnType = returnType;
-		this.responseContentType = responseContentType;
-		this.httpPath = httpPath;
-		this.httpMethod = httpMethod;
-		this.serviceInterface = serviceInterface;
-	}
 
 	public static RoutingMethodData from(
 			ExecutableElement method, Class<? extends Annotation> httpMethodAnnotation ) {
@@ -142,41 +133,5 @@ public class RoutingMethodData {
 		} catch ( MirroredTypeException cause ) {
 			return cause.getTypeMirror();
 		}
-	}
-
-	public String getPackageName() {
-		return packageName;
-	}
-
-	public Long getIdentifier() {
-		return identifier;
-	}
-
-	public String getType() {
-		return this.type;
-	}
-
-	public String getMethodName() {
-		return this.methodName;
-	}
-
-	public String getMethodParams() {
-		return this.methodParams;
-	}
-
-	public String getReturnType() {
-		return this.returnType;
-	}
-
-	public String getResponseContentType() {
-		return this.responseContentType;
-	}
-
-	public String getHttpPath() {
-		return this.httpPath;
-	}
-
-	public String getHttpMethod() {
-		return this.httpMethod;
 	}
 }
