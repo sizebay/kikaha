@@ -1,12 +1,13 @@
 package io.skullabs.undertow.urouting;
 
+import io.skullabs.undertow.urouting.api.*;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
 import trip.spi.*;
-import urouting.api.*;
 
 @Service
 public class RoutingMethodExceptionHandler {

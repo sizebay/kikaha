@@ -1,6 +1,8 @@
 package io.skullabs.undertow.urouting.serializers;
 
 import io.skullabs.undertow.urouting.Mimes;
+import io.skullabs.undertow.urouting.api.RoutingException;
+import io.skullabs.undertow.urouting.api.Serializer;
 
 import java.io.Writer;
 
@@ -12,8 +14,6 @@ import javax.xml.namespace.QName;
 
 import trip.spi.Name;
 import trip.spi.Service;
-import urouting.api.RoutingException;
-import urouting.api.Serializer;
 
 @Service
 @Name( Mimes.XML )

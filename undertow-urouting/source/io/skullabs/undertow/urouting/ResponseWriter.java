@@ -1,5 +1,6 @@
 package io.skullabs.undertow.urouting;
 
+import io.skullabs.undertow.urouting.api.*;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.*;
 
@@ -9,7 +10,6 @@ import java.nio.channels.Channels;
 
 import org.xnio.channels.StreamSinkChannel;
 import trip.spi.*;
-import urouting.api.*;
 
 /**
  * A helper class to write responses to the HTTP Client.

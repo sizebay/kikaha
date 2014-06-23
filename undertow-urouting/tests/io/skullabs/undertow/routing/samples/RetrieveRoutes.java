@@ -1,6 +1,6 @@
 package io.skullabs.undertow.routing.samples;
 
-import urouting.api.*;
+import io.skullabs.undertow.urouting.api.*;
 
 @Path( "{contentType}/serasa" )
 public class RetrieveRoutes {

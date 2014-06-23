@@ -1,6 +1,7 @@
 package io.skullabs.undertow.urouting;
 
 import static java.lang.String.format;
+import io.skullabs.undertow.urouting.api.*;
 
 import java.lang.annotation.Annotation;
 
@@ -11,7 +12,6 @@ import javax.lang.model.type.TypeMirror;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import trip.spi.Service;
-import urouting.api.*;
 
 @Getter
 @RequiredArgsConstructor

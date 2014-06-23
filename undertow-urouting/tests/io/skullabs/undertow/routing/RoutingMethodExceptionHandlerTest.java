@@ -2,9 +2,9 @@ package io.skullabs.undertow.routing;
 
 import static org.junit.Assert.assertNotNull;
 import io.skullabs.undertow.urouting.RoutingMethodExceptionHandler;
+import io.skullabs.undertow.urouting.api.Response;
 import org.junit.Test;
 import trip.spi.Provided;
-import urouting.api.Response;
 
 public class RoutingMethodExceptionHandlerTest extends TestCase {
 

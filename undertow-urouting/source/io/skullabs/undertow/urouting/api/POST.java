@@ -1,4 +1,4 @@
-package urouting.api;
+package io.skullabs.undertow.urouting.api;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,5 +1,7 @@
 package io.skullabs.undertow.urouting;
 
+import io.skullabs.undertow.urouting.api.RoutingException;
+import io.skullabs.undertow.urouting.api.Unserializer;
 import io.skullabs.undertow.urouting.converter.ConversionException;
 import io.skullabs.undertow.urouting.converter.ConverterFactory;
 import io.undertow.server.HttpServerExchange;
@@ -12,8 +14,6 @@ import java.util.Queue;
 
 import trip.spi.*;
 import trip.spi.helpers.KeyValueProviderContext;
-import urouting.api.RoutingException;
-import urouting.api.Unserializer;
 
 /**
  * Provides data to a routing method.

@@ -1,5 +1,7 @@
 package io.skullabs.undertow.urouting;
 
+import io.skullabs.undertow.urouting.api.*;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Set;
@@ -9,7 +11,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 
 import trip.spi.helpers.filter.Filter;
-import urouting.api.*;
 
 @SupportedAnnotationTypes( "urouting.api.*" )
 public class MicroRoutingAnnotationProcessor extends AbstractProcessor {

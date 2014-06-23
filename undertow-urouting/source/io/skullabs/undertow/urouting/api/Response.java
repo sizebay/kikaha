@@ -1,4 +1,4 @@
-package urouting.api;
+package io.skullabs.undertow.urouting.api;
 
 /**
  * Interface defining a object that handles a data that will
