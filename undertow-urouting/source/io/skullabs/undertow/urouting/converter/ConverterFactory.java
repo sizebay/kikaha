@@ -1,37 +1,33 @@
 package io.skullabs.undertow.urouting.converter;
 
+import io.skullabs.undertow.urouting.api.AbstractConverter;
+
 import java.util.HashMap;
 import java.util.Map;
 
+import trip.spi.*;
+
+@Service
+@SuppressWarnings( "rawtypes" )
 public class ConverterFactory {
 
 	final Map<String, Class<? extends AbstractConverter<?>>> converters = new HashMap<String, Class<? extends AbstractConverter<?>>>();
 
+	@Provided
+	ServiceProvider provider;
+
 	public ConverterFactory() {
 		try {
-			registerKnownConverters();
-		} catch (ConversionException e) {
-			throw new RuntimeException( e );
+			final Iterable<AbstractConverter> converters = provider.loadAll( AbstractConverter.class );
+			register( converters );
+		} catch ( ServiceProviderException cause ) {
+			throw new RuntimeException( cause );
 		}
 	}
 
-	@SuppressWarnings( "unchecked" )
-	public void registerKnownConverters() throws ConversionException {
-		register(
-				ByteConverter.class, ShortConverter.class, IntegerConverter.class,
-				FloatConverter.class, DoubleConverter.class, BooleanConverter.class,
-				LongConverter.class, BigDecimalConverter.class, BigIntegerConverter.class,
-				DateConverter.class, GregorianCalendarConverter.class, StringConverter.class );
-	}
-
-	@SuppressWarnings("unchecked")
-	public void register( Class<? extends AbstractConverter<?>>... converters ) throws ConversionException {
-		try {
-		for ( Class<? extends AbstractConverter<?>> converter : converters )
-			register( converter.newInstance() );
-		} catch ( IllegalAccessException | InstantiationException cause ) {
-			throw new ConversionException(cause);
-		}
+	public void register( Iterable<AbstractConverter> converters ) {
+		for ( AbstractConverter converter : converters )
+			register( converter );
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -51,7 +47,7 @@ public class ConverterFactory {
 				return (T)value;
 			AbstractConverter<T> converter = getConverterFor( clazz );
 			return converter.convert( value );
-		} catch ( InstantiationException| IllegalAccessException e ) {
+		} catch ( InstantiationException | IllegalAccessException e ) {
 			throw new ConversionException( String.format(
 					"Can't convert '%s' to '%s'", value, clazz.getCanonicalName() ), e );
 		}
@@ -64,7 +60,7 @@ public class ConverterFactory {
 		Class<? extends AbstractConverter<T>> converterClass =
 				(Class<? extends AbstractConverter<T>>)this.converters.get( canonicalName );
 		if ( converterClass == null )
-			throw new ConversionException("No converters defined to " + canonicalName);
+			throw new ConversionException( "No converters defined to " + canonicalName );
 		return converterClass.newInstance();
 	}
 

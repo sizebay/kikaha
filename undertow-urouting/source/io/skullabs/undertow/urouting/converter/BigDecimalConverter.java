@@ -1,11 +1,16 @@
 package io.skullabs.undertow.urouting.converter;
 
+import io.skullabs.undertow.urouting.api.AbstractConverter;
+
 import java.math.BigDecimal;
 
+import trip.spi.Service;
+
+@Service( AbstractConverter.class )
 public class BigDecimalConverter extends AbstractConverter<BigDecimal> {
 
 	@Override
-	public BigDecimal convert(String value) throws ConversionException {
+	public BigDecimal convert( String value ) throws ConversionException {
 		return new BigDecimal( value );
 	}
 

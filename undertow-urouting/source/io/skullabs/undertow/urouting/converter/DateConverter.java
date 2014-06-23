@@ -1,9 +1,16 @@
 package io.skullabs.undertow.urouting.converter;
 
+import io.skullabs.undertow.urouting.api.AbstractConverter;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import trip.spi.Name;
+import trip.spi.Service;
+
+@Name( "date-converter" )
+@Service( AbstractConverter.class )
 public class DateConverter extends AbstractConverter<Date> {
 
 	@Override
