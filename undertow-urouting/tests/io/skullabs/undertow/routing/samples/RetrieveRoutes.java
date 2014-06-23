@@ -1,6 +1,7 @@
 package io.skullabs.undertow.routing.samples;
 
 import io.skullabs.undertow.urouting.api.*;
+import io.undertow.server.HttpServerExchange;
 
 @Path( "{contentType}/serasa" )
 public class RetrieveRoutes {
@@ -11,8 +12,10 @@ public class RetrieveRoutes {
 			@HeaderParam( "Authorization-Token" ) Long authorizationToken,
 			@CookieParam( "SESSIONID" ) Integer sessionId,
 			@PathParam( "contentType" ) String contentType,
-			@QueryParam( "id" ) Double id ) {
-
+			@QueryParam( "id" ) Double id,
+			@Context HttpServerExchange exchange ) {
+		System.out.println( exchange.getRequestURI() );
+		System.out.println( "contentType: " + contentType );
 	}
 
 	@GET
@@ -23,6 +26,7 @@ public class RetrieveRoutes {
 			@CookieParam( "SESSIONID" ) Integer sessionId,
 			@PathParam( "contentType" ) String contentType,
 			@QueryParam( "id" ) Double id ) {
+		System.out.println( "contentType: " + contentType );
 		return "RelatoMais";
 	}
 }

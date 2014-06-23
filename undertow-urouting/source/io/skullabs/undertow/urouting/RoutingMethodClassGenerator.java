@@ -21,6 +21,8 @@ public class RoutingMethodClassGenerator {
 	}
 
 	public void generate( RoutingMethodData clazz ) throws IOException {
+		String methodCanonicalName = clazz.getType() + "." + clazz.getMethodName();
+		System.out.println( "Generating class for method " + methodCanonicalName );
 		String name = createClassCanonicalName( clazz );
 		JavaFileObject sourceFile = filer.createSourceFile( name );
 		Writer writer = sourceFile.openWriter();

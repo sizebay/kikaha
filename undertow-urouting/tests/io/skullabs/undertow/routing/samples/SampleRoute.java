@@ -1,5 +1,6 @@
-package io.skullabs.undertow.routing;
+package io.skullabs.undertow.routing.samples;
 
+import io.skullabs.undertow.routing.User;
 import io.skullabs.undertow.urouting.Mimes;
 import io.skullabs.undertow.urouting.api.*;
 import trip.spi.Service;

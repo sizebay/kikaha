@@ -78,6 +78,7 @@
 		<version.maven.plugin>2.3.2</version.maven.plugin>
 		<version.assembly.plugin>2.2.1</version.assembly.plugin>
 		<version.jar.plugin>2.4</version.jar.plugin>
+		<version.build.helper.plugin>1.8</version.build.helper.plugin>
 	</properties>
 
 	<dependencyManagement>
@@ -233,6 +234,25 @@
 					<debug>false</debug>
 					<encoding>UTF-8</encoding>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>${version.build.helper.plugin}</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources/annotations</source>
+								<source>${project.build.directory}/generated-sources/test-annotations</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 		<pluginManagement>

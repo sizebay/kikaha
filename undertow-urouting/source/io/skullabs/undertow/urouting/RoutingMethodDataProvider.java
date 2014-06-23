@@ -4,6 +4,7 @@ import io.skullabs.undertow.urouting.api.*;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
 import io.undertow.util.Headers;
+import io.undertow.util.PathTemplateMatch;
 
 import java.io.Reader;
 import java.nio.channels.Channels;
@@ -43,6 +44,8 @@ public class RoutingMethodDataProvider {
 			throws ConversionException,
 			InstantiationException, IllegalAccessException {
 		final Cookie cookie = exchange.getRequestCookies().get( cookieParam );
+		if ( cookie == null )
+			return null;
 		final String value = cookie.getValue();
 		return converterFactory.getConverterFor( clazz ).convert( value );
 	}
@@ -62,6 +65,8 @@ public class RoutingMethodDataProvider {
 	public <T> T getQueryParam( final HttpServerExchange exchange, final String queryParam, final Class<T> clazz )
 			throws ConversionException, InstantiationException, IllegalAccessException {
 		final Queue<String> queryParams = exchange.getQueryParameters().get( queryParam );
+		if ( queryParams == null )
+			return null;
 		final String value = queryParams.peek();
 		return converterFactory.getConverterFor( clazz ).convert( value );
 	}
@@ -80,8 +85,9 @@ public class RoutingMethodDataProvider {
 	 */
 	public <T> T getHeaderParam( final HttpServerExchange exchange, final String headerParam, final Class<T> clazz )
 			throws ConversionException, InstantiationException, IllegalAccessException {
-		final Queue<String> headerValues = exchange.getRequestHeaders().get( headerParam );
-		final String value = headerValues.peek();
+		final String value = exchange.getRequestHeaders().getFirst( headerParam );
+		if ( value == null )
+			return null;
 		return converterFactory.getConverterFor( clazz ).convert( value );
 	}
 
@@ -99,8 +105,8 @@ public class RoutingMethodDataProvider {
 	 */
 	public <T> T getPathParam( final HttpServerExchange exchange, final String pathParam, final Class<T> clazz )
 			throws ConversionException, InstantiationException, IllegalAccessException {
-		final Queue<String> pathValues = exchange.getPathParameters().get( pathParam );
-		final String value = pathValues.peek();
+		final PathTemplateMatch pathTemplate = exchange.getAttachment( PathTemplateMatch.ATTACHMENT_KEY );
+		final String value = pathTemplate.getParameters().get( pathParam );
 		return converterFactory.getConverterFor( clazz ).convert( value );
 	}
 

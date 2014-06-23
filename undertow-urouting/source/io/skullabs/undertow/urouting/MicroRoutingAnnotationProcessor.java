@@ -12,7 +12,7 @@ import javax.lang.model.element.*;
 
 import trip.spi.helpers.filter.Filter;
 
-@SupportedAnnotationTypes( "urouting.api.*" )
+@SupportedAnnotationTypes( "io.skullabs.undertow.urouting.api.*" )
 public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
 
 	RoutingMethodClassGenerator generator;
@@ -45,7 +45,6 @@ public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
 
 	void generateRoutingMethods( ExecutableElement method, RoundEnvironment roundEnv,
 			Class<? extends Annotation> httpMethodAnnotation ) throws IOException {
-		System.out.println( "Generating class for method " + method );
 		generator.generate( RoutingMethodData.from( method, httpMethodAnnotation ) );
 	}
 
