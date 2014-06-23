@@ -9,12 +9,20 @@ import trip.spi.*;
 @SuppressWarnings( "rawtypes" )
 public class ConverterFactory {
 
-	final Map<String, Class<? extends AbstractConverter<?>>> converters = new HashMap<String, Class<? extends AbstractConverter<?>>>();
+	Map<String, Class<? extends AbstractConverter<?>>> converters;
 
 	@Provided
 	ServiceProvider provider;
 
-	public ConverterFactory() {
+	public Map<String, Class<? extends AbstractConverter<?>>> getConverters() {
+		if ( converters == null ) {
+			converters = new HashMap<String, Class<? extends AbstractConverter<?>>>();
+			loadAllConverters();
+		}
+		return converters;
+	}
+
+	public void loadAllConverters() {
 		try {
 			final Iterable<AbstractConverter> converters = provider.loadAll( AbstractConverter.class );
 			register( converters );
@@ -35,7 +43,7 @@ public class ConverterFactory {
 	}
 
 	public void register( Class<?> targetClass, Class<? extends AbstractConverter<?>> converter ) {
-		this.converters.put( targetClass.getCanonicalName(), converter );
+		this.getConverters().put( targetClass.getCanonicalName(), converter );
 	}
 
 	@SuppressWarnings( "unchecked" )
@@ -56,7 +64,7 @@ public class ConverterFactory {
 			throws InstantiationException, IllegalAccessException, ConversionException {
 		String canonicalName = clazz.getCanonicalName();
 		Class<? extends AbstractConverter<T>> converterClass =
-				(Class<? extends AbstractConverter<T>>)this.converters.get( canonicalName );
+				(Class<? extends AbstractConverter<T>>)this.getConverters().get( canonicalName );
 		if ( converterClass == null )
 			throw new ConversionException( "No converters defined to " + canonicalName );
 		return converterClass.newInstance();
