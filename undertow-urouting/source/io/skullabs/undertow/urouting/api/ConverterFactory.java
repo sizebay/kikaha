@@ -1,6 +1,6 @@
-package io.skullabs.undertow.urouting.converter;
+package io.skullabs.undertow.urouting.api;
 
-import io.skullabs.undertow.urouting.api.AbstractConverter;
+import io.skullabs.undertow.urouting.converter.ConversionException;
 
 import java.util.HashMap;
 import java.util.Map;
