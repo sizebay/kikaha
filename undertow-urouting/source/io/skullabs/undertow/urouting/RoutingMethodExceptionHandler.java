@@ -2,8 +2,6 @@ package io.skullabs.undertow.urouting;
 
 import io.skullabs.undertow.urouting.api.*;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,11 +50,6 @@ public class RoutingMethodExceptionHandler {
 
 	@SuppressWarnings( { "unchecked" } )
 	protected <T extends Throwable> Class<T> getGenericClass( ExceptionHandler<T> handler ) {
-		final Type[] genericInterfaces = handler.getClass().getGenericInterfaces();
-		for ( Type genericInterface : genericInterfaces )
-			if ( ParameterizedType.class.isInstance( genericInterface )
-					&& ExceptionHandler.class.equals( ( (ParameterizedType)genericInterface ).getRawType() ) )
-				return (Class<T>)( (ParameterizedType)genericInterface ).getActualTypeArguments()[0];
-		return null;
+		return (Class<T>)Reflection.getFirstGenericTypeFrom( handler, ExceptionHandler.class );
 	}
 }

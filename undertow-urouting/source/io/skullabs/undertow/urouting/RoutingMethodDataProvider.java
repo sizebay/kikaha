@@ -20,8 +20,12 @@ public class RoutingMethodDataProvider {
 
 	@Provided
 	ConverterFactory converterFactory;
+
 	@Provided
 	ServiceProvider provider;
+
+	@Provided
+	ContextProducerFactory contextProducerFactory;
 
 	/**
 	 * Get a cookie from request converted to the {@code <T>} type as defined by
@@ -127,9 +131,14 @@ public class RoutingMethodDataProvider {
 	 * @param clazz
 	 * @return
 	 * @throws ServiceProviderException
+	 * @throws RoutingException
 	 */
-	public <T> T getData( final HttpServerExchange exchange, final Class<T> clazz ) throws ServiceProviderException {
-		KeyValueProviderContext context = new KeyValueProviderContext();
+	public <T> T getData( final HttpServerExchange exchange, final Class<T> clazz ) throws ServiceProviderException, RoutingException {
+		final ContextProducer<T> producerFor = contextProducerFactory.producerFor( clazz );
+		if ( producerFor != null )
+			return producerFor.produce( exchange );
+
+		final KeyValueProviderContext context = new KeyValueProviderContext();
 		context.attribute( HttpServerExchange.class, exchange );
 		return provider.load( clazz, context );
 	}
