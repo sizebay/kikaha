@@ -1,7 +1,6 @@
 package io.skullabs.undertow.urouting;
 
 import io.skullabs.undertow.urouting.api.*;
-import io.skullabs.undertow.urouting.converter.ConversionException;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
 import io.undertow.util.Headers;

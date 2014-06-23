@@ -1,7 +1,5 @@
 package io.skullabs.undertow.urouting.api;
 
-import io.skullabs.undertow.urouting.converter.ConversionException;
-
 import java.lang.reflect.ParameterizedType;
 
 /**

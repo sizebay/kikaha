@@ -1,8 +1,7 @@
-package io.skullabs.undertow.urouting.converter;
+package io.skullabs.undertow.urouting.api;
 
-import java.io.IOException;
 
-public class ConversionException extends IOException {
+public class ConversionException extends RoutingException {
 
 	private static final long serialVersionUID = 2695056089411684745L;
 

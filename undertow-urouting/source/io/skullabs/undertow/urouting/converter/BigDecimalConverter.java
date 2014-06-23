@@ -1,6 +1,7 @@
 package io.skullabs.undertow.urouting.converter;
 
 import io.skullabs.undertow.urouting.api.AbstractConverter;
+import io.skullabs.undertow.urouting.api.ConversionException;
 
 import java.math.BigDecimal;
 
