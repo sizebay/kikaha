@@ -1,7 +1,15 @@
-package io.skullabs.undertow.urouting.converter;
+package io.skullabs.undertow.urouting.api;
+
+import io.skullabs.undertow.urouting.converter.ConversionException;
 
 import java.lang.reflect.ParameterizedType;
 
+/**
+ * Abstract class to provide a conversion from String to {@code T}. It is hugely
+ * used during conversion of Header/Cookie/Path/Query Parameters.
+ *
+ * @param <T>
+ */
 public abstract class AbstractConverter<T> {
 
 	public abstract T convert( String value ) throws ConversionException;
