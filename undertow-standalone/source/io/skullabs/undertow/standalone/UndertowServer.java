@@ -123,6 +123,7 @@ public class UndertowServer {
 	private ServiceProvider newServiceProvider() {
 		final ServiceProvider serviceProvider = new ServiceProvider();
 		serviceProvider.provideFor( ServiceProvider.class, serviceProvider );
+		serviceProvider.provideFor( Configuration.class, configuration );
 		return serviceProvider;
 	}
 
