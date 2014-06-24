@@ -4,6 +4,8 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import trip.spi.Provided;
 import trip.spi.Service;
+import io.skullabs.undertow.standalone.api.Configuration;
+import io.skullabs.undertow.standalone.api.HandlerTypes;
 import io.skullabs.undertow.standalone.api.WebResource;
 import io.skullabs.undertow.urouting.ResponseWriter;
 import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
@@ -16,9 +18,14 @@ public class GeneratedRoutingMethod123 implements HttpHandler {
 	@Provided ResponseWriter responseWriter;
 	@Provided RoutingMethodDataProvider methodDataProvider;
 	@Provided RoutingMethodExceptionHandler exceptionHandler;
+	@Provided Configuration configuration;
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
+			if ( HandlerTypes.IO_BOUND.equals( configuration.defaultHandlerType() ) && !exchange.isInIoThread() ) {
+				exchange.dispatch(this);
+				return;
+			}
 		try {
 			final io.skullabs.undertow.routing.samples.RetrieveRoutes instance = new io.skullabs.undertow.routing.samples.RetrieveRoutes();
 			final String response = instance.renderRelatoMais( true );

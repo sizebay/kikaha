@@ -65,7 +65,8 @@ public class RoutingMethodClassGeneratorTest extends TestCase {
 		return new RoutingMethodData(
 				RetrieveRoutes.class.getCanonicalName(),
 				RetrieveRoutes.class.getPackage().toString(),
-				"renderRelatoMais", params, returnType, responseContentType, "/hello/world", "GET", serviceInterface );
+				"renderRelatoMais", params, returnType, responseContentType,
+				"/hello/world", "GET", serviceInterface, false, false );
 	}
 
 	@SneakyThrows

@@ -7,6 +7,8 @@ import trip.spi.Service;
 {{#serviceInterface}}
 import trip.spi.ServiceProvider;
 {{/serviceInterface}}
+import io.skullabs.undertow.standalone.api.Configuration;
+import io.skullabs.undertow.standalone.api.HandlerTypes;
 import io.skullabs.undertow.standalone.api.WebResource;
 import io.skullabs.undertow.urouting.ResponseWriter;
 import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
@@ -22,9 +24,28 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 	@Provided ResponseWriter responseWriter;
 	@Provided RoutingMethodDataProvider methodDataProvider;
 	@Provided RoutingMethodExceptionHandler exceptionHandler;
+	{{^cpuBound}}
+	{{^ioBound}}
+	@Provided Configuration configuration;
+	{{/ioBound}}
+	{{/cpuBound}}
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
+		{{^cpuBound}}
+		{{^ioBound}}
+			if ( HandlerTypes.IO_BOUND.equals( configuration.defaultHandlerType() ) && !exchange.isInIoThread() ) {
+				exchange.dispatch(this);
+				return;
+			}
+		{{/ioBound}}
+		{{/cpuBound}}
+		{{#ioBound}}
+			if ( !exchange.isInIoThread() ) {
+				exchange.dispatch(this);
+				return;
+			}
+		{{/ioBound}}
 		try {
 		{{#serviceInterface}}
 			final {{type}} instance = serviceProvider.load( {{serviceInterface}}.class );

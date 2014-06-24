@@ -28,6 +28,8 @@ public class RoutingMethodData {
 	final String httpPath;
 	final String httpMethod;
 	final String serviceInterface;
+	final boolean cpuBound;
+	final boolean ioBound;
 	final Long identifier = System.currentTimeMillis();
 
 	public static RoutingMethodData from(
@@ -41,7 +43,9 @@ public class RoutingMethodData {
 				extractResponseContentTypeFrom( method ),
 				measureHttpPathFrom( method ),
 				httpMethodAnnotation.getSimpleName(),
-				extractServiceInterfaceFrom( method ) );
+				extractServiceInterfaceFrom( method ),
+				method.getAnnotation( CPU.class ) != null,
+				method.getAnnotation( IO.class ) != null );
 	}
 
 	public static String extractPackageName( String canonicalName ) {
