@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import io.skullabs.undertow.standalone.api.Configuration;
+import io.skullabs.undertow.standalone.api.HandlerTypes;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -23,6 +24,15 @@ public class DefaultConfiguration implements Configuration {
 	
 	@Getter( lazy=true )
 	private final String resourcesPath = config().getString( "undertow.resources-path" );
+	
+	@Getter( lazy=true )
+	private final HandlerTypes defaultHandlerType = getDefaultHandlerType();
+	
+	public HandlerTypes getDefaultHandlerType(){
+		final String defaultHandlerType = config().getString( "undertow.default-handler-type" );
+		final String upperCaseHandlerType = defaultHandlerType.replace('-', '_').toUpperCase();
+		return HandlerTypes.valueOf(upperCaseHandlerType);
+	}
 
 	public static Configuration loadDefaultConfiguration(){
 		Config config = loadDefaultConfig();
