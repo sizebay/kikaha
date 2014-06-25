@@ -51,6 +51,7 @@ public class UndertowServer {
 	 */
 	protected void bootstrap() throws UndertowStandaloneException {
 		try {
+			provider.provideFor( Configuration.class, configuration );
 			DefaultDeploymentContext deploymentContext = createDeploymentContext();
 			runDeploymentHooks( deploymentContext );
 			deployWebResourceFolder( deploymentContext );
@@ -123,7 +124,6 @@ public class UndertowServer {
 	private ServiceProvider newServiceProvider() {
 		final ServiceProvider serviceProvider = new ServiceProvider();
 		serviceProvider.provideFor( ServiceProvider.class, serviceProvider );
-		serviceProvider.provideFor( Configuration.class, configuration );
 		return serviceProvider;
 	}
 

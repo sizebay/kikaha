@@ -7,8 +7,12 @@ import trip.spi.Service;
 {{#serviceInterface}}
 import trip.spi.ServiceProvider;
 {{/serviceInterface}}
+{{^cpuBound}}
+{{^ioBound}}
 import io.skullabs.undertow.standalone.api.Configuration;
 import io.skullabs.undertow.standalone.api.HandlerTypes;
+{{/ioBound}}
+{{/cpuBound}}
 import io.skullabs.undertow.standalone.api.WebResource;
 import io.skullabs.undertow.urouting.ResponseWriter;
 import io.skullabs.undertow.urouting.RoutingMethodDataProvider;

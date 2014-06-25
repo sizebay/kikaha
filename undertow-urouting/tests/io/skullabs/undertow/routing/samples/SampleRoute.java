@@ -10,6 +10,7 @@ import trip.spi.Service;
 public class SampleRoute {
 
 	@GET
+	@CPU
 	public String printUser() {
 		return "User";
 	}
