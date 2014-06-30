@@ -2,7 +2,10 @@ package io.skullabs.undertow.standalone.mojo;
 
 import io.skullabs.undertow.standalone.Main;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,9 +13,13 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.*;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.artifact.versioning.VersionRange;
-import org.apache.maven.plugin.*;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.project.MavenProject;
 
@@ -82,8 +89,8 @@ public class UndertowRunnerMojo extends AbstractMojo {
 		try {
 			memorizeClassPathWithRunnableJar();
 			String commandLineString = getCommandLineString();
-			System.out.println( "CML: " + commandLineString );
 			run( commandLineString );
+//			Main.main( new String[]{ profile } );
 		} catch ( Exception e ) {
 			throw new MojoExecutionException( "Can't initialize Undertow Server.", e );
 		}
@@ -92,24 +99,15 @@ public class UndertowRunnerMojo extends AbstractMojo {
 	@SuppressWarnings( "unchecked" )
 	void memorizeClassPathWithRunnableJar()
 			throws DependencyResolutionRequiredException, ArtifactResolutionException, ArtifactNotFoundException {
-		// for ( Resource element : (List<Resource>)this.project.getResources()
-		// )
-		// this.classPath.append( element.getDirectory() ).append( SEPARATOR );
-		// for ( String element :
-		// (List<String>)this.project.getCompileClasspathElements() )
-		// this.classPath.append( element ).append( SEPARATOR );
-		for ( Artifact artifact : (List<Artifact>)this.project.getCompileArtifacts() ) {
-			// System.out.println( "Artifact: " + artifact + " scope=" +
-			// artifact.getScope() );
-			// if ( artifact.getScope() == null || artifact.getScope().equals(
-			// "compile" ) )
-			this.classPath.append( getArtifactAbsolutePath( artifact ) ).append( SEPARATOR );
+		final List<String> artifactsInClassPath = new ArrayList<>();
+		for ( Artifact artifact : (List<Artifact>)this.project.getRuntimeArtifacts() ){
+			final String artifactAbsolutePath = getArtifactAbsolutePath( artifact );
+			if ( !artifactsInClassPath.contains( artifactAbsolutePath ) ){
+				this.classPath.append( artifactAbsolutePath ).append( SEPARATOR );
+				artifactsInClassPath.add(artifactAbsolutePath);
+			}
 		}
-		this.classPath
-				.append( getFinalArtifactName() )
-		/*
-		 * .append( SEPARATOR ) .append( resolveUndertowStadalone() )
-		 */;
+		this.classPath.append( getFinalArtifactName() );
 	}
 
 	String resolveUndertowStadalone() throws ArtifactResolutionException, ArtifactNotFoundException {
@@ -136,7 +134,7 @@ public class UndertowRunnerMojo extends AbstractMojo {
 
 	String getCommandLineString() {
 		return String.format(
-				"javaw -cp %s %s %s",
+				"java -cp %s %s %s",
 				this.classPath.toString(),
 				Main.class.getCanonicalName(),
 				this.profile != null ? this.profile : "" );

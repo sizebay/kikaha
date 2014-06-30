@@ -21,19 +21,23 @@
 		<url>scm:git:git@github.com:Skullabs/undertow-standalone.git</url>
 		<developerConnection>scm:git:git@github.com:Skullabs/undertow-standalone.git</developerConnection>
 	</scm>
-	
+
 	<repositories>
 		<repository>
 			<id>release-repository</id>
 			<name>Texo Release Repository</name>
 			<url>http://skullabs.io:8081/content/repositories/PublicRelease/</url>
-			<snapshots><enabled>false</enabled></snapshots>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
 		</repository>
 		<repository>
 			<id>snapshot-repository</id>
 			<name>Texo Snapshot Repository</name>
 			<url>http://skullabs.io:8081/content/repositories/PublicSnapshot/</url>
-			<releases><enabled>false</enabled></releases>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
 		</repository>
 	</repositories>
 
@@ -61,8 +65,8 @@
 	<modules>
 		<module>undertow-standalone</module>
 		<module>undertow-build</module>
- 		<module>undertow-urouting</module>
- 		<module>undertow-maven-plugin</module>
+		<module>undertow-urouting</module>
+		<module>undertow-maven-plugin</module>
 	</modules>
 
 	<properties>
@@ -70,7 +74,7 @@
 		<version.junit>4.10</version.junit>
 		<version.lombok>1.12.4</version.lombok>
 		<version.mockito>1.9.5</version.mockito>
-		<version.undertow>1.1.0.Beta1</version.undertow>
+		<version.undertow>1.1.0.Beta2</version.undertow>
 		<version.trip>0.13</version.trip>
 		<version.config>1.2.0</version.config>
 		<version.jackson>2.4.0</version.jackson>
@@ -141,8 +145,8 @@
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
-			    <artifactId>jackson-databind</artifactId>
-			    <version>${version.jackson}</version>
+				<artifactId>jackson-databind</artifactId>
+				<version>${version.jackson}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -227,7 +231,6 @@
 				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${version.maven.plugin}</version>
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
@@ -272,6 +275,61 @@
 							<goals>
 								<goal>single</goal>
 							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<inherited>true</inherited>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${version.maven.plugin}</version>
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+						<optimize>false</optimize>
+						<debug>true</debug>
+						<encoding>UTF-8</encoding>
+					</configuration>
+					<executions>
+						<execution>
+							<id>compile</id>
+							<phase>compile</phase>
+							<goals>
+								<goal>compile</goal>
+							</goals>
+							<configuration>
+								<proc>none</proc>
+							</configuration>
+						</execution>
+						<execution>
+							<id>test-compile</id>
+							<phase>test-compile</phase>
+							<goals>
+								<goal>testCompile</goal>
+							</goals>
+							<configuration>
+								<proc>none</proc>
+							</configuration>
+						</execution>
+						<execution>
+							<id>generate-sources</id>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>compile</goal>
+							</goals>
+							<configuration>
+								<proc>only</proc>
+							</configuration>
+						</execution>
+						<execution>
+							<id>generate-test-sources</id>
+							<phase>generate-test-sources</phase>
+							<goals>
+								<goal>testCompile</goal>
+							</goals>
+							<configuration>
+								<proc>only</proc>
+							</configuration>
 						</execution>
 					</executions>
 				</plugin>
