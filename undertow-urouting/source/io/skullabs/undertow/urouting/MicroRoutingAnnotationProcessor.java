@@ -26,7 +26,6 @@ public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
 	@Override
 	public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv ) {
 		try {
-			System.out.println( "urouting processor::" + roundEnv );
 			generateRoutingMethods( roundEnv, GET.class );
 			generateRoutingMethods( roundEnv, POST.class );
 			generateRoutingMethods( roundEnv, PUT.class );

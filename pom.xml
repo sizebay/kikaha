@@ -71,7 +71,7 @@
 		<version.lombok>1.12.4</version.lombok>
 		<version.mockito>1.9.5</version.mockito>
 		<version.undertow>1.1.0.Beta1</version.undertow>
-		<version.trip>0.12</version.trip>
+		<version.trip>0.13</version.trip>
 		<version.config>1.2.0</version.config>
 		<version.jackson>2.4.0</version.jackson>
 		<!-- Plugin's Versions -->
