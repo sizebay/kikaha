@@ -62,6 +62,7 @@
 		<module>undertow-standalone</module>
 		<module>undertow-build</module>
  		<module>undertow-urouting</module>
+ 		<module>undertow-maven-plugin</module>
 	</modules>
 
 	<properties>
