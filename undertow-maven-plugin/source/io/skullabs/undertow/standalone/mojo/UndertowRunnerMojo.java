@@ -5,6 +5,7 @@ import io.skullabs.undertow.standalone.Main;
 import java.io.*;
 import java.util.*;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -132,7 +133,9 @@ public class UndertowRunnerMojo extends AbstractMojo {
 	}
 
 	void run( String commandLineString ) throws IOException, InterruptedException {
-		Process exec = Runtime.getRuntime().exec( commandLineString );
+		final Runtime runtime = Runtime.getRuntime();
+		final Process exec = runtime.exec( commandLineString );
+		runtime.addShutdownHook( new ProcessDestroyer( exec ) );
 		printAsynchronously( exec.getInputStream() );
 		printAsynchronously( exec.getErrorStream() );
 		if ( exec.waitFor() > 0 )
@@ -142,5 +145,15 @@ public class UndertowRunnerMojo extends AbstractMojo {
 	void printAsynchronously( InputStream stream ) {
 		new Thread( new ProcessOutputPrinter( stream ) ).start();
 	}
+}
 
+@RequiredArgsConstructor
+class ProcessDestroyer extends Thread {
+	final Process process;
+
+	@Override
+	public void run() {
+		process.destroy();
+		System.out.println( "Undertow has shutting down!" );
+	}
 }
