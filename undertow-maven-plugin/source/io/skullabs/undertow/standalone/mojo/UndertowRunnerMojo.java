@@ -2,30 +2,22 @@ package io.skullabs.undertow.standalone.mojo;
 
 import io.skullabs.undertow.standalone.Main;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.artifact.resolver.*;
 import org.apache.maven.artifact.versioning.VersionRange;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.*;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.project.MavenProject;
 
 /**
  * @goal run
- * @requiresDependencyResolution test
+ * @requiresDependencyResolution compile+runtime
  */
 public class UndertowRunnerMojo extends AbstractMojo {
 
@@ -90,7 +82,6 @@ public class UndertowRunnerMojo extends AbstractMojo {
 			memorizeClassPathWithRunnableJar();
 			String commandLineString = getCommandLineString();
 			run( commandLineString );
-//			Main.main( new String[]{ profile } );
 		} catch ( Exception e ) {
 			throw new MojoExecutionException( "Can't initialize Undertow Server.", e );
 		}
@@ -100,11 +91,11 @@ public class UndertowRunnerMojo extends AbstractMojo {
 	void memorizeClassPathWithRunnableJar()
 			throws DependencyResolutionRequiredException, ArtifactResolutionException, ArtifactNotFoundException {
 		final List<String> artifactsInClassPath = new ArrayList<>();
-		for ( Artifact artifact : (List<Artifact>)this.project.getRuntimeArtifacts() ){
+		for ( Artifact artifact : (Set<Artifact>)this.project.getArtifacts() ) {
 			final String artifactAbsolutePath = getArtifactAbsolutePath( artifact );
-			if ( !artifactsInClassPath.contains( artifactAbsolutePath ) ){
+			if ( !artifactsInClassPath.contains( artifactAbsolutePath ) ) {
 				this.classPath.append( artifactAbsolutePath ).append( SEPARATOR );
-				artifactsInClassPath.add(artifactAbsolutePath);
+				artifactsInClassPath.add( artifactAbsolutePath );
 			}
 		}
 		this.classPath.append( getFinalArtifactName() );
