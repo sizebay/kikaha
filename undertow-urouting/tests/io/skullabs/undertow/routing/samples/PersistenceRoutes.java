@@ -1,7 +1,13 @@
 package io.skullabs.undertow.routing.samples;
 
 import io.skullabs.undertow.routing.User;
-import io.skullabs.undertow.urouting.api.*;
+import io.skullabs.undertow.urouting.api.Context;
+import io.skullabs.undertow.urouting.api.DELETE;
+import io.skullabs.undertow.urouting.api.POST;
+import io.skullabs.undertow.urouting.api.PUT;
+import io.skullabs.undertow.urouting.api.Path;
+import io.skullabs.undertow.urouting.api.PathParam;
+import io.skullabs.undertow.urouting.api.Response;
 import trip.spi.Service;
 
 @Service

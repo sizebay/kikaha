@@ -1,6 +1,6 @@
 package io.skullabs.undertow.urouting.serializers;
 
-import io.skullabs.undertow.urouting.Mimes;
+import io.skullabs.undertow.urouting.api.Mimes;
 import io.skullabs.undertow.urouting.api.RoutingException;
 import io.skullabs.undertow.urouting.api.Serializer;
 

@@ -4,7 +4,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import io.skullabs.undertow.urouting.api.ConversionException;
 import io.skullabs.undertow.urouting.api.ConverterFactory;
+
 import org.junit.Test;
+
 import trip.spi.Provided;
 
 public class ConverterFactoryTest extends TestCase {

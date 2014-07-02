@@ -1,6 +1,13 @@
 package io.skullabs.undertow.routing.samples;
 
-import io.skullabs.undertow.urouting.api.*;
+import io.skullabs.undertow.urouting.api.Context;
+import io.skullabs.undertow.urouting.api.CookieParam;
+import io.skullabs.undertow.urouting.api.GET;
+import io.skullabs.undertow.urouting.api.HeaderParam;
+import io.skullabs.undertow.urouting.api.Path;
+import io.skullabs.undertow.urouting.api.PathParam;
+import io.skullabs.undertow.urouting.api.Produces;
+import io.skullabs.undertow.urouting.api.QueryParam;
 import io.undertow.server.HttpServerExchange;
 
 @Path( "{contentType}/serasa" )

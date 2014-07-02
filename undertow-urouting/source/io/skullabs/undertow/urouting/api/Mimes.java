@@ -1,4 +1,4 @@
-package io.skullabs.undertow.urouting;
+package io.skullabs.undertow.urouting.api;
 
 public interface Mimes {
 

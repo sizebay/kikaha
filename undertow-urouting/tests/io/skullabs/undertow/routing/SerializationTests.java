@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import io.skullabs.undertow.routing.User.Address;
-import io.skullabs.undertow.urouting.Mimes;
+import io.skullabs.undertow.urouting.api.Mimes;
 import io.skullabs.undertow.urouting.api.Serializer;
 import io.skullabs.undertow.urouting.api.Unserializer;
 
@@ -12,7 +12,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import lombok.SneakyThrows;
+
 import org.junit.Test;
+
 import trip.spi.ServiceProvider;
 
 public class SerializationTests extends TestCase {

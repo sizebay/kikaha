@@ -1,6 +1,6 @@
 package io.skullabs.undertow.urouting.serializers;
 
-import io.skullabs.undertow.urouting.Mimes;
+import io.skullabs.undertow.urouting.api.Mimes;
 import io.skullabs.undertow.urouting.api.RoutingException;
 import io.skullabs.undertow.urouting.api.Unserializer;
 
@@ -9,6 +9,7 @@ import java.io.Reader;
 
 import trip.spi.Name;
 import trip.spi.Service;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service

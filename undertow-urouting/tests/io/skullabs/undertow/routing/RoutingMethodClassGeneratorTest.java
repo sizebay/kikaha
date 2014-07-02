@@ -4,7 +4,9 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 import io.skullabs.undertow.routing.samples.RetrieveRoutes;
 import io.skullabs.undertow.urouting.RoutingMethodClassGenerator;
 import io.skullabs.undertow.urouting.RoutingMethodData;
@@ -16,6 +18,7 @@ import javax.tools.JavaFileObject;
 
 import lombok.SneakyThrows;
 import lombok.val;
+
 import org.junit.Test;
 
 public class RoutingMethodClassGeneratorTest extends TestCase {

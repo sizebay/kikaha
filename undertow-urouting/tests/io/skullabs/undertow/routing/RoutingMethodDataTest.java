@@ -4,6 +4,7 @@ import static io.skullabs.undertow.urouting.RoutingMethodData.extractPackageName
 import static io.skullabs.undertow.urouting.RoutingMethodData.generateHttpPath;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+
 import org.junit.Test;
 
 public class RoutingMethodDataTest {
