@@ -1,5 +1,7 @@
 package io.skullabs.undertow.standalone.api;
 
+import com.typesafe.config.Config;
+
 public interface Configuration {
 
 	String resourcesPath();
@@ -9,4 +11,6 @@ public interface Configuration {
 	String host();
 
 	HandlerTypes defaultHandlerType();
+
+	Config config();
 }

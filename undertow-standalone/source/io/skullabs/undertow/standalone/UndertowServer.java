@@ -1,5 +1,6 @@
 package io.skullabs.undertow.standalone;
 
+import com.typesafe.config.Config;
 import io.skullabs.undertow.standalone.api.*;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
@@ -51,7 +52,7 @@ public class UndertowServer {
 	 */
 	protected void bootstrap() throws UndertowStandaloneException {
 		try {
-			provider.provideFor( Configuration.class, configuration );
+			provideSomeDependenciesForFurtherInjections();
 			DefaultDeploymentContext deploymentContext = createDeploymentContext();
 			runDeploymentHooks( deploymentContext );
 			deployWebResourceFolder( deploymentContext );
@@ -60,6 +61,11 @@ public class UndertowServer {
 		} catch ( ServiceProviderException cause ) {
 			throw new UndertowStandaloneException( cause );
 		}
+	}
+
+	protected void provideSomeDependenciesForFurtherInjections() {
+		provider.provideFor( Configuration.class, configuration );
+		provider.provideFor( Config.class, configuration().config() );
 	}
 
 	protected DefaultDeploymentContext createDeploymentContext() throws ServiceProviderException {
@@ -123,12 +129,11 @@ public class UndertowServer {
 
 	private ServiceProvider newServiceProvider() {
 		final ServiceProvider serviceProvider = new ServiceProvider();
-		serviceProvider.provideFor( ServiceProvider.class, serviceProvider );
 		return serviceProvider;
 	}
 
 	static <T> List<T> mutableList( Iterable<T> immutable ) {
-		ArrayList<T> mutableList = new ArrayList<T>();
+		final ArrayList<T> mutableList = new ArrayList<T>();
 		for ( T item : immutable )
 			mutableList.add( item );
 		return mutableList;
