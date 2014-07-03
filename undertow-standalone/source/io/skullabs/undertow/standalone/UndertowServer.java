@@ -21,7 +21,7 @@ import trip.spi.ServiceProviderException;
 
 @Log
 @Getter
-@Accessors( fluent = true )
+@Accessors(fluent = true)
 @RequiredArgsConstructor
 public class UndertowServer {
 
@@ -41,8 +41,10 @@ public class UndertowServer {
 		this.server = createServer();
 		this.server.start();
 		long elapsed = System.currentTimeMillis() - start;
-		log.info( "Server started in " + elapsed + "ms." );
-		log.info( "Server is listening at " + host() + ":" + configuration().port() );
+		log.info("Server started in " + elapsed + "ms.");
+		log.info("Server is listening at " + host() + ":"
+				+ configuration().port());
+		Runtime.getRuntime().addShutdownHook( new UndertowShutdownHook(this) );
 	}
 
 	/**
@@ -54,77 +56,85 @@ public class UndertowServer {
 		try {
 			provideSomeDependenciesForFurtherInjections();
 			DefaultDeploymentContext deploymentContext = createDeploymentContext();
-			runDeploymentHooks( deploymentContext );
-			deployWebResourceFolder( deploymentContext );
-			finishDeployment( deploymentContext );
+			runDeploymentHooks(deploymentContext);
+			deployWebResourceFolder(deploymentContext);
+			finishDeployment(deploymentContext);
 			this.deploymentContext = deploymentContext;
-		} catch ( ServiceProviderException cause ) {
-			throw new UndertowStandaloneException( cause );
+		} catch (ServiceProviderException cause) {
+			throw new UndertowStandaloneException(cause);
 		}
 	}
 
 	protected void provideSomeDependenciesForFurtherInjections() {
-		provider.provideFor( Configuration.class, configuration );
-		provider.provideFor( Config.class, configuration().config() );
+		provider.provideFor(Configuration.class, configuration);
+		provider.provideFor(Config.class, configuration().config());
 	}
 
-	protected DefaultDeploymentContext createDeploymentContext() throws ServiceProviderException {
-		Iterable<DeploymentHook> deploymentHooks = provider.loadAll( DeploymentHook.class );
-		Iterable<RequestHook> requestHooks = provider.loadAll( RequestHook.class );
-		List<RequestHook> mutableListOfHooks = mutableList( requestHooks );
-		return new DefaultDeploymentContext( deploymentHooks, mutableListOfHooks );
+	protected DefaultDeploymentContext createDeploymentContext()
+			throws ServiceProviderException {
+		Iterable<DeploymentHook> deploymentHooks = provider
+				.loadAll(DeploymentHook.class);
+		Iterable<RequestHook> requestHooks = provider
+				.loadAll(RequestHook.class);
+		List<RequestHook> mutableListOfHooks = mutableList(requestHooks);
+		return new DefaultDeploymentContext(deploymentHooks, mutableListOfHooks);
 	}
 
-	protected void runDeploymentHooks( DeploymentContext deploymentContext ) {
-		for ( DeploymentHook hook : deploymentContext.deploymentHooks() ) {
-			log.fine( "Dispatching deployment hook: " + hook.getClass().getCanonicalName() );
-			hook.onDeploy( deploymentContext );
+	protected void runDeploymentHooks(DeploymentContext deploymentContext) {
+		for (DeploymentHook hook : deploymentContext.deploymentHooks()) {
+			log.fine("Dispatching deployment hook: "
+					+ hook.getClass().getCanonicalName());
+			hook.onDeploy(deploymentContext);
 		}
 	}
 
-	protected void deployWebResourceFolder( DeploymentContext deploymentContext ) {
-		deploymentContext.fallbackHandler( createResourceManager() );
+	protected void deployWebResourceFolder(DeploymentContext deploymentContext) {
+		deploymentContext.fallbackHandler(createResourceManager());
 	}
 
 	protected ResourceHandler createResourceManager() {
 		File location = retrieveWebAppFolder();
-		FileResourceManager resourceManager = new FileResourceManager( location, 100 );
-		log.info( "Exposing resource files at " + location );
-		return Handlers.resource( resourceManager )
-				.setResourceManager( resourceManager )
-				.setDirectoryListingEnabled( false );
+		FileResourceManager resourceManager = new FileResourceManager(location,
+				100);
+		log.info("Exposing resource files at " + location);
+		return Handlers.resource(resourceManager)
+				.setResourceManager(resourceManager)
+				.setDirectoryListingEnabled(false);
 	}
 
 	protected File retrieveWebAppFolder() {
-		File location = new File( configuration().resourcesPath() );
-		if ( !location.exists() )
+		File location = new File(configuration().resourcesPath());
+		if (!location.exists())
 			location.mkdir();
 		return location;
 	}
 
-	protected void finishDeployment( DefaultDeploymentContext deploymentContext ) {
+	protected void finishDeployment(DefaultDeploymentContext deploymentContext) {
 		HttpHandler rootHandler = deploymentContext.rootHandler();
-		final UndertowRoutedResourcesHook undertowRoutedResources = UndertowRoutedResourcesHook.wrap( rootHandler );
-		deploymentContext.register( undertowRoutedResources );
+		final UndertowRoutedResourcesHook undertowRoutedResources = UndertowRoutedResourcesHook
+				.wrap(rootHandler);
+		deploymentContext.register(undertowRoutedResources);
 	}
 
 	protected Undertow createServer() {
-		return Undertow.builder()
-				.addHttpListener( configuration().port(), host() )
-				.setHandler( new DefaultHttpRequestHandler( this.deploymentContext() ) )
+		return Undertow
+				.builder()
+				.addHttpListener(configuration().port(), host())
+				.setHandler(
+						new DefaultHttpRequestHandler(this.deploymentContext()))
 				.build();
 	}
 
 	private String host() {
 		String host = configuration().host();
-		if ( host == "*" )
+		if (host == "*")
 			host = "0.0.0.0";
 		return host;
 	}
 
 	public void stop() {
 		this.server().stop();
-		log.info( "Server stopped!" );
+		log.info("Server stopped!");
 	}
 
 	private ServiceProvider newServiceProvider() {
@@ -132,10 +142,20 @@ public class UndertowServer {
 		return serviceProvider;
 	}
 
-	static <T> List<T> mutableList( Iterable<T> immutable ) {
+	static <T> List<T> mutableList(Iterable<T> immutable) {
 		final ArrayList<T> mutableList = new ArrayList<T>();
-		for ( T item : immutable )
-			mutableList.add( item );
+		for (T item : immutable)
+			mutableList.add(item);
 		return mutableList;
+	}
+
+	@RequiredArgsConstructor
+	static class UndertowShutdownHook extends Thread {
+		final UndertowServer server;
+
+		@Override
+		public void run() {
+			server.stop();
+		}
 	}
 }

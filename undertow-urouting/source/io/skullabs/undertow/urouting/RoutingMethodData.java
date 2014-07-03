@@ -9,11 +9,13 @@ import javax.lang.model.element.*;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import trip.spi.Service;
 
 @Getter
+@EqualsAndHashCode(exclude="identifier")
 @RequiredArgsConstructor
 public class RoutingMethodData {
 
@@ -30,7 +32,13 @@ public class RoutingMethodData {
 	final String serviceInterface;
 	final boolean cpuBound;
 	final boolean ioBound;
-	final Long identifier = System.currentTimeMillis();
+	
+	@Getter( lazy=true )
+	private final Long identifier = createIdentifier();
+	
+	private Long createIdentifier() {
+		return hashCode() & 0xffffffffl;
+	}
 
 	public static RoutingMethodData from(
 			ExecutableElement method, Class<? extends Annotation> httpMethodAnnotation ) {

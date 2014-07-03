@@ -19,6 +19,7 @@ public class HttpHandlerDeploymentHook implements DeploymentHook {
 	@Override
 	public void onDeploy(DeploymentContext context) {
 		try {
+			log.info("Looking for HttpHandler routes...");
 			deployAllHttpHandlers( context );
 		} catch ( ServiceProviderException cause ) {
 			handleFailure(cause);
