@@ -38,13 +38,13 @@ public class HazelcastConfiguration {
 		final Config config;
 
 		@Getter( lazy = true )
-		private final String username = config().getString( "undertow.hazelcast.mode" );
+		private final String groupname = config().getString( "undertow.hazelcast.group.name" );
 
 		@Getter( lazy = true )
-		private final String password = config().getString( "undertow.hazelcast.mode" );
+		private final String password = config().getString( "undertow.hazelcast.group.password" );
 
 		@Getter( lazy = true )
-		private final List<String> addresses = config().getStringList( "undertow.hazelcast.mode" );
+		private final List<String> addresses = config().getStringList( "undertow.hazelcast.address" );
 
 	}
 }

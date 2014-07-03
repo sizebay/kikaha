@@ -3,9 +3,11 @@ package io.skullabs.undertow.hazelcast;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.Config;
+import com.hazelcast.config.GroupConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import io.skullabs.undertow.hazelcast.HazelcastConfiguration.ClusterClientConfig;
+import io.skullabs.undertow.standalone.api.Configuration;
 import lombok.extern.java.Log;
 import trip.spi.*;
 
@@ -19,6 +21,9 @@ public class HazelcastInstanceProducer {
 	@Provided
 	HazelcastConfiguration hazelcastConfig;
 	HazelcastInstance instance;
+
+	@Provided
+	Configuration undertowConfiguration;
 
 	/**
 	 * Produce a Hazelcast Instance. It will ensure that has only one instance
@@ -70,20 +75,19 @@ public class HazelcastInstanceProducer {
 		}
 	}
 
+	/**
+	 * Configure a connection as a client to a remote cluster node.
+	 * 
+	 * @return ClientConfig
+	 */
 	ClientConfig createClientConfiguration() {
 		final ClientConfig clientConfig = new ClientConfig();
 		final ClusterClientConfig clusterClient = hazelcastConfig.clusterClient();
-		if ( !isBlank( clusterClient.username() ) )
-			clientConfig.getGroupConfig()
-					.setName( clusterClient.username() )
-					.setPassword( clusterClient.password() );
+		final GroupConfig groupConfig = clientConfig.getGroupConfig();
+		configureGroupIdentification( clusterClient, groupConfig );
 		for ( String address : clusterClient.addresses() )
 			clientConfig.getNetworkConfig().addAddress( address );
 		return clientConfig;
-	}
-
-	boolean isBlank( String string ) {
-		return string == null || string.isEmpty();
 	}
 
 	Config loadConfig() {
@@ -99,6 +103,33 @@ public class HazelcastInstanceProducer {
 	}
 
 	private Config createConfig() {
-		return new Config();
+		final Config config = new Config();
+		final GroupConfig groupConfig = config.getGroupConfig();
+		final ClusterClientConfig clusterClient = hazelcastConfig.clusterClient();
+		configureGroupIdentification( clusterClient, groupConfig );
+		return config;
+	}
+
+	/**
+	 * Populates the group identification. On client configuration, it provides
+	 * the data to connect to the remote cluster node. On cluster node
+	 * configurations, it defines the expected parameters when a client tries to
+	 * connect with it.
+	 * 
+	 * @param clusterClient
+	 * @param groupConfig
+	 */
+	private void configureGroupIdentification(
+			final ClusterClientConfig clusterClient, final GroupConfig groupConfig ) {
+		if ( !isBlank( clusterClient.groupname() ) )
+			groupConfig.setName( clusterClient.groupname() );
+		else
+			groupConfig.setName( undertowConfiguration.applicationName() );
+		if ( !isBlank( clusterClient.password() ) )
+			groupConfig.setPassword( clusterClient.password() );
+	}
+
+	boolean isBlank( String string ) {
+		return string == null || string.isEmpty();
 	}
 }
