@@ -50,30 +50,30 @@
 							<goal>testCompile</goal>
 						</goals>
 					</execution>
-					<execution>
-						<id>generate-sources</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<configuration>
-							<proc>only</proc>
-							<annotationProcessors>
-								<annotationProcessor>lombok.core.AnnotationProcessor</annotationProcessor>
-								<annotationProcessor>trip.spi.inject.ProvidedClassesProcessor</annotationProcessor>
-							</annotationProcessors>
-						</configuration>
-					</execution>
-					<execution>
-						<id>generate-test-sources</id>
-						<phase>generate-test-sources</phase>
-						<goals>
-							<goal>testCompile</goal>
-						</goals>
-						<configuration>
-							<proc>only</proc>
-						</configuration>
-					</execution>
+<!-- 					<execution> -->
+<!-- 						<id>generate-sources</id> -->
+<!-- 						<phase>generate-sources</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>compile</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<proc>only</proc> -->
+<!-- 							<annotationProcessors> -->
+<!-- 								<annotationProcessor>lombok.core.AnnotationProcessor</annotationProcessor> -->
+<!-- 								<annotationProcessor>trip.spi.inject.ProvidedClassesProcessor</annotationProcessor> -->
+<!-- 							</annotationProcessors> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
+<!-- 					<execution> -->
+<!-- 						<id>generate-test-sources</id> -->
+<!-- 						<phase>generate-test-sources</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>testCompile</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<proc>only</proc> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
 				</executions>
 			</plugin>
 		</plugins>

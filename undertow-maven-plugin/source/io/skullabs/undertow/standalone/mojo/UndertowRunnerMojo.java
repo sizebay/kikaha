@@ -82,6 +82,7 @@ public class UndertowRunnerMojo extends AbstractMojo {
 		try {
 			memorizeClassPathWithRunnableJar();
 			String commandLineString = getCommandLineString();
+			System.out.println( "CML: " + commandLineString );
 			run( commandLineString );
 		} catch ( Exception e ) {
 			throw new MojoExecutionException( "Can't initialize Undertow Server.", e );
