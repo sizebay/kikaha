@@ -23,6 +23,9 @@ public class HazelcastConfiguration {
 	final Config config;
 
 	@Getter( lazy = true )
+	private final Boolean overrideXmlConfig = config().getBoolean( "undertow.hazelcast.override-xml-config" );
+
+	@Getter( lazy = true )
 	private final Boolean sessionManagementEnabled = config().getBoolean( "undertow.hazelcast.session-management-enabled" );
 
 	@Getter( lazy = true )

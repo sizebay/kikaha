@@ -2,8 +2,7 @@ package io.skullabs.undertow.hazelcast;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.config.Config;
-import com.hazelcast.config.GroupConfig;
+import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import io.skullabs.undertow.hazelcast.HazelcastConfiguration.ClusterClientConfig;
@@ -103,10 +102,13 @@ public class HazelcastInstanceProducer {
 	}
 
 	private Config createConfig() {
-		final Config config = new Config();
+		final Config config = new XmlConfigBuilder().build();
 		final GroupConfig groupConfig = config.getGroupConfig();
 		final ClusterClientConfig clusterClient = hazelcastConfig.clusterClient();
-		configureGroupIdentification( clusterClient, groupConfig );
+
+		if ( hazelcastConfig.overrideXmlConfig() )
+			configureGroupIdentification( clusterClient, groupConfig );
+
 		return config;
 	}
 
