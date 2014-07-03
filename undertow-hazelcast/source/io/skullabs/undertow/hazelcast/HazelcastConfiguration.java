@@ -8,10 +8,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
+/**
+ * Represents the entries defined in application.conf file that belongs to
+ * hazelcast behavior configuration in Undertow Standalone Extension.
+ */
 @Getter
 @Accessors( fluent = true )
 @RequiredArgsConstructor
-public class HazelcastConfig {
+public class HazelcastConfiguration {
 
 	public static final String MODE_CLIENT = "client";
 	public static final String MODE_CLUSTER_NODE = "cluster-node";

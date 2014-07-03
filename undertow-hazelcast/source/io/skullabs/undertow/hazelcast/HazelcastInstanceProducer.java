@@ -5,14 +5,14 @@ import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import io.skullabs.undertow.hazelcast.HazelcastConfig.ClusterClientConfig;
+import io.skullabs.undertow.hazelcast.HazelcastConfiguration.ClusterClientConfig;
 import trip.spi.*;
 
 @Service
 public class HazelcastInstanceProducer {
 
 	@Provided
-	HazelcastConfig hazelcastConfig;
+	HazelcastConfiguration hazelcastConfig;
 	HazelcastInstance instance;
 
 	@Producer
@@ -23,7 +23,7 @@ public class HazelcastInstanceProducer {
 	}
 
 	HazelcastInstance createHazelcastInstance() {
-		if ( hazelcastConfig.mode().equals( HazelcastConfig.MODE_CLIENT ) ) {
+		if ( hazelcastConfig.mode().equals( HazelcastConfiguration.MODE_CLIENT ) ) {
 			final ClientConfig clientConfig = createClientConfiguration();
 			return HazelcastClient.newHazelcastClient( clientConfig );
 		}

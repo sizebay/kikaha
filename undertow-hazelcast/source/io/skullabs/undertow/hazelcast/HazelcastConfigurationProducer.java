@@ -4,17 +4,17 @@ import com.typesafe.config.Config;
 import trip.spi.*;
 
 @Service
-public class HazelcastConfigProducer {
+public class HazelcastConfigurationProducer {
 
 	@Provided
 	Config config;
-	HazelcastConfig hazelcastConfig;
+	HazelcastConfiguration hazelcastConfig;
 
 	@Producer
-	public HazelcastConfig createHazelcastConfig() {
+	public HazelcastConfiguration createHazelcastConfig() {
 		if ( hazelcastConfig == null ) {
 			compatibilizeHazelcastConfigurationWithTypesafeModel();
-			hazelcastConfig = new HazelcastConfig( config );
+			hazelcastConfig = new HazelcastConfiguration( config );
 		}
 		return hazelcastConfig;
 	}
