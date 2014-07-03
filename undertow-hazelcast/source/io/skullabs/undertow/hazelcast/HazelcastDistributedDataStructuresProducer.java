@@ -21,8 +21,47 @@ public class HazelcastDistributedDataStructuresProducer {
 	@SuppressWarnings( "rawtypes" )
 	public IQueue produceIQueues( final ProviderContext context ) {
 		final String name = retrieveMapNameFrom( context );
-		final IQueue<Object> queue = hazelcast.getQueue( name );
+		final IQueue queue = hazelcast.getQueue( name );
 		return queue;
+	}
+
+	@Producer
+	@SuppressWarnings( "rawtypes" )
+	public MultiMap produceMultimap( final ProviderContext context ) {
+		final String name = retrieveMapNameFrom( context );
+		final MultiMap mmap = hazelcast.getMultiMap( name );
+		return mmap;
+	}
+
+	@Producer
+	@SuppressWarnings( "rawtypes" )
+	public ISet produceSet( final ProviderContext context ) {
+		final String name = retrieveMapNameFrom( context );
+		final ISet set = hazelcast.getSet( name );
+		return set;
+	}
+
+	@Producer
+	@SuppressWarnings( "rawtypes" )
+	public IList produceList( final ProviderContext context ) {
+		final String name = retrieveMapNameFrom( context );
+		final IList list = hazelcast.getList( name );
+		return list;
+	}
+
+	@Producer
+	@SuppressWarnings( "rawtypes" )
+	public ITopic produceTopic( final ProviderContext context ) {
+		final String name = retrieveMapNameFrom( context );
+		final ITopic topic = hazelcast.getTopic( name );
+		return topic;
+	}
+
+	@Producer
+	public ILock produceLock( final ProviderContext context ) {
+		final String name = retrieveMapNameFrom( context );
+		final ILock lock = hazelcast.getLock( name );
+		return lock;
 	}
 
 	String retrieveMapNameFrom( final ProviderContext context ) {
