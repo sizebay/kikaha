@@ -22,7 +22,6 @@ public class HazelcastInstanceProducerTest {
 
 	@Test
 	public void grantThatProducesTwoMapsWithSameData() {
-		System.out.println( producer );
 		final HazelcastInstance firstInstance = producer.createHazelcastInstance();
 		final IMap<String, Object> firstMap = produceMap( firstInstance );
 		final Hello hello = new Hello();

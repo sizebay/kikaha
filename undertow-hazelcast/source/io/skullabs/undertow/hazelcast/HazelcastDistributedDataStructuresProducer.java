@@ -1,11 +1,10 @@
 package io.skullabs.undertow.hazelcast;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
+import com.hazelcast.core.*;
 import trip.spi.*;
 
 @Service
-public class HazelcastMapProducer {
+public class HazelcastDistributedDataStructuresProducer {
 
 	@Provided
 	HazelcastInstance hazelcast;
@@ -16,6 +15,14 @@ public class HazelcastMapProducer {
 		final String name = retrieveMapNameFrom( context );
 		final IMap map = hazelcast.getMap( name );
 		return map;
+	}
+
+	@Producer
+	@SuppressWarnings( "rawtypes" )
+	public IQueue produceIQueues( final ProviderContext context ) {
+		final String name = retrieveMapNameFrom( context );
+		final IQueue<Object> queue = hazelcast.getQueue( name );
+		return queue;
 	}
 
 	String retrieveMapNameFrom( final ProviderContext context ) {
