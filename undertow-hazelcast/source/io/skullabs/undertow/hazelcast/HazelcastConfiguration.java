@@ -28,7 +28,8 @@ public class HazelcastConfiguration {
 	@Getter( lazy = true )
 	private final String mode = config().getString( "undertow.hazelcast.mode" );
 
-	final ClusterClientConfig clusterClient = new ClusterClientConfig( config() );
+	@Getter( lazy = true )
+	private final ClusterClientConfig clusterClient = new ClusterClientConfig( config() );
 
 	@Getter
 	@Accessors( fluent = true )
@@ -45,6 +46,5 @@ public class HazelcastConfiguration {
 
 		@Getter( lazy = true )
 		private final List<String> addresses = config().getStringList( "undertow.hazelcast.address" );
-
 	}
 }
