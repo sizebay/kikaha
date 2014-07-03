@@ -4,6 +4,8 @@ import com.typesafe.config.Config;
 
 public interface Configuration {
 
+	String applicationName();
+
 	String resourcesPath();
 
 	Integer port();

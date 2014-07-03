@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 public class DefaultConfiguration implements Configuration {
 
 	final Config config;
+	final String applicationName;
 
 	@Getter( lazy = true )
 	private final Integer port = config().getInt( "undertow.port" );
@@ -35,14 +36,14 @@ public class DefaultConfiguration implements Configuration {
 
 	public static Configuration loadDefaultConfiguration() {
 		Config config = loadDefaultConfig();
-		return new DefaultConfiguration( config );
+		return new DefaultConfiguration( config, "default" );
 	}
 
 	public static Configuration loadConfiguration( String rootPath ) {
 		Config defaultConfig = loadDefaultConfig();
 		Config root = defaultConfig.getConfig( rootPath );
 		Config config = root.withFallback( defaultConfig );
-		return new DefaultConfiguration( config );
+		return new DefaultConfiguration( config, rootPath );
 	}
 
 	public static Config loadDefaultConfig() {
