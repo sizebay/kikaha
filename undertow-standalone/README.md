@@ -36,7 +36,7 @@ to achieve the your daily web development goals.
 
 ```java
 @Service
-@Webresource( value="/", method="GET")
+@WebResource( value="/", method="GET")
 public class HelloWorldHandler implements HttpHandler {
 
     @Override
@@ -92,10 +92,10 @@ public class TraceDeploymentHook implements DeploymentHook {
 The ```io.skullabs.undertow.standalone.api.DeploymentContext``` class contains a set of methods that helps you to interact with ```io.skullabs.undertow.standalone.UndertowServer``` before and after the service is running. Lets take a look on its main functionalities.
 
 #### DeploymentContext#register
-It registers a route on Undertow.
-__uri__: defines which uri this route should be listening to.
-__method__: the Http Method this route should be listening to. Default: GET.
-__handler__: the ```io.undertow.server.HttpHandler``` implementation of route.
+It registers a route on Undertow, where:
+- __uri__: defines which uri this route should be listening to.
+- __method__: the Http Method this route should be listening to. Default: GET.
+- __handler__: the ```io.undertow.server.HttpHandler``` implementation of route.
 ```java
 	DeploymentContext register( String uri, HttpHandler handler );
 	DeploymentContext register( String uri, String method, HttpHandler handler );
@@ -132,17 +132,17 @@ the HttpServerExchange state or even interrupt the request.
 @Service
 public class TraceRequestHook implements RequestHook {
 
-	// ...
+    // ...
 
-	@Override
-	public void execute( RequestHookChain chain, HttpServerExchange exchange ) {
-	  // Tracing the request
-	  String message = exchange.getRequestMethod().toString() + ":" + exchange.getRequestPath();
-		log.info( message );
-		
-		// Allowing the next chain of hooks to do its job.
-		// If no other RequestHook are available, it will execute the Default Handler
-		chain.executeNext();
+    @Override
+    public void execute( RequestHookChain chain, HttpServerExchange exchange ) {
+        // Tracing the request
+        String message = exchange.getRequestMethod().toString() + ":" + exchange.getRequestPath();
+        log.info( message );
+
+        // Allowing the next chain of hooks to do its job.
+        // If no other RequestHook are available, it will execute the Default Handler
+        chain.executeNext();
 	}
 }
 
@@ -162,7 +162,8 @@ Just include the bellow maven dependencies to your ```pom.xml```. Note that Unde
     </properties>
 ...
     <dependencies>
-        <!-- tRip for IoC and Modularization -->
+        <!-- tRip Processor for IoC and Modularization.
+        	 Needed only during source compilation. You don't need it during runtime. -->
         <dependency>
             <groupId>io.skullabs.trip</groupId>
             <artifactId>trip-processor</artifactId>
