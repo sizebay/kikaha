@@ -14,6 +14,6 @@ public class TypesafeConfigTest {
 	public void grant() {
 		TypesafeConfigurationCompatibilization compatibilization = spy( new TypesafeConfigurationCompatibilization( config ) );
 		compatibilization.compatibilize();
-		verify( compatibilization, times( 47 ) ).memorizeProperty( any( String.class ), any( Object.class ) );
+		verify( compatibilization, times( 1 ) ).memorizeProperty( any( String.class ), any( Object.class ) );
 	}
 }
