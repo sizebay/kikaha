@@ -9,13 +9,11 @@ import javax.lang.model.element.*;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import trip.spi.Service;
 
 @Getter
-@EqualsAndHashCode(exclude="identifier")
+@EqualsAndHashCode( exclude = "identifier" )
 @RequiredArgsConstructor
 public class RoutingMethodData {
 
@@ -32,10 +30,10 @@ public class RoutingMethodData {
 	final String serviceInterface;
 	final boolean cpuBound;
 	final boolean ioBound;
-	
-	@Getter( lazy=true )
+
+	@Getter( lazy = true )
 	private final Long identifier = createIdentifier();
-	
+
 	private Long createIdentifier() {
 		return hashCode() & 0xffffffffl;
 	}
@@ -73,13 +71,23 @@ public class RoutingMethodData {
 		for ( VariableElement parameter : method.getParameters() ) {
 			if ( !first )
 				buffer.append( ',' );
-			buffer.append( extractMethodParamFrom( parameter ) ).append( METHOD_PARAM_EOL );
+			buffer.append( extractMethodParamFrom( method, parameter ) ).append( METHOD_PARAM_EOL );
 			first = false;
 		}
 		return buffer.toString();
 	}
 
-	static String extractMethodParamFrom( VariableElement parameter ) {
+	/**
+	 * Extract method parameter for a given {@VariableElement}
+	 * argument. The returned method parameter will be passed as argument to a
+	 * routing method.
+	 * 
+	 * @param method
+	 * @param parameter
+	 * @return
+	 */
+	// XXX: bad, ugly and huge method
+	static String extractMethodParamFrom( ExecutableElement method, VariableElement parameter ) {
 		String targetType = parameter.asType().toString();
 		PathParam pathParam = parameter.getAnnotation( PathParam.class );
 		if ( pathParam != null )
@@ -96,6 +104,9 @@ public class RoutingMethodData {
 		Context dataParam = parameter.getAnnotation( Context.class );
 		if ( dataParam != null )
 			return format( "methodDataProvider.getData( exchange, %s.class )", targetType );
+		String consumingContentType = extractConsumingContentTypeFrom( method );
+		if ( consumingContentType != null )
+			return format( "methodDataProvider.getBody( exchange, %s.class, \"%s\" )", targetType, consumingContentType );
 		return format( "methodDataProvider.getBody( exchange, %s.class )", targetType );
 	}
 
@@ -110,6 +121,15 @@ public class RoutingMethodData {
 			producesAnnotation = method.getEnclosingElement().getAnnotation( Produces.class );
 		if ( producesAnnotation != null )
 			return producesAnnotation.value();
+		return null;
+	}
+
+	static String extractConsumingContentTypeFrom( ExecutableElement method ) {
+		Consumes consumesAnnotation = method.getAnnotation( Consumes.class );
+		if ( consumesAnnotation == null )
+			consumesAnnotation = method.getEnclosingElement().getAnnotation( Consumes.class );
+		if ( consumesAnnotation != null )
+			return consumesAnnotation.value();
 		return null;
 	}
 

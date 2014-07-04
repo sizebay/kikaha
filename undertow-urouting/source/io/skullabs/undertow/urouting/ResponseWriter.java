@@ -8,12 +8,14 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.channels.Channels;
 
+import lombok.extern.java.Log;
 import org.xnio.channels.StreamSinkChannel;
 import trip.spi.*;
 
 /**
  * A helper class to write responses to the HTTP Client.
  */
+@Log
 @Service( ResponseWriter.class )
 public class ResponseWriter {
 
@@ -108,9 +110,24 @@ public class ResponseWriter {
 			throws ServiceProviderException, RoutingException, IOException {
 		final StreamSinkChannel channel = exchange.getResponseChannel();
 		final Writer writer = Channels.newWriter( channel, encoding );
-		final Serializer serializer = provider.load( Serializer.class, contentType );
+		final Serializer serializer = getSerializer( contentType );
 		serializer.serialize( serializable, UncloseableWriterWrapper.wrap( writer ) );
 		writer.flush();
+	}
+
+	Serializer getSerializer( String contentType )
+			throws ServiceProviderException {
+		return getSerializer( contentType, Mimes.PLAIN_TEXT );
+	}
+
+	Serializer getSerializer( final String contentType, final String defaultContentType )
+			throws ServiceProviderException {
+		Serializer serializer = provider.load( Serializer.class, contentType );
+		if ( serializer == null ) {
+			log.warning( "No serializer found for " + contentType + ". Falling back to " + defaultContentType );
+			serializer = provider.load( Serializer.class, defaultContentType );
+		}
+		return serializer;
 	}
 
 	void sendHeaders( final HttpServerExchange exchange, final Response response ) {
