@@ -1,4 +1,4 @@
-## Undertow Standalone Extension
+## Standalone Extension
 Automations on Undertow Bootstrap to make easier to embed it on your application.
 
 ### What it provides to you?
@@ -11,6 +11,7 @@ Undertow is an amazing web development plataform. It is the current Wildfly
 core engine, it has a simple and powerful internal design, and is [one of most fastest web implementations ever](http://www.techempower.com/benchmarks/#section=data-r8&hw=i7&test=plaintext).
 Nevertheless, it has no standard way to struture and embed your project. Every time you intent to use Undertow embedded in your project you should create a bunch of code lines to bootstrap your web application.
 
+### Creating routes
 Here is the default hello world example provided by Undertow documentation.
 
 ```java
@@ -31,8 +32,13 @@ public class HelloWorldServer {
 }
 ```
 
-This Undertow Standalone Extension aim to save you from the pain of creating its countless lines of code
-to achieve the your daily web development goals.
+Note that UndertowBuilder expects a root HttpHandler to handle all requests your applications will be able to handle. When more than one route is needed to be deployed a inattentive developer may turn its powerful application code into a mess spaghetti code.
+
+The Standalone Extension aim to save you from the pain of creating its countless lines of code
+to create your routes. All the effort needed to create a route on your application is:
+- implement the ```io.undertow.server.HttpHandler``` interface
+- inform which URL and Http Method it is expected to handle through ```io.skullabs.undertow.standalone.api.WebResource``` annotation
+- annotated it as a singleton service through ```trip.api.Service```
 
 ```java
 @Service
@@ -52,7 +58,7 @@ public class HelloWorldHandler implements HttpHandler {
 There is an special main class ( ```io.skullabs.undertow.standalone.Main``` ) on Undertow Standalone module that helps you to start you embedded application. You could point it out no your MANIFEST.MF to create a runnable jar, or pass it in the command line to start your application manually.
 
 ```console
-$ java -cp ${CLASSPATH} io.skullabs.undertow.standalone.Main
+$ java -cp ${YOUR_CUSTOM_CLASSPATH} io.skullabs.undertow.standalone.Main
 ```
 
 If you already has your own main class, you should also consider to start Undertow itself as shown bellow:
