@@ -121,13 +121,61 @@ public class RoutingMethodDataProvider {
 	 * @throws RoutingException
 	 */
 	public <T> T getBody( final HttpServerExchange exchange, final Class<T> clazz ) throws ServiceProviderException, RoutingException {
+		return getBody( exchange, clazz, null );
+	}
+
+	/**
+	 * Get the body of current request and convert to {@code <T>} type as
+	 * defined by {@code clazz} argument.<br>
+	 * <br>
+	 * 
+	 * It searches for {@link Unserializer} implementations to convert sent data
+	 * from client into the desired object. The "Content-Type" header is the
+	 * information needed to define which {@link Unserializer} should be used to
+	 * decode the sent data into an object. When no {@link Unserializer} is
+	 * found it uses the {@code defaulConsumingContentType} argument to seek
+	 * another one. It throws {@link RoutingException} when no decoder was
+	 * found.
+	 * 
+	 * @param exchange
+	 * @param clazz
+	 * @param defaulConsumingContentType
+	 * @return
+	 * @throws ServiceProviderException
+	 * @throws RoutingException
+	 *             when no {@link Unserializer} implementation was found
+	 */
+	public <T> T getBody( final HttpServerExchange exchange, final Class<T> clazz, final String defaulConsumingContentType )
+			throws ServiceProviderException, RoutingException {
 		String contentEncoding = exchange.getRequestHeaders().getFirst( Headers.CONTENT_ENCODING_STRING );
 		if ( contentEncoding == null )
 			contentEncoding = "UTF-8";
 		final String contentType = exchange.getRequestHeaders().getFirst( Headers.CONTENT_TYPE_STRING );
-		final Unserializer unserializer = provider.load( Unserializer.class, contentType );
+		final Unserializer unserializer = getUnserializer( contentType, defaulConsumingContentType );
 		final Reader reader = Channels.newReader( exchange.getRequestChannel(), contentEncoding );
 		return unserializer.unserialize( reader, clazz );
+	}
+
+	/**
+	 * Retrieves an {@link Unserializer} for a given {@code contentType}
+	 * argument. When no {@link Unserializer} is found it uses the
+	 * {@code defaulConsumingContentType} argument to seek another one. It
+	 * throws {@link RoutingException} when no decoder was found.
+	 * 
+	 * @param contentType
+	 * @param defaulConsumingContentType
+	 * @return
+	 * @throws ServiceProviderException
+	 * @throws RoutingException
+	 */
+	private Unserializer getUnserializer( final String contentType, String defaulConsumingContentType ) throws ServiceProviderException,
+			RoutingException {
+		Unserializer unserializer = provider.load( Unserializer.class, contentType );
+		if ( unserializer == null && defaulConsumingContentType != null )
+			unserializer = provider.load( Unserializer.class, defaulConsumingContentType );
+		if ( unserializer == null )
+			throw new RoutingException( "BadRequest: No unserializer found this request." );
+		return unserializer;
 	}
 
 	/**
