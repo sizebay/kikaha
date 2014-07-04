@@ -1,143 +1,64 @@
-undertow-standalone
-===================
+# Undertow Standalone Extensions
 
-Undertow Standalone is a micro container running under Undertow core. It
-just provide an out-of-box structure to initialize your application without
-writing some bootstraping lines of code.
+Undertow Standalone Extensions was developed with two core ideas in mind:
+- provide a set of extensions to structure and initialize your application without writing a bunch of bootstraping lines of code
+- provides a lightweight micro container (written over the powerful undertow core), as alternative environment to to run web applications.
 
-## Don't repeat yourself
-Undertow is an amazing web development plataform. It is the current Wildfly
-core engine, is simple and [scalable](http://www.techempower.com/benchmarks/#section=data-r8&hw=i7&test=plaintext).
-Nevertheless, it has no standard way to struture and embed your project.
+## Who is it for?
+Undertow Standalone Extensions is for you if one of the bellow statements are true for your needs:
+- A full featured Web Container (like JBoss, Wildfly, GlassFish, etc) is considered overwhelming for my software needs
+- Servlet API is a boring development environment
+- My SaaS application is changing to a micro-services architecture
+- I want to create a software adopting the micro-services architecture principle
+- I want to do something impressively fast on the web
+- I want to have some fun developing a web software in JVM environment
 
-Here is the default hello world example provided by Undertow documentation.
+## Which extensions are available on current version
 
-```java
-public class HelloWorldServer {
+### Standalone
+Automations on Undertow Bootstrap to make easier to embed it on your application. It:
+- Automate routing registering, avoiding manual ( and repetitive ) definitions of HttpHandle routes
+- Provide deployment hooks to make developers able to be notified when Undertow is starting or shutting down
+- Provide a request hook mechanism that, similarly to Servlet Filters, allow developers to intercept and change a the HttpServerExchange
 
-    public static void main(final String[] args) {
-        Undertow server = Undertow.builder()
-                .addHttpListener(8080, "localhost")
-                .setHandler(new HttpHandler() {
-                    @Override
-                    public void handleRequest(final HttpServerExchange exchange) throws Exception {
-                        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
-                        exchange.getResponseSender().send("Hello World");
-                    }
-                }).build();
-        server.start();
-    }
-}
-```
+See this module [documentation](https://github.com/Skullabs/undertow-standalone/tree/master/undertow-standalone) for more information.
 
-Undertow Standalone aim to save you from the pain of creating its countless lines of code
-to achieve the your daily web development goals.
+### uRouting ( micro Routing )
+Provide an easy to use routing API ( JAXRS like ). It provides:
+- Annotation driven routing API
+- A routing API optimized in compile time, by having no reflections for routing it makes undertow a lightweight execution environment
+- Extensible (un)serialization mechanism ( to convert data (in)to JSON, XML, etc )
+- Orthogonal exception handler
+- and many more...
 
-```java
-@Path("/")
-public class HelloWorldHandler implements HttpHandler {
+See this module [documentation](https://github.com/Skullabs/undertow-standalone/tree/master/undertow-urouting) for more information.
 
-	@Override
-	public void handleRequest( HttpServerExchange exchange ) throws Exception {
-    exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
-    exchange.getResponseSender().send( "Hello World" );
-  }
+### Hazelcast integration
+Provide tight integration with the leading in-memory data-grid implementation ( [Hazelcast](http://hazelcast.org/) ). This module provides:
+- Easy-to-use Hazelcast Instance configuration ( as a Cluster Node )
+- Easy-to-use Hazelcast Instance configuration ( as a Client for Cluster Nodes )
+- Full integrated with all _distributed data structures_ provided by Hazelcast
+- Easier configuration environment with easy fallback to XML Based Configuration
+- Easier configuration environment with easy programmatic configuration ( for ClientConfig and Config )
+- and many more...
 
-}
-```
+See this module [documentation](https://github.com/Skullabs/undertow-standalone/tree/master/undertow-hazelcast) for more information.
 
-## Intercepting requests
-Undertow internally has a simple chain of responsibility where it store its routing
-design and provide an [easy to use DSL](http://undertow.io/documentation/core/built-in-handlers.html).
-Even so, intercepting requests isn't an easy task to do.
-
-Undertow Standalone provide an easy RequestHook where you can intercept requests, change
-the HttpServerExchange state and define if the request should go on or not.
-
-```java
-
-@lombok.extern.log4j.Log4j
-public class TraceRequestHook implements RequestHook {
-
-	@Override
-	public void execute( RequestHookChain chain, HttpServerExchange exchange ) throws DrowningException {
-	  // Tracing the request
-	  String message = exchange.getRequestMethod().toString() + ":" + exchange.getRequestPath();
-		log.info( message );
-		
-		// Allowing the next chain of hooks to do its job.
-		// If no other RequestHook are available, it will execute the Default Handler
-		chain.executeNext();
-	}
-}
-
-```
-
-Every request hook is disposed in a chain of responsibility. If a RequestHook does not call ```chain.executeNext()```
-it will interrupt the request lifecycle. It means that the hook is able to do what it want with the request.
-RequestHook's are useful to plug external frameworks like [RestEasy](http://www.jboss.org/resteasy) or a custom template
-engine like [Mustache](http://mustache.github.io/).
-
-## Listening to deployments
-It's possible to listen deployments events like ```onDeploy``` and ```onUndeploy```.
-
-```java
-@lombok.extern.log4j.Log4j
-public class TraceDeploymentHook implements DeploymentHook {
-
-	@Override
-	public void onDeploy( DeploymentContext context ) {
-		log.info( "On deploy" );
-	}
-
-	@Override
-	public void onUndeploy( DeploymentContext context ) {
-		log.info( "On undeploy" );
-	}
-
-}
-
-```
-
-With DeploymentContext is possible to analyze available classes in Classpath ( through
-```context.availableClasses()``` ). Its also possible to register new request hooks ( through
-```context.register( new RequestHook {  /*...*/ } )``` ) and register Undertow HttpHandlers
-( through ```context.register( "/hello/", new HttpHandler {  /*...*/ } )``` ), providing
-a full lifecycle to your application.
-
-## Installation  instructions
-
-Go to [Releases](https://github.com/TeXOLabs/undertow-standalone/releases) and download the
-[last bundled release](https://github.com/TeXOLabs/undertow-standalone/releases/download/1.0-Alpha1/undertow-standalone-1.0.Alpha1.zip) and unzip it in a nice location.
-
-As a micro container it was designed to contain a single Java application. Your just unzipped undertow folder
-should contains three directories:
-* bin: which contains scripts to manage undertow
-* lib: where you should put all your dependencies
-* webapp: where you could put all your web assets and resources
-
-Once you deployed your deps and resources, you could start the application as following:
-```bash
-# on linux console environment
-./bin/undertow.sh
-# on windows, in powershell console environment
-# yes, you should use linux slashes here
-sh bin/undertow.sh
-```
-
-## Creating a bundle from my maven project
+## Useful resources to getting started
 ``` TODO ```
 
+## Useful troubleshooting resources
+``` TODO ```
 
-## Contributing
-Undertow Standalone need your help to provide the best to the community. Even simple tasks like
-testing the micro container, finding typos in docs or reporting improvements feedbacks will be welcome.
+## Contributors
+[Ricardo Mattiazzi Baumgarter](https://github.com/ladraum)
+[Miere Liniel Teixeira](https://github.com/miere)
+
+Be a contributor and join our team. Undertow Standalone need your help to provide the best to the community. Even simple tasks like testing the micro container, finding typos in docs or reporting improvements feedbacks will be welcome.
 
 ## Community / Support
-
+* [GitHub Issues](https://github.com/Skullabs/undertow-standalone/issues)
 * Google Group: yet not created
-* [GitHub Issues](https://github.com/TeXOLabs/undertow-standalone/issues)
 
 ### License
-
-Undertow Standalone is [Apache 2.0 licensed](http://www.apache.org/licenses/LICENSE-2.0.html).
+Undertow Standalone Extensions is [Apache 2.0 licensed](http://www.apache.org/licenses/LICENSE-2.0.html).
