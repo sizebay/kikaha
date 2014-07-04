@@ -126,7 +126,7 @@ public class RoutingMethodDataProvider {
 			contentEncoding = "UTF-8";
 		final String contentType = exchange.getRequestHeaders().getFirst( Headers.CONTENT_TYPE_STRING );
 		final Unserializer unserializer = provider.load( Unserializer.class, contentType );
-		final Reader reader = Channels.newReader( exchange.getRequestChannel(), "UTF-8" );
+		final Reader reader = Channels.newReader( exchange.getRequestChannel(), contentEncoding );
 		return unserializer.unserialize( reader, clazz );
 	}
 
