@@ -21,7 +21,7 @@ Automations on Undertow Bootstrap to make easier to embed it on your application
 - Provide deployment hooks to make developers able to be notified when Undertow is starting or shutting down
 - Provide a request hook mechanism that, similarly to Servlet Filters, allow developers to intercept and change a the HttpServerExchange
 
-See this module [documentation](https://github.com/Skullabs/undertow-standalone/tree/master/undertow-standalone) for more information.
+See this module [documentation](https://github.com/Skullabs/undertow-standalone/tree/master/undertow-standalone/README.md) for more information.
 
 ### uRouting ( micro Routing )
 Provide an easy to use routing API ( JAXRS like ). It provides:
@@ -31,7 +31,7 @@ Provide an easy to use routing API ( JAXRS like ). It provides:
 - Orthogonal exception handler
 - and many more...
 
-See this module [documentation](https://github.com/Skullabs/undertow-standalone/tree/master/undertow-urouting) for more information.
+See this module [documentation](https://github.com/Skullabs/undertow-standalone/tree/master/undertow-urouting/README.md) for more information.
 
 ### Hazelcast integration
 Provide tight integration with the leading in-memory data-grid implementation ( [Hazelcast](http://hazelcast.org/) ). This module provides:
@@ -42,7 +42,7 @@ Provide tight integration with the leading in-memory data-grid implementation ( 
 - Easier configuration environment with easy programmatic configuration ( for ClientConfig and Config )
 - and many more...
 
-See this module [documentation](https://github.com/Skullabs/undertow-standalone/tree/master/undertow-hazelcast) for more information.
+See this module [documentation](https://github.com/Skullabs/undertow-standalone/tree/master/undertow-hazelcast/README.md) for more information.
 
 ## Useful resources to getting started
 ``` TODO ```
