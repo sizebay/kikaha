@@ -51,8 +51,8 @@ See this module [documentation](https://github.com/Skullabs/undertow-standalone/
 ``` TODO ```
 
 ## Contributors
-[Ricardo Mattiazzi Baumgarter](https://github.com/ladraum)
-[Miere Liniel Teixeira](https://github.com/miere)
+- [Ricardo Mattiazzi Baumgarter](https://github.com/ladraum)
+- [Miere Liniel Teixeira](https://github.com/miere)
 
 Be a contributor and join our team. Undertow Standalone need your help to provide the best to the community. Even simple tasks like testing the micro container, finding typos in docs or reporting improvements feedbacks will be welcome.
 
