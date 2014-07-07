@@ -52,13 +52,13 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 		{{/ioBound}}
 		try {
 		{{#serviceInterface}}
-			final {{type}} instance = serviceProvider.load( {{serviceInterface}}.class );
+			final {{{type}}} instance = serviceProvider.load( {{serviceInterface}}.class );
 		{{/serviceInterface}}
 		{{^serviceInterface}}
-			final {{type}} instance = new {{type}}();
+			final {{{type}}} instance = new {{{type}}}();
 		{{/serviceInterface}}
 		{{#returnType}}
-			final {{returnType}} response = instance.{{methodName}}( {{{methodParams}}} );
+			final {{{returnType}}} response = instance.{{methodName}}( {{{methodParams}}} );
 			{{#responseContentType}}
 				responseWriter.write( exchange, "{{responseContentType}}", response );
 			{{/responseContentType}}
