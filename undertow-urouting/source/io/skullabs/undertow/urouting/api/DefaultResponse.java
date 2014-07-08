@@ -28,7 +28,7 @@ public class DefaultResponse implements Response {
 		Header header = getHeader( name );
 		if ( header == null ) {
 			header = new DefaultHeader( name );
-			headers.addAll(headers);
+			headers.add(header);
 		}
 		header.add(value);
 		return this;
@@ -55,6 +55,15 @@ public class DefaultResponse implements Response {
 
 	public static DefaultResponse noContent() {
 		return response().statusCode(204);
+	}
+
+	public static DefaultResponse created() {
+		return response().statusCode(201);
+	}
+
+	public static DefaultResponse created( String location ) {
+		return response().statusCode(201)
+				.header("Location", location);
 	}
 
 	public static DefaultResponse notModified() {

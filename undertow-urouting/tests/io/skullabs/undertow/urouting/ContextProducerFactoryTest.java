@@ -1,11 +1,11 @@
-package io.skullabs.undertow.routing;
+package io.skullabs.undertow.urouting;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import io.skullabs.undertow.routing.samples.StringProducer;
 import io.skullabs.undertow.urouting.api.ContextProducer;
 import io.skullabs.undertow.urouting.api.ContextProducerFactory;
 import io.skullabs.undertow.urouting.api.RoutingException;
+import io.skullabs.undertow.urouting.samples.StringProducer;
 
 import org.junit.Test;
 

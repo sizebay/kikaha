@@ -1,4 +1,4 @@
-package io.skullabs.undertow.routing;
+package io.skullabs.undertow.urouting;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;

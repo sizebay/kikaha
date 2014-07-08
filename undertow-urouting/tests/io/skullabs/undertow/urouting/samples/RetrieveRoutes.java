@@ -1,4 +1,4 @@
-package io.skullabs.undertow.routing.samples;
+package io.skullabs.undertow.urouting.samples;
 
 import io.skullabs.undertow.urouting.api.Context;
 import io.skullabs.undertow.urouting.api.CookieParam;

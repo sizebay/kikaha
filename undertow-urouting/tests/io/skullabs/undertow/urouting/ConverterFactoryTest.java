@@ -1,4 +1,4 @@
-package io.skullabs.undertow.routing;
+package io.skullabs.undertow.urouting;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

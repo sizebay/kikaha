@@ -1,4 +1,4 @@
-package package io.skullabs.undertow.routing.samples;
+package package io.skullabs.undertow.urouting.samples;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -27,7 +27,7 @@ public class GeneratedRoutingMethod123 implements HttpHandler {
 				return;
 			}
 		try {
-			final io.skullabs.undertow.routing.samples.RetrieveRoutes instance = new io.skullabs.undertow.routing.samples.RetrieveRoutes();
+			final io.skullabs.undertow.urouting.samples.RetrieveRoutes instance = new io.skullabs.undertow.urouting.samples.RetrieveRoutes();
 			final String response = instance.renderRelatoMais( true );
 				responseWriter.write( exchange, response );
 		} catch ( Throwable cause ) {

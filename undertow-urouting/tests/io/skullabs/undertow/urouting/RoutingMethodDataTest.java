@@ -1,4 +1,4 @@
-package io.skullabs.undertow.routing;
+package io.skullabs.undertow.urouting;
 
 import static io.skullabs.undertow.urouting.RoutingMethodData.extractPackageName;
 import static io.skullabs.undertow.urouting.RoutingMethodData.generateHttpPath;

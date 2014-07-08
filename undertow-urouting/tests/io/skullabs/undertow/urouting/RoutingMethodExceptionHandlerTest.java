@@ -1,4 +1,4 @@
-package io.skullabs.undertow.routing;
+package io.skullabs.undertow.urouting;
 
 import static org.junit.Assert.assertNotNull;
 import io.skullabs.undertow.urouting.RoutingMethodExceptionHandler;

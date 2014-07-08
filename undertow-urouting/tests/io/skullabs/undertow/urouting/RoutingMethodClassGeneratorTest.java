@@ -1,4 +1,4 @@
-package io.skullabs.undertow.routing;
+package io.skullabs.undertow.urouting;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
@@ -7,9 +7,9 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import io.skullabs.undertow.routing.samples.RetrieveRoutes;
 import io.skullabs.undertow.urouting.RoutingMethodClassGenerator;
 import io.skullabs.undertow.urouting.RoutingMethodData;
+import io.skullabs.undertow.urouting.samples.RetrieveRoutes;
 
 import java.io.StringWriter;
 

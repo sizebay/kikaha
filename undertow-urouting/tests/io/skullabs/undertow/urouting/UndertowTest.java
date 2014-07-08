@@ -1,4 +1,4 @@
-package io.skullabs.undertow.routing;
+package io.skullabs.undertow.urouting;
 
 import io.skullabs.undertow.standalone.Main;
 import io.skullabs.undertow.standalone.api.UndertowStandaloneException;

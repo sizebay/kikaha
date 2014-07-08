@@ -93,8 +93,8 @@ public class ResponseWriter {
 	public void write( final HttpServerExchange exchange, final String contentType, final Response response )
 			throws ServiceProviderException, RoutingException, IOException {
 		sendStatusCode( exchange, response.statusCode() );
-		sendContentTypeHeader( exchange, contentType );
 		sendHeaders( exchange, response );
+		sendContentTypeHeader( exchange, contentType );
 		sendBodyResponse( exchange, response );
 	}
 
@@ -108,6 +108,9 @@ public class ResponseWriter {
 			final HttpServerExchange exchange, final String contentType,
 			final String encoding, final Object serializable )
 			throws ServiceProviderException, RoutingException, IOException {
+		if ( serializable == null )
+			return;
+		
 		final StreamSinkChannel channel = exchange.getResponseChannel();
 		final Writer writer = Channels.newWriter( channel, encoding );
 		final Serializer serializer = getSerializer( contentType );
@@ -134,7 +137,12 @@ public class ResponseWriter {
 		final HeaderMap responseHeaders = sendContentTypeHeader( exchange, response.contentType() );
 		for ( final Header header : response.headers() )
 			for ( final String value : header.values() )
-				responseHeaders.add( new HttpString( header.name() ), value );
+				sendHeader(responseHeaders, header, value);
+	}
+
+	void sendHeader(final HeaderMap responseHeaders,
+			final Header header, final String value) {
+		responseHeaders.add( new HttpString( header.name() ), value );
 	}
 
 	HttpServerExchange sendStatusCode( final HttpServerExchange exchange, Integer statusCode ) {

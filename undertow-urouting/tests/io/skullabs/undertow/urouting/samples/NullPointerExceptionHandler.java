@@ -1,4 +1,4 @@
-package io.skullabs.undertow.routing.samples;
+package io.skullabs.undertow.urouting.samples;
 
 import static org.mockito.Mockito.mock;
 import io.skullabs.undertow.urouting.api.ExceptionHandler;
