@@ -73,7 +73,7 @@
 	<properties>
 		<!-- Dependencies Versions -->
 		<version.junit>4.10</version.junit>
-		<version.lombok>1.12.4</version.lombok>
+		<version.lombok>1.14.4</version.lombok>
 		<version.mockito>1.9.5</version.mockito>
 		<version.undertow>1.1.0.Beta2</version.undertow>
 		<version.trip>0.14.1</version.trip>
