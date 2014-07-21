@@ -1,22 +1,33 @@
 package io.skullabs.undertow.urouting;
 
-import io.skullabs.undertow.urouting.api.*;
+import io.skullabs.undertow.urouting.api.Header;
+import io.skullabs.undertow.urouting.api.Mimes;
+import io.skullabs.undertow.urouting.api.Response;
+import io.skullabs.undertow.urouting.api.RoutingException;
+import io.skullabs.undertow.urouting.api.Serializer;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.*;
+import io.undertow.util.HeaderMap;
+import io.undertow.util.Headers;
+import io.undertow.util.HttpString;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.channels.Channels;
 
 import lombok.extern.java.Log;
+
 import org.xnio.channels.StreamSinkChannel;
-import trip.spi.*;
+
+import trip.spi.Provided;
+import trip.spi.ServiceProvider;
+import trip.spi.ServiceProviderException;
+import trip.spi.Singleton;
 
 /**
  * A helper class to write responses to the HTTP Client.
  */
 @Log
-@Service( ResponseWriter.class )
+@Singleton( ResponseWriter.class )
 public class ResponseWriter {
 
 	@Provided

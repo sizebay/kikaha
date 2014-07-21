@@ -2,9 +2,9 @@ package io.skullabs.undertow.urouting.samples;
 
 import io.skullabs.undertow.urouting.api.ContextProducer;
 import io.undertow.server.HttpServerExchange;
-import trip.spi.Service;
+import trip.spi.Singleton;
 
-@Service
+@Singleton
 public class StringProducer implements ContextProducer<String> {
 
 	public static final String HELLO_WORLD = "Hello World";

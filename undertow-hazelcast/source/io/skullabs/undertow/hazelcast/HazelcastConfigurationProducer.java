@@ -1,9 +1,12 @@
 package io.skullabs.undertow.hazelcast;
 
-import com.typesafe.config.Config;
-import trip.spi.*;
+import trip.spi.Producer;
+import trip.spi.Provided;
+import trip.spi.Singleton;
 
-@Service
+import com.typesafe.config.Config;
+
+@Singleton
 public class HazelcastConfigurationProducer {
 
 	@Provided

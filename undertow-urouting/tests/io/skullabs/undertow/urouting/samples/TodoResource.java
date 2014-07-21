@@ -18,12 +18,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import trip.spi.Service;
+import trip.spi.Singleton;
 
 @Path("todos")
 @Produces(Mimes.JSON)
 @Consumes(Mimes.JSON)
-@Service
+@Singleton
 public class TodoResource {
 
 	final Map<Long, Todo> todos = new HashMap<>();

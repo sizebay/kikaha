@@ -1,16 +1,31 @@
 package io.skullabs.undertow.urouting;
 
 import static java.lang.String.format;
-import io.skullabs.undertow.urouting.api.*;
+import io.skullabs.undertow.urouting.api.CPU;
+import io.skullabs.undertow.urouting.api.Consumes;
+import io.skullabs.undertow.urouting.api.Context;
+import io.skullabs.undertow.urouting.api.CookieParam;
+import io.skullabs.undertow.urouting.api.HeaderParam;
+import io.skullabs.undertow.urouting.api.IO;
+import io.skullabs.undertow.urouting.api.Path;
+import io.skullabs.undertow.urouting.api.PathParam;
+import io.skullabs.undertow.urouting.api.Produces;
+import io.skullabs.undertow.urouting.api.QueryParam;
 
 import java.lang.annotation.Annotation;
 
-import javax.lang.model.element.*;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 
-import lombok.*;
-import trip.spi.Service;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import trip.spi.Singleton;
+import trip.spi.Stateless;
 
 @Getter
 @EqualsAndHashCode( exclude = "identifier" )
@@ -149,18 +164,21 @@ public class RoutingMethodData {
 
 	static String extractServiceInterfaceFrom( ExecutableElement method ) {
 		TypeElement classElement = (TypeElement)method.getEnclosingElement();
-		Service service = classElement.getAnnotation( Service.class );
-		if ( service == null )
-			return null;
-		String canonicalName = getServiceInterfaceProviderClass( service ).toString();
-		if ( Service.class.getCanonicalName().equals( canonicalName ) )
+		String canonicalName = getServiceInterfaceProviderClass( classElement ).toString();
+		if ( Singleton.class.getCanonicalName().equals( canonicalName )
+				|| Stateless.class.getCanonicalName().equals( canonicalName ) )
 			return classElement.asType().toString();
 		return canonicalName;
 	}
 
-	static TypeMirror getServiceInterfaceProviderClass( Service service ) {
+	static TypeMirror getServiceInterfaceProviderClass( TypeElement service ) {
 		try {
-			service.value();
+			final Singleton singleton = service.getAnnotation( Singleton.class );
+			if ( singleton != null )
+				singleton.value();
+			final Stateless stateless = service.getAnnotation( Stateless.class );
+			if ( stateless != null )
+				stateless.value();
 			return null;
 		} catch ( MirroredTypeException cause ) {
 			return cause.getTypeMirror();

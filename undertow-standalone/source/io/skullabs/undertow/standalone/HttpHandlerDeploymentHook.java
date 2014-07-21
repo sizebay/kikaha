@@ -1,17 +1,17 @@
 package io.skullabs.undertow.standalone;
 
-import lombok.extern.java.Log;
 import io.skullabs.undertow.standalone.api.DeploymentContext;
 import io.skullabs.undertow.standalone.api.DeploymentHook;
 import io.skullabs.undertow.standalone.api.WebResource;
 import io.undertow.server.HttpHandler;
+import lombok.extern.java.Log;
 import trip.spi.Provided;
-import trip.spi.Service;
 import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
+import trip.spi.Singleton;
 
 @Log
-@Service
+@Singleton
 public class HttpHandlerDeploymentHook implements DeploymentHook {
 	
 	@Provided ServiceProvider provider;

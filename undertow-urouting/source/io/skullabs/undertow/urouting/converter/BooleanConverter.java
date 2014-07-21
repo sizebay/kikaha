@@ -2,9 +2,9 @@ package io.skullabs.undertow.urouting.converter;
 
 import io.skullabs.undertow.urouting.api.AbstractConverter;
 import io.skullabs.undertow.urouting.api.ConversionException;
-import trip.spi.Service;
+import trip.spi.Singleton;
 
-@Service( AbstractConverter.class )
+@Singleton( AbstractConverter.class )
 public class BooleanConverter extends AbstractConverter<Boolean> {
 
 	@Override

@@ -1,17 +1,24 @@
 package io.skullabs.undertow.hazelcast;
 
-import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.config.*;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
 import io.skullabs.undertow.hazelcast.HazelcastConfiguration.ClusterClientConfig;
 import io.skullabs.undertow.standalone.api.Configuration;
 import lombok.extern.java.Log;
-import trip.spi.*;
+import trip.spi.Producer;
+import trip.spi.Provided;
+import trip.spi.ServiceProvider;
+import trip.spi.ServiceProviderException;
+import trip.spi.Singleton;
+
+import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.client.config.ClientConfig;
+import com.hazelcast.config.Config;
+import com.hazelcast.config.GroupConfig;
+import com.hazelcast.config.XmlConfigBuilder;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 
 @Log
-@Service
+@Singleton
 public class HazelcastInstanceProducer {
 
 	@Provided

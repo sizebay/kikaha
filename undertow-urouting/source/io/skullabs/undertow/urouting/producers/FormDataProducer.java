@@ -3,15 +3,17 @@ package io.skullabs.undertow.urouting.producers;
 import io.skullabs.undertow.urouting.api.ContextProducer;
 import io.skullabs.undertow.urouting.api.RoutingException;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.server.handlers.form.*;
+import io.undertow.server.handlers.form.FormData;
+import io.undertow.server.handlers.form.FormDataParser;
+import io.undertow.server.handlers.form.FormParserFactory;
 
 import java.io.IOException;
 
 import lombok.extern.java.Log;
-import trip.spi.Service;
+import trip.spi.Singleton;
 
 @Log
-@Service
+@Singleton
 public class FormDataProducer implements ContextProducer<FormData> {
 
 	final static String COULD_NOT_PRODUCE_FORM_DATA = "Could not produce a FormData for this request.";

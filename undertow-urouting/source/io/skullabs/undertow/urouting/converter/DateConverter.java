@@ -8,10 +8,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import trip.spi.Name;
-import trip.spi.Service;
+import trip.spi.Singleton;
 
 @Name( "date-converter" )
-@Service( AbstractConverter.class )
+@Singleton( AbstractConverter.class )
 public class DateConverter extends AbstractConverter<Date> {
 
 	@Override

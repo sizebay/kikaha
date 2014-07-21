@@ -1,13 +1,18 @@
 package io.skullabs.undertow.urouting;
 
-import io.skullabs.undertow.urouting.api.*;
+import io.skullabs.undertow.urouting.api.ExceptionHandler;
+import io.skullabs.undertow.urouting.api.Response;
+import io.skullabs.undertow.urouting.api.UnhandledException;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import trip.spi.*;
+import trip.spi.Provided;
+import trip.spi.ServiceProvider;
+import trip.spi.ServiceProviderException;
+import trip.spi.Singleton;
 
-@Service
+@Singleton
 public class RoutingMethodExceptionHandler {
 
 	@Provided

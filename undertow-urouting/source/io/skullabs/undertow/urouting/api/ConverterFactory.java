@@ -3,9 +3,12 @@ package io.skullabs.undertow.urouting.api;
 import java.util.HashMap;
 import java.util.Map;
 
-import trip.spi.*;
+import trip.spi.Provided;
+import trip.spi.ServiceProvider;
+import trip.spi.ServiceProviderException;
+import trip.spi.Singleton;
 
-@Service
+@Singleton
 @SuppressWarnings( "rawtypes" )
 public class ConverterFactory {
 

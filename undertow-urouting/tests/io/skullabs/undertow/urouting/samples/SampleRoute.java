@@ -6,9 +6,9 @@ import io.skullabs.undertow.urouting.api.GET;
 import io.skullabs.undertow.urouting.api.Mimes;
 import io.skullabs.undertow.urouting.api.Path;
 import io.skullabs.undertow.urouting.api.Produces;
-import trip.spi.Service;
+import trip.spi.Singleton;
 
-@Service
+@Singleton
 @Path( "sample" )
 public class SampleRoute {
 

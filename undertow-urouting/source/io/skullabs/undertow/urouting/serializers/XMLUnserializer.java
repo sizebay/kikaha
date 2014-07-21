@@ -11,9 +11,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import trip.spi.Name;
-import trip.spi.Service;
+import trip.spi.Singleton;
 
-@Service
+@Singleton
 @Name( Mimes.XML )
 @SuppressWarnings("unchecked")
 public class XMLUnserializer implements Unserializer {

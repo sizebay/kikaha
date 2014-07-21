@@ -5,9 +5,9 @@ import io.skullabs.undertow.urouting.api.ConversionException;
 
 import java.math.BigDecimal;
 
-import trip.spi.Service;
+import trip.spi.Singleton;
 
-@Service( AbstractConverter.class )
+@Singleton( AbstractConverter.class )
 public class BigDecimalConverter extends AbstractConverter<BigDecimal> {
 
 	@Override

@@ -1,9 +1,20 @@
 package io.skullabs.undertow.hazelcast;
 
-import com.hazelcast.core.*;
-import trip.spi.*;
+import trip.spi.Producer;
+import trip.spi.Provided;
+import trip.spi.ProviderContext;
+import trip.spi.Singleton;
 
-@Service
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IList;
+import com.hazelcast.core.ILock;
+import com.hazelcast.core.IMap;
+import com.hazelcast.core.IQueue;
+import com.hazelcast.core.ISet;
+import com.hazelcast.core.ITopic;
+import com.hazelcast.core.MultiMap;
+
+@Singleton
 public class HazelcastDistributedDataStructuresProducer {
 
 	@Provided

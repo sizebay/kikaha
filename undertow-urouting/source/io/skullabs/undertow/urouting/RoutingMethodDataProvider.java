@@ -1,6 +1,11 @@
 package io.skullabs.undertow.urouting;
 
-import io.skullabs.undertow.urouting.api.*;
+import io.skullabs.undertow.urouting.api.ContextProducer;
+import io.skullabs.undertow.urouting.api.ContextProducerFactory;
+import io.skullabs.undertow.urouting.api.ConversionException;
+import io.skullabs.undertow.urouting.api.ConverterFactory;
+import io.skullabs.undertow.urouting.api.RoutingException;
+import io.skullabs.undertow.urouting.api.Unserializer;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
 import io.undertow.util.Headers;
@@ -10,13 +15,16 @@ import java.io.Reader;
 import java.nio.channels.Channels;
 import java.util.Queue;
 
-import trip.spi.*;
+import trip.spi.Provided;
+import trip.spi.ServiceProvider;
+import trip.spi.ServiceProviderException;
+import trip.spi.Singleton;
 import trip.spi.helpers.KeyValueProviderContext;
 
 /**
  * Provides data to a routing method.
  */
-@Service( RoutingMethodDataProvider.class )
+@Singleton( RoutingMethodDataProvider.class )
 public class RoutingMethodDataProvider {
 
 	@Provided

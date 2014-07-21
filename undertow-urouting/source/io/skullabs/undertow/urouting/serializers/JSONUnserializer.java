@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.io.Reader;
 
 import trip.spi.Name;
-import trip.spi.Service;
+import trip.spi.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Service
+@Singleton
 @Name( Mimes.JSON )
 public class JSONUnserializer implements Unserializer {
 	

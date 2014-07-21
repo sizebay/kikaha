@@ -8,9 +8,9 @@ import io.skullabs.undertow.urouting.api.PUT;
 import io.skullabs.undertow.urouting.api.Path;
 import io.skullabs.undertow.urouting.api.PathParam;
 import io.skullabs.undertow.urouting.api.Response;
-import trip.spi.Service;
+import trip.spi.Singleton;
 
-@Service
+@Singleton
 @Path( "{contentType}/users" )
 public class PersistenceRoutes {
 

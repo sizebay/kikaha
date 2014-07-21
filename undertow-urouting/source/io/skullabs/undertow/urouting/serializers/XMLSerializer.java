@@ -13,9 +13,9 @@ import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 
 import trip.spi.Name;
-import trip.spi.Service;
+import trip.spi.Singleton;
 
-@Service
+@Singleton
 @Name( Mimes.XML )
 @SuppressWarnings("unchecked")
 public class XMLSerializer implements Serializer {

@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.io.Writer;
 
 import trip.spi.Name;
-import trip.spi.Service;
+import trip.spi.Singleton;
 
-@Service
+@Singleton
 @Name( Mimes.PLAIN_TEXT )
 public class PlainTextSerializer implements Serializer {
 

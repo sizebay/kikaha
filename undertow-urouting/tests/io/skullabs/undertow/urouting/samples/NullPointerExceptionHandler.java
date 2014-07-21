@@ -3,9 +3,9 @@ package io.skullabs.undertow.urouting.samples;
 import static org.mockito.Mockito.mock;
 import io.skullabs.undertow.urouting.api.ExceptionHandler;
 import io.skullabs.undertow.urouting.api.Response;
-import trip.spi.Service;
+import trip.spi.Singleton;
 
-@Service
+@Singleton
 public class NullPointerExceptionHandler implements ExceptionHandler<NullPointerException> {
 
 	@Override

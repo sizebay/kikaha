@@ -6,9 +6,11 @@ import io.skullabs.undertow.urouting.api.ConversionException;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import trip.spi.*;
+import trip.spi.Name;
+import trip.spi.Provided;
+import trip.spi.Singleton;
 
-@Service( AbstractConverter.class )
+@Singleton( AbstractConverter.class )
 public class GregorianCalendarConverter extends AbstractConverter<GregorianCalendar> {
 
 	@Provided
