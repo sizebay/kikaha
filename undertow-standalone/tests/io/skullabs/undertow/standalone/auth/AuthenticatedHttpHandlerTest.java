@@ -1,5 +1,6 @@
 package io.skullabs.undertow.standalone.auth;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +31,9 @@ public class AuthenticatedHttpHandlerTest {
 
 	@Mock
 	HttpHandler httpHandler;
+
+	@Mock
+	HttpHandler authenticationRequiredHandler;
 
 	@Mock
 	SecurityContext securityContext;
@@ -64,9 +68,19 @@ public class AuthenticatedHttpHandlerTest {
 		verify( httpHandler ).handleRequest( exchange );
 	}
 
+	@Test
+	public void ensureThatNotCallTheTargetHttpHandleButHandleUnauthenticatedRequests() throws Exception {
+		val exchange = HttpServerExchangeStub.createHttpExchange();
+		val authHandler = createMockedAuthenticatedHandlerFor( exchange );
+		when( securityContext.authenticate() ).thenReturn( false );
+		authHandler.handleRequest( exchange );
+		verify( httpHandler, never() ).handleRequest( exchange );
+		verify( authenticationRequiredHandler ).handleRequest( exchange );
+	}
+
 	AuthenticatedHttpHandler createMockedAuthenticatedHandlerFor( final HttpServerExchange exchange ) {
 		val authMechs = createListOfAuthenticationMechanisms();
-		val authHandler = spy( new AuthenticatedHttpHandler( identityManager, authMechs, httpHandler ) );
+		val authHandler = spy( new AuthenticatedHttpHandler( identityManager, authMechs, httpHandler, authenticationRequiredHandler ) );
 		when( authHandler.createSecurityContext( exchange ) ).thenReturn( securityContext );
 		return authHandler;
 	}

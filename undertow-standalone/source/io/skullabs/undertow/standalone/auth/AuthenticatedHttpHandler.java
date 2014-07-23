@@ -22,6 +22,7 @@ public class AuthenticatedHttpHandler implements HttpHandler {
 	final IdentityManager identityManager;
 	final List<AuthenticationMechanism> authenticationMechanisms;
 	final HttpHandler authenticatedRoute;
+	final HttpHandler authenticationRequiredHandler;
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
@@ -29,7 +30,7 @@ public class AuthenticatedHttpHandler implements HttpHandler {
 		populateWithAuthenticationMechanisms( context );
 		context.setAuthenticationRequired();
 		if ( !context.authenticate() )
-			exchange.endExchange();
+			handleAuthenticationRequired( exchange );
 		else
 			authenticatedRoute.handleRequest( exchange );
 	}
@@ -44,5 +45,12 @@ public class AuthenticatedHttpHandler implements HttpHandler {
 	void populateWithAuthenticationMechanisms( final SecurityContext context ) {
 		for ( val authenticationMechanism : authenticationMechanisms )
 			context.addAuthenticationMechanism( authenticationMechanism );
+	}
+
+	void handleAuthenticationRequired( HttpServerExchange exchange ) throws Exception {
+		if ( authenticationRequiredHandler != null )
+			authenticationRequiredHandler.handleRequest( exchange );
+		else
+			exchange.endExchange();
 	}
 }
