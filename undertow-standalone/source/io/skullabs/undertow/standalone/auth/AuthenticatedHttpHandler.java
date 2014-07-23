@@ -2,6 +2,7 @@ package io.skullabs.undertow.standalone.auth;
 
 import io.undertow.security.api.AuthenticationMechanism;
 import io.undertow.security.api.AuthenticationMode;
+import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.security.api.SecurityContextFactory;
 import io.undertow.security.idm.IdentityManager;
@@ -22,15 +23,17 @@ public class AuthenticatedHttpHandler implements HttpHandler {
 	final IdentityManager identityManager;
 	final List<AuthenticationMechanism> authenticationMechanisms;
 	final HttpHandler authenticatedRoute;
-	final HttpHandler authenticationRequiredHandler;
+	final NotificationReceiver authenticationRequiredHandler;
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
 		val context = createSecurityContext( exchange );
 		populateWithAuthenticationMechanisms( context );
+		registerNotificationReceivers( context );
 		context.setAuthenticationRequired();
+
 		if ( !context.authenticate() )
-			handleAuthenticationRequired( exchange );
+			handleNotAuthenticatedExchange( exchange );
 		else
 			authenticatedRoute.handleRequest( exchange );
 	}
@@ -47,10 +50,17 @@ public class AuthenticatedHttpHandler implements HttpHandler {
 			context.addAuthenticationMechanism( authenticationMechanism );
 	}
 
-	void handleAuthenticationRequired( HttpServerExchange exchange ) throws Exception {
-		if ( authenticationRequiredHandler != null )
-			authenticationRequiredHandler.handleRequest( exchange );
-		else
+	void registerNotificationReceivers( final io.undertow.security.api.SecurityContext context ) {
+		if ( thereIsSomeoneListeningForAuthenticationEvents() )
+			context.registerNotificationReceiver( authenticationRequiredHandler );
+	}
+
+	void handleNotAuthenticatedExchange( HttpServerExchange exchange ) {
+		if ( !thereIsSomeoneListeningForAuthenticationEvents() )
 			exchange.endExchange();
+	}
+
+	boolean thereIsSomeoneListeningForAuthenticationEvents() {
+		return authenticationRequiredHandler != null;
 	}
 }

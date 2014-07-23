@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import io.skullabs.undertow.standalone.HttpServerExchangeStub;
 import io.undertow.security.api.AuthenticationMechanism;
+import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.security.idm.IdentityManager;
 import io.undertow.server.HttpHandler;
@@ -33,7 +34,7 @@ public class AuthenticatedHttpHandlerTest {
 	HttpHandler httpHandler;
 
 	@Mock
-	HttpHandler authenticationRequiredHandler;
+	NotificationReceiver authenticationRequiredHandler;
 
 	@Mock
 	SecurityContext securityContext;
@@ -44,7 +45,7 @@ public class AuthenticatedHttpHandlerTest {
 	}
 
 	@Test
-	public void ensureThatAreAbleToByPassAllAuthenticationMechanismsToSecurityContext() throws Exception {
+	public void ensureThatAreAbleToRegisterAllAuthenticationMechanismsToSecurityContext() throws Exception {
 		val exchange = HttpServerExchangeStub.createHttpExchange();
 		val authHandler = createMockedAuthenticatedHandlerFor( exchange );
 		authHandler.handleRequest( exchange );
@@ -60,6 +61,14 @@ public class AuthenticatedHttpHandlerTest {
 	}
 
 	@Test
+	public void ensureThatIsListenForAuthenticationEvents() throws Exception {
+		val exchange = HttpServerExchangeStub.createHttpExchange();
+		val authHandler = createMockedAuthenticatedHandlerFor( exchange );
+		authHandler.handleRequest( exchange );
+		verify( securityContext ).registerNotificationReceiver( authenticationRequiredHandler );
+	}
+
+	@Test
 	public void ensureThatCouldCallTheTargetHttpHandlerWhenIsAuthenticated() throws Exception {
 		val exchange = HttpServerExchangeStub.createHttpExchange();
 		val authHandler = createMockedAuthenticatedHandlerFor( exchange );
@@ -69,13 +78,12 @@ public class AuthenticatedHttpHandlerTest {
 	}
 
 	@Test
-	public void ensureThatNotCallTheTargetHttpHandleButHandleUnauthenticatedRequests() throws Exception {
+	public void ensureThatNotCallTheTargetHttpHandleWhenWasNotAuthenticatedRequests() throws Exception {
 		val exchange = HttpServerExchangeStub.createHttpExchange();
 		val authHandler = createMockedAuthenticatedHandlerFor( exchange );
 		when( securityContext.authenticate() ).thenReturn( false );
 		authHandler.handleRequest( exchange );
 		verify( httpHandler, never() ).handleRequest( exchange );
-		verify( authenticationRequiredHandler ).handleRequest( exchange );
 	}
 
 	AuthenticatedHttpHandler createMockedAuthenticatedHandlerFor( final HttpServerExchange exchange ) {
