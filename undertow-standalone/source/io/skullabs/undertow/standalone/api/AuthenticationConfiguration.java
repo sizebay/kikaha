@@ -6,11 +6,11 @@ import java.util.Map;
 @SuppressWarnings( "rawtypes" )
 public interface AuthenticationConfiguration {
 
-	Map<String, Class> mechisms();
+	Map<String, Class> mechanisms();
 
-	Class identityManagerClass();
+	Map<String, Class> identityManagers();
 
-	AuthenticationRule defaultRule();
+	AuthenticationRuleConfiguration defaultRule();
 
-	List<AuthenticationRule> authenticationRules();
+	List<AuthenticationRuleConfiguration> authenticationRules();
 }

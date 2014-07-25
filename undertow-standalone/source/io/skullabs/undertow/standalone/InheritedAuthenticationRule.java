@@ -1,6 +1,6 @@
 package io.skullabs.undertow.standalone;
 
-import io.skullabs.undertow.standalone.api.AuthenticationRule;
+import io.skullabs.undertow.standalone.api.AuthenticationRuleConfiguration;
 
 import java.util.List;
 
@@ -11,13 +11,16 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException.Missing;
 
 @RequiredArgsConstructor
-class InheritedAuthenticationRule implements AuthenticationRule {
+class InheritedAuthenticationRule implements AuthenticationRuleConfiguration {
 
 	final Config config;
-	final AuthenticationRule inheritedRule;
+	final AuthenticationRuleConfiguration inheritedRule;
 
 	@Getter( lazy = true )
 	private final String pattern = config.getString( "pattern" );
+
+	@Getter( lazy = true )
+	private final String identityManager = config.getString( "identity-manager" );
 
 	@Getter( lazy = true )
 	private final List<String> mechanisms = config.getStringList( "mechanisms" );
@@ -49,6 +52,15 @@ class InheritedAuthenticationRule implements AuthenticationRule {
 			return getExpectedRoles();
 		} catch ( Missing cause ) {
 			return inheritedRule.expectedRoles();
+		}
+	}
+
+	@Override
+	public String identityManager() {
+		try {
+			return getIdentityManager();
+		} catch ( Missing cause ) {
+			return inheritedRule.identityManager();
 		}
 	}
 }

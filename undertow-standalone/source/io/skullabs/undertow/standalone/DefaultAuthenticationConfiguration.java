@@ -1,7 +1,7 @@
 package io.skullabs.undertow.standalone;
 
 import io.skullabs.undertow.standalone.api.AuthenticationConfiguration;
-import io.skullabs.undertow.standalone.api.AuthenticationRule;
+import io.skullabs.undertow.standalone.api.AuthenticationRuleConfiguration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,16 +25,16 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 	final Config config;
 
 	@Getter( lazy = true )
-	private final Map<String, Class> mechisms = retrieveChildElementsAsClassMapFromConfigNode( "mechanisms" );
+	private final Map<String, Class> mechanisms = retrieveChildElementsAsClassMapFromConfigNode( "mechanisms" );
 
 	@Getter( lazy = true )
-	private final Class identityManagerClass = readIdentityManagerClass();
+	private final Map<String, Class> identityManagers = retrieveChildElementsAsClassMapFromConfigNode( "identity-managers" );
 
 	@Getter( lazy = true )
-	private final AuthenticationRule defaultRule = new DefaultAuthenticationRule( config.getConfig( "default-rule" ) );
+	private final AuthenticationRuleConfiguration defaultRule = new DefaultAuthenticationRule( config.getConfig( "default-rule" ) );
 
 	@Getter( lazy = true )
-	private final List<AuthenticationRule> authenticationRules = retrieveAuthenticationRules();
+	private final List<AuthenticationRuleConfiguration> authenticationRules = retrieveAuthenticationRules();
 
 	public Map<String, Class> retrieveChildElementsAsClassMapFromConfigNode( String rootNode ) {
 		val classList = new HashMap<String,Class>();
@@ -49,10 +49,6 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 		return classFromCanonicalName( classCanonicalName );
 	}
 
-	public Class readIdentityManagerClass() {
-		return classFromCanonicalName( config.getString( "identity-manager" ) );
-	}
-
 	Class classFromCanonicalName( String classCanonicalName ) {
 		try {
 			return Class.forName( classCanonicalName );
@@ -61,14 +57,14 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 		}
 	}
 
-	public List<AuthenticationRule> retrieveAuthenticationRules() {
-		val authRules = new ArrayList<AuthenticationRule>();
+	public List<AuthenticationRuleConfiguration> retrieveAuthenticationRules() {
+		val authRules = new ArrayList<AuthenticationRuleConfiguration>();
 		for ( Config ruleConfig : config.getConfigList( "rules" ) )
 			authRules.add( createAuthenticationRule( ruleConfig ) );
 		return authRules;
 	}
 
-	private AuthenticationRule createAuthenticationRule( Config ruleConfig ) {
+	private AuthenticationRuleConfiguration createAuthenticationRule( Config ruleConfig ) {
 		return new InheritedAuthenticationRule( ruleConfig, defaultRule() );
 	}
 }

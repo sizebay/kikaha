@@ -31,15 +31,16 @@ public class DefaultAuthenticationConfigurationTest {
 
 	@Test
 	public void ensureThatCouldListMechanismsAsMapOfClassesFromLazyGetter() {
-		val classMap = authConfig.mechisms();
+		val classMap = authConfig.mechanisms();
 		assertNotNull( classMap );
 		assertEquals( classMap.get( "default" ), DefaultBasicAuthenticationMechanism.class );
 	}
 
 	@Test
 	public void ensureThatCouldReadIdentityManagerClass() {
-		val identityManagerClass = authConfig.identityManagerClass();
-		assertEquals( identityManagerClass, DefaultAdminOnlyIdentityManager.class );
+		val classMap = authConfig.identityManagers();
+		assertNotNull( classMap );
+		assertEquals( classMap.get( "default" ), DefaultAdminOnlyIdentityManager.class );
 	}
 
 	@Test
@@ -49,6 +50,7 @@ public class DefaultAuthenticationConfigurationTest {
 		assertThat( defaultRule.pattern(), is( "/*" ) );
 		assertThat( defaultRule.expectedRoles().get( 0 ), is( "minimum-access-role" ) );
 		assertThat( defaultRule.mechanisms().get( 0 ), is( "default" ) );
+		assertThat( defaultRule.identityManager(), is( "default" ) );
 	}
 
 	@Test
