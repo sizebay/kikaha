@@ -12,7 +12,7 @@ public class IOThreadHandler implements HttpHandler {
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
 		if ( !exchange.isInIoThread() )
-			exchange.dispatch( this );
+			exchange.dispatch( targetHandler );
 		else
 			targetHandler.handleRequest( exchange );
 	}
