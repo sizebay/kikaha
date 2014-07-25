@@ -1,12 +1,14 @@
 package io.skullabs.undertow.standalone;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
+import io.skullabs.undertow.standalone.api.AuthenticationConfiguration;
 import io.skullabs.undertow.standalone.api.Configuration;
 import io.skullabs.undertow.standalone.api.HandlerTypes;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 
 @Getter
 @Accessors( fluent = true )
@@ -27,6 +29,9 @@ public class DefaultConfiguration implements Configuration {
 
 	@Getter( lazy = true )
 	private final HandlerTypes defaultHandlerType = getDefaultHandlerType();
+
+	@Getter( lazy = true )
+	private final AuthenticationConfiguration authentication = new DefaultAuthenticationConfiguration( config() );
 
 	public HandlerTypes getDefaultHandlerType() {
 		final String defaultHandlerType = config().getString( "undertow.default-handler-type" );

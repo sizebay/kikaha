@@ -5,11 +5,11 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import io.skullabs.undertow.standalone.HttpServerExchangeStub;
+import io.skullabs.undertow.standalone.api.RequestHookChain;
 import io.undertow.security.api.AuthenticationMechanism;
 import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.security.idm.IdentityManager;
-import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 
 import java.util.ArrayList;
@@ -31,13 +31,13 @@ public class AuthenticatedHttpHandlerTest {
 	AuthenticationMechanism authMechanism;
 
 	@Mock
-	HttpHandler httpHandler;
-
-	@Mock
 	NotificationReceiver authenticationRequiredHandler;
 
 	@Mock
 	SecurityContext securityContext;
+
+	@Mock
+	RequestHookChain requestChain;
 
 	@Before
 	public void initializeMocks() {
@@ -48,7 +48,7 @@ public class AuthenticatedHttpHandlerTest {
 	public void ensureThatAreAbleToRegisterAllAuthenticationMechanismsToSecurityContext() throws Exception {
 		val exchange = HttpServerExchangeStub.createHttpExchange();
 		val authHandler = createMockedAuthenticatedHandlerFor( exchange );
-		authHandler.handleRequest( exchange );
+		authHandler.execute( requestChain, exchange );
 		verify( securityContext ).addAuthenticationMechanism( authMechanism );
 	}
 
@@ -56,7 +56,7 @@ public class AuthenticatedHttpHandlerTest {
 	public void ensureThatSetAuthenticationAsRequired() throws Exception {
 		val exchange = HttpServerExchangeStub.createHttpExchange();
 		val authHandler = createMockedAuthenticatedHandlerFor( exchange );
-		authHandler.handleRequest( exchange );
+		authHandler.execute( requestChain, exchange );
 		verify( securityContext ).setAuthenticationRequired();
 	}
 
@@ -64,7 +64,7 @@ public class AuthenticatedHttpHandlerTest {
 	public void ensureThatIsListenForAuthenticationEvents() throws Exception {
 		val exchange = HttpServerExchangeStub.createHttpExchange();
 		val authHandler = createMockedAuthenticatedHandlerFor( exchange );
-		authHandler.handleRequest( exchange );
+		authHandler.execute( requestChain, exchange );
 		verify( securityContext ).registerNotificationReceiver( authenticationRequiredHandler );
 	}
 
@@ -73,8 +73,8 @@ public class AuthenticatedHttpHandlerTest {
 		val exchange = HttpServerExchangeStub.createHttpExchange();
 		val authHandler = createMockedAuthenticatedHandlerFor( exchange );
 		when( securityContext.authenticate() ).thenReturn( true );
-		authHandler.handleRequest( exchange );
-		verify( httpHandler ).handleRequest( exchange );
+		authHandler.execute( requestChain, exchange );
+		verify( requestChain ).executeNext();
 	}
 
 	@Test
@@ -82,13 +82,13 @@ public class AuthenticatedHttpHandlerTest {
 		val exchange = HttpServerExchangeStub.createHttpExchange();
 		val authHandler = createMockedAuthenticatedHandlerFor( exchange );
 		when( securityContext.authenticate() ).thenReturn( false );
-		authHandler.handleRequest( exchange );
-		verify( httpHandler, never() ).handleRequest( exchange );
+		authHandler.execute( requestChain, exchange );
+		verify( requestChain, never() ).executeNext();
 	}
 
-	AuthenticatedHttpHandler createMockedAuthenticatedHandlerFor( final HttpServerExchange exchange ) {
+	AuthenticationHook createMockedAuthenticatedHandlerFor( final HttpServerExchange exchange ) {
 		val authMechs = createListOfAuthenticationMechanisms();
-		val authHandler = spy( new AuthenticatedHttpHandler( identityManager, authMechs, httpHandler, authenticationRequiredHandler ) );
+		val authHandler = spy( new AuthenticationHook( identityManager, authMechs, authenticationRequiredHandler ) );
 		when( authHandler.createSecurityContext( exchange ) ).thenReturn( securityContext );
 		return authHandler;
 	}

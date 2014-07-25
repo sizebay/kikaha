@@ -14,5 +14,7 @@ public interface Configuration {
 
 	HandlerTypes defaultHandlerType();
 
+	AuthenticationConfiguration authentication();
+
 	Config config();
 }
