@@ -10,36 +10,38 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.experimental.Accessors;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
 
+@Getter
 @Accessors( fluent = true )
-@RequiredArgsConstructor
 @SuppressWarnings( "rawtypes" )
 public class DefaultAuthenticationConfiguration implements AuthenticationConfiguration {
 
 	final Config config;
 
-	@Getter( lazy = true )
-	private final Map<String, Class> mechanisms = retrieveChildElementsAsClassMapFromConfigNode( "mechanisms" );
+	final Map<String, Class<?>> mechanisms;
+	final Map<String, Class<?>> identityManagers;
+	final Map<String, Class<?>> notificationReceivers;
+	final AuthenticationRuleConfiguration defaultRule;
+	final List<AuthenticationRuleConfiguration> authenticationRules;
 
-	@Getter( lazy = true )
-	private final Map<String, Class> identityManagers = retrieveChildElementsAsClassMapFromConfigNode( "identity-managers" );
+	public DefaultAuthenticationConfiguration( final Config config ) {
+		this.config = config;
+		mechanisms = retrieveChildElementsAsClassMapFromConfigNode( "mechanisms" );
+		identityManagers = retrieveChildElementsAsClassMapFromConfigNode( "identity-managers" );
+		notificationReceivers = retrieveChildElementsAsClassMapFromConfigNode( "notification-receivers" );
+		defaultRule = new DefaultAuthenticationRule( config.getConfig( "default-rule" ) );
+		authenticationRules = retrieveAuthenticationRules();
+	}
 
-	@Getter( lazy = true )
-	private final AuthenticationRuleConfiguration defaultRule = new DefaultAuthenticationRule( config.getConfig( "default-rule" ) );
-
-	@Getter( lazy = true )
-	private final List<AuthenticationRuleConfiguration> authenticationRules = retrieveAuthenticationRules();
-
-	public Map<String, Class> retrieveChildElementsAsClassMapFromConfigNode( String rootNode ) {
-		val classList = new HashMap<String,Class>();
+	public Map<String, Class<?>> retrieveChildElementsAsClassMapFromConfigNode( String rootNode ) {
+		val classList = new HashMap<String, Class<?>>();
 		val node = config.getConfig( rootNode );
-		for ( Entry<String, ConfigValue> entry : node.entrySet() )
+		for ( val entry : node.entrySet() )
 			classList.put( entry.getKey(), convertCanonicalNameToClass( entry ) );
 		return classList;
 	}
@@ -59,7 +61,7 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 
 	public List<AuthenticationRuleConfiguration> retrieveAuthenticationRules() {
 		val authRules = new ArrayList<AuthenticationRuleConfiguration>();
-		for ( Config ruleConfig : config.getConfigList( "rules" ) )
+		for ( val ruleConfig : config.getConfigList( "rules" ) )
 			authRules.add( createAuthenticationRule( ruleConfig ) );
 		return authRules;
 	}

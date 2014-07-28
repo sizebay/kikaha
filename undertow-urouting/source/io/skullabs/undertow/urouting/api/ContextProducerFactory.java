@@ -32,7 +32,7 @@ public class ContextProducerFactory {
 
 	private void loadProducers() throws RoutingException {
 		try {
-			Iterable<ContextProducer> producers = provider.loadAll( ContextProducer.class );
+			Iterable<ContextProducer> producers = provider.loadSingletons( ContextProducer.class );
 			for ( ContextProducer producer : producers )
 				register( producer );
 		} catch ( ServiceProviderException cause ) {

@@ -8,6 +8,8 @@ public interface AuthenticationRuleConfiguration {
 
 	String identityManager();
 
+	String notificationReceiver();
+
 	List<String> mechanisms();
 
 	List<String> expectedRoles();

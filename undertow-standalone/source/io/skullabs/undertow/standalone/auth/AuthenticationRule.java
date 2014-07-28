@@ -20,12 +20,16 @@ public class AuthenticationRule {
 	final IdentityManager identityManager;
 	final List<AuthenticationMechanism> mechanisms;
 	final List<String> expectedRoles;
-	final NotificationReceiver authenticationRequiredHandler;
+	final NotificationReceiver notificationReceiver;
 
 	@Getter( lazy = true )
 	private final URLMatcher matcher = URLMatcher.compile( pattern() );
 
 	public boolean matches( String url ) {
 		return matcher().matches( url );
+	}
+
+	public boolean isThereSomeoneListeningForAuthenticationEvents() {
+		return notificationReceiver != null;
 	}
 }

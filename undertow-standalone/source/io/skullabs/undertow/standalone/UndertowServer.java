@@ -73,9 +73,9 @@ public class UndertowServer {
 	protected DefaultDeploymentContext createDeploymentContext()
 			throws ServiceProviderException {
 		Iterable<DeploymentHook> deploymentHooks = provider
-				.loadAll(DeploymentHook.class);
+				.loadSingletons(DeploymentHook.class);
 		Iterable<RequestHook> requestHooks = provider
-				.loadAll(RequestHook.class);
+				.loadSingletons(RequestHook.class);
 		List<RequestHook> mutableListOfHooks = mutableList(requestHooks);
 		return new DefaultDeploymentContext(deploymentHooks, mutableListOfHooks);
 	}

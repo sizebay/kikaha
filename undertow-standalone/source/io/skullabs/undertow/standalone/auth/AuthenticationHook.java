@@ -3,17 +3,11 @@ package io.skullabs.undertow.standalone.auth;
 import io.skullabs.undertow.standalone.api.RequestHook;
 import io.skullabs.undertow.standalone.api.RequestHookChain;
 import io.skullabs.undertow.standalone.api.UndertowStandaloneException;
-import io.undertow.security.api.AuthenticationMechanism;
 import io.undertow.security.api.AuthenticationMode;
-import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.security.api.SecurityContextFactory;
-import io.undertow.security.idm.IdentityManager;
 import io.undertow.security.impl.SecurityContextFactoryImpl;
 import io.undertow.server.HttpServerExchange;
-
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -22,46 +16,64 @@ public class AuthenticationHook implements RequestHook {
 
 	final SecurityContextHandler securityContextHandler = SecurityContextHandler.DEFAULT;
 	final SecurityContextFactory contextFactory = SecurityContextFactoryImpl.INSTANCE;
-	final IdentityManager identityManager;
-	final List<AuthenticationMechanism> authenticationMechanisms;
-	final NotificationReceiver authenticationRequiredHandler;
 
-	SecurityContext createSecurityContext( final HttpServerExchange exchange ) {
+	final AuthenticationRuleMatcher authenticationRuleMatcher;
+
+	@Override
+	public void execute( RequestHookChain chain, HttpServerExchange exchange ) throws UndertowStandaloneException {
+		AuthenticationRule rule = retrieveRuleThatEnsureRequestShouldBeAuthenticated( exchange );
+		if ( rule == null )
+			chain.executeNext();
+		else
+			executeRequestOnlyIfAuthenticate( chain, rule, exchange );
+	}
+
+	AuthenticationRule retrieveRuleThatEnsureRequestShouldBeAuthenticated( HttpServerExchange exchange ) {
+		final String relativePath = retrieveRelativePath( exchange );
+		return authenticationRuleMatcher.retrieveAuthenticationRuleForUrl( relativePath );
+	}
+
+	String retrieveRelativePath( HttpServerExchange exchange ) {
+		return exchange.getRelativePath();
+	}
+
+	void executeRequestOnlyIfAuthenticate( RequestHookChain chain, AuthenticationRule rule, HttpServerExchange exchange )
+			throws UndertowStandaloneException {
+		val context = createSecurityContext( exchange, rule );
+		populateWithAuthenticationMechanisms( context, rule );
+		registerNotificationReceivers( context, rule );
+		context.setAuthenticationRequired();
+
+		if ( !context.authenticate() )
+			handleNotAuthenticatedExchange( exchange, rule );
+		else
+			chain.executeNext();
+	}
+
+	SecurityContext createSecurityContext(
+			final HttpServerExchange exchange, final AuthenticationRule rule ) {
 		val newContext = this.contextFactory.createSecurityContext(
-				exchange, AuthenticationMode.PRO_ACTIVE, identityManager, null );
+				exchange, AuthenticationMode.PRO_ACTIVE,
+				rule.identityManager(), null );
 		securityContextHandler.setSecurityContext( exchange, newContext );
 		return newContext;
 	}
 
-	void populateWithAuthenticationMechanisms( final SecurityContext context ) {
-		for ( val authenticationMechanism : authenticationMechanisms )
+	void populateWithAuthenticationMechanisms(
+			final SecurityContext context, final AuthenticationRule rule ) {
+		for ( val authenticationMechanism : rule.mechanisms() )
 			context.addAuthenticationMechanism( authenticationMechanism );
 	}
 
-	void registerNotificationReceivers( final SecurityContext context ) {
-		if ( thereIsSomeoneListeningForAuthenticationEvents() )
-			context.registerNotificationReceiver( authenticationRequiredHandler );
+	void registerNotificationReceivers(
+			final SecurityContext context, final AuthenticationRule rule ) {
+		if ( rule.isThereSomeoneListeningForAuthenticationEvents() )
+			context.registerNotificationReceiver( rule.notificationReceiver() );
 	}
 
-	void handleNotAuthenticatedExchange( HttpServerExchange exchange ) {
-		if ( !thereIsSomeoneListeningForAuthenticationEvents() )
+	void handleNotAuthenticatedExchange(
+			final HttpServerExchange exchange, final AuthenticationRule rule ) {
+		if ( !rule.isThereSomeoneListeningForAuthenticationEvents() )
 			exchange.endExchange();
-	}
-
-	boolean thereIsSomeoneListeningForAuthenticationEvents() {
-		return authenticationRequiredHandler != null;
-	}
-
-	@Override
-	public void execute( RequestHookChain chain, HttpServerExchange exchange ) throws UndertowStandaloneException {
-		val context = createSecurityContext( exchange );
-		populateWithAuthenticationMechanisms( context );
-		registerNotificationReceivers( context );
-		context.setAuthenticationRequired();
-
-		if ( !context.authenticate() )
-			handleNotAuthenticatedExchange( exchange );
-		else
-			chain.executeNext();
 	}
 }

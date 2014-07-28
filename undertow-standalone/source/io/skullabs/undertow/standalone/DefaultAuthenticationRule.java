@@ -23,6 +23,9 @@ class DefaultAuthenticationRule implements AuthenticationRuleConfiguration {
 	private final String identityManager = config.getString( "identity-manager" );
 
 	@Getter( lazy = true )
+	private final String notificationReceiver = config.getString( "notification-receiver" );
+
+	@Getter( lazy = true )
 	private final List<String> mechanisms = config.getStringList( "mechanisms" );
 
 	@Getter( lazy = true )

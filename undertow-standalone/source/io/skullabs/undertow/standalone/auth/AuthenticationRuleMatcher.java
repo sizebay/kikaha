@@ -3,6 +3,7 @@ package io.skullabs.undertow.standalone.auth;
 import io.skullabs.undertow.standalone.api.AuthenticationConfiguration;
 import io.skullabs.undertow.standalone.api.AuthenticationRuleConfiguration;
 import io.undertow.security.api.AuthenticationMechanism;
+import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.idm.IdentityManager;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class AuthenticationRuleMatcher {
 
 	final Map<String, AuthenticationMechanism> mechanisms;
 	final Map<String, IdentityManager> identityManagers;
+	final Map<String, NotificationReceiver> notificationReceivers;
 	final List<AuthenticationRule> rules;
 	final AuthenticationConfiguration authConfig;
 
@@ -28,6 +30,7 @@ public class AuthenticationRuleMatcher {
 		this.authConfig = authConfig;
 		mechanisms = instantiateMechanismsFoundOnConfig();
 		identityManagers = instantiateIdentityManagersFoundOnConfig();
+		notificationReceivers = instantiateNotificationReceivers();
 		rules = readRulesFromConfig();
 	}
 
@@ -49,7 +52,16 @@ public class AuthenticationRuleMatcher {
 		return identityManagers;
 	}
 
-	Object instantiate( Class clazz ) {
+	Map<String, NotificationReceiver> instantiateNotificationReceivers() {
+		val notificationReceivers = new HashMap<String, NotificationReceiver>();
+		for ( String id : authConfig.notificationReceivers().keySet() ) {
+			val originalClass = authConfig.notificationReceivers().get( id );
+			notificationReceivers.put( id, (NotificationReceiver)instantiate( originalClass ) );
+		}
+		return notificationReceivers;
+	}
+
+	Object instantiate( final Class clazz ) {
 		try {
 			return clazz.newInstance();
 		} catch ( InstantiationException | IllegalAccessException e ) {
@@ -66,10 +78,11 @@ public class AuthenticationRuleMatcher {
 
 	AuthenticationRule convertConfToRule( final AuthenticationRuleConfiguration ruleConf ) {
 		val identityManager = identityManagers().get( ruleConf.identityManager() );
+		val notificationReceiver = notificationReceivers().get( ruleConf.notificationReceiver() );
 		val mechanisms = extractNeededMechanisms( ruleConf );
 		return new AuthenticationRule(
 				ruleConf.pattern(), identityManager,
-				mechanisms, ruleConf.expectedRoles(), null );
+				mechanisms, ruleConf.expectedRoles(), notificationReceiver );
 	}
 
 	List<AuthenticationMechanism> extractNeededMechanisms(
@@ -80,7 +93,7 @@ public class AuthenticationRuleMatcher {
 		return mechanisms;
 	}
 
-	AuthenticationRule retrieveAuthenticationRuleForUrl( String url ) {
+	public AuthenticationRule retrieveAuthenticationRuleForUrl( final String url ) {
 		for ( val rule : rules )
 			if ( rule.matches( url ) )
 				return rule;

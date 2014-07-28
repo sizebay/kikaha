@@ -31,12 +31,16 @@ public class DefaultConfiguration implements Configuration {
 	private final HandlerTypes defaultHandlerType = getDefaultHandlerType();
 
 	@Getter( lazy = true )
-	private final AuthenticationConfiguration authentication = new DefaultAuthenticationConfiguration( config() );
+	private final AuthenticationConfiguration authentication = createAuthenticationConfig();
 
 	public HandlerTypes getDefaultHandlerType() {
 		final String defaultHandlerType = config().getString( "undertow.default-handler-type" );
 		final String upperCaseHandlerType = defaultHandlerType.replace( '-', '_' ).toUpperCase();
 		return HandlerTypes.valueOf( upperCaseHandlerType );
+	}
+
+	AuthenticationConfiguration createAuthenticationConfig() {
+		return new DefaultAuthenticationConfiguration( config().getConfig( "undertow.auth" ) );
 	}
 
 	public static Configuration loadDefaultConfiguration() {

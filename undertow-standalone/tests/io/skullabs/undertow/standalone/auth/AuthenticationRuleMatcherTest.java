@@ -29,6 +29,7 @@ public class AuthenticationRuleMatcherTest {
 		assertThat( rule.mechanisms().get( 0 ), is( DefaultBasicAuthenticationMechanism.class ) );
 		assertThat( rule.mechanisms().get( 1 ), is( DefaultBasicAuthenticationMechanism.class ) );
 		assertThat( rule.identityManager(), is( DefaultAdminOnlyIdentityManager.class ) );
+		assertThat( rule.notificationReceiver(), is( BasicAuthenticationNotificationReceiver.class ) );
 	}
 
 	@Test

@@ -9,7 +9,7 @@ import lombok.val;
 @RequiredArgsConstructor
 public class StringSplitter {
 
-	final static char END_OF_STRING = 'ง';
+	final static char END_OF_STRING = 'ยง';
 	final List<String> strings = new ArrayList<>();
 	final StringCursor splittable;
 	StringBuilder buffer = new StringBuilder();
