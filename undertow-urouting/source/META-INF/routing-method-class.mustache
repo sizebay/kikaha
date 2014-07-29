@@ -3,7 +3,7 @@ package {{packageName}};
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import trip.spi.Provided;
-import trip.spi.Service;
+import trip.spi.Singleton;
 {{#serviceInterface}}
 import trip.spi.ServiceProvider;
 {{/serviceInterface}}
@@ -18,7 +18,7 @@ import io.skullabs.undertow.urouting.ResponseWriter;
 import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
 import io.skullabs.undertow.urouting.RoutingMethodExceptionHandler;
 
-@Service( HttpHandler.class )
+@Singleton( HttpHandler.class )
 @WebResource( value="{{httpPath}}", method="{{httpMethod}}" )
 public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 

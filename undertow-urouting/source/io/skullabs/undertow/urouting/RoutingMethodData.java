@@ -179,7 +179,7 @@ public class RoutingMethodData {
 			final Stateless stateless = service.getAnnotation( Stateless.class );
 			if ( stateless != null )
 				stateless.value();
-			return null;
+			return service.asType();
 		} catch ( MirroredTypeException cause ) {
 			return cause.getTypeMirror();
 		}
