@@ -3,6 +3,7 @@ package io.skullabs.undertow.standalone.auth;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -12,6 +13,7 @@ import io.skullabs.undertow.standalone.DefaultConfiguration;
 import io.skullabs.undertow.standalone.HttpServerExchangeStub;
 import io.skullabs.undertow.standalone.api.RequestHookChain;
 import io.skullabs.undertow.standalone.api.UndertowStandaloneException;
+import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpServerExchange;
 import lombok.val;
@@ -77,7 +79,12 @@ public class AuthenticationHookTest {
 	public void ensureThatIsListenForAuthenticationEvents() throws Exception {
 		val exchange = HttpServerExchangeStub.createHttpExchange();
 		val authHandler = createMockedAuthenticatedHandlerFor( exchange );
+		val matchedRule = mock( AuthenticationRule.class );
+		val notificationReceiver = mock( NotificationReceiver.class );
+		doReturn( securityContext ).when( authHandler ).createSecurityContext( exchange, matchedRule );
 		doReturn( matchedRule ).when( matcher ).retrieveAuthenticationRuleForUrl( any( String.class ) );
+		doReturn( notificationReceiver ).when( matchedRule ).notificationReceiver();
+		doReturn( true ).when( matchedRule ).isThereSomeoneListeningForAuthenticationEvents();
 		authHandler.execute( requestChain, exchange );
 		verify( securityContext ).registerNotificationReceiver( matchedRule.notificationReceiver() );
 	}
