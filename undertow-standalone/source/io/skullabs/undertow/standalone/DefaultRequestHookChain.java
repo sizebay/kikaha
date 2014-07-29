@@ -35,15 +35,15 @@ public class DefaultRequestHookChain implements RequestHookChain {
 	}
 
 	@Override
-	public void executeInIOThread( final RequestHook hook ) throws UndertowStandaloneException {
+	public void executeInIOThread( final Runnable hook ) throws UndertowStandaloneException {
 		if ( !this.isInIOThread() )
 			this.dispatchInIOThread( hook );
 		else
-			executeHook( hook );
+			hook.run();
 	}
 
-	void dispatchInIOThread( RequestHook hook ) {
-		this.exchange.dispatch( new IOThreadDispatcher( hook ) );
+	void dispatchInIOThread( Runnable hook ) {
+		this.exchange.dispatch( hook );
 	}
 
 	void executeHook( final RequestHook hook ) throws UndertowStandaloneException {
@@ -54,23 +54,5 @@ public class DefaultRequestHookChain implements RequestHookChain {
 		if ( !this.hooks().hasNext() )
 			throw new UndertowStandaloneException( "No hook available found." );
 		return this.hooks().next();
-	}
-
-	@RequiredArgsConstructor
-	class IOThreadDispatcher implements Runnable {
-
-		final RequestHook hook;
-
-		@Override
-		public void run() {
-			try {
-				executeHook( hook );
-			} catch ( UndertowStandaloneException e ) {
-				e.printStackTrace();
-				if ( !exchange.isResponseStarted() )
-					exchange.setResponseCode( 500 );
-				exchange.endExchange();
-			}
-		}
 	}
 }

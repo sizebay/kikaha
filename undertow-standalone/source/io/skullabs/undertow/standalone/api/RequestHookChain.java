@@ -1,13 +1,17 @@
 package io.skullabs.undertow.standalone.api;
 
+import io.undertow.server.HttpServerExchange;
+
 public interface RequestHookChain {
 
 	void executeNext() throws UndertowStandaloneException;
 
 	DeploymentContext context();
 
+	HttpServerExchange exchange();
+
 	boolean isInIOThread();
 
-	void executeInIOThread( RequestHook hook ) throws UndertowStandaloneException;
+	void executeInIOThread( Runnable hook ) throws UndertowStandaloneException;
 
 }

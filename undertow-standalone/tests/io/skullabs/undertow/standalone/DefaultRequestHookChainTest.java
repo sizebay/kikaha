@@ -25,6 +25,7 @@ public class DefaultRequestHookChainTest {
 	final BooleanRequestHook requestHook = new BooleanRequestHook();
 	final DeploymentContext context = createDeploymentContext().register( requestHook );
 	final DefaultRequestHookChain chain = spy( new DefaultRequestHookChain( null, context ) );
+	final Runnable someThread = new Thread();
 
 	@Test
 	public void ensureThatCouldExecuteARequestHookInChain() throws UndertowStandaloneException {
@@ -35,9 +36,9 @@ public class DefaultRequestHookChainTest {
 	@Test
 	public void ensureThatCouldExecuteRequestInIOThread() throws UndertowStandaloneException {
 		doReturn( false ).when( chain ).isInIOThread();
-		doNothing().when( chain ).dispatchInIOThread( requestHook );
-		chain.executeInIOThread( requestHook );
-		verify( chain ).dispatchInIOThread( requestHook );
+		doNothing().when( chain ).dispatchInIOThread( someThread );
+		chain.executeInIOThread( someThread );
+		verify( chain ).dispatchInIOThread( someThread );
 	}
 
 	private DeploymentContext createDeploymentContext() {
