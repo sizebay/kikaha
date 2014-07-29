@@ -2,25 +2,42 @@ package io.skullabs.undertow.standalone;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import io.skullabs.undertow.standalone.api.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import io.skullabs.undertow.standalone.api.DeploymentContext;
+import io.skullabs.undertow.standalone.api.DeploymentHook;
+import io.skullabs.undertow.standalone.api.RequestHook;
+import io.skullabs.undertow.standalone.api.RequestHookChain;
+import io.skullabs.undertow.standalone.api.UndertowStandaloneException;
 import io.undertow.server.HttpServerExchange;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
+
 import org.junit.Test;
 
 public class DefaultRequestHookChainTest {
 
+	final BooleanRequestHook requestHook = new BooleanRequestHook();
+	final DeploymentContext context = createDeploymentContext().register( requestHook );
+	final DefaultRequestHookChain chain = spy( new DefaultRequestHookChain( null, context ) );
+
 	@Test
 	public void ensureThatCouldExecuteARequestHookInChain() throws UndertowStandaloneException {
-		final BooleanRequestHook requestHook = new BooleanRequestHook();
-		final DeploymentContext context = createDeploymentContext();
-		context.register( requestHook );
-		final DefaultRequestHookChain chain = new DefaultRequestHookChain( null, context );
 		chain.executeNext();
 		assertThat( requestHook.isExecuted(), is( true ) );
+	}
+
+	@Test
+	public void ensureThatCouldExecuteRequestInIOThread() throws UndertowStandaloneException {
+		doReturn( false ).when( chain ).isInIOThread();
+		doNothing().when( chain ).dispatchInIOThread( requestHook );
+		chain.executeInIOThread( requestHook );
+		verify( chain ).dispatchInIOThread( requestHook );
 	}
 
 	private DeploymentContext createDeploymentContext() {
