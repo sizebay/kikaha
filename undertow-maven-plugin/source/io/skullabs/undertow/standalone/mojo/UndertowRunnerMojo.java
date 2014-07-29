@@ -2,17 +2,27 @@ package io.skullabs.undertow.standalone.mojo;
 
 import io.skullabs.undertow.standalone.Main;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.*;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.artifact.versioning.VersionRange;
-import org.apache.maven.plugin.*;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.project.MavenProject;
 
@@ -127,7 +137,7 @@ public class UndertowRunnerMojo extends AbstractMojo {
 
 	String getCommandLineString() {
 		return String.format(
-				"java -cp %s %s %s",
+				"java -cp '%s' %s %s",
 				this.classPath.toString(),
 				Main.class.getCanonicalName(),
 				this.profile != null ? this.profile : "" );
