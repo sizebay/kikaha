@@ -1,6 +1,7 @@
 package io.skullabs.undertow.standalone.auth;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -45,14 +46,14 @@ public class AuthenticationRulesDeploymentTest {
 	@Test
 	public void ensureThatHaveDeployedTheAuthenticationHook() {
 		deployment.onDeploy( deploymentContext );
-		verify( deploymentContext ).register( any( AuthenticationHook.class ) );
+		verify( deploymentContext ).register( isA( IOThreadAuthenticationHook.class ) );
 	}
 
 	@Test
 	public void ensureThatWillNotDeployTheAuthenticationHookWhenNoAuthenticationRuleIsDefinedInConfigFile() {
 		doReturn( false ).when( deployment ).haveAuthenticationRulesDefinedInConfigurationFile();
 		deployment.onDeploy( deploymentContext );
-		verify( deploymentContext, never() ).register( any( AuthenticationHook.class ) );
+		verify( deploymentContext, never() ).register( isA( IOThreadAuthenticationHook.class ) );
 	}
 
 	@Test
