@@ -24,7 +24,7 @@ import trip.spi.helpers.KeyValueProviderContext;
 /**
  * Provides data to a routing method.
  */
-@Singleton( RoutingMethodDataProvider.class )
+@Singleton
 public class RoutingMethodDataProvider {
 
 	@Provided

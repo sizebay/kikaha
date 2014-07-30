@@ -6,15 +6,13 @@ import io.skullabs.undertow.urouting.api.ConversionException;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import trip.spi.Name;
 import trip.spi.Provided;
 import trip.spi.Singleton;
 
-@Singleton( AbstractConverter.class )
+@Singleton( exposedAs = AbstractConverter.class )
 public class GregorianCalendarConverter extends AbstractConverter<GregorianCalendar> {
 
-	@Provided
-	@Name( "date-converter" )
+	@Provided( name = "date-converter" )
 	AbstractConverter<Date> dateConverter;
 
 	@Override

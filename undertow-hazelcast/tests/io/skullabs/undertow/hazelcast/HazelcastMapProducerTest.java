@@ -1,15 +1,24 @@
 package io.skullabs.undertow.hazelcast;
 
 import static org.junit.Assert.assertEquals;
-import com.hazelcast.core.IMap;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import trip.spi.*;
+
+import trip.spi.Provided;
+import trip.spi.ServiceProvider;
+import trip.spi.ServiceProviderException;
+
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.IMap;
 
 public class HazelcastMapProducerTest {
 
@@ -39,6 +48,11 @@ public class HazelcastMapProducerTest {
 	@Before
 	public void setup() throws ServiceProviderException {
 		provider.provideOn( this );
+	}
+
+	@After
+	public void shutdownHazelcast() {
+		Hazelcast.shutdownAll();
 	}
 }
 

@@ -10,11 +10,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import trip.spi.Name;
 import trip.spi.Singleton;
 
-@Singleton
-@Name( Mimes.XML )
+@Singleton( name = Mimes.XML )
 @SuppressWarnings("unchecked")
 public class XMLUnserializer implements Unserializer {
 

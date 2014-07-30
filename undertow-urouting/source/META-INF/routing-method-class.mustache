@@ -18,7 +18,7 @@ import io.skullabs.undertow.urouting.ResponseWriter;
 import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
 import io.skullabs.undertow.urouting.RoutingMethodExceptionHandler;
 
-@Singleton( HttpHandler.class )
+@Singleton( exposedAs=HttpHandler.class )
 @WebResource( value="{{httpPath}}", method="{{httpMethod}}" )
 public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 import trip.spi.Singleton;
 
-@Singleton( AbstractConverter.class )
+@Singleton( exposedAs = AbstractConverter.class )
 public class BigDecimalConverter extends AbstractConverter<BigDecimal> {
 
 	@Override

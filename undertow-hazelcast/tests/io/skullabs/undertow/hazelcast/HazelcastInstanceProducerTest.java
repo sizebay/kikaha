@@ -2,16 +2,23 @@ package io.skullabs.undertow.hazelcast;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import lombok.Getter;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import trip.spi.*;
+
+import trip.spi.Provided;
+import trip.spi.ServiceProvider;
+import trip.spi.ServiceProviderException;
+
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
 
 public class HazelcastInstanceProducerTest {
 
@@ -42,6 +49,11 @@ public class HazelcastInstanceProducerTest {
 	@Before
 	public void setup() throws ServiceProviderException {
 		provider.provideOn( this );
+	}
+
+	@After
+	public void shutdownHazelcast() {
+		Hazelcast.shutdownAll();
 	}
 
 	@Getter

@@ -7,11 +7,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import trip.spi.Name;
 import trip.spi.Singleton;
 
-@Name( "date-converter" )
-@Singleton( AbstractConverter.class )
+@Singleton( exposedAs = AbstractConverter.class, name = "date-converter" )
 public class DateConverter extends AbstractConverter<Date> {
 
 	@Override

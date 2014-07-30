@@ -4,7 +4,7 @@ import io.skullabs.undertow.urouting.api.ContextProducer;
 import io.undertow.server.HttpServerExchange;
 import trip.spi.Singleton;
 
-@Singleton( ContextProducer.class )
+@Singleton( exposedAs = ContextProducer.class )
 public class HttpServerExchangeProducer implements ContextProducer<HttpServerExchange> {
 
 	@Override

@@ -27,7 +27,7 @@ import trip.spi.Singleton;
  * A helper class to write responses to the HTTP Client.
  */
 @Log
-@Singleton( ResponseWriter.class )
+@Singleton
 public class ResponseWriter {
 
 	@Provided

@@ -7,13 +7,11 @@ import io.skullabs.undertow.urouting.api.Serializer;
 import java.io.IOException;
 import java.io.Writer;
 
-import trip.spi.Name;
 import trip.spi.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Singleton
-@Name( Mimes.JSON )
+@Singleton( name = Mimes.JSON )
 public class JSONSerializer implements Serializer {
 	
 	final ObjectMapper mapper = new ObjectMapper();

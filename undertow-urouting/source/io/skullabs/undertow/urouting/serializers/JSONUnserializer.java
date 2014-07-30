@@ -7,13 +7,11 @@ import io.skullabs.undertow.urouting.api.Unserializer;
 import java.io.IOException;
 import java.io.Reader;
 
-import trip.spi.Name;
 import trip.spi.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Singleton
-@Name( Mimes.JSON )
+@Singleton( name = Mimes.JSON )
 public class JSONUnserializer implements Unserializer {
 	
 	final ObjectMapper mapper = new ObjectMapper();

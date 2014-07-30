@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 import trip.spi.Singleton;
 
-@Singleton( AbstractConverter.class )
+@Singleton( exposedAs = AbstractConverter.class )
 public class BigIntegerConverter extends AbstractConverter<BigInteger> {
 
 	@Override

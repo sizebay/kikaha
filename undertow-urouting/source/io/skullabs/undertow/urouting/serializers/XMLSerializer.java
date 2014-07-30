@@ -12,11 +12,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 
-import trip.spi.Name;
 import trip.spi.Singleton;
 
-@Singleton
-@Name( Mimes.XML )
+@Singleton( name = Mimes.XML )
 @SuppressWarnings("unchecked")
 public class XMLSerializer implements Serializer {
 

@@ -13,7 +13,7 @@ import lombok.extern.java.Log;
 import trip.spi.Singleton;
 
 @Log
-@Singleton
+@Singleton( exposedAs = ContextProducer.class )
 public class FormDataProducer implements ContextProducer<FormData> {
 
 	final static String COULD_NOT_PRODUCE_FORM_DATA = "Could not produce a FormData for this request.";

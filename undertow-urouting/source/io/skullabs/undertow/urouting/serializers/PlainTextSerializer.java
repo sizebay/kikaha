@@ -7,11 +7,9 @@ import io.skullabs.undertow.urouting.api.Serializer;
 import java.io.IOException;
 import java.io.Writer;
 
-import trip.spi.Name;
 import trip.spi.Singleton;
 
-@Singleton
-@Name( Mimes.PLAIN_TEXT )
+@Singleton( name = Mimes.PLAIN_TEXT )
 public class PlainTextSerializer implements Serializer {
 
 	static final String NULL = "null";

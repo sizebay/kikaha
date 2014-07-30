@@ -12,7 +12,7 @@ import io.skullabs.undertow.urouting.ResponseWriter;
 import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
 import io.skullabs.undertow.urouting.RoutingMethodExceptionHandler;
 
-@Singleton( HttpHandler.class )
+@Singleton( exposedAs=HttpHandler.class )
 @WebResource( value="/hello/world", method="GET" )
 public class GeneratedRoutingMethod123 implements HttpHandler {
 

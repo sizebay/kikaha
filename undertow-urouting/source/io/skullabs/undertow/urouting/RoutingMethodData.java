@@ -175,10 +175,10 @@ public class RoutingMethodData {
 		try {
 			final Singleton singleton = service.getAnnotation( Singleton.class );
 			if ( singleton != null )
-				singleton.value();
+				singleton.exposedAs();
 			final Stateless stateless = service.getAnnotation( Stateless.class );
 			if ( stateless != null )
-				stateless.value();
+				stateless.exposedAs();
 			return service.asType();
 		} catch ( MirroredTypeException cause ) {
 			return cause.getTypeMirror();

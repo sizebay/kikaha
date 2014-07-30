@@ -5,7 +5,7 @@ import io.skullabs.undertow.urouting.api.ExceptionHandler;
 import io.skullabs.undertow.urouting.api.Response;
 import trip.spi.Singleton;
 
-@Singleton
+@Singleton( exposedAs = ExceptionHandler.class )
 public class NullPointerExceptionHandler implements ExceptionHandler<NullPointerException> {
 
 	@Override

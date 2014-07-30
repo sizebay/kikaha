@@ -1,13 +1,25 @@
 package io.skullabs.undertow.hazelcast;
 
 import static org.junit.Assert.assertTrue;
-import com.hazelcast.core.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import trip.spi.*;
+
+import trip.spi.Provided;
+import trip.spi.ServiceProvider;
+import trip.spi.ServiceProviderException;
+
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.IList;
+import com.hazelcast.core.ILock;
+import com.hazelcast.core.IMap;
+import com.hazelcast.core.IQueue;
+import com.hazelcast.core.ISet;
+import com.hazelcast.core.ITopic;
+import com.hazelcast.core.MultiMap;
 
 public class HazelcastProducedDistributedDataStructuresTest {
 
@@ -55,5 +67,10 @@ public class HazelcastProducedDistributedDataStructuresTest {
 	@Before
 	public void setup() throws ServiceProviderException {
 		provider.provideOn( this );
+	}
+
+	@After
+	public void shutdownHazelcast() {
+		Hazelcast.shutdownAll();
 	}
 }

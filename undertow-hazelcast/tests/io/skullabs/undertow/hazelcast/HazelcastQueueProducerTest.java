@@ -2,14 +2,20 @@ package io.skullabs.undertow.hazelcast;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import com.hazelcast.core.IQueue;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import trip.spi.*;
+
+import trip.spi.Provided;
+import trip.spi.ServiceProvider;
+import trip.spi.ServiceProviderException;
+
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.IQueue;
 
 public class HazelcastQueueProducerTest {
 
@@ -41,6 +47,11 @@ public class HazelcastQueueProducerTest {
 		provider.provideOn( this );
 		provider.provideOn( consumer );
 		consumer.start();
+	}
+
+	@After
+	public void shutdownHazelcast() {
+		Hazelcast.shutdownAll();
 	}
 
 	class QueueOfBooleansConsumer extends Thread {
