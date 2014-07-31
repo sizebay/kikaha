@@ -14,9 +14,9 @@ import kikaha.core.api.HandlerTypes;
 {{/ioBound}}
 {{/cpuBound}}
 import kikaha.core.api.WebResource;
-import io.skullabs.undertow.urouting.ResponseWriter;
-import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
-import io.skullabs.undertow.urouting.RoutingMethodExceptionHandler;
+import kikaha.urouting.ResponseWriter;
+import kikaha.urouting.RoutingMethodDataProvider;
+import kikaha.urouting.RoutingMethodExceptionHandler;
 
 @Singleton( exposedAs=HttpHandler.class )
 @WebResource( value="{{httpPath}}", method="{{httpMethod}}" )

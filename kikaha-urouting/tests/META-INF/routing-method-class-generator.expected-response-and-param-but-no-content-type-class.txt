@@ -1,4 +1,4 @@
-package package io.skullabs.undertow.urouting.samples;
+package package kikaha.urouting.samples;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -7,9 +7,9 @@ import trip.spi.Singleton;
 import kikaha.core.api.Configuration;
 import kikaha.core.api.HandlerTypes;
 import kikaha.core.api.WebResource;
-import io.skullabs.undertow.urouting.ResponseWriter;
-import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
-import io.skullabs.undertow.urouting.RoutingMethodExceptionHandler;
+import kikaha.urouting.ResponseWriter;
+import kikaha.urouting.RoutingMethodDataProvider;
+import kikaha.urouting.RoutingMethodExceptionHandler;
 
 @Singleton( exposedAs=HttpHandler.class )
 @WebResource( value="/hello/world", method="GET" )
@@ -27,7 +27,7 @@ public class GeneratedRoutingMethod123 implements HttpHandler {
 				return;
 			}
 		try {
-			final io.skullabs.undertow.urouting.samples.RetrieveRoutes instance = new io.skullabs.undertow.urouting.samples.RetrieveRoutes();
+			final kikaha.urouting.samples.RetrieveRoutes instance = new kikaha.urouting.samples.RetrieveRoutes();
 			final String response = instance.renderRelatoMais( true );
 				responseWriter.write( exchange, response );
 		} catch ( Throwable cause ) {
