@@ -1,11 +1,11 @@
-# Undertow Standalone Extensions
+# Kikaha
 
-Undertow Standalone Extensions was developed with two core ideas in mind:
-- provide a set of extensions to structure and initialize your application without writing a bunch of bootstraping lines of code
-- provides a lightweight micro container (written over the powerful undertow core), as alternative environment to to run web applications.
+Kikaha is a micro container writen over the fast Undertow core. was developed with two core ideas in mind:
+- provides a lightweight micro container (written over the powerful undertow core), as alternative environment to to run web applications
+- provide a set of undertow extensions to structure and initialize your application without writing a bunch of bootstraping lines of code, making easier to develop embedded applications
 
 ## Who is it for?
-Undertow Standalone Extensions is for you if one of the bellow statements are true for your needs:
+Kikaha is for you if one of the bellow statements are true for your needs:
 - A full featured Web Container (like JBoss, Wildfly, GlassFish, etc) is considered overwhelming for my software needs
 - Servlet API is a boring development environment
 - My SaaS application is changing to a micro-services architecture
@@ -15,13 +15,13 @@ Undertow Standalone Extensions is for you if one of the bellow statements are tr
 
 ## Which extensions are available on current version
 
-### Standalone
-Automations on Undertow Bootstrap to make easier to embed it on your application. It:
+### Core
+Automations on Undertow bootstrap routines to make easier to embed it on your application. It:
 - Automate routing registering, avoiding manual ( and repetitive ) definitions of HttpHandle routes
 - Provide deployment hooks to make developers able to be notified when Undertow is starting or shutting down
 - Provide a request hook mechanism that, similarly to Servlet Filters, allow developers to intercept and change a the HttpServerExchange
 
-See this module [documentation](https://github.com/Skullabs/undertow-standalone/tree/master/undertow-standalone/README.md) for more information.
+See this module [documentation](https://github.com/Skullabs/kikaha/tree/master/kikaha-core/README.md) for more information.
 
 ### uRouting ( micro Routing )
 Provide an easy to use routing API ( JAXRS like ). It provides:
@@ -31,7 +31,7 @@ Provide an easy to use routing API ( JAXRS like ). It provides:
 - Orthogonal exception handler
 - and many more...
 
-See this module [documentation](https://github.com/Skullabs/undertow-standalone/tree/master/undertow-urouting/README.md) for more information.
+See this module [documentation](https://github.com/Skullabs/kikaha/tree/master/kikaha-urouting/README.md) for more information.
 
 ### Hazelcast integration
 Provide tight integration with the leading in-memory data-grid implementation ( [Hazelcast](http://hazelcast.org/) ). This module provides:
@@ -42,7 +42,7 @@ Provide tight integration with the leading in-memory data-grid implementation ( 
 - Easier configuration environment with easy programmatic configuration ( for ClientConfig and Config )
 - and many more...
 
-See this module [documentation](https://github.com/Skullabs/undertow-standalone/tree/master/undertow-hazelcast/README.md) for more information.
+See this module [documentation](https://github.com/Skullabs/kikaha/tree/master/kikaha-hazelcast/README.md) for more information.
 
 ## Useful resources to getting started
 ``` TODO ```
