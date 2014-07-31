@@ -1,4 +1,4 @@
-package io.skullabs.undertow.standalone.mojo;
+package kikaha.mojo;
 
 import java.io.File;
 import java.io.IOException;
