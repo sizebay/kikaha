@@ -1,10 +1,11 @@
 package kikaha.core.auth;
 
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.DefaultAuthenticationConfiguration;
@@ -18,44 +19,42 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class AuthenticationRunnerTest {
+public class PrePopulatedSecurityContextFactoryTest {
 
 	@Mock
 	SecurityContext securityContext;
+	
+	@Mock
+	SecurityContextFactory wrappedFactory;
+	SecurityContextFactory finalFactory;
 
 	@Mock
 	RequestHookChain requestChain;
 
-	AuthenticationRunner authHandler;
 	HttpServerExchange exchange;
 	AuthenticationRule matchedRule;
 
 	@Test
-	public void ensureThatSetAuthenticationAsRequired() throws Exception {
-		doReturn( true ).when( securityContext ).authenticate();
-		authHandler.run();
-		verify( securityContext ).setAuthenticationRequired();
-	}
-
-	@Test
-	public void ensureThatCouldCallTheTargetHttpHandlerWhenIsAuthenticated() throws Exception {
+	public void ensureThatAreAbleToRegisterAllAuthenticationMechanismsToSecurityContext() throws Exception {
 		when( securityContext.authenticate() ).thenReturn( true );
-		authHandler.run();
-		verify( requestChain ).executeNext();
+		finalFactory.createSecurityContextFor( exchange, matchedRule );
+		verify( securityContext ).addAuthenticationMechanism( matchedRule.mechanisms().get( 0 ) );
 	}
 
 	@Test
-	public void ensureThatNotCallTheTargetHttpHandleWhenWasNotAuthenticatedRequests() throws Exception {
-		when( securityContext.authenticate() ).thenReturn( false );
-		authHandler.run();
-		verify( requestChain, never() ).executeNext();
+	public void ensureThatIsListenForAuthenticationEvents() throws Exception {
+		val notificationReceiver = mock( NotificationReceiver.class );
+		doReturn( notificationReceiver ).when( matchedRule ).notificationReceiver();
+		doReturn( true ).when( matchedRule ).isThereSomeoneListeningForAuthenticationEvents();
+		finalFactory.createSecurityContextFor( exchange, matchedRule );
+		verify( securityContext ).registerNotificationReceiver( matchedRule.notificationReceiver() );
 	}
 
 	@Before
 	public void initializeMocks() {
 		MockitoAnnotations.initMocks( this );
 		initializeExchange();
-		initializeAuthHandler();
+		initializeFactories();
 	}
 
 	void initializeExchange() {
@@ -63,10 +62,11 @@ public class AuthenticationRunnerTest {
 		doReturn( exchange ).when( requestChain ).exchange();
 	}
 
-	void initializeAuthHandler() {
+	void initializeFactories() {
 		val matcher = mockAuthRuleMatcher();
-		this.matchedRule = spy( matcher.retrieveAuthenticationRuleForUrl( "/user" ) );
-		this.authHandler = spy( new AuthenticationRunner( securityContext, requestChain ) );
+		this.matchedRule = spy( matcher.retrieveAuthenticationRuleForUrl( "/sample-route" ) );
+		doReturn( securityContext ).when( wrappedFactory ).createSecurityContextFor( exchange, matchedRule );
+		finalFactory = spy( PrePopulatedSecurityContextFactory.wrap( wrappedFactory ) );
 	}
 
 	AuthenticationRuleMatcher mockAuthRuleMatcher() {

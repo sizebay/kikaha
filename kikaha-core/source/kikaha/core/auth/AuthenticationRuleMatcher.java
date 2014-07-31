@@ -23,6 +23,7 @@ public class AuthenticationRuleMatcher {
 	final Map<String, AuthenticationMechanism> mechanisms;
 	final Map<String, IdentityManager> identityManagers;
 	final Map<String, NotificationReceiver> notificationReceivers;
+	final Map<String, SecurityContextFactory> securityContextFactories;
 	final List<AuthenticationRule> rules;
 	final AuthenticationConfiguration authConfig;
 
@@ -31,6 +32,7 @@ public class AuthenticationRuleMatcher {
 		mechanisms = instantiateMechanismsFoundOnConfig();
 		identityManagers = instantiateIdentityManagersFoundOnConfig();
 		notificationReceivers = instantiateNotificationReceivers();
+		securityContextFactories = instantiateSecurityContextFactories();
 		rules = readRulesFromConfig();
 	}
 
@@ -61,6 +63,15 @@ public class AuthenticationRuleMatcher {
 		return notificationReceivers;
 	}
 
+	Map<String, SecurityContextFactory> instantiateSecurityContextFactories() {
+		val securityContextFactories = new HashMap<String, SecurityContextFactory>();
+		for ( String id : authConfig.securityContextFactories().keySet() ) {
+			val originalClass = authConfig.securityContextFactories().get( id );
+			securityContextFactories.put( id, (SecurityContextFactory)instantiate( originalClass ) );
+		}
+		return securityContextFactories;
+	}
+
 	Object instantiate( final Class clazz ) {
 		try {
 			return clazz.newInstance();
@@ -79,10 +90,12 @@ public class AuthenticationRuleMatcher {
 	AuthenticationRule convertConfToRule( final AuthenticationRuleConfiguration ruleConf ) {
 		val identityManager = identityManagers().get( ruleConf.identityManager() );
 		val notificationReceiver = notificationReceivers().get( ruleConf.notificationReceiver() );
+		val securityContextFactory = securityContextFactories().get( ruleConf.securityContextFactory() );
 		val mechanisms = extractNeededMechanisms( ruleConf );
 		return new AuthenticationRule(
 				ruleConf.pattern(), identityManager,
-				mechanisms, ruleConf.expectedRoles(), notificationReceiver );
+				mechanisms, ruleConf.expectedRoles(),
+				notificationReceiver, securityContextFactory );
 	}
 
 	List<AuthenticationMechanism> extractNeededMechanisms(

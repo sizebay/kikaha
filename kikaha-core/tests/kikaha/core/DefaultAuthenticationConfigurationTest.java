@@ -4,8 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import kikaha.core.DefaultAuthenticationConfiguration;
-import kikaha.core.DefaultConfiguration;
 import kikaha.core.auth.DefaultAdminOnlyIdentityManager;
 import kikaha.core.auth.DefaultBasicAuthenticationMechanism;
 import lombok.val;
@@ -63,5 +61,7 @@ public class DefaultAuthenticationConfigurationTest {
 		assertThat( inheritedRule.expectedRoles().get( 0 ), is( defaultRule.expectedRoles().get( 0 ) ) );
 		assertThat( inheritedRule.mechanisms().get( 0 ), is( defaultRule.mechanisms().get( 0 ) ) );
 		assertThat( inheritedRule.mechanisms().get( 1 ), is( "alternative" ) );
+		assertThat( inheritedRule.securityContextFactory(), is( defaultRule.securityContextFactory() ) );
+		assertThat( inheritedRule.securityContextFactory(), is( "default" ) );
 	}
 }

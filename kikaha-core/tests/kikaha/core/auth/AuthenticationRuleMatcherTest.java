@@ -6,9 +6,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import kikaha.core.DefaultAuthenticationConfiguration;
 import kikaha.core.DefaultConfiguration;
-import kikaha.core.auth.AuthenticationRuleMatcher;
-import kikaha.core.auth.DefaultAdminOnlyIdentityManager;
-import kikaha.core.auth.DefaultBasicAuthenticationMechanism;
 import lombok.val;
 
 import org.junit.Before;
@@ -33,6 +30,9 @@ public class AuthenticationRuleMatcherTest {
 		assertThat( rule.mechanisms().get( 1 ), is( DefaultBasicAuthenticationMechanism.class ) );
 		assertThat( rule.identityManager(), is( DefaultAdminOnlyIdentityManager.class ) );
 		assertNull( rule.notificationReceiver() );
+		assertNotNull( rule.securityContextFactory() );
+		assertThat( rule.securityContextFactory(), is( PrePopulatedSecurityContextFactory.class ) );
+		assertThat( ( (PrePopulatedSecurityContextFactory)rule.securityContextFactory() ).wrapped, is( DefaultSecurityContextFactory.class ) );
 	}
 
 	@Test

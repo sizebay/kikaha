@@ -25,6 +25,9 @@ class DefaultAuthenticationRule implements AuthenticationRuleConfiguration {
 	private final String notificationReceiver = config.getString( "notification-receiver" );
 
 	@Getter( lazy = true )
+	private final String securityContextFactory = config.getString( "security-context-factory" );
+
+	@Getter( lazy = true )
 	private final List<String> mechanisms = config.getStringList( "mechanisms" );
 
 	@Getter( lazy = true )

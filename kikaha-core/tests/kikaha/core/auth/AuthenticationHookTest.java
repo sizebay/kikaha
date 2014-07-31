@@ -6,12 +6,11 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.DefaultConfiguration;
 import kikaha.core.api.RequestHookChain;
 import kikaha.core.api.UndertowStandaloneException;
-import kikaha.core.auth.AuthenticationHook;
-import kikaha.core.auth.AuthenticationRuleMatcher;
 import lombok.val;
 
 import org.junit.Before;
@@ -20,6 +19,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class AuthenticationHookTest {
+
+	@Mock
+	SecurityContext securityContext;
 
 	@Mock
 	RequestHookChain chain;
@@ -36,6 +38,8 @@ public class AuthenticationHookTest {
 	@Test
 	public void ensureThatCallTheHookInIOThreadWhenHasRuleThatMatchesTheRelativePath() throws UndertowStandaloneException {
 		doNothing().when( chain ).executeInIOThread( any( Runnable.class ) );
+		doReturn( securityContext ).when( authenticationHook ).createSecurityContext( any( HttpServerExchange.class ),
+				any( AuthenticationRule.class ) );
 		doReturn( "/valid-authenticated-url/" ).when( authenticationHook ).retrieveRelativePath( any( HttpServerExchange.class ) );
 		authenticationHook.execute( chain, null );
 		verify( chain ).executeInIOThread( any( Runnable.class ) );

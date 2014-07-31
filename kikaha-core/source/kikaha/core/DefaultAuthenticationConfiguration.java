@@ -25,6 +25,7 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 	final Map<String, Class<?>> mechanisms;
 	final Map<String, Class<?>> identityManagers;
 	final Map<String, Class<?>> notificationReceivers;
+	final Map<String, Class<?>> securityContextFactories;
 	final AuthenticationRuleConfiguration defaultRule;
 	final List<AuthenticationRuleConfiguration> authenticationRules;
 
@@ -35,6 +36,7 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 		notificationReceivers = retrieveChildElementsAsClassMapFromConfigNode( "notification-receivers" );
 		defaultRule = new DefaultAuthenticationRule( config.getConfig( "default-rule" ) );
 		authenticationRules = retrieveAuthenticationRules();
+		securityContextFactories = retrieveChildElementsAsClassMapFromConfigNode( "security-context-factories" );
 	}
 
 	public Map<String, Class<?>> retrieveChildElementsAsClassMapFromConfigNode( String rootNode ) {
@@ -50,14 +52,6 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 		return classFromCanonicalName( classCanonicalName );
 	}
 
-	Class classFromCanonicalName( String classCanonicalName ) {
-		try {
-			return Class.forName( classCanonicalName );
-		} catch ( ClassNotFoundException cause ) {
-			throw new IllegalStateException( cause );
-		}
-	}
-
 	public List<AuthenticationRuleConfiguration> retrieveAuthenticationRules() {
 		val authRules = new ArrayList<AuthenticationRuleConfiguration>();
 		for ( val ruleConfig : config.getConfigList( "rules" ) )
@@ -67,5 +61,17 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 
 	private AuthenticationRuleConfiguration createAuthenticationRule( Config ruleConfig ) {
 		return new InheritedAuthenticationRule( ruleConfig, defaultRule() );
+	}
+
+	Class classFromCanonicalName( String classCanonicalName ) {
+		try {
+			return Class.forName( classCanonicalName );
+		} catch ( ClassNotFoundException cause ) {
+			throw bypass( cause );
+		}
+	}
+
+	IllegalStateException bypass( Exception cause ) {
+		return new IllegalStateException( cause );
 	}
 }

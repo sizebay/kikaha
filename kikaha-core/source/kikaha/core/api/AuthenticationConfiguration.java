@@ -11,6 +11,8 @@ public interface AuthenticationConfiguration {
 
 	Map<String, Class<?>> notificationReceivers();
 
+	Map<String, Class<?>> securityContextFactories();
+
 	AuthenticationRuleConfiguration defaultRule();
 
 	List<AuthenticationRuleConfiguration> authenticationRules();

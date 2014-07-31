@@ -10,6 +10,8 @@ public interface AuthenticationRuleConfiguration {
 
 	String notificationReceiver();
 
+	String securityContextFactory();
+
 	List<String> mechanisms();
 
 	List<String> expectedRoles();

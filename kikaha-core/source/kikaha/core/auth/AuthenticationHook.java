@@ -1,10 +1,12 @@
 package kikaha.core.auth;
 
+import io.undertow.security.api.SecurityContext;
+import io.undertow.server.HttpServerExchange;
 import kikaha.core.api.RequestHook;
 import kikaha.core.api.RequestHookChain;
 import kikaha.core.api.UndertowStandaloneException;
-import io.undertow.server.HttpServerExchange;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @RequiredArgsConstructor
 public class AuthenticationHook implements RequestHook {
@@ -12,20 +14,31 @@ public class AuthenticationHook implements RequestHook {
 	final AuthenticationRuleMatcher authenticationRuleMatcher;
 
 	@Override
-	public void execute( RequestHookChain chain, HttpServerExchange exchange ) throws UndertowStandaloneException {
-		final AuthenticationRule rule = retrieveRuleThatEnsureRequestShouldBeAuthenticated( exchange );
+	public void execute( final RequestHookChain chain, final HttpServerExchange exchange ) throws UndertowStandaloneException {
+		val rule = retrieveRuleThatEnsureRequestShouldBeAuthenticated( exchange );
 		if ( rule == null )
 			chain.executeNext();
 		else
-			chain.executeInIOThread( new AuthenticationRunner( rule, chain ) );
+			runAuthenticationInIOThread( chain, exchange, rule );
 	}
 
-	AuthenticationRule retrieveRuleThatEnsureRequestShouldBeAuthenticated( HttpServerExchange exchange ) {
-		final String relativePath = retrieveRelativePath( exchange );
+	void runAuthenticationInIOThread( final RequestHookChain chain, final HttpServerExchange exchange,
+			final kikaha.core.auth.AuthenticationRule rule )
+			throws UndertowStandaloneException {
+		val context = createSecurityContext( exchange, rule );
+		chain.executeInIOThread( new AuthenticationRunner( context, chain ) );
+	}
+
+	SecurityContext createSecurityContext( final HttpServerExchange exchange, final AuthenticationRule rule ) {
+		return rule.securityContextFactory().createSecurityContextFor( exchange, rule );
+	}
+
+	AuthenticationRule retrieveRuleThatEnsureRequestShouldBeAuthenticated( final HttpServerExchange exchange ) {
+		val relativePath = retrieveRelativePath( exchange );
 		return authenticationRuleMatcher.retrieveAuthenticationRuleForUrl( relativePath );
 	}
 
-	String retrieveRelativePath( HttpServerExchange exchange ) {
+	String retrieveRelativePath( final HttpServerExchange exchange ) {
 		return exchange.getRelativePath();
 	}
 }
