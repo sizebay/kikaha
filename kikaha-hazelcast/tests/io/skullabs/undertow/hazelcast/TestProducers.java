@@ -1,7 +1,9 @@
 package io.skullabs.undertow.hazelcast;
 
+import kikaha.core.DefaultConfiguration;
+
 import com.typesafe.config.Config;
-import io.skullabs.undertow.standalone.DefaultConfiguration;
+
 import trip.spi.Producer;
 
 public class TestProducers {

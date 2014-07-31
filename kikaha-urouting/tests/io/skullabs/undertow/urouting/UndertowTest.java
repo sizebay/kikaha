@@ -1,9 +1,9 @@
 package io.skullabs.undertow.urouting;
 
-import io.skullabs.undertow.standalone.Main;
-import io.skullabs.undertow.standalone.api.UndertowStandaloneException;
-
 import java.io.IOException;
+
+import kikaha.core.Main;
+import kikaha.core.api.UndertowStandaloneException;
 
 import org.junit.Ignore;
 import org.junit.Test;

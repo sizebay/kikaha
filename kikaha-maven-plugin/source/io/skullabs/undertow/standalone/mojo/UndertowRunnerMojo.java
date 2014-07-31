@@ -1,7 +1,5 @@
 package io.skullabs.undertow.standalone.mojo;
 
-import io.skullabs.undertow.standalone.Main;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import kikaha.core.Main;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.maven.artifact.Artifact;

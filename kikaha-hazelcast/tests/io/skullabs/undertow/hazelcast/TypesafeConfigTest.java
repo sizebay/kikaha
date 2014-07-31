@@ -2,8 +2,10 @@ package io.skullabs.undertow.hazelcast;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import kikaha.core.DefaultConfiguration;
+
 import com.typesafe.config.Config;
-import io.skullabs.undertow.standalone.DefaultConfiguration;
+
 import org.junit.Test;
 
 public class TypesafeConfigTest {

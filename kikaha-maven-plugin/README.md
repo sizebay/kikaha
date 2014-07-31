@@ -26,20 +26,20 @@ Now you are able to change to the current work directory of your project and run
 ```console
 $ cd my-simple-project
 $ mvn clean install undertow:run
-jul 03, 2014 6:06:05 PM io.skullabs.undertow.standalone.HttpHandlerDeploymentHook onDeploy
+jul 03, 2014 6:06:05 PM kikaha.core.HttpHandlerDeploymentHook onDeploy
 INFORMAÃıES: Looking for HttpHandler routes...
-jul 03, 2014 6:06:05 PM io.skullabs.undertow.standalone.DefaultDeploymentContext register
+jul 03, 2014 6:06:05 PM kikaha.core.DefaultDeploymentContext register
 INFORMAÃıES: Registering route: GET:/users/{id}/.
-jul 03, 2014 6:06:05 PM io.skullabs.undertow.standalone.DefaultDeploymentContext register
+jul 03, 2014 6:06:05 PM kikaha.core.DefaultDeploymentContext register
 INFORMAÃıES: Registering route: POST:/users/{id}/.
-jul 03, 2014 6:06:05 PM io.skullabs.undertow.standalone.UndertowServer createResourceManager
+jul 03, 2014 6:06:05 PM kikaha.core.UndertowServer createResourceManager
 INFORMAÃıES: Exposing resource files at .\webapp
 jul 03, 2014 6:06:05 PM org.xnio.Xnio <clinit>
 INFO: XNIO version 3.3.0.Beta1
 jul 03, 2014 6:06:05 PM org.xnio.nio.NioXnio <clinit>
 INFO: XNIO NIO Implementation Version 3.3.0.Beta1
-jul 03, 2014 6:06:05 PM io.skullabs.undertow.standalone.UndertowServer start
+jul 03, 2014 6:06:05 PM kikaha.core.UndertowServer start
 INFORMAÃıES: Server started in 220ms.
-jul 03, 2014 6:06:05 PM io.skullabs.undertow.standalone.UndertowServer start
+jul 03, 2014 6:06:05 PM kikaha.core.UndertowServer start
 INFORMAÃıES: Server is listening at 0.0.0.0:9000
 ```

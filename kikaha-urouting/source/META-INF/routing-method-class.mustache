@@ -9,11 +9,11 @@ import trip.spi.ServiceProvider;
 {{/serviceInterface}}
 {{^cpuBound}}
 {{^ioBound}}
-import io.skullabs.undertow.standalone.api.Configuration;
-import io.skullabs.undertow.standalone.api.HandlerTypes;
+import kikaha.core.api.Configuration;
+import kikaha.core.api.HandlerTypes;
 {{/ioBound}}
 {{/cpuBound}}
-import io.skullabs.undertow.standalone.api.WebResource;
+import kikaha.core.api.WebResource;
 import io.skullabs.undertow.urouting.ResponseWriter;
 import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
 import io.skullabs.undertow.urouting.RoutingMethodExceptionHandler;

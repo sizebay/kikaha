@@ -12,7 +12,7 @@ PORT=9000
 # RUNTIME VARIABLES
 JAVA=java
 JAVA_OPTS=
-MAIN_CLASS=io.skullabs.undertow.standalone.Main
+MAIN_CLASS=kikaha.core.Main
 
 # READ CUSTOM CONFIGURATIONS
 if [ -e bin/undertow.conf ]; then
