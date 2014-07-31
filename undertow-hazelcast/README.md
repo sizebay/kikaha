@@ -10,13 +10,13 @@ Provide tight integration with the leading in-memory data-grid implementation ( 
 - and many more...
 
 ### Instaltion instructions
-Just include the bellow maven dependencies to your ```pom.xml```. Note that Undertow Extensions use [tRip](https://github.com/Skullabs/tRip) as an engine to provide implementations and allow our internal modularization.
+Just include the bellow maven dependencies to your ```pom.xml```. Note that Kikaha use [tRip](https://github.com/Skullabs/tRip) as an engine to provide implementations and allow our internal modularization.
 
 ```xml
 ...
     <properties>
-        <version.trip>0.14.1</version.trip>
-        <version.undertow>1.1-SNAPSHOT</version.undertow>
+        <version.trip>1.0-SNAPSHOT</version.trip>
+        <version.undertow>1.0-SNAPSHOT</version.undertow>
     </properties>
 ...
     <dependencies>
