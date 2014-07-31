@@ -1,0 +1,77 @@
+package {{packageName}};
+
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import trip.spi.Provided;
+import trip.spi.Singleton;
+{{#serviceInterface}}
+import trip.spi.ServiceProvider;
+{{/serviceInterface}}
+{{^cpuBound}}
+{{^ioBound}}
+import io.skullabs.undertow.standalone.api.Configuration;
+import io.skullabs.undertow.standalone.api.HandlerTypes;
+{{/ioBound}}
+{{/cpuBound}}
+import io.skullabs.undertow.standalone.api.WebResource;
+import io.skullabs.undertow.urouting.ResponseWriter;
+import io.skullabs.undertow.urouting.RoutingMethodDataProvider;
+import io.skullabs.undertow.urouting.RoutingMethodExceptionHandler;
+
+@Singleton( exposedAs=HttpHandler.class )
+@WebResource( value="{{httpPath}}", method="{{httpMethod}}" )
+public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
+
+	{{#serviceInterface}}
+	@Provided ServiceProvider serviceProvider;
+	{{/serviceInterface}}
+	@Provided ResponseWriter responseWriter;
+	@Provided RoutingMethodDataProvider methodDataProvider;
+	@Provided RoutingMethodExceptionHandler exceptionHandler;
+	{{^cpuBound}}
+	{{^ioBound}}
+	@Provided Configuration configuration;
+	{{/ioBound}}
+	{{/cpuBound}}
+
+	@Override
+	public void handleRequest( HttpServerExchange exchange ) throws Exception {
+		{{^cpuBound}}
+		{{^ioBound}}
+			if ( HandlerTypes.IO_BOUND.equals( configuration.defaultHandlerType() ) && !exchange.isInIoThread() ) {
+				exchange.dispatch(this);
+				return;
+			}
+		{{/ioBound}}
+		{{/cpuBound}}
+		{{#ioBound}}
+			if ( !exchange.isInIoThread() ) {
+				exchange.dispatch(this);
+				return;
+			}
+		{{/ioBound}}
+		try {
+		{{#serviceInterface}}
+			final {{{type}}} instance = serviceProvider.load( {{serviceInterface}}.class );
+		{{/serviceInterface}}
+		{{^serviceInterface}}
+			final {{{type}}} instance = new {{{type}}}();
+		{{/serviceInterface}}
+		{{#returnType}}
+			final {{{returnType}}} response = instance.{{methodName}}( {{{methodParams}}} );
+			{{#responseContentType}}
+				responseWriter.write( exchange, "{{responseContentType}}", response );
+			{{/responseContentType}}
+			{{^responseContentType}}
+				responseWriter.write( exchange, response );
+			{{/responseContentType}}
+		{{/returnType}}
+		{{^returnType}}
+			instance.{{methodName}}( {{{methodParams}}} );
+			responseWriter.write( exchange );
+		{{/returnType}}
+		} catch ( Throwable cause ) {
+			responseWriter.write( exchange, exceptionHandler.handle( cause ) );
+		}
+	}
+}
