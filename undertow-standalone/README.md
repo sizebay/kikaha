@@ -1,5 +1,5 @@
 ## Standalone Extension
-Automations on Undertow Bootstrap to make easier to embed it on your application.
+Automations on Undertow bootstrap routines to make easier to embed it on your application.
 
 ### What it provides to you?
 - Automate routing registering, avoiding manual ( and repetitive ) definitions of HttpHandle routes
@@ -34,7 +34,7 @@ public class HelloWorldServer {
 
 Note that UndertowBuilder expects a root HttpHandler to handle all requests your applications will be able to handle. When more than one route is needed to be deployed a inattentive developer may turn its powerful application code into a mess spaghetti code.
 
-The Standalone Extension aim to save you from the pain of creating its countless lines of code
+The Standalone extension aim to save you from the pain of creating its countless lines of code
 to create your routes. All the effort needed to create a route on your application is:
 - implement the ```io.undertow.server.HttpHandler``` interface
 - inform which URL and Http Method it is expected to handle through ```io.skullabs.undertow.standalone.api.WebResource``` annotation
@@ -163,8 +163,8 @@ Just include the bellow maven dependencies to your ```pom.xml```. Note that Unde
 ```xml
 ...
     <properties>
-        <version.trip>0.14.1</version.trip>
-        <version.undertow>1.1-SNAPSHOT</version.undertow>
+        <version.trip>1.0-SNAPSHOT/version.trip>
+        <version.undertow>1.0-SNAPSHOT</version.undertow>
     </properties>
 ...
     <dependencies>
