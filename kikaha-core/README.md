@@ -38,10 +38,10 @@ The Standalone extension aim to save you from the pain of creating its countless
 to create your routes. All the effort needed to create a route on your application is:
 - implement the ```io.undertow.server.HttpHandler``` interface
 - inform which URL and Http Method it is expected to handle through ```kikaha.core.api.WebResource``` annotation
-- annotated it as a singleton service through ```trip.api.Service```
+- annotated it as a singleton service through ```trip.api.Singleton```
 
 ```java
-@Service
+@Singleton
 @WebResource( value="/", method="GET")
 public class HelloWorldHandler implements HttpHandler {
 
@@ -55,7 +55,7 @@ public class HelloWorldHandler implements HttpHandler {
 ```
 
 ### Starting up an application
-There is an special main class ( ```kikaha.core.Main``` ) on Undertow Standalone module that helps you to start you embedded application. You could point it out no your MANIFEST.MF to create a runnable jar, or pass it in the command line to start your application manually.
+There is an special main class ( ```kikaha.core.Main``` ) on Kikaha core module that helps you to start you embedded application. You could point it out no your MANIFEST.MF to create a runnable jar, or pass it in the command line to start your application manually.
 
 ```console
 $ java -cp ${YOUR_CUSTOM_CLASSPATH} kikaha.core.Main
@@ -71,7 +71,7 @@ If you already has your own main class, you should also consider to start Undert
 
 ```
 
-As occurs with Undertow core, this modulo is totally OpenSource. If any of above approaches doesn't fit your need, you may consider to extends ```kikaha.core.UndertowServer``` class and improve it by your self.
+As occurs with Undertow core, this module is totally OpenSource. If any of above approaches doesn't fit your need, you may consider to extends ```kikaha.core.UndertowServer``` class and improve it by your self.
 
 ### Listening to deployments
 It's possible to listen deployments events like ```onDeploy``` and ```onUndeploy```.
