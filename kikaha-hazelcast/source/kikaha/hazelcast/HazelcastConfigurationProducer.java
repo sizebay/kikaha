@@ -1,4 +1,4 @@
-package io.skullabs.undertow.hazelcast;
+package kikaha.hazelcast;
 
 import trip.spi.Producer;
 import trip.spi.Provided;

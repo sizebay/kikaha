@@ -1,4 +1,4 @@
-package io.skullabs.undertow.hazelcast;
+package kikaha.hazelcast;
 
 import com.typesafe.config.Config;
 

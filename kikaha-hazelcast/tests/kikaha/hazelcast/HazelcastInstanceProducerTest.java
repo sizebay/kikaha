@@ -1,4 +1,4 @@
-package io.skullabs.undertow.hazelcast;
+package kikaha.hazelcast;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotSame;
 import java.io.Serializable;
 import java.util.Date;
 
+import kikaha.hazelcast.HazelcastInstanceProducer;
 import lombok.Getter;
 
 import org.junit.After;

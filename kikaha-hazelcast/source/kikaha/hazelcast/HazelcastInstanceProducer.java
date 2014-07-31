@@ -1,7 +1,7 @@
-package io.skullabs.undertow.hazelcast;
+package kikaha.hazelcast;
 
 import kikaha.core.api.Configuration;
-import io.skullabs.undertow.hazelcast.HazelcastConfiguration.ClusterClientConfig;
+import kikaha.hazelcast.HazelcastConfiguration.ClusterClientConfig;
 import lombok.extern.java.Log;
 import trip.spi.Producer;
 import trip.spi.Provided;

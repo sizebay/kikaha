@@ -1,8 +1,10 @@
-package io.skullabs.undertow.hazelcast;
+package kikaha.hazelcast;
 
 import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import kikaha.hazelcast.Source;
 
 import org.junit.After;
 import org.junit.Before;

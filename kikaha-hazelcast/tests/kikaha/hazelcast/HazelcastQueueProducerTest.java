@@ -1,10 +1,12 @@
-package io.skullabs.undertow.hazelcast;
+package kikaha.hazelcast;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import kikaha.hazelcast.Source;
 
 import org.junit.After;
 import org.junit.Before;

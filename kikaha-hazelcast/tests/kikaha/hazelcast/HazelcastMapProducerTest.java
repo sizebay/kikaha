@@ -1,10 +1,11 @@
-package io.skullabs.undertow.hazelcast;
+package kikaha.hazelcast;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.Serializable;
 import java.util.Date;
 
+import kikaha.hazelcast.Source;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
