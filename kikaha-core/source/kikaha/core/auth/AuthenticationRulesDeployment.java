@@ -40,6 +40,7 @@ public class AuthenticationRulesDeployment implements DeploymentHook {
 		provideOnMapEntries( ruleMatcher.identityManagers() );
 		provideOnMapEntries( ruleMatcher.notificationReceivers() );
 		provideOnMapEntries( ruleMatcher.mechanisms() );
+		provideOnMapEntries( ruleMatcher.securityContextFactories() );
 		return ruleMatcher;
 	}
 	

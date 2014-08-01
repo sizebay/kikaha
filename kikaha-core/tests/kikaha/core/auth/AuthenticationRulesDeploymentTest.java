@@ -13,8 +13,6 @@ import java.util.Map;
 import kikaha.core.DefaultConfiguration;
 import kikaha.core.api.Configuration;
 import kikaha.core.api.DeploymentContext;
-import kikaha.core.auth.AuthenticationHook;
-import kikaha.core.auth.AuthenticationRulesDeployment;
 import lombok.val;
 
 import org.junit.Before;
@@ -62,6 +60,6 @@ public class AuthenticationRulesDeploymentTest {
 	@SuppressWarnings( "unchecked" )
 	public void ensureThatHaveProvideOnEveryMapReadFromConfig() {
 		deployment.onDeploy( deploymentContext );
-		verify( deployment, times( 3 ) ).provideOnMapEntries( any( Map.class ) );
+		verify( deployment, times( 4 ) ).provideOnMapEntries( any( Map.class ) );
 	}
 }
