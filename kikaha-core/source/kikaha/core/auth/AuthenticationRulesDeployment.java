@@ -13,7 +13,7 @@ import trip.spi.ServiceProviderException;
 import trip.spi.Singleton;
 
 @Log
-@Singleton
+@Singleton( exposedAs = DeploymentHook.class )
 public class AuthenticationRulesDeployment implements DeploymentHook {
 	
 	@Provided

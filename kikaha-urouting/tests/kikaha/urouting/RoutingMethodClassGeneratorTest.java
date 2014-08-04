@@ -13,8 +13,6 @@ import java.io.StringWriter;
 import javax.annotation.processing.Filer;
 import javax.tools.JavaFileObject;
 
-import kikaha.urouting.RoutingMethodClassGenerator;
-import kikaha.urouting.RoutingMethodData;
 import kikaha.urouting.samples.RetrieveRoutes;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -69,7 +67,7 @@ public class RoutingMethodClassGeneratorTest extends TestCase {
 				RetrieveRoutes.class.getCanonicalName(),
 				RetrieveRoutes.class.getPackage().toString(),
 				"renderRelatoMais", params, returnType, responseContentType,
-				"/hello/world", "GET", serviceInterface, false, false );
+				"/hello/world", "GET", serviceInterface, false, false, false );
 	}
 
 	@SneakyThrows

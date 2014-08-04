@@ -4,11 +4,22 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import javax.annotation.processing.*;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.*;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 
-import kikaha.urouting.api.*;
+import kikaha.urouting.api.DELETE;
+import kikaha.urouting.api.GET;
+import kikaha.urouting.api.MultiPartFormData;
+import kikaha.urouting.api.PATCH;
+import kikaha.urouting.api.POST;
+import kikaha.urouting.api.PUT;
 import trip.spi.helpers.filter.Filter;
 
 @SupportedAnnotationTypes( "kikaha.urouting.api.*" )
@@ -29,6 +40,8 @@ public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
 			generateRoutingMethods( roundEnv, POST.class );
 			generateRoutingMethods( roundEnv, PUT.class );
 			generateRoutingMethods( roundEnv, DELETE.class );
+			generateRoutingMethods( roundEnv, PATCH.class );
+			generateRoutingMethods( roundEnv, MultiPartFormData.class );
 			return false;
 		} catch ( IOException e ) {
 			throw new IllegalStateException( e );

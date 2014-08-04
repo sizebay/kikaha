@@ -2,6 +2,8 @@ package kikaha.urouting;
 
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
+import io.undertow.server.handlers.form.FormData;
+import io.undertow.server.handlers.form.FormData.FormValue;
 import io.undertow.util.Headers;
 import io.undertow.util.PathTemplateMatch;
 
@@ -76,6 +78,16 @@ public class RoutingMethodDataProvider {
 		if ( queryParams == null )
 			return null;
 		final String value = queryParams.peek();
+		return converterFactory.getConverterFor( clazz ).convert( value );
+	}
+
+	@SuppressWarnings( "unchecked" )
+	public <T> T getFormParam( final FormData form, final String formParam, final Class<T> clazz )
+			throws ConversionException, InstantiationException, IllegalAccessException {
+		final FormValue formValue = form.getFirst( formParam );
+		if ( formValue.isFile() )
+			return (T)formValue.getFile();
+		final String value = formValue.getValue();
 		return converterFactory.getConverterFor( clazz ).convert( value );
 	}
 

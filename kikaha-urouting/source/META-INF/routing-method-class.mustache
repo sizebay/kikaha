@@ -2,6 +2,11 @@ package {{packageName}};
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+{{#isMultiPart}}
+import io.undertow.server.handlers.form.FormData;
+import io.undertow.server.handlers.form.FormDataParser;
+import io.undertow.server.handlers.form.FormParserFactory;
+{{/isMultiPart}}
 import trip.spi.Provided;
 import trip.spi.Singleton;
 {{#serviceInterface}}
@@ -39,16 +44,30 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 		{{^cpuBound}}
 		{{^ioBound}}
 			if ( HandlerTypes.IO_BOUND.equals( configuration.defaultHandlerType() ) && !exchange.isInIoThread() ) {
+				{{#isMultiPart}}
+				exchange.startBlocking();
+				{{/isMultiPart}}
 				exchange.dispatch(this);
 				return;
 			}
+		{{#isMultiPart}}
+			else if ( exchange.isInIoThread() && !exchange.isBlocking() )
+				exchange.startBlocking();
+		{{/isMultiPart}}
 		{{/ioBound}}
 		{{/cpuBound}}
 		{{#ioBound}}
 			if ( !exchange.isInIoThread() ) {
+				{{#isMultiPart}}
+				exchange.startBlocking();
+				{{/isMultiPart}}
 				exchange.dispatch(this);
 				return;
 			}
+			{{#isMultiPart}}
+			else if ( exchange.isInIoThread() && !exchange.isBlocking() )
+				exchange.startBlocking();
+			{{/isMultiPart}}
 		{{/ioBound}}
 		try {
 		{{#serviceInterface}}
@@ -57,6 +76,10 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 		{{^serviceInterface}}
 			final {{{type}}} instance = new {{{type}}}();
 		{{/serviceInterface}}
+		{{#isMultiPart}}
+			final FormDataParser parser = FormParserFactory.builder().build().createParser(exchange);
+			final FormData formData = parser.parseBlocking();
+		{{/isMultiPart}}
 		{{#returnType}}
 			final {{{returnType}}} response = instance.{{methodName}}( {{{methodParams}}} );
 			{{#responseContentType}}

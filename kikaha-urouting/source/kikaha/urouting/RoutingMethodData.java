@@ -15,8 +15,10 @@ import kikaha.urouting.api.CPU;
 import kikaha.urouting.api.Consumes;
 import kikaha.urouting.api.Context;
 import kikaha.urouting.api.CookieParam;
+import kikaha.urouting.api.FormParam;
 import kikaha.urouting.api.HeaderParam;
 import kikaha.urouting.api.IO;
+import kikaha.urouting.api.MultiPartFormData;
 import kikaha.urouting.api.Path;
 import kikaha.urouting.api.PathParam;
 import kikaha.urouting.api.Produces;
@@ -45,6 +47,7 @@ public class RoutingMethodData {
 	final String serviceInterface;
 	final boolean cpuBound;
 	final boolean ioBound;
+	final boolean isMultiPart;
 
 	@Getter( lazy = true )
 	private final Long identifier = createIdentifier();
@@ -55,6 +58,9 @@ public class RoutingMethodData {
 
 	public static RoutingMethodData from(
 			ExecutableElement method, Class<? extends Annotation> httpMethodAnnotation ) {
+		boolean isMultiPart = httpMethodAnnotation.equals( MultiPartFormData.class );
+		final String httpMethod = isMultiPart
+				? "POST" : httpMethodAnnotation.getSimpleName();
 		final String type = method.getEnclosingElement().asType().toString();
 		return new RoutingMethodData(
 				type, extractPackageName( type ),
@@ -63,10 +69,11 @@ public class RoutingMethodData {
 				extractReturnTypeFrom( method ),
 				extractResponseContentTypeFrom( method ),
 				measureHttpPathFrom( method ),
-				httpMethodAnnotation.getSimpleName(),
+				httpMethod,
 				extractServiceInterfaceFrom( method ),
 				method.getAnnotation( CPU.class ) != null,
-				method.getAnnotation( IO.class ) != null );
+				method.getAnnotation( IO.class ) != null,
+				isMultiPart );
 	}
 
 	public static String extractPackageName( String canonicalName ) {
@@ -116,6 +123,9 @@ public class RoutingMethodData {
 		CookieParam cookieParam = parameter.getAnnotation( CookieParam.class );
 		if ( cookieParam != null )
 			return getParam( CookieParam.class, cookieParam.value(), targetType );
+		FormParam formParam = parameter.getAnnotation( FormParam.class );
+		if ( formParam != null )
+			return getFormParam( formParam.value(), targetType );
 		Context dataParam = parameter.getAnnotation( Context.class );
 		if ( dataParam != null )
 			return format( "methodDataProvider.getData( exchange, %s.class )", targetType );
@@ -123,6 +133,11 @@ public class RoutingMethodData {
 		if ( consumingContentType != null )
 			return format( "methodDataProvider.getBody( exchange, %s.class, \"%s\" )", targetType, consumingContentType );
 		return format( "methodDataProvider.getBody( exchange, %s.class )", targetType );
+	}
+
+	static String getFormParam( String param, String targetType ) {
+		return format( "methodDataProvider.getFormParam( formData, \"%s\", %s.class )",
+				param, targetType );
 	}
 
 	static String getParam( Class<?> targetAnnotation, String param, String targetType ) {

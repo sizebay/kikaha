@@ -1,9 +1,9 @@
 package kikaha.core;
 
+import io.undertow.server.HttpHandler;
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
 import kikaha.core.api.WebResource;
-import io.undertow.server.HttpHandler;
 import lombok.extern.java.Log;
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
@@ -11,7 +11,7 @@ import trip.spi.ServiceProviderException;
 import trip.spi.Singleton;
 
 @Log
-@Singleton
+@Singleton( exposedAs = DeploymentHook.class )
 public class HttpHandlerDeploymentHook implements DeploymentHook {
 	
 	@Provided ServiceProvider provider;
