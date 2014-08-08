@@ -1,12 +1,12 @@
 package kikaha.hazelcast;
 
-import com.typesafe.config.Config;
-
 import java.util.List;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+
+import com.typesafe.config.Config;
 
 /**
  * Represents the entries defined in application.conf file that belongs to
@@ -26,7 +26,10 @@ public class HazelcastConfiguration {
 	private final Boolean overrideXmlConfig = config().getBoolean( "undertow.hazelcast.override-xml-config" );
 
 	@Getter( lazy = true )
-	private final Boolean sessionManagementEnabled = config().getBoolean( "undertow.hazelcast.session-management-enabled" );
+	private final Boolean sessionManagementEnabled = config().getBoolean( "undertow.hazelcast.session-management.enabled" );
+
+	@Getter( lazy = true )
+	private final Integer sessionTimeToLive = config().getInt( "undertow.hazelcast.session-management.time-to-live" );
 
 	@Getter( lazy = true )
 	private final String mode = config().getString( "undertow.hazelcast.mode" );
