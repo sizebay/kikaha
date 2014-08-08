@@ -38,7 +38,7 @@ public class AuthenticationRulesDeploymentTest {
 	public void initializeDeployment() throws ServiceProviderException {
 		val deployment = new AuthenticationRulesDeployment();
 		val provider = new ServiceProvider();
-		provider.provideFor( Configuration.class, DefaultConfiguration.loadDefaultConfiguration() );
+		provider.providerFor( Configuration.class, DefaultConfiguration.loadDefaultConfiguration() );
 		provider.provideOn( deployment );
 		this.deployment = spy( deployment );
 	}

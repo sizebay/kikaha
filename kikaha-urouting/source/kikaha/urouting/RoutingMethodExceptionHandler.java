@@ -44,7 +44,7 @@ public class RoutingMethodExceptionHandler {
 	@SuppressWarnings( { "rawtypes", "unchecked" } )
 	protected HashMap<Class<?>, ExceptionHandler<?>> loadHandlers() throws ServiceProviderException {
 		final HashMap<Class<?>, ExceptionHandler<?>> handlers = new HashMap<Class<?>, ExceptionHandler<?>>();
-		final Iterable<ExceptionHandler> iterableHandlers = provider.loadSingletons( ExceptionHandler.class );
+		final Iterable<ExceptionHandler> iterableHandlers = provider.loadAll( ExceptionHandler.class );
 		for ( ExceptionHandler handler : iterableHandlers ) {
 			Class<?> throwableClass = getGenericClass( handler );
 			handlers.put( throwableClass, handler );

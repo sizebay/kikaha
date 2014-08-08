@@ -27,7 +27,7 @@ public class ConverterFactory {
 
 	public void loadAllConverters() {
 		try {
-			final Iterable<AbstractConverter> converters = provider.loadSingletons( AbstractConverter.class );
+			final Iterable<AbstractConverter> converters = provider.loadAll( AbstractConverter.class );
 			register( converters );
 		} catch ( ServiceProviderException cause ) {
 			throw new RuntimeException( cause );

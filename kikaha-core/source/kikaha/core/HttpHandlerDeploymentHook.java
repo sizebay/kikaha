@@ -27,7 +27,7 @@ public class HttpHandlerDeploymentHook implements DeploymentHook {
 	}
 
 	void deployAllHttpHandlers( DeploymentContext context ) throws ServiceProviderException {
-		Iterable<HttpHandler> handlers = provider.loadSingletons( HttpHandler.class );
+		Iterable<HttpHandler> handlers = provider.loadAll( HttpHandler.class );
 		for ( HttpHandler handler : handlers )
 			deploy(context, handler);
 	}

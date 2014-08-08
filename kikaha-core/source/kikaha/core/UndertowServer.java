@@ -1,7 +1,5 @@
 package kikaha.core;
 
-import com.typesafe.config.Config;
-
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
@@ -12,13 +10,19 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import kikaha.core.api.*;
+import kikaha.core.api.Configuration;
+import kikaha.core.api.DeploymentContext;
+import kikaha.core.api.DeploymentHook;
+import kikaha.core.api.RequestHook;
+import kikaha.core.api.UndertowStandaloneException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.java.Log;
 import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
+
+import com.typesafe.config.Config;
 
 @Log
 @Getter
@@ -67,16 +71,16 @@ public class UndertowServer {
 	}
 
 	protected void provideSomeDependenciesForFurtherInjections() {
-		provider.provideFor(Configuration.class, configuration);
-		provider.provideFor(Config.class, configuration().config());
+		provider.providerFor( Configuration.class, configuration );
+		provider.providerFor( Config.class, configuration().config() );
 	}
 
 	protected DefaultDeploymentContext createDeploymentContext()
 			throws ServiceProviderException {
 		Iterable<DeploymentHook> deploymentHooks = provider
-				.loadSingletons(DeploymentHook.class);
+			.loadAll( DeploymentHook.class );
 		Iterable<RequestHook> requestHooks = provider
-				.loadSingletons(RequestHook.class);
+			.loadAll( RequestHook.class );
 		List<RequestHook> mutableListOfHooks = mutableList(requestHooks);
 		return new DefaultDeploymentContext(deploymentHooks, mutableListOfHooks);
 	}

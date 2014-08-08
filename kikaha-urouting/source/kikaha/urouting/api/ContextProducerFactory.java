@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import kikaha.urouting.Reflection;
+import lombok.val;
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
@@ -31,7 +32,7 @@ public class ContextProducerFactory {
 
 	private void loadProducers() throws RoutingException {
 		try {
-			Iterable<ContextProducer> producers = provider.loadSingletons( ContextProducer.class );
+			val producers = provider.loadAll( ContextProducer.class );
 			for ( ContextProducer producer : producers )
 				register( producer );
 		} catch ( ServiceProviderException cause ) {
@@ -40,7 +41,7 @@ public class ContextProducerFactory {
 	}
 
 	public <T> void register( ContextProducer<T> producer ) {
-		Class<?> forClazz = Reflection.getFirstGenericTypeFrom( producer, ContextProducer.class );
+		val forClazz = Reflection.getFirstGenericTypeFrom( producer, ContextProducer.class );
 		producers.put( forClazz, producer );
 	}
 }
