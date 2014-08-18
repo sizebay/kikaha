@@ -8,7 +8,7 @@ import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Serializer;
 import trip.spi.Singleton;
 
-@Singleton( name = Mimes.PLAIN_TEXT )
+@Singleton( name = Mimes.PLAIN_TEXT, exposedAs = Serializer.class )
 public class PlainTextSerializer implements Serializer {
 
 	static final String NULL = "null";

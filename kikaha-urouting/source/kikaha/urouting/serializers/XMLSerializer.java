@@ -13,8 +13,8 @@ import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Serializer;
 import trip.spi.Singleton;
 
-@Singleton( name = Mimes.XML )
 @SuppressWarnings("unchecked")
+@Singleton( name = Mimes.XML, exposedAs = Serializer.class )
 public class XMLSerializer implements Serializer {
 
 	@Override

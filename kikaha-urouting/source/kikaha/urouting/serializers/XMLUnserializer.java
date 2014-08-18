@@ -11,8 +11,8 @@ import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Unserializer;
 import trip.spi.Singleton;
 
-@Singleton( name = Mimes.XML )
 @SuppressWarnings("unchecked")
+@Singleton( name = Mimes.XML, exposedAs = Unserializer.class )
 public class XMLUnserializer implements Unserializer {
 
 	@Override

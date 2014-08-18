@@ -10,7 +10,7 @@ import trip.spi.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Singleton( name = Mimes.JSON )
+@Singleton( name = Mimes.JSON, exposedAs = Unserializer.class )
 public class JSONUnserializer implements Unserializer {
 	
 	final ObjectMapper mapper = new ObjectMapper();
