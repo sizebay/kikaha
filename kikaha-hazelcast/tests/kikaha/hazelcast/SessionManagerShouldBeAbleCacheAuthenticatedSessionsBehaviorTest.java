@@ -1,6 +1,5 @@
 package kikaha.hazelcast;
 
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -45,10 +44,7 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 		forceReturnMockedSecurityContext();
 		memorizeCacheNotifier();
 		sessionManager.createSecurityContextFor( null, null );
-		mockAccount();
-		forceReturnMockedSessionWhenNotifyingAuthentication();
-		cacheNotifier.handleNotification( createAuthenticationNotification() );
-		verify( cacheNotifier ).createSessionFrom( eq( account ), any( HttpServerExchange.class ) );
+		simulateAsynNotificationWhenAuthenticationIsSuccessful();
 	}
 
 	void memorizeCacheNotifier() {
@@ -56,16 +52,29 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 		doReturn( cacheNotifier ).when( sessionManager ).createReceiverToIncludeSessionIntoCache();
 	}
 
+	void simulateAsynNotificationWhenAuthenticationIsSuccessful() {
+		mockAccount();
+		forceReturnMockedSessionWhenNotifyingAuthentication();
+		forceUseCurrentMockedSessionIdWhileHandlingNotifications();
+		cacheNotifier.handleNotification( createAuthenticationNotification() );
+		verify( cacheNotifier ).createSessionFrom( eq( account ), any( HttpServerExchange.class ) );
+		verify( sessionCache ).put( eq( sessionIdCookie.getValue() ), any( Session.class ) );
+	}
+
+	void mockAccount() {
+		doReturn( "User Name" ).when( principal ).getName();
+		doReturn( Collections.emptySet() ).when( account ).getRoles();
+		doReturn( principal ).when( account ).getPrincipal();
+	}
+
 	void forceReturnMockedSessionWhenNotifyingAuthentication() {
-		session = new Session( "Generic Browser", "localhost", SessionAccount.from( account ) );
+		session = new Session( "Chrome", "localhost", SessionAccount.from( account ) );
 		doReturn( session ).when( cacheNotifier ).createSessionFrom( eq( account ), any( HttpServerExchange.class ) );
 		doNothing().when( cacheNotifier ).saveSessionCookieFor( any( HttpServerExchange.class ), anyString() );
 	}
 
-	private void mockAccount() {
-		doReturn( "User Name" ).when( principal ).getName();
-		doReturn( Collections.emptySet() ).when( account ).getRoles();
-		doReturn( principal ).when( account ).getPrincipal();
+	void forceUseCurrentMockedSessionIdWhileHandlingNotifications() {
+		doReturn( this.sessionIdCookie.getValue() ).when( cacheNotifier ).generateANewId();
 	}
 
 	SecurityNotification createAuthenticationNotification() {
@@ -76,6 +85,8 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 
 	private void responseASecondRequestWithCachedData() {
 		simulateThatReceivedCookieFromRequest();
-		fail( "Not finished test." );
+		simulateAChromeUserAgentRequest();
+		sessionManager.createSecurityContextFor( null, null );
+		verify( sessionManager ).preAuthenticatedSecurityContext( any( HttpServerExchange.class ), any( Session.class ) );
 	}
 }

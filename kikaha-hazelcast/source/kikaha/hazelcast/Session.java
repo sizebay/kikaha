@@ -33,6 +33,12 @@ public class Session implements Serializable {
 			host, SessionAccount.from( account ) );
 	}
 
+	public static Session from( HttpServerExchange exchange ) {
+		val headers = exchange.getRequestHeaders();
+		return new Session(
+			headers.getFirst( Headers.USER_AGENT ), null, null );
+	}
+
 	static String extractHostAddressFrom( HttpServerExchange exchange ) {
 		final InetSocketAddress peerAddress = (InetSocketAddress)exchange.getConnection().getPeerAddress();
 		return peerAddress.getAddress().getHostAddress();

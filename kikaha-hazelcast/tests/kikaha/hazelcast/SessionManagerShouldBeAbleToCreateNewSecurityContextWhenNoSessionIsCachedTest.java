@@ -17,6 +17,7 @@ public class SessionManagerShouldBeAbleToCreateNewSecurityContextWhenNoSessionIs
 	@Test
 	public void ensureThatIdentifiedCookieFromRequestAndCreateANewSecurityContextWhenNoSessionCachedFound() {
 		simulateThatReceivedCookieFromRequest();
+		simulateAChromeUserAgentRequest();
 		forceReturnMockedSecurityContext();
 		assertSame( securityContext, sessionManager.createSecurityContextFor( null, null ) );
 		verify( sessionManager ).postAuthenticatedSecurityContext( any( HttpServerExchange.class ), any( AuthenticationRule.class ) );
@@ -27,6 +28,7 @@ public class SessionManagerShouldBeAbleToCreateNewSecurityContextWhenNoSessionIs
 	@Test
 	public void ensureThatHaveNoCookieAndCreateANewSecurityContextWhenNoSessionCachedFound() {
 		simulateThatHaveNotReceivedCookieFromRequest();
+		simulateAChromeUserAgentRequest();
 		forceReturnMockedSecurityContext();
 		assertSame( securityContext, sessionManager.createSecurityContextFor( null, null ) );
 		verify( sessionManager ).postAuthenticatedSecurityContext( any( HttpServerExchange.class ), any( AuthenticationRule.class ) );

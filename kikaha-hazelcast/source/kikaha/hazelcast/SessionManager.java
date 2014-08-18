@@ -42,20 +42,34 @@ public class SessionManager implements SecurityContextFactory {
 		return context;
 	}
 
-	Session getSessionFromCacheFor( HttpServerExchange exchange ) {
+	Session getSessionFromCacheFor( final HttpServerExchange exchange ) {
 		final Cookie sessionCookie = getSessionCookie( exchange );
 		if ( sessionCookie == null )
 			return null;
 		final String sessionId = sessionCookie.getValue();
 		setSessionAsAttributeToExchange( exchange, sessionId );
-		return sessionCache.get( sessionId );
+		val session = sessionCache.get( sessionId );
+		if ( !isValidSessionForExchange( session, exchange ) )
+			return null;
+		return session;
 	}
 
-	public void setSessionAsAttributeToExchange( HttpServerExchange exchange, final String sessionId ) {
+	boolean isValidSessionForExchange( final Session session, final HttpServerExchange exchange ) {
+		if ( session == null )
+			return false;
+		val newSession = createValidationSessionForExchange( exchange );
+		return newSession.userAgent().equals( session.userAgent() );
+	}
+
+	Session createValidationSessionForExchange( final HttpServerExchange exchange ) {
+		return Session.from( exchange );
+	}
+
+	public void setSessionAsAttributeToExchange( final HttpServerExchange exchange, final String sessionId ) {
 		exchange.putAttachment( SESSION_KEY, sessionId );
 	}
 
-	public Cookie getSessionCookie( HttpServerExchange exchange ) {
+	public Cookie getSessionCookie( final HttpServerExchange exchange ) {
 		return exchange.getRequestCookies().get( SESSION_ID );
 	}
 
@@ -89,7 +103,7 @@ public class SessionManager implements SecurityContextFactory {
 		final String id = UuidUtil.buildRandomUuidString();
 		final StringBuilder sb = new StringBuilder( "HZ" );
 		final char[] chars = id.toCharArray();
-		for ( char c : chars ) {
+		for ( final char c : chars ) {
 			if ( c != '-' ) {
 				if ( Character.isLetter( c ) )
 					sb.append( Character.toUpperCase( c ) );
@@ -110,21 +124,25 @@ public class SessionManager implements SecurityContextFactory {
 		implements NotificationReceiver {
 
 		@Override
-		public void handleNotification( SecurityNotification notification ) {
+		public void handleNotification( final SecurityNotification notification ) {
 			if ( notification.getEventType().equals( EventType.AUTHENTICATED ) ) {
 				val account = notification.getAccount();
 				val exchange = notification.getExchange();
-				val id = generateSessionId();
+				val id = generateANewId();
 				sessionCache.put( id, createSessionFrom( account, exchange ) );
 				saveSessionCookieFor( exchange, id );
 			}
+		}
+
+		String generateANewId() {
+			return generateSessionId();
 		}
 
 		Session createSessionFrom( final io.undertow.security.idm.Account account, final io.undertow.server.HttpServerExchange exchange ) {
 			return Session.from( exchange, account );
 		}
 
-		void saveSessionCookieFor( HttpServerExchange exchange, String id ) {
+		void saveSessionCookieFor( final HttpServerExchange exchange, final String id ) {
 			val cookies = exchange.getResponseCookies();
 			val cookie = new CookieImpl( SESSION_ID, id );
 			cookie.setPath( "/" );
@@ -142,9 +160,9 @@ public class SessionManager implements SecurityContextFactory {
 		implements NotificationReceiver {
 		
 		@Override
-		public void handleNotification( SecurityNotification notification ) {
+		public void handleNotification( final SecurityNotification notification ) {
 			if ( notification.getEventType().equals( EventType.LOGGED_OUT ) ) {
-				String sessionId = notification.getExchange().getAttachment( SESSION_KEY );
+				final String sessionId = notification.getExchange().getAttachment( SESSION_KEY );
 				sessionCache.remove( sessionId );
 			}
 		}

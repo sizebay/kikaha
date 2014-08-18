@@ -23,6 +23,10 @@ public class SessionAccount implements Account, Serializable {
 		val principal = new SerializablePrincipal( account.getPrincipal().getName() );
 		return new SessionAccount( principal, account.getRoles() );
 	}
+
+	public static SessionAccount empty() {
+		return new SessionAccount( null, null );
+	}
 }
 
 @Getter

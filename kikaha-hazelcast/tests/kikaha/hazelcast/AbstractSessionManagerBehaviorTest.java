@@ -21,16 +21,22 @@ import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
 
 import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.IMap;
 
 public class AbstractSessionManagerBehaviorTest {
 
+	final ServiceProvider provider = new ServiceProvider();
 	final Cookie sessionIdCookie = new CookieImpl( SessionManager.SESSION_ID, SessionManager.generateSessionId() );
+	final Session firefoxSession = new Session( "Firefox", null, null );
+	final Session chromeSession = new Session( "Chrome", null, null );
 
 	@Mock
 	SecurityContext securityContext;
 
 	@Provided
 	SessionManager sessionManager;
+
+	IMap<String, Session> sessionCache;
 
 	protected void simulateThatReceivedCookieFromRequest() {
 		doReturn( sessionIdCookie ).when( sessionManager ).getSessionCookie( any( HttpServerExchange.class ) );
@@ -47,15 +53,33 @@ public class AbstractSessionManagerBehaviorTest {
 		doReturn( null ).when( sessionManager ).getSessionCookie( any( HttpServerExchange.class ) );
 	}
 
+	protected void simulateAFirefoxUserAgentRequest() {
+		doReturn( firefoxSession ).when( sessionManager )
+			.createValidationSessionForExchange( any( HttpServerExchange.class ) );
+	}
+
+	protected void simulateAChromeUserAgentRequest() {
+		doReturn( chromeSession ).when( sessionManager )
+			.createValidationSessionForExchange( any( HttpServerExchange.class ) );
+	}
+
 	@Before
 	public void setup() throws ServiceProviderException {
-		new ServiceProvider().provideOn( this );
-		resetMocks();
+		provider.provideOn( this );
+		MockitoAnnotations.initMocks( this );
+		sessionCache = sessionManager.sessionCache
+			= spy( sessionManager.sessionCache );
 		sessionManager = spy( sessionManager );
 	}
 
 	protected void resetMocks() {
-		MockitoAnnotations.initMocks( this );
+		try {
+			provider.provideOn( this );
+			MockitoAnnotations.initMocks( this );
+			sessionManager = spy( sessionManager );
+		} catch ( ServiceProviderException e ) {
+			throw new RuntimeException( e );
+		}
 	}
 
 	@After
