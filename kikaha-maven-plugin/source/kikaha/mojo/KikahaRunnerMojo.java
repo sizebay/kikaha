@@ -29,7 +29,7 @@ import org.apache.maven.project.MavenProject;
  * @goal run
  * @requiresDependencyResolution compile+runtime
  */
-public class UndertowRunnerMojo extends AbstractMojo {
+public class KikahaRunnerMojo extends AbstractMojo {
 
 	final static String SEPARATOR = System.getProperty( "path.separator" );
 
@@ -136,7 +136,7 @@ public class UndertowRunnerMojo extends AbstractMojo {
 
 	String getCommandLineString() {
 		return String.format(
-				"java -cp '%s' %s %s",
+			"java -cp \"%s\" %s %s",
 				this.classPath.toString(),
 				Main.class.getCanonicalName(),
 				this.profile != null ? this.profile : "" );
