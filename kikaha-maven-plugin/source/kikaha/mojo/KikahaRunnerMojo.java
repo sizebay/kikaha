@@ -109,7 +109,9 @@ public class KikahaRunnerMojo extends AbstractMojo {
 				artifactsInClassPath.add( artifactAbsolutePath );
 			}
 		}
-		this.classPath.append( getFinalArtifactName() );
+		this.classPath
+			.append( getFinalArtifactName() )
+			.append( SEPARATOR ).append( "." );
 	}
 
 	String resolveUndertowStadalone() throws ArtifactResolutionException, ArtifactNotFoundException {
