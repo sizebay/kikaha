@@ -28,7 +28,7 @@ public class AuthenticationRuleMatcherTest {
 		assertNotNull( rule );
 		assertThat( rule.mechanisms().get( 0 ), is( DefaultBasicAuthenticationMechanism.class ) );
 		assertThat( rule.mechanisms().get( 1 ), is( DefaultBasicAuthenticationMechanism.class ) );
-		assertThat( rule.identityManager(), is( DefaultAdminOnlyIdentityManager.class ) );
+		assertThat( rule.identityManager(), is( FixedUserAndPasswordIdentityManager.class ) );
 		assertNull( rule.notificationReceiver() );
 		assertNotNull( rule.securityContextFactory() );
 		assertThat( rule.securityContextFactory(), is( PrePopulatedSecurityContextFactory.class ) );

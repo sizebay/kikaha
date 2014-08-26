@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import kikaha.core.auth.DefaultAdminOnlyIdentityManager;
+import kikaha.core.auth.FixedUserAndPasswordIdentityManager;
 import kikaha.core.auth.DefaultBasicAuthenticationMechanism;
 import lombok.val;
 
@@ -39,7 +39,7 @@ public class DefaultAuthenticationConfigurationTest {
 	public void ensureThatCouldReadIdentityManagerClass() {
 		val classMap = authConfig.identityManagers();
 		assertNotNull( classMap );
-		assertEquals( classMap.get( "default" ), DefaultAdminOnlyIdentityManager.class );
+		assertEquals( classMap.get( "default" ), FixedUserAndPasswordIdentityManager.class );
 	}
 
 	@Test
