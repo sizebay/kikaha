@@ -12,12 +12,6 @@ import trip.spi.Singleton;
 {{#serviceInterface}}
 import trip.spi.ServiceProvider;
 {{/serviceInterface}}
-{{^cpuBound}}
-{{^ioBound}}
-import kikaha.core.api.Configuration;
-import kikaha.core.api.HandlerTypes;
-{{/ioBound}}
-{{/cpuBound}}
 import kikaha.core.api.WebResource;
 import kikaha.urouting.ResponseWriter;
 import kikaha.urouting.RoutingMethodDataProvider;
@@ -33,42 +27,19 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 	@Provided ResponseWriter responseWriter;
 	@Provided RoutingMethodDataProvider methodDataProvider;
 	@Provided RoutingMethodExceptionHandler exceptionHandler;
-	{{^cpuBound}}
-	{{^ioBound}}
-	@Provided Configuration configuration;
-	{{/ioBound}}
-	{{/cpuBound}}
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
-		{{^cpuBound}}
-		{{^ioBound}}
-			if ( HandlerTypes.IO_BOUND.equals( configuration.defaultHandlerType() ) && !exchange.isInIoThread() ) {
-				{{#isMultiPart}}
-				exchange.startBlocking();
-				{{/isMultiPart}}
-				exchange.dispatch(this);
-				return;
-			}
-		{{#isMultiPart}}
-			else if ( exchange.isInIoThread() && !exchange.isBlocking() )
-				exchange.startBlocking();
-		{{/isMultiPart}}
-		{{/ioBound}}
-		{{/cpuBound}}
-		{{#ioBound}}
-			if ( !exchange.isInIoThread() ) {
-				{{#isMultiPart}}
-				exchange.startBlocking();
-				{{/isMultiPart}}
+		{{#hasIOBound}}
+			if ( exchange.isInIoThread() ) {
 				exchange.dispatch(this);
 				return;
 			}
 			{{#isMultiPart}}
-			else if ( exchange.isInIoThread() && !exchange.isBlocking() )
+			else if ( !exchange.isInIoThread() && !exchange.isBlocking() )
 				exchange.startBlocking();
 			{{/isMultiPart}}
-		{{/ioBound}}
+		{{/hasIOBound}}
 		try {
 		{{#serviceInterface}}
 			final {{{type}}} instance = serviceProvider.load( {{serviceInterface}}.class );

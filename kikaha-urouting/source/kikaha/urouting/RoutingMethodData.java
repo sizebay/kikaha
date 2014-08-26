@@ -11,13 +11,11 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 
-import kikaha.urouting.api.CPU;
 import kikaha.urouting.api.Consumes;
 import kikaha.urouting.api.Context;
 import kikaha.urouting.api.CookieParam;
 import kikaha.urouting.api.FormParam;
 import kikaha.urouting.api.HeaderParam;
-import kikaha.urouting.api.IO;
 import kikaha.urouting.api.MultiPartFormData;
 import kikaha.urouting.api.Path;
 import kikaha.urouting.api.PathParam;
@@ -45,8 +43,7 @@ public class RoutingMethodData {
 	final String httpPath;
 	final String httpMethod;
 	final String serviceInterface;
-	final boolean cpuBound;
-	final boolean ioBound;
+	final boolean hasIOBound;
 	final boolean isMultiPart;
 
 	@Getter( lazy = true )
@@ -62,18 +59,23 @@ public class RoutingMethodData {
 		final String httpMethod = isMultiPart
 				? "POST" : httpMethodAnnotation.getSimpleName();
 		final String type = method.getEnclosingElement().asType().toString();
+		final String methodParams = extractMethodParamsFrom( method );
 		return new RoutingMethodData(
 				type, extractPackageName( type ),
 				method.getSimpleName().toString(),
-				extractMethodParamsFrom( method ),
+			methodParams,
 				extractReturnTypeFrom( method ),
 				extractResponseContentTypeFrom( method ),
 				measureHttpPathFrom( method ),
 				httpMethod,
 				extractServiceInterfaceFrom( method ),
-				method.getAnnotation( CPU.class ) != null,
-				method.getAnnotation( IO.class ) != null,
+			hasIOBlockingOperations( methodParams ),
 				isMultiPart );
+	}
+
+	private static boolean hasIOBlockingOperations( final String methodParams ) {
+		return methodParams.contains( "methodDataProvider.getBody" )
+			|| methodParams.contains( "methodDataProvider.getFormParam" );
 	}
 
 	public static String extractPackageName( String canonicalName ) {
@@ -129,10 +131,7 @@ public class RoutingMethodData {
 		Context dataParam = parameter.getAnnotation( Context.class );
 		if ( dataParam != null )
 			return format( "methodDataProvider.getData( exchange, %s.class )", targetType );
-		String consumingContentType = extractConsumingContentTypeFrom( method );
-		if ( consumingContentType != null )
-			return format( "methodDataProvider.getBody( exchange, %s.class, \"%s\" )", targetType, consumingContentType );
-		return format( "methodDataProvider.getBody( exchange, %s.class )", targetType );
+		return getBodyParam( method, targetType );
 	}
 
 	static String getFormParam( String param, String targetType ) {
@@ -145,13 +144,11 @@ public class RoutingMethodData {
 				targetAnnotation.getSimpleName(), param, targetType );
 	}
 
-	static String extractResponseContentTypeFrom( ExecutableElement method ) {
-		Produces producesAnnotation = method.getAnnotation( Produces.class );
-		if ( producesAnnotation == null )
-			producesAnnotation = method.getEnclosingElement().getAnnotation( Produces.class );
-		if ( producesAnnotation != null )
-			return producesAnnotation.value();
-		return null;
+	static String getBodyParam( ExecutableElement method, String targetType ) {
+		String consumingContentType = extractConsumingContentTypeFrom( method );
+		if ( consumingContentType != null )
+			return format( "methodDataProvider.getBody( exchange, %s.class, \"%s\" )", targetType, consumingContentType );
+		return format( "methodDataProvider.getBody( exchange, %s.class )", targetType );
 	}
 
 	static String extractConsumingContentTypeFrom( ExecutableElement method ) {
@@ -160,6 +157,15 @@ public class RoutingMethodData {
 			consumesAnnotation = method.getEnclosingElement().getAnnotation( Consumes.class );
 		if ( consumesAnnotation != null )
 			return consumesAnnotation.value();
+		return null;
+	}
+
+	static String extractResponseContentTypeFrom( ExecutableElement method ) {
+		Produces producesAnnotation = method.getAnnotation( Produces.class );
+		if ( producesAnnotation == null )
+			producesAnnotation = method.getEnclosingElement().getAnnotation( Produces.class );
+		if ( producesAnnotation != null )
+			return producesAnnotation.value();
 		return null;
 	}
 

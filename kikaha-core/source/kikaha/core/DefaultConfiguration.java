@@ -2,7 +2,6 @@ package kikaha.core;
 
 import kikaha.core.api.AuthenticationConfiguration;
 import kikaha.core.api.Configuration;
-import kikaha.core.api.HandlerTypes;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -28,16 +27,7 @@ public class DefaultConfiguration implements Configuration {
 	private final String resourcesPath = config().getString( "undertow.resources-path" );
 
 	@Getter( lazy = true )
-	private final HandlerTypes defaultHandlerType = getDefaultHandlerType();
-
-	@Getter( lazy = true )
 	private final AuthenticationConfiguration authentication = createAuthenticationConfig();
-
-	public HandlerTypes getDefaultHandlerType() {
-		final String defaultHandlerType = config().getString( "undertow.default-handler-type" );
-		final String upperCaseHandlerType = defaultHandlerType.replace( '-', '_' ).toUpperCase();
-		return HandlerTypes.valueOf( upperCaseHandlerType );
-	}
 
 	AuthenticationConfiguration createAuthenticationConfig() {
 		return new DefaultAuthenticationConfiguration( config().getConfig( "undertow.auth" ) );

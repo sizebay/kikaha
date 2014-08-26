@@ -64,10 +64,10 @@ public class RoutingMethodClassGeneratorTest extends TestCase {
 
 	RoutingMethodData createData( String returnType, String responseContentType, String params, String serviceInterface ) {
 		return new RoutingMethodData(
-				RetrieveRoutes.class.getCanonicalName(),
-				RetrieveRoutes.class.getPackage().toString(),
-				"renderRelatoMais", params, returnType, responseContentType,
-				"/hello/world", "GET", serviceInterface, false, false, false );
+			RetrieveRoutes.class.getCanonicalName(),
+			RetrieveRoutes.class.getPackage().toString(),
+			"renderRelatoMais", params, returnType, responseContentType,
+			"/hello/world", "GET", serviceInterface, false, false );
 	}
 
 	@SneakyThrows

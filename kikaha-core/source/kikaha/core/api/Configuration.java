@@ -12,8 +12,6 @@ public interface Configuration {
 
 	String host();
 
-	HandlerTypes defaultHandlerType();
-
 	AuthenticationConfiguration authentication();
 
 	Config config();

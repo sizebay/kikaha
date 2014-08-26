@@ -4,8 +4,6 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import trip.spi.Provided;
 import trip.spi.Singleton;
-import kikaha.core.api.Configuration;
-import kikaha.core.api.HandlerTypes;
 import kikaha.core.api.WebResource;
 import kikaha.urouting.ResponseWriter;
 import kikaha.urouting.RoutingMethodDataProvider;
@@ -18,14 +16,9 @@ public class GeneratedRoutingMethod123 implements HttpHandler {
 	@Provided ResponseWriter responseWriter;
 	@Provided RoutingMethodDataProvider methodDataProvider;
 	@Provided RoutingMethodExceptionHandler exceptionHandler;
-	@Provided Configuration configuration;
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
-			if ( HandlerTypes.IO_BOUND.equals( configuration.defaultHandlerType() ) && !exchange.isInIoThread() ) {
-				exchange.dispatch(this);
-				return;
-			}
 		try {
 			final kikaha.urouting.samples.RetrieveRoutes instance = new kikaha.urouting.samples.RetrieveRoutes();
 			final String response = instance.renderRelatoMais( true );

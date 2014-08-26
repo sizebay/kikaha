@@ -1,7 +1,6 @@
 package kikaha.urouting.samples;
 
 import kikaha.urouting.User;
-import kikaha.urouting.api.CPU;
 import kikaha.urouting.api.GET;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Path;
@@ -13,7 +12,6 @@ import trip.spi.Singleton;
 public class SampleRoute {
 
 	@GET
-	@CPU
 	public String printUser() {
 		return "User";
 	}
