@@ -2,6 +2,7 @@ package kikaha.core;
 
 import io.undertow.Handlers;
 import io.undertow.Undertow;
+import io.undertow.Undertow.Builder;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
@@ -122,11 +123,11 @@ public class UndertowServer {
 	}
 
 	protected Undertow createServer() {
-		return Undertow
-				.builder()
-				.addHttpListener(configuration().port(), host())
-				.setHandler(
-						new DefaultHttpRequestHandler(this.deploymentContext()))
+		final Builder builder = Undertow.builder();
+		// TODO: check for ssl configurations
+		builder.addHttpListener( configuration().port(), host() );
+		return builder.setHandler(
+			new DefaultHttpRequestHandler( this.deploymentContext() ) )
 				.build();
 	}
 
