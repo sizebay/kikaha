@@ -24,8 +24,12 @@ public class ContextProducerFactory {
 
 	public Map<Class, ContextProducer> getProducers() throws RoutingException {
 		if ( this.producers == null ) {
-			producers = new HashMap<Class, ContextProducer>();
-			loadProducers();
+			synchronized ( this.producers ) {
+				if ( this.producers == null ) {
+					producers = new HashMap<Class, ContextProducer>();
+					loadProducers();
+				}
+			}
 		}
 		return this.producers;
 	}
