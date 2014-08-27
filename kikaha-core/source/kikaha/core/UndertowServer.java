@@ -8,14 +8,18 @@ import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.net.ssl.SSLContext;
 
 import kikaha.core.api.Configuration;
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
 import kikaha.core.api.RequestHook;
 import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.ssl.SSLContextFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -124,11 +128,22 @@ public class UndertowServer {
 
 	protected Undertow createServer() {
 		final Builder builder = Undertow.builder();
-		// TODO: check for ssl configurations
-		builder.addHttpListener( configuration().port(), host() );
+		final SSLContext sslContext = readConfiguredSSLContext();
+		if ( sslContext == null )
+			builder.addHttpListener( configuration().port(), host() );
+		else
+			builder.addHttpsListener( configuration().port(), host(), sslContext );
 		return builder.setHandler(
-			new DefaultHttpRequestHandler( this.deploymentContext() ) )
-				.build();
+			new DefaultHttpRequestHandler( this.deploymentContext() ) ).build();
+	}
+
+	SSLContext readConfiguredSSLContext() {
+		try {
+			final SSLContextFactory factory = provider.load( SSLContextFactory.class );
+			return factory.createSSLContext();
+		} catch ( IOException | ServiceProviderException cause ) {
+			throw new RuntimeException( cause );
+		}
 	}
 
 	private String host() {

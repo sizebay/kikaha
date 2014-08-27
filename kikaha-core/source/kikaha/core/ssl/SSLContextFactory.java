@@ -19,13 +19,35 @@ import lombok.val;
 
 import org.xnio.IoUtils;
 
+import trip.spi.Provided;
 import trip.spi.Singleton;
 
+/**
+ * Creates SSLContext for SSL environments.
+ *
+ * @author Miere Teixeira
+ */
 @Singleton
 // TODO: improve capability of SSL support making more integration tests.
 public class SSLContextFactory {
 
-	public static final String JKS = "JKS";
+	@Provided
+	SSLConfiguration sslConfiguration;
+
+	/**
+	 * Create a SSLContext based on data defined in {@link SSLConfiguration}.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public SSLContext createSSLContext() throws IOException {
+		if ( sslConfiguration.isEmpty() )
+			return null;
+		return createSSLContext(
+			sslConfiguration.keystore(),
+			sslConfiguration.truststore(),
+			sslConfiguration.password() );
+	}
 
 	/**
 	 * Create a SSLContext for a given {@code truststore} and {@code keystore}
@@ -52,7 +74,7 @@ public class SSLContextFactory {
 
 	public KeyStore loadKeyStore( final InputStream stream, final String password ) throws IOException {
 		try {
-			val loadedKeystore = KeyStore.getInstance( JKS );
+			val loadedKeystore = KeyStore.getInstance( sslConfiguration.securityProvider() );
 			loadedKeystore.load( stream, password.toCharArray() );
 			return loadedKeystore;
 		} catch ( KeyStoreException | NoSuchAlgorithmException | CertificateException e ) {
