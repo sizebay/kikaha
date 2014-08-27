@@ -2,6 +2,8 @@ package kikaha.urouting.api;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import kikaha.urouting.Reflection;
 import lombok.val;
@@ -14,6 +16,8 @@ import trip.spi.Singleton;
 @SuppressWarnings( { "rawtypes", "unchecked" } )
 public class ContextProducerFactory {
 
+	final Lock lock = new ReentrantLock();
+
 	@Provided
 	ServiceProvider provider;
 	Map<Class, ContextProducer> producers;
@@ -24,12 +28,12 @@ public class ContextProducerFactory {
 
 	public Map<Class, ContextProducer> getProducers() throws RoutingException {
 		if ( this.producers == null ) {
-			synchronized ( this.producers ) {
-				if ( this.producers == null ) {
-					producers = new HashMap<Class, ContextProducer>();
-					loadProducers();
-				}
+			lock.lock();
+			if ( this.producers == null ) {
+				producers = new HashMap<Class, ContextProducer>();
+				loadProducers();
 			}
+			lock.unlock();
 		}
 		return this.producers;
 	}
