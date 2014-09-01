@@ -18,19 +18,19 @@ public class DefaultConfiguration implements Configuration {
 	final String applicationName;
 
 	@Getter( lazy = true )
-	private final Integer port = config().getInt( "undertow.port" );
+	private final Integer port = config().getInt( "server.port" );
 
 	@Getter( lazy = true )
-	private final String host = config().getString( "undertow.host" );
+	private final String host = config().getString( "server.host" );
 
 	@Getter( lazy = true )
-	private final String resourcesPath = config().getString( "undertow.resources-path" );
+	private final String resourcesPath = config().getString( "server.resources-path" );
 
 	@Getter( lazy = true )
 	private final AuthenticationConfiguration authentication = createAuthenticationConfig();
 
 	AuthenticationConfiguration createAuthenticationConfig() {
-		return new DefaultAuthenticationConfiguration( config().getConfig( "undertow.auth" ) );
+		return new DefaultAuthenticationConfiguration( config().getConfig( "server.auth" ) );
 	}
 
 	public static Configuration loadDefaultConfiguration() {

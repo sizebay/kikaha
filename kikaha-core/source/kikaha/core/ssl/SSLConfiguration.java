@@ -14,16 +14,19 @@ public class SSLConfiguration {
 	Configuration configuration;
 
 	@Getter( lazy = true )
-	private final String keystore = configuration.config().getString( "undertow.ssl.keystore" );
+	private final String keystore = configuration.config().getString( "server.ssl.keystore" );
 
 	@Getter( lazy = true )
-	private final String truststore = configuration.config().getString( "undertow.ssl.truststore" );
+	private final String truststore = configuration.config().getString( "server.ssl.truststore" );
 
 	@Getter( lazy = true )
-	private final String password = configuration.config().getString( "undertow.ssl.password" );
+	private final String password = configuration.config().getString( "server.ssl.password" );
 
 	@Getter( lazy = true )
-	private final String securityProvider = configuration.config().getString( "undertow.ssl.security-provider" );
+	private final String certSecurityProvider = configuration.config().getString( "server.ssl.cert-security-provider" );
+
+	@Getter( lazy = true )
+	private final String keystoreSecurityProvider = configuration.config().getString( "server.ssl.keystore-security-provider" );
 
 	public boolean isEmpty() {
 		return isBlank( keystore() )

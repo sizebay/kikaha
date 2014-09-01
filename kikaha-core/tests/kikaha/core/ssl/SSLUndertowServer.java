@@ -14,20 +14,36 @@ import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
+import javax.net.ssl.SSLContext;
+
+import kikaha.core.DefaultConfiguration;
+import kikaha.core.api.Configuration;
 import lombok.val;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import trip.spi.ServiceProvider;
+import trip.spi.ServiceProviderException;
+
 public class SSLUndertowServer {
 
 	static final String SCHEME = "scheme";
+
 	Undertow undertow;
 
 	@Before
-	public void startServer() throws IOException {
-		val context = new SSLContextFactory().createSSLContext( "server.keystore", "server.truststore", "password" );
+	public void startServer() throws IOException, ServiceProviderException {
+		val config = DefaultConfiguration.loadDefaultConfiguration();
+		val provider = new ServiceProvider();
+		provider.providerFor( Configuration.class, config );
+		val sslContextFactory = provider.load( SSLContextFactory.class );
+		val context = sslContextFactory.createSSLContext( "server.keystore", "server.truststore", "password" );
+		startServer( context );
+	}
+
+	void startServer( final SSLContext context ) {
 		undertow = Undertow
 			.builder()
 			.addHttpsListener( 9990, "localhost", context )

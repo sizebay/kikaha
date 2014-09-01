@@ -2,7 +2,6 @@ package kikaha.core.url;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import kikaha.core.url.URLMatcher;
 
 import org.junit.Test;
 
@@ -44,7 +43,7 @@ public class URLMatcherTest {
 		assertTrue( matcher.matches( "/panel/admin/page/123/" ) );
 	}
 
-	@Test( timeout = 1000 )
+	@Test( timeout = 2000 )
 	public void ensureThatCouldApplyStressTestOnUrlMatchingInAffordableTime() {
 		URLMatcher matcher = URLMatcher.compile( "/panel/*/page/*/" );
 		for ( int i = 0; i < MANY_TIMES; i++ ) {

@@ -23,16 +23,16 @@ public class HazelcastConfiguration {
 	final Config config;
 
 	@Getter( lazy = true )
-	private final Boolean overrideXmlConfig = config().getBoolean( "undertow.hazelcast.override-xml-config" );
+	private final Boolean overrideXmlConfig = config().getBoolean( "server.hazelcast.override-xml-config" );
 
 	@Getter( lazy = true )
-	private final Boolean sessionManagementEnabled = config().getBoolean( "undertow.hazelcast.session-management.enabled" );
+	private final Boolean sessionManagementEnabled = config().getBoolean( "server.hazelcast.session-management.enabled" );
 
 	@Getter( lazy = true )
-	private final Integer sessionTimeToLive = config().getInt( "undertow.hazelcast.session-management.time-to-live" );
+	private final Integer sessionTimeToLive = config().getInt( "server.hazelcast.session-management.time-to-live" );
 
 	@Getter( lazy = true )
-	private final String mode = config().getString( "undertow.hazelcast.mode" );
+	private final String mode = config().getString( "server.hazelcast.mode" );
 
 	@Getter( lazy = true )
 	private final ClusterClientConfig clusterClient = new ClusterClientConfig( config() );
@@ -45,12 +45,12 @@ public class HazelcastConfiguration {
 		final Config config;
 
 		@Getter( lazy = true )
-		private final String groupname = config().getString( "undertow.hazelcast.group.name" );
+		private final String groupname = config().getString( "server.hazelcast.group.name" );
 
 		@Getter( lazy = true )
-		private final String password = config().getString( "undertow.hazelcast.group.password" );
+		private final String password = config().getString( "server.hazelcast.group.password" );
 
 		@Getter( lazy = true )
-		private final List<String> addresses = config().getStringList( "undertow.hazelcast.address" );
+		private final List<String> addresses = config().getStringList( "server.hazelcast.address" );
 	}
 }

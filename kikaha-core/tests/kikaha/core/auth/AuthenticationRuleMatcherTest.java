@@ -17,7 +17,7 @@ public class AuthenticationRuleMatcherTest {
 
 	@Before
 	public void initializeConfigurationAndMatcher() {
-		val defaultConfig = DefaultConfiguration.loadDefaultConfig().getConfig( "undertow.auth" );
+		val defaultConfig = DefaultConfiguration.loadDefaultConfig().getConfig( "server.auth" );
 		val authConfig = new DefaultAuthenticationConfiguration( defaultConfig );
 		this.matcher = new AuthenticationRuleMatcher( authConfig );
 	}

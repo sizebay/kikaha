@@ -74,7 +74,7 @@ public class SSLContextFactory {
 
 	public KeyStore loadKeyStore( final InputStream stream, final String password ) throws IOException {
 		try {
-			val loadedKeystore = KeyStore.getInstance( sslConfiguration.securityProvider() );
+			val loadedKeystore = KeyStore.getInstance( sslConfiguration.keystoreSecurityProvider() );
 			loadedKeystore.load( stream, password.toCharArray() );
 			return loadedKeystore;
 		} catch ( KeyStoreException | NoSuchAlgorithmException | CertificateException e ) {
@@ -95,7 +95,7 @@ public class SSLContextFactory {
 	SSLContext createSSLContext( KeyManager[] keyManagers, TrustManager[] trustManagers ) throws IOException {
 		SSLContext sslContext;
 		try {
-			sslContext = SSLContext.getInstance( "TLS" );
+			sslContext = SSLContext.getInstance( sslConfiguration.certSecurityProvider() );
 			sslContext.init( keyManagers, trustManagers, null );
 		} catch ( NoSuchAlgorithmException | KeyManagementException e ) {
 			throw new IOException( "Unable to create and initialise the SSLContext", e );

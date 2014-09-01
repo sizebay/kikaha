@@ -4,8 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import kikaha.core.auth.FixedUserAndPasswordIdentityManager;
 import kikaha.core.auth.DefaultBasicAuthenticationMechanism;
+import kikaha.core.auth.FixedUserAndPasswordIdentityManager;
 import lombok.val;
 
 import org.junit.Before;
@@ -17,7 +17,7 @@ public class DefaultAuthenticationConfigurationTest {
 
 	@Before
 	public void initializeAuthConfiguration() {
-		val defaultConfig = DefaultConfiguration.loadDefaultConfig().getConfig( "undertow.auth" );
+		val defaultConfig = DefaultConfiguration.loadDefaultConfig().getConfig( "server.auth" );
 		this.authConfig = new DefaultAuthenticationConfiguration( defaultConfig );
 	}
 

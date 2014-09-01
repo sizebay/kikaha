@@ -70,7 +70,7 @@ public class AuthenticationRunnerTest {
 	}
 
 	AuthenticationRuleMatcher mockAuthRuleMatcher() {
-		val defaultConfig = DefaultConfiguration.loadDefaultConfig().getConfig( "undertow.auth" );
+		val defaultConfig = DefaultConfiguration.loadDefaultConfig().getConfig( "server.auth" );
 		val authConfig = new DefaultAuthenticationConfiguration( defaultConfig );
 		val authRuleMatcher = spy( new AuthenticationRuleMatcher( authConfig ) );
 		return authRuleMatcher;
