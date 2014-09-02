@@ -18,7 +18,6 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -94,7 +93,7 @@ public class KikahaRunnerMojo extends AbstractMojo {
 			System.out.println( "CML: " + commandLineString );
 			run( commandLineString );
 		} catch ( Exception e ) {
-			throw new MojoExecutionException( "Can't initialize Undertow Server.", e );
+			throw new MojoExecutionException( "Can't initialize Kikaha.", e );
 		}
 	}
 
@@ -114,21 +113,10 @@ public class KikahaRunnerMojo extends AbstractMojo {
 			.append( SEPARATOR ).append( "." );
 	}
 
-	String resolveUndertowStadalone() throws ArtifactResolutionException, ArtifactNotFoundException {
-		Artifact undertowStandalone = getUndertowStandalone();
-		return getArtifactAbsolutePath( undertowStandalone );
-	}
-
 	String getArtifactAbsolutePath( Artifact artifact )
 			throws ArtifactResolutionException, ArtifactNotFoundException {
 		this.resolver.resolve( artifact, Collections.EMPTY_LIST, this.localRepository );
 		return artifact.getFile().getAbsolutePath();
-	}
-
-	Artifact getUndertowStandalone() {
-		return this.factory.createDependencyArtifact(
-				this.plugin.getGroupId(), "undertow-standalone",
-				VersionRange.createFromVersion( this.plugin.getVersion() ), "jar", "", Artifact.SCOPE_RUNTIME );
 	}
 
 	String getFinalArtifactName() {
@@ -151,7 +139,7 @@ public class KikahaRunnerMojo extends AbstractMojo {
 		printAsynchronously( exec.getInputStream() );
 		printAsynchronously( exec.getErrorStream() );
 		if ( exec.waitFor() > 0 )
-			throw new RuntimeException( "The Undertow Server has failed to run." );
+			throw new RuntimeException( "The Kikaha has failed to run." );
 	}
 
 	void printAsynchronously( InputStream stream ) {
@@ -166,6 +154,6 @@ class ProcessDestroyer extends Thread {
 	@Override
 	public void run() {
 		process.destroy();
-		System.out.println( "Undertow has shutting down!" );
+		System.out.println( "Kikaha has shutting down!" );
 	}
 }
