@@ -35,14 +35,14 @@ public class DefaultRequestHookChain implements RequestHookChain {
 	}
 
 	@Override
-	public void executeInIOThread( final Runnable hook ) throws UndertowStandaloneException {
-		if ( !this.isInIOThread() )
-			this.dispatchInIOThread( hook );
+	public void executeInWorkerThread( final Runnable hook ) throws UndertowStandaloneException {
+		if ( this.isInIOThread() )
+			this.dispatchToWorkerThread( hook );
 		else
 			hook.run();
 	}
 
-	void dispatchInIOThread( Runnable hook ) {
+	void dispatchToWorkerThread( Runnable hook ) {
 		this.exchange.dispatch( hook );
 	}
 

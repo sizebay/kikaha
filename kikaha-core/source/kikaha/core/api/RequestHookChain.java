@@ -12,6 +12,6 @@ public interface RequestHookChain {
 
 	boolean isInIOThread();
 
-	void executeInIOThread( Runnable hook ) throws UndertowStandaloneException;
+	void executeInWorkerThread( Runnable hook ) throws UndertowStandaloneException;
 
 }

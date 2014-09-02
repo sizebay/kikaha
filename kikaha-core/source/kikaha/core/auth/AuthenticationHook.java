@@ -26,7 +26,7 @@ public class AuthenticationHook implements RequestHook {
 			final kikaha.core.auth.AuthenticationRule rule )
 			throws UndertowStandaloneException {
 		val context = createSecurityContext( exchange, rule );
-		chain.executeInIOThread( new AuthenticationRunner( context, chain ) );
+		chain.executeInWorkerThread( new AuthenticationRunner( context, chain, rule.expectedRoles() ) );
 	}
 
 	SecurityContext createSecurityContext( final HttpServerExchange exchange, final AuthenticationRule rule ) {

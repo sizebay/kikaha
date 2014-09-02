@@ -3,6 +3,9 @@ package kikaha.core.auth;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.security.api.SecurityContextFactory;
 import io.undertow.security.impl.SecurityContextFactoryImpl;
+
+import java.util.Collection;
+
 import kikaha.core.api.RequestHookChain;
 import kikaha.core.api.UndertowStandaloneException;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +19,22 @@ public class AuthenticationRunner implements Runnable {
 
 	final SecurityContext context;
 	final RequestHookChain chain;
+	final Collection<String> expectedRoles;
 
 	@Override
 	public void run() {
 		context.setAuthenticationRequired();
-		if ( context.authenticate() )
+		if ( context.authenticate() && matchesExpectedRoles() )
 			tryExecuteChain();
+	}
+
+	boolean matchesExpectedRoles() {
+		int matchedRoles = 0;
+		for ( String expectedRole : expectedRoles )
+			for ( String role : context.getAuthenticatedAccount().getRoles() )
+				if ( expectedRole.equals( role ) )
+					matchedRoles++;
+		return matchedRoles == expectedRoles.size();
 	}
 
 	void tryExecuteChain() {

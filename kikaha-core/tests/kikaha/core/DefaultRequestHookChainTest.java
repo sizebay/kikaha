@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import io.undertow.server.HttpServerExchange;
@@ -11,8 +12,6 @@ import io.undertow.server.HttpServerExchange;
 import java.util.ArrayList;
 import java.util.List;
 
-import kikaha.core.DefaultDeploymentContext;
-import kikaha.core.DefaultRequestHookChain;
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
 import kikaha.core.api.RequestHook;
@@ -27,7 +26,7 @@ public class DefaultRequestHookChainTest {
 	final BooleanRequestHook requestHook = new BooleanRequestHook();
 	final DeploymentContext context = createDeploymentContext().register( requestHook );
 	final DefaultRequestHookChain chain = spy( new DefaultRequestHookChain( null, context ) );
-	final Runnable someThread = new Thread();
+	final Runnable someThread = spy( new Thread() );
 
 	@Test
 	public void ensureThatCouldExecuteARequestHookInChain() throws UndertowStandaloneException {
@@ -36,11 +35,20 @@ public class DefaultRequestHookChainTest {
 	}
 
 	@Test
-	public void ensureThatCouldExecuteRequestInIOThread() throws UndertowStandaloneException {
+	public void ensureThatDispatchedToWorkerThread() throws UndertowStandaloneException {
+		doReturn( true ).when( chain ).isInIOThread();
+		doNothing().when( chain ).dispatchToWorkerThread( someThread );
+		chain.executeInWorkerThread( someThread );
+		verify( chain ).dispatchToWorkerThread( someThread );
+	}
+
+	@Test
+	public void ensureThatNotDispatchRequestToWorkerThread() throws UndertowStandaloneException {
 		doReturn( false ).when( chain ).isInIOThread();
-		doNothing().when( chain ).dispatchInIOThread( someThread );
-		chain.executeInIOThread( someThread );
-		verify( chain ).dispatchInIOThread( someThread );
+		doNothing().when( chain ).dispatchToWorkerThread( someThread );
+		chain.executeInWorkerThread( someThread );
+		verify( chain, never() ).dispatchToWorkerThread( someThread );
+		verify( someThread ).run();
 	}
 
 	private DeploymentContext createDeploymentContext() {

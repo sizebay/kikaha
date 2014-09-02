@@ -37,18 +37,18 @@ public class AuthenticationHookTest {
 
 	@Test
 	public void ensureThatCallTheHookInIOThreadWhenHasRuleThatMatchesTheRelativePath() throws UndertowStandaloneException {
-		doNothing().when( chain ).executeInIOThread( any( Runnable.class ) );
+		doNothing().when( chain ).executeInWorkerThread( any( Runnable.class ) );
 		doReturn( securityContext ).when( authenticationHook ).createSecurityContext( any( HttpServerExchange.class ),
 				any( AuthenticationRule.class ) );
 		doReturn( "/valid-authenticated-url/" ).when( authenticationHook ).retrieveRelativePath( any( HttpServerExchange.class ) );
 		authenticationHook.execute( chain, null );
-		verify( chain ).executeInIOThread( any( Runnable.class ) );
+		verify( chain ).executeInWorkerThread( any( Runnable.class ) );
 	}
 
 	@Test
 	public void ensureThatCallTheHookInSameThreadWhenThereWasRuleThatMatchesTheRelativePath() throws UndertowStandaloneException {
 		doReturn( "invalid-authenticated-url/" ).when( authenticationHook ).retrieveRelativePath( any( HttpServerExchange.class ) );
 		authenticationHook.execute( chain, null );
-		verify( chain, never() ).executeInIOThread( any( Runnable.class ) );
+		verify( chain, never() ).executeInWorkerThread( any( Runnable.class ) );
 	}
 }

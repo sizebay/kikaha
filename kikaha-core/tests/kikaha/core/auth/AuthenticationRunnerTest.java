@@ -7,6 +7,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpServerExchange;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import kikaha.core.DefaultAuthenticationConfiguration;
 import kikaha.core.DefaultConfiguration;
 import kikaha.core.HttpServerExchangeStub;
@@ -33,6 +37,7 @@ public class AuthenticationRunnerTest {
 	@Test
 	public void ensureThatSetAuthenticationAsRequired() throws Exception {
 		doReturn( true ).when( securityContext ).authenticate();
+		when( securityContext.getAuthenticatedAccount() ).thenReturn( new FixedUsernameAndRolesAccount( createExpectedRoles(), null ) );
 		authHandler.run();
 		verify( securityContext ).setAuthenticationRequired();
 	}
@@ -40,8 +45,18 @@ public class AuthenticationRunnerTest {
 	@Test
 	public void ensureThatCouldCallTheTargetHttpHandlerWhenIsAuthenticated() throws Exception {
 		when( securityContext.authenticate() ).thenReturn( true );
+		when( securityContext.getAuthenticatedAccount() ).thenReturn( new FixedUsernameAndRolesAccount( createExpectedRoles(), null ) );
 		authHandler.run();
 		verify( requestChain ).executeNext();
+	}
+
+	@Test
+	public void ensureThatNotCallTheTargetHttpHandlerWhenDoesntMatchExpectedRoles() throws Exception {
+		when( securityContext.authenticate() ).thenReturn( true );
+		val accountWithUnexpectedRoles = new FixedUsernameAndRolesAccount( new HashSet<String>(), null );
+		when( securityContext.getAuthenticatedAccount() ).thenReturn( accountWithUnexpectedRoles );
+		authHandler.run();
+		verify( requestChain, never() ).executeNext();
 	}
 
 	@Test
@@ -66,7 +81,7 @@ public class AuthenticationRunnerTest {
 	void initializeAuthHandler() {
 		val matcher = mockAuthRuleMatcher();
 		this.matchedRule = spy( matcher.retrieveAuthenticationRuleForUrl( "/user" ) );
-		this.authHandler = spy( new AuthenticationRunner( securityContext, requestChain ) );
+		this.authHandler = spy( new AuthenticationRunner( securityContext, requestChain, createExpectedRoles() ) );
 	}
 
 	AuthenticationRuleMatcher mockAuthRuleMatcher() {
@@ -74,5 +89,11 @@ public class AuthenticationRunnerTest {
 		val authConfig = new DefaultAuthenticationConfiguration( defaultConfig );
 		val authRuleMatcher = spy( new AuthenticationRuleMatcher( authConfig ) );
 		return authRuleMatcher;
+	}
+
+	Set<String> createExpectedRoles() {
+		val roles = new HashSet<String>();
+		roles.add( "Expected" );
+		return roles;
 	}
 }
