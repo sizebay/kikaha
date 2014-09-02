@@ -1,6 +1,10 @@
 package kikaha.core.auth;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -52,11 +56,13 @@ public class AuthenticationRunnerTest {
 
 	@Test
 	public void ensureThatNotCallTheTargetHttpHandlerWhenDoesntMatchExpectedRoles() throws Exception {
+		doNothing().when( authHandler ).handlePermitionDenied();
 		when( securityContext.authenticate() ).thenReturn( true );
 		val accountWithUnexpectedRoles = new FixedUsernameAndRolesAccount( new HashSet<String>(), null );
 		when( securityContext.getAuthenticatedAccount() ).thenReturn( accountWithUnexpectedRoles );
 		authHandler.run();
 		verify( requestChain, never() ).executeNext();
+		verify( authHandler ).handlePermitionDenied();
 	}
 
 	@Test
@@ -64,6 +70,15 @@ public class AuthenticationRunnerTest {
 		when( securityContext.authenticate() ).thenReturn( false );
 		authHandler.run();
 		verify( requestChain, never() ).executeNext();
+	}
+
+	@Test
+	public void ensureThatIsAbleToHandleExceptionsInRunMethod() throws Exception {
+		doThrow( new IllegalStateException() ).when( securityContext ).authenticate();
+		doNothing().when( authHandler ).handleException( any( Throwable.class ) );
+		authHandler.run();
+		verify( requestChain, never() ).executeNext();
+		verify( authHandler ).handleException( isA( IllegalStateException.class ) );
 	}
 
 	@Before

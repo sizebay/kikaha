@@ -23,9 +23,13 @@ public class AuthenticationRunner implements Runnable {
 
 	@Override
 	public void run() {
-		context.setAuthenticationRequired();
-		if ( context.authenticate() && matchesExpectedRoles() )
-			tryExecuteChain();
+		try {
+			context.setAuthenticationRequired();
+			if ( context.authenticate() )
+				tryExecuteChain();
+		} catch ( Throwable cause ) {
+			handleException( cause );
+		}
 	}
 
 	boolean matchesExpectedRoles() {
@@ -37,19 +41,29 @@ public class AuthenticationRunner implements Runnable {
 		return matchedRoles == expectedRoles.size();
 	}
 
-	void tryExecuteChain() {
-		try {
+	void tryExecuteChain() throws UndertowStandaloneException {
+		if ( matchesExpectedRoles() )
 			chain.executeNext();
-		} catch ( UndertowStandaloneException e ) {
-			handleException( e );
-		}
+		else
+			handlePermitionDenied();
 	}
 
-	void handleException( UndertowStandaloneException e ) {
-		e.printStackTrace();
+	void handlePermitionDenied() {
 		val exchange = chain.exchange();
-		if ( !exchange.isResponseStarted() )
+		if ( !exchange.isResponseStarted() ) {
+			exchange.setResponseCode( 403 );
+			exchange.getResponseSender().send( "Permition Denied" );
+		}
+		exchange.endExchange();
+	}
+
+	void handleException( Throwable cause ) {
+		cause.printStackTrace();
+		val exchange = chain.exchange();
+		if ( !exchange.isResponseStarted() ) {
 			exchange.setResponseCode( 500 );
+			exchange.getResponseSender().send( "Internal Server Error: " + cause.getMessage() );
+		}
 		exchange.endExchange();
 	}
 }
