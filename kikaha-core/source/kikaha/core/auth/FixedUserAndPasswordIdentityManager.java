@@ -1,7 +1,7 @@
 package kikaha.core.auth;
 
 import io.undertow.security.idm.Account;
-import kikaha.core.api.Configuration;
+import kikaha.core.api.conf.Configuration;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import trip.spi.Provided;

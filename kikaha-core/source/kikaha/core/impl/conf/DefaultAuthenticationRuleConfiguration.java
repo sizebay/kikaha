@@ -1,8 +1,8 @@
-package kikaha.core;
+package kikaha.core.impl.conf;
 
 import java.util.List;
 
-import kikaha.core.api.AuthenticationRuleConfiguration;
+import kikaha.core.api.conf.AuthenticationRuleConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -11,7 +11,7 @@ import com.typesafe.config.Config;
 
 @Accessors( fluent = true )
 @RequiredArgsConstructor
-class DefaultAuthenticationRule implements AuthenticationRuleConfiguration {
+class DefaultAuthenticationRuleConfiguration implements AuthenticationRuleConfiguration {
 
 	final Config config;
 

@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import kikaha.core.auth.DefaultBasicAuthenticationMechanism;
 import kikaha.core.auth.FixedUserAndPasswordIdentityManager;
+import kikaha.core.impl.conf.DefaultAuthenticationConfiguration;
+import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.val;
 
 import org.junit.Before;
@@ -25,14 +27,14 @@ public class DefaultAuthenticationConfigurationTest {
 	public void ensureThatCouldListMechanismsAsMapOfClasses() {
 		val classMap = authConfig.retrieveChildElementsAsClassMapFromConfigNode( "mechanisms" );
 		assertNotNull( classMap );
-		assertEquals( classMap.get( "default" ), DefaultBasicAuthenticationMechanism.class );
+		assertEquals( classMap.get( "basic" ), DefaultBasicAuthenticationMechanism.class );
 	}
 
 	@Test
 	public void ensureThatCouldListMechanismsAsMapOfClassesFromLazyGetter() {
 		val classMap = authConfig.mechanisms();
 		assertNotNull( classMap );
-		assertEquals( classMap.get( "default" ), DefaultBasicAuthenticationMechanism.class );
+		assertEquals( classMap.get( "basic" ), DefaultBasicAuthenticationMechanism.class );
 	}
 
 	@Test
@@ -48,7 +50,8 @@ public class DefaultAuthenticationConfigurationTest {
 		assertNotNull( defaultRule );
 		assertThat( defaultRule.pattern(), is( "/*" ) );
 		assertThat( defaultRule.expectedRoles().get( 0 ), is( "minimum-access-role" ) );
-		assertThat( defaultRule.mechanisms().get( 0 ), is( "default" ) );
+		assertThat( defaultRule.mechanisms().get( 0 ), is( "basic" ) );
+		assertThat( defaultRule.mechanisms().get( 1 ), is( "form" ) );
 		assertThat( defaultRule.identityManager(), is( "default" ) );
 	}
 

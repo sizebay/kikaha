@@ -27,6 +27,8 @@ public class AuthenticationRunner implements Runnable {
 			context.setAuthenticationRequired();
 			if ( context.authenticate() )
 				tryExecuteChain();
+			else
+				handleAuthenticationRequired();
 		} catch ( Throwable cause ) {
 			handleException( cause );
 		}
@@ -34,8 +36,8 @@ public class AuthenticationRunner implements Runnable {
 
 	boolean matchesExpectedRoles() {
 		int matchedRoles = 0;
-		for ( String expectedRole : expectedRoles )
-			for ( String role : context.getAuthenticatedAccount().getRoles() )
+		for ( val expectedRole : expectedRoles )
+			for ( val role : context.getAuthenticatedAccount().getRoles() )
 				if ( expectedRole.equals( role ) )
 					matchedRoles++;
 		return matchedRoles == expectedRoles.size();
@@ -46,6 +48,15 @@ public class AuthenticationRunner implements Runnable {
 			chain.executeNext();
 		else
 			handlePermitionDenied();
+	}
+
+	void handleAuthenticationRequired() {
+		val exchange = chain.exchange();
+		if ( !exchange.isResponseStarted() ) {
+			exchange.setResponseCode( 401 );
+			exchange.getResponseSender().send( "Authentication Required" );
+		}
+		exchange.endExchange();
 	}
 
 	void handlePermitionDenied() {

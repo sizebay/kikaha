@@ -1,7 +1,8 @@
-package kikaha.core;
+package kikaha.core.impl.conf;
 
-import kikaha.core.api.AuthenticationConfiguration;
-import kikaha.core.api.Configuration;
+import kikaha.core.api.conf.AuthenticationConfiguration;
+import kikaha.core.api.conf.Configuration;
+import kikaha.core.api.conf.SSLConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -28,6 +29,13 @@ public class DefaultConfiguration implements Configuration {
 
 	@Getter( lazy = true )
 	private final AuthenticationConfiguration authentication = createAuthenticationConfig();
+
+	@Getter( lazy = true )
+	private final SSLConfiguration ssl = createSSLConfiguration();
+
+	SSLConfiguration createSSLConfiguration() {
+		return new DefaultSSLConfiguration( config().getConfig( "server.ssl" ) );
+	}
 
 	AuthenticationConfiguration createAuthenticationConfig() {
 		return new DefaultAuthenticationConfiguration( config().getConfig( "server.auth" ) );

@@ -1,4 +1,4 @@
-package kikaha.core;
+package kikaha.core.impl;
 
 import io.undertow.server.HttpHandler;
 import kikaha.core.api.DeploymentContext;

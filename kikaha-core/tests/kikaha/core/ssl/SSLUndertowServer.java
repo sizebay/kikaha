@@ -16,8 +16,8 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.SSLContext;
 
-import kikaha.core.DefaultConfiguration;
-import kikaha.core.api.Configuration;
+import kikaha.core.api.conf.Configuration;
+import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.val;
 
 import org.junit.After;

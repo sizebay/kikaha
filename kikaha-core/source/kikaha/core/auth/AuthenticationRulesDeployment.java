@@ -2,9 +2,9 @@ package kikaha.core.auth;
 
 import java.util.Map;
 
-import kikaha.core.api.Configuration;
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
+import kikaha.core.api.conf.Configuration;
 import lombok.val;
 import lombok.extern.java.Log;
 import trip.spi.Provided;

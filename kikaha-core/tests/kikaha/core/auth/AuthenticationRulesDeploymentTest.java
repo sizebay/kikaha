@@ -10,9 +10,9 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Map;
 
-import kikaha.core.DefaultConfiguration;
-import kikaha.core.api.Configuration;
 import kikaha.core.api.DeploymentContext;
+import kikaha.core.api.conf.Configuration;
+import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.val;
 
 import org.junit.Before;

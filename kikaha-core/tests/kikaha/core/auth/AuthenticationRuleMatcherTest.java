@@ -4,8 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import kikaha.core.DefaultAuthenticationConfiguration;
-import kikaha.core.DefaultConfiguration;
+import kikaha.core.impl.conf.DefaultAuthenticationConfiguration;
+import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.val;
 
 import org.junit.Before;

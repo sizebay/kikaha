@@ -1,4 +1,4 @@
-package kikaha.core;
+package kikaha.core.impl;
 
 import io.undertow.server.HttpServerExchange;
 
@@ -42,7 +42,7 @@ public class DefaultRequestHookChain implements RequestHookChain {
 			hook.run();
 	}
 
-	void dispatchToWorkerThread( Runnable hook ) {
+	public void dispatchToWorkerThread( Runnable hook ) {
 		this.exchange.dispatch( hook );
 	}
 

@@ -2,8 +2,9 @@ package kikaha.core;
 
 import java.io.IOException;
 
-import kikaha.core.api.Configuration;
 import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.api.conf.Configuration;
+import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 

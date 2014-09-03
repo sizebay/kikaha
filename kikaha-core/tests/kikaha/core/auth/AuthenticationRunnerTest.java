@@ -15,10 +15,10 @@ import io.undertow.server.HttpServerExchange;
 import java.util.HashSet;
 import java.util.Set;
 
-import kikaha.core.DefaultAuthenticationConfiguration;
-import kikaha.core.DefaultConfiguration;
 import kikaha.core.HttpServerExchangeStub;
 import kikaha.core.api.RequestHookChain;
+import kikaha.core.impl.conf.DefaultAuthenticationConfiguration;
+import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.val;
 
 import org.junit.Before;
@@ -67,9 +67,11 @@ public class AuthenticationRunnerTest {
 
 	@Test
 	public void ensureThatNotCallTheTargetHttpHandleWhenWasNotAuthenticatedRequests() throws Exception {
+		doNothing().when( authHandler ).handleAuthenticationRequired();
 		when( securityContext.authenticate() ).thenReturn( false );
 		authHandler.run();
 		verify( requestChain, never() ).executeNext();
+		verify( authHandler ).handleAuthenticationRequired();
 	}
 
 	@Test

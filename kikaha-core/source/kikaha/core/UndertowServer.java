@@ -14,11 +14,14 @@ import java.util.List;
 
 import javax.net.ssl.SSLContext;
 
-import kikaha.core.api.Configuration;
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
 import kikaha.core.api.RequestHook;
 import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.api.conf.Configuration;
+import kikaha.core.impl.DefaultDeploymentContext;
+import kikaha.core.impl.DefaultHttpRequestHandler;
+import kikaha.core.impl.UndertowRoutedResourcesHook;
 import kikaha.core.ssl.SSLContextFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

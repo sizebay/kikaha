@@ -1,4 +1,4 @@
-package kikaha.core;
+package kikaha.core.impl.conf;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import kikaha.core.api.AuthenticationConfiguration;
-import kikaha.core.api.AuthenticationRuleConfiguration;
+import kikaha.core.api.conf.AuthenticationConfiguration;
+import kikaha.core.api.conf.AuthenticationRuleConfiguration;
+import kikaha.core.api.conf.FormAuthConfiguration;
 import lombok.Getter;
 import lombok.val;
 import lombok.experimental.Accessors;
@@ -27,6 +28,7 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 	final Map<String, Class<?>> notificationReceivers;
 	final Map<String, Class<?>> securityContextFactories;
 	final AuthenticationRuleConfiguration defaultRule;
+	final FormAuthConfiguration formAuth;
 	final List<AuthenticationRuleConfiguration> authenticationRules;
 
 	public DefaultAuthenticationConfiguration( final Config config ) {
@@ -34,7 +36,8 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 		mechanisms = retrieveChildElementsAsClassMapFromConfigNode( "mechanisms" );
 		identityManagers = retrieveChildElementsAsClassMapFromConfigNode( "identity-managers" );
 		notificationReceivers = retrieveChildElementsAsClassMapFromConfigNode( "notification-receivers" );
-		defaultRule = new DefaultAuthenticationRule( config.getConfig( "default-rule" ) );
+		defaultRule = new DefaultAuthenticationRuleConfiguration( config.getConfig( "default-rule" ) );
+		formAuth = new DefaultFormAuthConfiguration( config.getConfig( "form-auth" ) );
 		authenticationRules = retrieveAuthenticationRules();
 		securityContextFactories = retrieveChildElementsAsClassMapFromConfigNode( "security-context-factories" );
 	}
@@ -60,7 +63,7 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 	}
 
 	private AuthenticationRuleConfiguration createAuthenticationRule( Config ruleConfig ) {
-		return new InheritedAuthenticationRule( ruleConfig, defaultRule() );
+		return new InheritedAuthenticationRuleConfiguration( ruleConfig, defaultRule() );
 	}
 
 	Class classFromCanonicalName( String classCanonicalName ) {

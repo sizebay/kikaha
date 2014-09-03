@@ -1,4 +1,4 @@
-package kikaha.core.api;
+package kikaha.core.api.conf;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +18,8 @@ public interface AuthenticationConfiguration {
 	AuthenticationRuleConfiguration defaultRule();
 
 	List<AuthenticationRuleConfiguration> authenticationRules();
+
+	FormAuthConfiguration formAuth();
 
 	Config config();
 }

@@ -1,5 +1,6 @@
 package kikaha.core.auth;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -8,10 +9,10 @@ import static org.mockito.Mockito.when;
 import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpServerExchange;
-import kikaha.core.DefaultAuthenticationConfiguration;
-import kikaha.core.DefaultConfiguration;
 import kikaha.core.HttpServerExchangeStub;
 import kikaha.core.api.RequestHookChain;
+import kikaha.core.impl.conf.DefaultAuthenticationConfiguration;
+import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.val;
 
 import org.junit.Before;
@@ -26,7 +27,7 @@ public class PrePopulatedSecurityContextFactoryTest {
 	
 	@Mock
 	SecurityContextFactory wrappedFactory;
-	SecurityContextFactory finalFactory;
+	PrePopulatedSecurityContextFactory finalFactory;
 
 	@Mock
 	RequestHookChain requestChain;
@@ -39,6 +40,7 @@ public class PrePopulatedSecurityContextFactoryTest {
 		when( securityContext.authenticate() ).thenReturn( true );
 		finalFactory.createSecurityContextFor( exchange, matchedRule );
 		verify( securityContext ).addAuthenticationMechanism( matchedRule.mechanisms().get( 0 ) );
+		verify( finalFactory ).setEmptyUndertowSessionManagerOnExchange( any( HttpServerExchange.class ) );
 	}
 
 	@Test

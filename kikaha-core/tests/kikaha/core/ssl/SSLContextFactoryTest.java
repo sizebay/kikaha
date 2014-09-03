@@ -5,8 +5,8 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 
-import kikaha.core.DefaultConfiguration;
-import kikaha.core.api.Configuration;
+import kikaha.core.api.conf.Configuration;
+import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.val;
 
 import org.junit.Test;
@@ -39,10 +39,8 @@ public class SSLContextFactoryTest {
 	}
 
 	SSLContextFactory createFactoryFrom( final Configuration config ) {
-		val sslConfig = new SSLConfiguration();
-		sslConfig.configuration = config;
 		val factory = new SSLContextFactory();
-		factory.sslConfiguration = sslConfig;
+		factory.configuration = config;
 		return factory;
 	}
 

@@ -2,6 +2,7 @@ package kikaha.core.auth;
 
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.server.session.SessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -15,13 +16,18 @@ public class PrePopulatedSecurityContextFactory
 	@Override
 	public SecurityContext createSecurityContextFor( HttpServerExchange exchange, AuthenticationRule rule ) {
 		val context = wrapped.createSecurityContextFor( exchange, rule );
+		setEmptyUndertowSessionManagerOnExchange( exchange );
 		setSecurityContextForThisExchange( exchange, context );
 		populateWithAuthenticationMechanisms( context, rule );
 		registerNotificationReceivers( context, rule );
 		return context;
 	}
 
-	void setSecurityContextForThisExchange( HttpServerExchange exchange, final io.undertow.security.api.SecurityContext context ) {
+	void setEmptyUndertowSessionManagerOnExchange( HttpServerExchange exchange ) {
+		exchange.putAttachment( SessionManager.ATTACHMENT_KEY, new EmptyUndertowSessionManager() );
+	}
+
+	void setSecurityContextForThisExchange( HttpServerExchange exchange, final SecurityContext context ) {
 		securityContextHandler.setSecurityContext( exchange, context );
 	}
 

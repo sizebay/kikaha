@@ -8,9 +8,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpServerExchange;
-import kikaha.core.DefaultConfiguration;
 import kikaha.core.api.RequestHookChain;
 import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.val;
 
 import org.junit.Before;

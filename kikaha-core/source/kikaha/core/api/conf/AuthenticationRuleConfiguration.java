@@ -1,4 +1,4 @@
-package kikaha.core.api;
+package kikaha.core.api.conf;
 
 import java.util.List;
 

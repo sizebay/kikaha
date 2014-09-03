@@ -15,6 +15,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
+import kikaha.core.api.conf.Configuration;
+import kikaha.core.api.conf.SSLConfiguration;
 import lombok.val;
 
 import org.xnio.IoUtils;
@@ -32,7 +34,7 @@ import trip.spi.Singleton;
 public class SSLContextFactory {
 
 	@Provided
-	SSLConfiguration sslConfiguration;
+	Configuration configuration;
 
 	/**
 	 * Create a SSLContext based on data defined in {@link SSLConfiguration}.
@@ -41,12 +43,12 @@ public class SSLContextFactory {
 	 * @throws IOException
 	 */
 	public SSLContext createSSLContext() throws IOException {
-		if ( sslConfiguration.isEmpty() )
+		if ( configuration.ssl().isEmpty() )
 			return null;
 		return createSSLContext(
-			sslConfiguration.keystore(),
-			sslConfiguration.truststore(),
-			sslConfiguration.password() );
+			configuration.ssl().keystore(),
+			configuration.ssl().truststore(),
+			configuration.ssl().password() );
 	}
 
 	/**
@@ -74,7 +76,7 @@ public class SSLContextFactory {
 
 	public KeyStore loadKeyStore( final InputStream stream, final String password ) throws IOException {
 		try {
-			val loadedKeystore = KeyStore.getInstance( sslConfiguration.keystoreSecurityProvider() );
+			val loadedKeystore = KeyStore.getInstance( configuration.ssl().keystoreSecurityProvider() );
 			loadedKeystore.load( stream, password.toCharArray() );
 			return loadedKeystore;
 		} catch ( KeyStoreException | NoSuchAlgorithmException | CertificateException e ) {
@@ -95,7 +97,7 @@ public class SSLContextFactory {
 	SSLContext createSSLContext( KeyManager[] keyManagers, TrustManager[] trustManagers ) throws IOException {
 		SSLContext sslContext;
 		try {
-			sslContext = SSLContext.getInstance( sslConfiguration.certSecurityProvider() );
+			sslContext = SSLContext.getInstance( configuration.ssl().certSecurityProvider() );
 			sslContext.init( keyManagers, trustManagers, null );
 		} catch ( NoSuchAlgorithmException | KeyManagementException e ) {
 			throw new IOException( "Unable to create and initialise the SSLContext", e );

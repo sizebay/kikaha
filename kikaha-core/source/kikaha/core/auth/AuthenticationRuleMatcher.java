@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import kikaha.core.api.AuthenticationConfiguration;
-import kikaha.core.api.AuthenticationRuleConfiguration;
+import kikaha.core.api.conf.AuthenticationConfiguration;
+import kikaha.core.api.conf.AuthenticationRuleConfiguration;
 import lombok.Getter;
 import lombok.val;
 import lombok.experimental.Accessors;

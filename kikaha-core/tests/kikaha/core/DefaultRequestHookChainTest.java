@@ -17,6 +17,8 @@ import kikaha.core.api.DeploymentHook;
 import kikaha.core.api.RequestHook;
 import kikaha.core.api.RequestHookChain;
 import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.impl.DefaultDeploymentContext;
+import kikaha.core.impl.DefaultRequestHookChain;
 import lombok.Getter;
 
 import org.junit.Test;

@@ -1,8 +1,8 @@
-package kikaha.core;
+package kikaha.core.impl.conf;
 
 import java.util.List;
 
-import kikaha.core.api.AuthenticationRuleConfiguration;
+import kikaha.core.api.conf.AuthenticationRuleConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -10,7 +10,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException.Missing;
 
 @RequiredArgsConstructor
-class InheritedAuthenticationRule implements AuthenticationRuleConfiguration {
+class InheritedAuthenticationRuleConfiguration implements AuthenticationRuleConfiguration {
 
 	final Config config;
 	final AuthenticationRuleConfiguration inheritedRule;

@@ -1,9 +1,9 @@
-package kikaha.core;
+package kikaha.core.impl;
 
-import kikaha.core.api.DeploymentContext;
-import kikaha.core.api.RequestHookChain;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import kikaha.core.api.DeploymentContext;
+import kikaha.core.api.RequestHookChain;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
