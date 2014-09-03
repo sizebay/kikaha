@@ -1,6 +1,6 @@
 package kikaha.hazelcast;
 
-import kikaha.core.api.Configuration;
+import kikaha.core.api.conf.Configuration;
 import kikaha.hazelcast.HazelcastConfiguration.ClusterClientConfig;
 import lombok.extern.java.Log;
 import trip.spi.Producer;

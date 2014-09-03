@@ -27,7 +27,7 @@ public class AuthenticationRulesDeployment implements DeploymentHook {
 		if ( haveAuthenticationRulesDefinedInConfigurationFile() ) {
 			log.info( "Configuring authentication rules..." );
 			val ruleMatcher = createRuleMatcher();
-			context.register( new AuthenticationHook( ruleMatcher ) );
+			context.register( new AuthenticationHook( ruleMatcher, configuration ) );
 		}
 	}
 

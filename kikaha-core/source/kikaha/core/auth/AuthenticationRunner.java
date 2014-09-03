@@ -1,34 +1,32 @@
 package kikaha.core.auth;
 
 import io.undertow.security.api.SecurityContext;
-import io.undertow.security.api.SecurityContextFactory;
-import io.undertow.security.impl.SecurityContextFactoryImpl;
+import io.undertow.util.Headers;
 
 import java.util.Collection;
 
 import kikaha.core.api.RequestHookChain;
 import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.api.conf.FormAuthConfiguration;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 @RequiredArgsConstructor
 public class AuthenticationRunner implements Runnable {
 
-	final SecurityContextHandler securityContextHandler = SecurityContextHandler.DEFAULT;
-	final SecurityContextFactory contextFactory = SecurityContextFactoryImpl.INSTANCE;
-
 	final SecurityContext context;
 	final RequestHookChain chain;
 	final Collection<String> expectedRoles;
+	final FormAuthConfiguration formAuthConfig;
 
 	@Override
 	public void run() {
 		try {
 			context.setAuthenticationRequired();
-			if ( context.authenticate() )
+			if ( context.authenticate() && context.isAuthenticated() )
 				tryExecuteChain();
 			else
-				handleAuthenticationRequired();
+				endCommunicationWithClient();
 		} catch ( Throwable cause ) {
 			handleException( cause );
 		}
@@ -50,22 +48,28 @@ public class AuthenticationRunner implements Runnable {
 			handlePermitionDenied();
 	}
 
-	void handleAuthenticationRequired() {
-		val exchange = chain.exchange();
-		if ( !exchange.isResponseStarted() ) {
-			exchange.setResponseCode( 401 );
-			exchange.getResponseSender().send( "Authentication Required" );
-		}
-		exchange.endExchange();
+	void endCommunicationWithClient() {
+		chain.exchange().endExchange();
 	}
 
 	void handlePermitionDenied() {
 		val exchange = chain.exchange();
-		if ( !exchange.isResponseStarted() ) {
-			exchange.setResponseCode( 403 );
-			exchange.getResponseSender().send( "Permition Denied" );
-		}
-		exchange.endExchange();
+		if ( !exchange.isResponseStarted() )
+			if ( formAuthConfig.permitionDeniedPage().isEmpty() )
+				sendForbidenError( exchange );
+			else
+				redirectToPermitionDeniedPage( exchange );
+		endCommunicationWithClient();
+	}
+
+	void sendForbidenError( final io.undertow.server.HttpServerExchange exchange ) {
+		exchange.setResponseCode( 403 );
+		exchange.getResponseSender().send( "Permition Denied" );
+	}
+
+	void redirectToPermitionDeniedPage( final io.undertow.server.HttpServerExchange exchange ) {
+		exchange.setResponseCode( 307 );
+		exchange.getResponseHeaders().put( Headers.LOCATION, formAuthConfig.permitionDeniedPage() );
 	}
 
 	void handleException( Throwable cause ) {

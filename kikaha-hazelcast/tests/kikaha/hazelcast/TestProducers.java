@@ -1,6 +1,6 @@
 package kikaha.hazelcast;
 
-import kikaha.core.DefaultConfiguration;
+import kikaha.core.impl.conf.DefaultConfiguration;
 
 import com.typesafe.config.Config;
 

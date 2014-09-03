@@ -51,7 +51,6 @@ public class DefaultAuthenticationConfigurationTest {
 		assertThat( defaultRule.pattern(), is( "/*" ) );
 		assertThat( defaultRule.expectedRoles().get( 0 ), is( "minimum-access-role" ) );
 		assertThat( defaultRule.mechanisms().get( 0 ), is( "basic" ) );
-		assertThat( defaultRule.mechanisms().get( 1 ), is( "form" ) );
 		assertThat( defaultRule.identityManager(), is( "default" ) );
 	}
 

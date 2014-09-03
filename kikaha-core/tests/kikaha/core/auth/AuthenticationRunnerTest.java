@@ -49,6 +49,7 @@ public class AuthenticationRunnerTest {
 	@Test
 	public void ensureThatCouldCallTheTargetHttpHandlerWhenIsAuthenticated() throws Exception {
 		when( securityContext.authenticate() ).thenReturn( true );
+		when( securityContext.isAuthenticated() ).thenReturn( true );
 		when( securityContext.getAuthenticatedAccount() ).thenReturn( new FixedUsernameAndRolesAccount( createExpectedRoles(), null ) );
 		authHandler.run();
 		verify( requestChain ).executeNext();
@@ -56,22 +57,25 @@ public class AuthenticationRunnerTest {
 
 	@Test
 	public void ensureThatNotCallTheTargetHttpHandlerWhenDoesntMatchExpectedRoles() throws Exception {
-		doNothing().when( authHandler ).handlePermitionDenied();
+		doNothing().when( authHandler ).endCommunicationWithClient();
+		doNothing().when( authHandler ).sendForbidenError( any( HttpServerExchange.class ) );
 		when( securityContext.authenticate() ).thenReturn( true );
+		when( securityContext.isAuthenticated() ).thenReturn( true );
 		val accountWithUnexpectedRoles = new FixedUsernameAndRolesAccount( new HashSet<String>(), null );
 		when( securityContext.getAuthenticatedAccount() ).thenReturn( accountWithUnexpectedRoles );
 		authHandler.run();
 		verify( requestChain, never() ).executeNext();
 		verify( authHandler ).handlePermitionDenied();
+		verify( authHandler ).sendForbidenError( any( HttpServerExchange.class ) );
 	}
 
 	@Test
 	public void ensureThatNotCallTheTargetHttpHandleWhenWasNotAuthenticatedRequests() throws Exception {
-		doNothing().when( authHandler ).handleAuthenticationRequired();
+		doNothing().when( authHandler ).endCommunicationWithClient();
 		when( securityContext.authenticate() ).thenReturn( false );
 		authHandler.run();
 		verify( requestChain, never() ).executeNext();
-		verify( authHandler ).handleAuthenticationRequired();
+		verify( authHandler ).endCommunicationWithClient();
 	}
 
 	@Test
@@ -96,9 +100,12 @@ public class AuthenticationRunnerTest {
 	}
 
 	void initializeAuthHandler() {
+		val formAuthConfig = DefaultConfiguration
+			.loadDefaultConfiguration().authentication().formAuth();
 		val matcher = mockAuthRuleMatcher();
 		this.matchedRule = spy( matcher.retrieveAuthenticationRuleForUrl( "/user" ) );
-		this.authHandler = spy( new AuthenticationRunner( securityContext, requestChain, createExpectedRoles() ) );
+		this.authHandler = spy( new AuthenticationRunner(
+			securityContext, requestChain, createExpectedRoles(), formAuthConfig ) );
 	}
 
 	AuthenticationRuleMatcher mockAuthRuleMatcher() {

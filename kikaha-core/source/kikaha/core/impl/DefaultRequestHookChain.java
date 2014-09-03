@@ -38,8 +38,10 @@ public class DefaultRequestHookChain implements RequestHookChain {
 	public void executeInWorkerThread( final Runnable hook ) throws UndertowStandaloneException {
 		if ( this.isInIOThread() )
 			this.dispatchToWorkerThread( hook );
-		else
+		else {
+			System.out.println( "just run" );
 			hook.run();
+		}
 	}
 
 	public void dispatchToWorkerThread( Runnable hook ) {

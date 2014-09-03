@@ -32,7 +32,7 @@ public class AuthenticationHookTest {
 		MockitoAnnotations.initMocks( this );
 		val config = DefaultConfiguration.loadDefaultConfiguration();
 		val authenticationRuleMatcher = new AuthenticationRuleMatcher( config.authentication() );
-		authenticationHook = spy( new AuthenticationHook( authenticationRuleMatcher ) );
+		authenticationHook = spy( new AuthenticationHook( authenticationRuleMatcher, config ) );
 	}
 
 	@Test

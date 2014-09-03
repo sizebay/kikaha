@@ -2,7 +2,7 @@ package kikaha.hazelcast;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import kikaha.core.DefaultConfiguration;
+import kikaha.core.impl.conf.DefaultConfiguration;
 import kikaha.hazelcast.TypesafeConfigurationCompatibilization;
 
 import com.typesafe.config.Config;
