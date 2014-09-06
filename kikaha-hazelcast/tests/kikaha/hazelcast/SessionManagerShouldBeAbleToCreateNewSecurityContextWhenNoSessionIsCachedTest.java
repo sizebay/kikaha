@@ -6,8 +6,8 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.verify;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.auth.AuthenticationRule;
-import kikaha.hazelcast.SessionManager.IncludeSessionIntoCacheForAuthenticatedAccounts;
-import kikaha.hazelcast.SessionManager.RemoveSessionFromCacheForLoggedOutAccounts;
+import kikaha.hazelcast.HazelcastSecurityContextFactory.IncludeSessionIntoCacheForAuthenticatedAccounts;
+import kikaha.hazelcast.HazelcastSecurityContextFactory.RemoveSessionFromCacheForLoggedOutAccounts;
 
 import org.junit.Test;
 
@@ -19,8 +19,8 @@ public class SessionManagerShouldBeAbleToCreateNewSecurityContextWhenNoSessionIs
 		simulateThatReceivedCookieFromRequest();
 		simulateAChromeUserAgentRequest();
 		forceReturnMockedSecurityContext();
-		assertSame( securityContext, sessionManager.createSecurityContextFor( null, null ) );
-		verify( sessionManager ).postAuthenticatedSecurityContext( any( HttpServerExchange.class ), any( AuthenticationRule.class ) );
+		assertSame( securityContext, factory.createSecurityContextFor( new HttpServerExchange( null ), null ) );
+		verify( factory ).postAuthenticatedSecurityContext( any( HttpServerExchange.class ), any( AuthenticationRule.class ) );
 		verify( securityContext ).registerNotificationReceiver( isA( IncludeSessionIntoCacheForAuthenticatedAccounts.class ) );
 		verify( securityContext ).registerNotificationReceiver( isA( RemoveSessionFromCacheForLoggedOutAccounts.class ) );
 	}
@@ -30,8 +30,8 @@ public class SessionManagerShouldBeAbleToCreateNewSecurityContextWhenNoSessionIs
 		simulateThatHaveNotReceivedCookieFromRequest();
 		simulateAChromeUserAgentRequest();
 		forceReturnMockedSecurityContext();
-		assertSame( securityContext, sessionManager.createSecurityContextFor( null, null ) );
-		verify( sessionManager ).postAuthenticatedSecurityContext( any( HttpServerExchange.class ), any( AuthenticationRule.class ) );
+		assertSame( securityContext, factory.createSecurityContextFor( new HttpServerExchange( null ), null ) );
+		verify( factory ).postAuthenticatedSecurityContext( any( HttpServerExchange.class ), any( AuthenticationRule.class ) );
 		verify( securityContext ).registerNotificationReceiver( isA( IncludeSessionIntoCacheForAuthenticatedAccounts.class ) );
 		verify( securityContext ).registerNotificationReceiver( isA( RemoveSessionFromCacheForLoggedOutAccounts.class ) );
 	}

@@ -7,13 +7,13 @@ import lombok.val;
 import trip.spi.Singleton;
 
 @Singleton( exposedAs = ContextProducer.class )
-public class SessionContextProducer implements ContextProducer<Session> {
+public class SessionContextProducer implements ContextProducer<AuthenticatedSession> {
 
 	@Override
-	public Session produce( HttpServerExchange exchange ) throws RoutingException {
+	public AuthenticatedSession produce( HttpServerExchange exchange ) throws RoutingException {
 		val securityContext = exchange.getSecurityContext();
 		if ( securityContext == null )
-			return Session.from( exchange );
-		return Session.from( exchange, securityContext.getAuthenticatedAccount() );
+			return AuthenticatedSession.from( exchange );
+		return AuthenticatedSession.from( null, exchange, securityContext.getAuthenticatedAccount() );
 	}
 }

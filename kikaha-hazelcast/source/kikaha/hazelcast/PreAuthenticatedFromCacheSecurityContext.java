@@ -20,7 +20,7 @@ public class PreAuthenticatedFromCacheSecurityContext
 	implements SecurityContext {
 
 	final List<NotificationReceiver> notificationReceivers = new ArrayList<>();
-	final Session session;
+	final AuthenticatedSession session;
 	final HttpServerExchange exchange;
 
 	@Override

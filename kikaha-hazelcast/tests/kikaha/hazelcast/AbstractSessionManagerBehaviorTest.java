@@ -26,40 +26,47 @@ import com.hazelcast.core.IMap;
 public class AbstractSessionManagerBehaviorTest {
 
 	final ServiceProvider provider = new ServiceProvider();
-	final Cookie sessionIdCookie = new CookieImpl( SessionManager.SESSION_ID, SessionManager.generateSessionId() );
-	final Session firefoxSession = new Session( "Firefox", null, null );
-	final Session chromeSession = new Session( "Chrome", null, null );
+	final Cookie sessionIdCookie = new CookieImpl( SessionCacheManager.SESSION_ID, SessionCacheManager.generateSessionId() );
+	final AuthenticatedSession firefoxSession = new AuthenticatedSession( null, "Firefox", null, null );
+	final AuthenticatedSession chromeSession = new AuthenticatedSession( null, "Chrome", null, null );
 
 	@Mock
 	SecurityContext securityContext;
 
-	@Provided
-	SessionManager sessionManager;
+	@Mock
+	IMap<String, AuthenticatedSession> cache;
 
-	IMap<String, Session> sessionCache;
+	@Provided
+	SessionCacheManager sessionCache;
+
+	@Provided
+	HazelcastSecurityContextFactory factory;
 
 	protected void simulateThatReceivedCookieFromRequest() {
-		doReturn( sessionIdCookie ).when( sessionManager ).getSessionCookie( any( HttpServerExchange.class ) );
-		doNothing().when( sessionManager ).setSessionAsAttributeToExchange( any( HttpServerExchange.class ),
+		doReturn( sessionIdCookie ).when( sessionCache ).getSessionCookie( any( HttpServerExchange.class ) );
+		doNothing().when( sessionCache ).setSessionAsAttributeToExchange( any( HttpServerExchange.class ),
 			eq( sessionIdCookie.getValue() ) );
+		doReturn( true ).when( sessionCache ).isValidSessionForExchange(
+			any( AuthenticatedSession.class ),
+			any( HttpServerExchange.class ) );
 	}
 
 	protected void forceReturnMockedSecurityContext() {
-		doReturn( securityContext ).when( sessionManager ).createSecurityContextWithDefaultFactory( any( HttpServerExchange.class ),
-			any( AuthenticationRule.class ) );
+		doReturn( securityContext ).when( factory ).createSecurityContextWithDefaultFactory(
+			any( HttpServerExchange.class ), any( AuthenticationRule.class ) );
 	}
 
 	protected void simulateThatHaveNotReceivedCookieFromRequest() {
-		doReturn( null ).when( sessionManager ).getSessionCookie( any( HttpServerExchange.class ) );
+		doReturn( null ).when( sessionCache ).getSessionCookie( any( HttpServerExchange.class ) );
 	}
 
 	protected void simulateAFirefoxUserAgentRequest() {
-		doReturn( firefoxSession ).when( sessionManager )
+		doReturn( firefoxSession ).when( sessionCache )
 			.createValidationSessionForExchange( any( HttpServerExchange.class ) );
 	}
 
 	protected void simulateAChromeUserAgentRequest() {
-		doReturn( chromeSession ).when( sessionManager )
+		doReturn( chromeSession ).when( sessionCache )
 			.createValidationSessionForExchange( any( HttpServerExchange.class ) );
 	}
 
@@ -67,16 +74,22 @@ public class AbstractSessionManagerBehaviorTest {
 	public void setup() throws ServiceProviderException {
 		provider.provideOn( this );
 		MockitoAnnotations.initMocks( this );
-		sessionCache = sessionManager.sessionCache
-			= spy( sessionManager.sessionCache );
-		sessionManager = spy( sessionManager );
+		sessionCache = spy( sessionCache );
+		factory = spy( factory );
+		factory.sessionCache = sessionCache;
+		doReturn( cache ).when( sessionCache ).produceSessionCache();
+		// doReturn( "HZ29BCB1391F4F4F468A2E339F32CEFC5F" ).when( sessionCache
+		// ).generateANewId();
 	}
 
 	protected void resetMocks() {
 		try {
 			provider.provideOn( this );
 			MockitoAnnotations.initMocks( this );
-			sessionManager = spy( sessionManager );
+			sessionCache = spy( sessionCache );
+			doReturn( cache ).when( sessionCache ).produceSessionCache();
+			factory = spy( factory );
+			factory.sessionCache = sessionCache;
 		} catch ( ServiceProviderException e ) {
 			throw new RuntimeException( e );
 		}

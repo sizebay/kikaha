@@ -15,7 +15,7 @@ import io.undertow.server.HttpServerExchange;
 import java.security.Principal;
 import java.util.Collections;
 
-import kikaha.hazelcast.SessionManager.IncludeSessionIntoCacheForAuthenticatedAccounts;
+import kikaha.hazelcast.HazelcastSecurityContextFactory.IncludeSessionIntoCacheForAuthenticatedAccounts;
 
 import org.junit.Test;
 import org.mockito.Mock;
@@ -29,11 +29,12 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 	@Mock
 	Principal principal;
 
-	Session session;
+	AuthenticatedSession session;
 	IncludeSessionIntoCacheForAuthenticatedAccounts cacheNotifier;
 
 	@Test
 	public void ensureFullLifecycleBehavior() {
+
 		treatAnUnauthenticatedRequest();
 		resetMocks();
 		responseASecondRequestWithCachedData();
@@ -43,13 +44,13 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 		simulateThatHaveNotReceivedCookieFromRequest();
 		forceReturnMockedSecurityContext();
 		memorizeCacheNotifier();
-		sessionManager.createSecurityContextFor( null, null );
+		factory.createSecurityContextFor( new HttpServerExchange( null ), null );
 		simulateAsynNotificationWhenAuthenticationIsSuccessful();
 	}
 
 	void memorizeCacheNotifier() {
-		cacheNotifier = spy( sessionManager.createReceiverToIncludeSessionIntoCache() );
-		doReturn( cacheNotifier ).when( sessionManager ).createReceiverToIncludeSessionIntoCache();
+		cacheNotifier = spy( factory.createReceiverToIncludeSessionIntoCache() );
+		doReturn( cacheNotifier ).when( factory ).createReceiverToIncludeSessionIntoCache();
 	}
 
 	void simulateAsynNotificationWhenAuthenticationIsSuccessful() {
@@ -57,8 +58,11 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 		forceReturnMockedSessionWhenNotifyingAuthentication();
 		forceUseCurrentMockedSessionIdWhileHandlingNotifications();
 		cacheNotifier.handleNotification( createAuthenticationNotification() );
-		verify( cacheNotifier ).createSessionFrom( eq( account ), any( HttpServerExchange.class ) );
-		verify( sessionCache ).put( eq( sessionIdCookie.getValue() ), any( Session.class ) );
+		verify( sessionCache ).memorize( any( Account.class ), any( HttpServerExchange.class ) );
+		// verify( cacheNotifier ).createSessionFrom( eq( account ), any(
+		// HttpServerExchange.class ) );
+		// verify( cache ).put( eq( sessionIdCookie.getValue() ), any(
+		// AuthenticatedSession.class ) );
 	}
 
 	void mockAccount() {
@@ -68,13 +72,13 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 	}
 
 	void forceReturnMockedSessionWhenNotifyingAuthentication() {
-		session = new Session( "Chrome", "localhost", SessionAccount.from( account ) );
-		doReturn( session ).when( cacheNotifier ).createSessionFrom( eq( account ), any( HttpServerExchange.class ) );
-		doNothing().when( cacheNotifier ).saveSessionCookieFor( any( HttpServerExchange.class ), anyString() );
+		session = new AuthenticatedSession( null, "Chrome", "localhost", SessionAccount.from( account ) );
+		doReturn( session ).when( sessionCache ).memorize( eq( account ), any( HttpServerExchange.class ) );
+		doNothing().when( sessionCache ).saveSessionCookieFor( any( HttpServerExchange.class ), anyString() );
 	}
 
 	void forceUseCurrentMockedSessionIdWhileHandlingNotifications() {
-		doReturn( this.sessionIdCookie.getValue() ).when( cacheNotifier ).generateANewId();
+		doReturn( this.sessionIdCookie.getValue() ).when( sessionCache ).generateANewId();
 	}
 
 	SecurityNotification createAuthenticationNotification() {
@@ -85,8 +89,9 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 
 	private void responseASecondRequestWithCachedData() {
 		simulateThatReceivedCookieFromRequest();
+		doReturn( chromeSession ).when( sessionCache ).getSession( any( String.class ) );
 		simulateAChromeUserAgentRequest();
-		sessionManager.createSecurityContextFor( null, null );
-		verify( sessionManager ).preAuthenticatedSecurityContext( any( HttpServerExchange.class ), any( Session.class ) );
+		factory.createSecurityContextFor( new HttpServerExchange( null ), null );
+		verify( factory ).preAuthenticatedSecurityContext( any( HttpServerExchange.class ), any( AuthenticatedSession.class ) );
 	}
 }

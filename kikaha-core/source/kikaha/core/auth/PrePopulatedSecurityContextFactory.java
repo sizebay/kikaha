@@ -24,7 +24,8 @@ public class PrePopulatedSecurityContextFactory
 	}
 
 	void setEmptyUndertowSessionManagerOnExchange( HttpServerExchange exchange ) {
-		exchange.putAttachment( SessionManager.ATTACHMENT_KEY, new EmptyUndertowSessionManager() );
+		if ( exchange.getAttachment( SessionManager.ATTACHMENT_KEY ) == null )
+			exchange.putAttachment( SessionManager.ATTACHMENT_KEY, new EmptyUndertowSessionManager() );
 	}
 
 	void setSecurityContextForThisExchange( HttpServerExchange exchange, final SecurityContext context ) {
