@@ -22,7 +22,7 @@ public class GeneratedRoutingMethod123 implements HttpHandler {
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
 		try {
-			final kikaha.urouting.samples.RetrieveRoutes instance = serviceProvider.load( java.lang.String.class );
+			final java.lang.String instance = serviceProvider.load( java.lang.String.class );
 			instance.renderRelatoMais(  );
 			responseWriter.write( exchange );
 		} catch ( Throwable cause ) {

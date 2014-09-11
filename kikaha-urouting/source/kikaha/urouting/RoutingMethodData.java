@@ -54,23 +54,23 @@ public class RoutingMethodData {
 	}
 
 	public static RoutingMethodData from(
-			ExecutableElement method, Class<? extends Annotation> httpMethodAnnotation ) {
-		boolean isMultiPart = httpMethodAnnotation.equals( MultiPartFormData.class );
+			final ExecutableElement method, final Class<? extends Annotation> httpMethodAnnotation ) {
+		final boolean isMultiPart = httpMethodAnnotation.equals( MultiPartFormData.class );
 		final String httpMethod = isMultiPart
 				? "POST" : httpMethodAnnotation.getSimpleName();
 		final String type = method.getEnclosingElement().asType().toString();
 		final String methodParams = extractMethodParamsFrom( method );
+		return createRouteMethodData( method, isMultiPart, httpMethod, type, methodParams );
+	}
+
+	private static RoutingMethodData createRouteMethodData(
+		final ExecutableElement method, final boolean isMultiPart,
+		final String httpMethod, final String type, final String methodParams ) {
 		return new RoutingMethodData(
-				type, extractPackageName( type ),
-				method.getSimpleName().toString(),
-			methodParams,
-				extractReturnTypeFrom( method ),
-				extractResponseContentTypeFrom( method ),
-				measureHttpPathFrom( method ),
-				httpMethod,
-				extractServiceInterfaceFrom( method ),
-			hasIOBlockingOperations( methodParams ),
-				isMultiPart );
+			type, extractPackageName( type ), method.getSimpleName().toString(),
+			methodParams, extractReturnTypeFrom( method ), extractResponseContentTypeFrom( method ),
+			measureHttpPathFrom( method ), httpMethod, extractServiceInterfaceFrom( method ),
+			hasIOBlockingOperations( methodParams ), isMultiPart );
 	}
 
 	private static boolean hasIOBlockingOperations( final String methodParams ) {
@@ -78,21 +78,21 @@ public class RoutingMethodData {
 			|| methodParams.contains( "methodDataProvider.getFormParam" );
 	}
 
-	public static String extractPackageName( String canonicalName ) {
+	public static String extractPackageName( final String canonicalName ) {
 		return canonicalName.replaceAll( "^(.*)\\.[^\\.]+", "$1" );
 	}
 
-	static String extractReturnTypeFrom( ExecutableElement method ) {
-		String returnTypeAsString = method.getReturnType().toString();
+	static String extractReturnTypeFrom( final ExecutableElement method ) {
+		final String returnTypeAsString = method.getReturnType().toString();
 		if ( "void".equals( returnTypeAsString ) )
 			return null;
 		return returnTypeAsString;
 	}
 
-	static String extractMethodParamsFrom( ExecutableElement method ) {
+	static String extractMethodParamsFrom( final ExecutableElement method ) {
 		final StringBuilder buffer = new StringBuilder().append( METHOD_PARAM_EOL );
 		boolean first = true;
-		for ( VariableElement parameter : method.getParameters() ) {
+		for ( final VariableElement parameter : method.getParameters() ) {
 			if ( !first )
 				buffer.append( ',' );
 			buffer.append( extractMethodParamFrom( method, parameter ) ).append( METHOD_PARAM_EOL );
@@ -105,53 +105,53 @@ public class RoutingMethodData {
 	 * Extract method parameter for a given {@VariableElement}
 	 * argument. The returned method parameter will be passed as argument to a
 	 * routing method.
-	 * 
+	 *
 	 * @param method
 	 * @param parameter
 	 * @return
 	 */
 	// XXX: bad, ugly and huge method
-	static String extractMethodParamFrom( ExecutableElement method, VariableElement parameter ) {
-		String targetType = parameter.asType().toString();
-		PathParam pathParam = parameter.getAnnotation( PathParam.class );
+	static String extractMethodParamFrom( final ExecutableElement method, final VariableElement parameter ) {
+		final String targetType = parameter.asType().toString();
+		final PathParam pathParam = parameter.getAnnotation( PathParam.class );
 		if ( pathParam != null )
 			return getParam( PathParam.class, pathParam.value(), targetType );
-		QueryParam queryParam = parameter.getAnnotation( QueryParam.class );
+		final QueryParam queryParam = parameter.getAnnotation( QueryParam.class );
 		if ( queryParam != null )
 			return getParam( QueryParam.class, queryParam.value(), targetType );
-		HeaderParam headerParam = parameter.getAnnotation( HeaderParam.class );
+		final HeaderParam headerParam = parameter.getAnnotation( HeaderParam.class );
 		if ( headerParam != null )
 			return getParam( HeaderParam.class, headerParam.value(), targetType );
-		CookieParam cookieParam = parameter.getAnnotation( CookieParam.class );
+		final CookieParam cookieParam = parameter.getAnnotation( CookieParam.class );
 		if ( cookieParam != null )
 			return getParam( CookieParam.class, cookieParam.value(), targetType );
-		FormParam formParam = parameter.getAnnotation( FormParam.class );
+		final FormParam formParam = parameter.getAnnotation( FormParam.class );
 		if ( formParam != null )
 			return getFormParam( formParam.value(), targetType );
-		Context dataParam = parameter.getAnnotation( Context.class );
+		final Context dataParam = parameter.getAnnotation( Context.class );
 		if ( dataParam != null )
 			return format( "methodDataProvider.getData( exchange, %s.class )", targetType );
 		return getBodyParam( method, targetType );
 	}
 
-	static String getFormParam( String param, String targetType ) {
+	static String getFormParam( final String param, final String targetType ) {
 		return format( "methodDataProvider.getFormParam( formData, \"%s\", %s.class )",
 				param, targetType );
 	}
 
-	static String getParam( Class<?> targetAnnotation, String param, String targetType ) {
+	static String getParam( final Class<?> targetAnnotation, final String param, final String targetType ) {
 		return format( "methodDataProvider.get%s( exchange, \"%s\", %s.class )",
 				targetAnnotation.getSimpleName(), param, targetType );
 	}
 
-	static String getBodyParam( ExecutableElement method, String targetType ) {
-		String consumingContentType = extractConsumingContentTypeFrom( method );
+	static String getBodyParam( final ExecutableElement method, final String targetType ) {
+		final String consumingContentType = extractConsumingContentTypeFrom( method );
 		if ( consumingContentType != null )
 			return format( "methodDataProvider.getBody( exchange, %s.class, \"%s\" )", targetType, consumingContentType );
 		return format( "methodDataProvider.getBody( exchange, %s.class )", targetType );
 	}
 
-	static String extractConsumingContentTypeFrom( ExecutableElement method ) {
+	static String extractConsumingContentTypeFrom( final ExecutableElement method ) {
 		Consumes consumesAnnotation = method.getAnnotation( Consumes.class );
 		if ( consumesAnnotation == null )
 			consumesAnnotation = method.getEnclosingElement().getAnnotation( Consumes.class );
@@ -160,7 +160,7 @@ public class RoutingMethodData {
 		return null;
 	}
 
-	static String extractResponseContentTypeFrom( ExecutableElement method ) {
+	static String extractResponseContentTypeFrom( final ExecutableElement method ) {
 		Produces producesAnnotation = method.getAnnotation( Produces.class );
 		if ( producesAnnotation == null )
 			producesAnnotation = method.getEnclosingElement().getAnnotation( Produces.class );
@@ -169,7 +169,7 @@ public class RoutingMethodData {
 		return null;
 	}
 
-	static String measureHttpPathFrom( ExecutableElement method ) {
+	static String measureHttpPathFrom( final ExecutableElement method ) {
 		final Element classElement = method.getEnclosingElement();
 		final Path pathAnnotationOfClass = classElement.getAnnotation( Path.class );
 		final String rootPath = pathAnnotationOfClass != null ? pathAnnotationOfClass.value() : "/";
@@ -178,21 +178,21 @@ public class RoutingMethodData {
 		return generateHttpPath( rootPath, methodPath );
 	}
 
-	public static String generateHttpPath( String rootPath, String methodPath ) {
+	public static String generateHttpPath( final String rootPath, final String methodPath ) {
 		return String.format( "/%s/%s/", rootPath, methodPath )
 				.replaceAll( "//+", "/" );
 	}
 
-	static String extractServiceInterfaceFrom( ExecutableElement method ) {
-		TypeElement classElement = (TypeElement)method.getEnclosingElement();
-		String canonicalName = getServiceInterfaceProviderClass( classElement ).toString();
+	static String extractServiceInterfaceFrom( final ExecutableElement method ) {
+		final TypeElement classElement = (TypeElement)method.getEnclosingElement();
+		final String canonicalName = getServiceInterfaceProviderClass( classElement ).toString();
 		if ( Singleton.class.getCanonicalName().equals( canonicalName )
 				|| Stateless.class.getCanonicalName().equals( canonicalName ) )
 			return classElement.asType().toString();
 		return canonicalName;
 	}
 
-	static TypeMirror getServiceInterfaceProviderClass( TypeElement service ) {
+	static TypeMirror getServiceInterfaceProviderClass( final TypeElement service ) {
 		try {
 			final Singleton singleton = service.getAnnotation( Singleton.class );
 			if ( singleton != null )
@@ -201,7 +201,7 @@ public class RoutingMethodData {
 			if ( stateless != null )
 				stateless.exposedAs();
 			return service.asType();
-		} catch ( MirroredTypeException cause ) {
+		} catch ( final MirroredTypeException cause ) {
 			return cause.getTypeMirror();
 		}
 	}

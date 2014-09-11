@@ -42,7 +42,7 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 		{{/hasIOBound}}
 		try {
 		{{#serviceInterface}}
-			final {{{type}}} instance = serviceProvider.load( {{serviceInterface}}.class );
+			final {{{serviceInterface}}} instance = serviceProvider.load( {{{serviceInterface}}}.class );
 		{{/serviceInterface}}
 		{{^serviceInterface}}
 			final {{{type}}} instance = new {{{type}}}();
