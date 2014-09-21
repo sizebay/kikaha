@@ -9,7 +9,6 @@ import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.val;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.typesafe.config.Config;
@@ -32,7 +31,6 @@ public class SSLContextFactoryTest {
 	}
 
 	@Test
-	@Ignore
 	public void ensureIsPossibleToCreateASSLContextFromDefaultConfiguration() throws IOException {
 		val config = DefaultConfiguration.loadDefaultConfiguration();
 		val factory = createFactoryFrom( config );
@@ -45,5 +43,4 @@ public class SSLContextFactoryTest {
 		factory.configuration = config;
 		return factory;
 	}
-
 }
