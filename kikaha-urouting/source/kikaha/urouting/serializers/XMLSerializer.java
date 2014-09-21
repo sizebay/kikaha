@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 
 import kikaha.urouting.api.Mimes;
@@ -29,9 +30,16 @@ public class XMLSerializer implements Serializer {
 
 	<T> void serialize(Class<T> clazz, T object, Writer output) throws JAXBException {
 		final JAXBContext context = JAXBContext.newInstance( clazz );
-		final String lowerCase = clazz.getSimpleName().toLowerCase();
-		final JAXBElement<T> element = new JAXBElement<T>( new QName(lowerCase), clazz, object );
+		final String rootElementName = extractRootElementName( clazz );
+		final JAXBElement<T> element = new JAXBElement<T>( new QName(rootElementName), clazz, object );
 		final Marshaller marshaller = context.createMarshaller();
         marshaller.marshal( element, output );
+	}
+
+	String extractRootElementName( Class<?> clazz ) {
+		final XmlRootElement rootElement = clazz.getAnnotation( XmlRootElement.class );
+		if ( rootElement != null && !rootElement.name().isEmpty() )
+			return rootElement.name();
+		return clazz.getSimpleName().toLowerCase();
 	}
 }
