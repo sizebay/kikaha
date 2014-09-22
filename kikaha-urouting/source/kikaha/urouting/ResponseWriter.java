@@ -35,7 +35,7 @@ public class ResponseWriter {
 
 	/**
 	 * Writes a response to HTTP Client informing that no content was available.
-	 * 
+	 *
 	 * @param exchange
 	 */
 	public void write( final HttpServerExchange exchange ) {
@@ -44,7 +44,7 @@ public class ResponseWriter {
 
 	/**
 	 * Serialize and send the {@code response} object to the HTTP Client.
-	 * 
+	 *
 	 * @param exchange
 	 * @param response
 	 * @throws ServiceProviderException
@@ -59,7 +59,7 @@ public class ResponseWriter {
 
 	/**
 	 * Serialize and send the {@code response} object to the HTTP Client.
-	 * 
+	 *
 	 * @param exchange
 	 * @param response
 	 * @throws ServiceProviderException
@@ -76,7 +76,7 @@ public class ResponseWriter {
 	 * Serialize and send the {@code response} object to the HTTP Client. The
 	 * HTTP Status Code will always be 200, in this case. Also, it will send use
 	 * <em>UTF-8</em> as default encoding.
-	 * 
+	 *
 	 * @param exchange
 	 * @param contentType
 	 * @param response
@@ -93,7 +93,7 @@ public class ResponseWriter {
 
 	/**
 	 * Serialize and send the {@code response} object to the HTTP Client.
-	 * 
+	 *
 	 * @param exchange
 	 * @param contentType
 	 * @param response
@@ -121,15 +121,16 @@ public class ResponseWriter {
 			throws ServiceProviderException, RoutingException, IOException {
 		if ( serializable == null )
 			return;
-		
+
 		final StreamSinkChannel channel = exchange.getResponseChannel();
 		final Writer writer = Channels.newWriter( channel, encoding );
 		final Serializer serializer = getSerializer( contentType );
 		serializer.serialize( serializable, UncloseableWriterWrapper.wrap( writer ) );
 		writer.flush();
+		writer.close();
 	}
 
-	Serializer getSerializer( String contentType )
+	Serializer getSerializer( final String contentType )
 			throws ServiceProviderException {
 		return getSerializer( contentType, Mimes.PLAIN_TEXT );
 	}
@@ -156,12 +157,12 @@ public class ResponseWriter {
 		responseHeaders.add( new HttpString( header.name() ), value );
 	}
 
-	HttpServerExchange sendStatusCode( final HttpServerExchange exchange, Integer statusCode ) {
+	HttpServerExchange sendStatusCode( final HttpServerExchange exchange, final Integer statusCode ) {
 		exchange.setResponseCode( statusCode );
 		return exchange;
 	}
 
-	HeaderMap sendContentTypeHeader( final HttpServerExchange exchange, String contentType ) {
+	HeaderMap sendContentTypeHeader( final HttpServerExchange exchange, final String contentType ) {
 		final HeaderMap responseHeaders = exchange.getResponseHeaders();
 		responseHeaders.add( new HttpString( Headers.CONTENT_TYPE_STRING ), contentType );
 		return responseHeaders;
