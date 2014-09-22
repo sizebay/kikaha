@@ -127,7 +127,7 @@ public class ResponseWriter {
 		final Serializer serializer = getSerializer( contentType );
 		serializer.serialize( serializable, UncloseableWriterWrapper.wrap( writer ) );
 		writer.flush();
-		writer.close();
+		exchange.endExchange();
 	}
 
 	Serializer getSerializer( final String contentType )
