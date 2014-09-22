@@ -5,19 +5,17 @@ import java.util.GregorianCalendar;
 
 import kikaha.urouting.api.AbstractConverter;
 import kikaha.urouting.api.ConversionException;
-import trip.spi.Provided;
 import trip.spi.Singleton;
 
 @Singleton( exposedAs = AbstractConverter.class )
 public class GregorianCalendarConverter extends AbstractConverter<GregorianCalendar> {
 
-	@Provided( name = "date-converter" )
-	AbstractConverter<Date> dateConverter;
+	final DateConverter dateConverter = new DateConverter();
 
 	@Override
-	public GregorianCalendar convert( String value ) throws ConversionException {
-		Date date = dateConverter.convert( value );
-		GregorianCalendar calendar = new GregorianCalendar();
+	public GregorianCalendar convert( final String value ) throws ConversionException {
+		final Date date = dateConverter.convert( value );
+		final GregorianCalendar calendar = new GregorianCalendar();
 		calendar.setTime( date );
 		return calendar;
 	}
