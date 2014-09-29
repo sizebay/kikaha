@@ -22,6 +22,7 @@ import com.hazelcast.core.IMap;
 public class SessionCacheManager {
 
 	public static final AttachmentKey<String> SESSION_KEY = AttachmentKey.create( String.class );
+	public static final AttachmentKey<AuthenticatedSession> CURRENT_SESSION = AttachmentKey.create( AuthenticatedSession.class );
 	public static final String SESSION_ID = "SESSIONID";
 	public static final String SESSION_CACHE = "session-cache";
 
@@ -56,14 +57,22 @@ public class SessionCacheManager {
 	 * @return
 	 */
 	public AuthenticatedSession getSession( final HttpServerExchange exchange ) {
+		AuthenticatedSession session = exchange.getAttachment( CURRENT_SESSION );
+		if ( session == null )
+			session = produceASessionFromCookieInExchange( exchange );
+		return session;
+	}
+
+	AuthenticatedSession produceASessionFromCookieInExchange(
+		final HttpServerExchange exchange ) {
 		val sessionCookie = getSessionCookie( exchange );
 		if ( sessionCookie == null )
 			return null;
 		val sessionId = sessionCookie.getValue();
-		setSessionAsAttributeToExchange( exchange, sessionId );
 		val session = getSession( sessionId );
 		if ( !isValidSessionForExchange( session, exchange ) )
 			return null;
+		setSessionAsAttributeToExchange( exchange, session );
 		return session;
 	}
 
@@ -82,8 +91,9 @@ public class SessionCacheManager {
 		return exchange.getRequestCookies().get( SESSION_ID );
 	}
 
-	void setSessionAsAttributeToExchange( final HttpServerExchange exchange, final String sessionId ) {
-		exchange.putAttachment( SESSION_KEY, sessionId );
+	void setSessionAsAttributeToExchange( final HttpServerExchange exchange, final AuthenticatedSession session ) {
+		exchange.putAttachment( CURRENT_SESSION, session );
+		exchange.putAttachment( SESSION_KEY, session.getId() );
 	}
 
 	boolean isValidSessionForExchange( final AuthenticatedSession session, final HttpServerExchange exchange ) {
@@ -95,7 +105,7 @@ public class SessionCacheManager {
 
 	AuthenticatedSession createValidationSessionForExchange( final HttpServerExchange exchange ) {
 		final AuthenticatedSession session = AuthenticatedSession.from( exchange );
-		saveSessionCookieFor( exchange, session.getId() );
+		setSessionAsAttributeToExchange( exchange, session );
 		return session;
 	}
 
@@ -111,7 +121,13 @@ public class SessionCacheManager {
 	public AuthenticatedSession memorize( final Account account, final HttpServerExchange exchange ) {
 		val id = generateANewId();
 		val session = AuthenticatedSession.from( id, exchange, account );
-		saveSessionCookieFor( exchange, id );
+		return memorizeOrUpdate( exchange, session );
+	}
+
+	public AuthenticatedSession memorizeOrUpdate(
+			final HttpServerExchange exchange,
+			final AuthenticatedSession session ) {
+		saveSessionCookieFor( exchange, session );
 		return memorizeOrUpdate( session );
 	}
 
@@ -119,9 +135,9 @@ public class SessionCacheManager {
 		return SessionID.generateSessionId();
 	}
 
-	void saveSessionCookieFor( final HttpServerExchange exchange, final String id ) {
+	void saveSessionCookieFor( final HttpServerExchange exchange, final AuthenticatedSession session ) {
 		val cookies = exchange.getResponseCookies();
-		val cookie = new CookieImpl( SESSION_ID, id );
+		val cookie = new CookieImpl( SESSION_ID, session.getId() );
 		cookie.setPath( "/" );
 		cookies.put( SESSION_ID, cookie );
 	}

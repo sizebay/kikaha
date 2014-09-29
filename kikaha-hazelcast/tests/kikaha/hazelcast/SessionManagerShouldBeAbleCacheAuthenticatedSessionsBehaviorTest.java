@@ -2,9 +2,6 @@ package kikaha.hazelcast;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -14,6 +11,7 @@ import io.undertow.security.idm.Account;
 import io.undertow.security.idm.IdentityManager;
 import io.undertow.server.HttpServerExchange;
 
+import java.net.InetSocketAddress;
 import java.security.Principal;
 import java.util.Collections;
 
@@ -53,6 +51,9 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 
 	private HttpServerExchange createHttpExchange() {
 		final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
+		final InetSocketAddress address = new InetSocketAddress( "localhost", 8080 );
+		exchange.setDestinationAddress( address );
+		exchange.setRequestScheme( "http" );
 		assertNotNull( exchange.getRequestHeaders() );
 		return exchange;
 	}
@@ -74,6 +75,7 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 		mockAccount();
 		forceReturnMockedSessionWhenNotifyingAuthentication();
 		forceUseCurrentMockedSessionIdWhileHandlingNotifications();
+		doReturn( null ).when( sessionCache ).memorize( any( Account.class ), any( HttpServerExchange.class ) );
 		cacheNotifier.handleNotification( createAuthenticationNotification() );
 		verify( sessionCache ).memorize( any( Account.class ), any( HttpServerExchange.class ) );
 		// verify( cacheNotifier ).createSessionFrom( eq( account ), any(
@@ -89,9 +91,8 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 	}
 
 	void forceReturnMockedSessionWhenNotifyingAuthentication() {
-		session = new AuthenticatedSession( null, "Chrome", "localhost", SessionAccount.from( account ) );
-		doReturn( session ).when( sessionCache ).memorize( eq( account ), any( HttpServerExchange.class ) );
-		doNothing().when( sessionCache ).saveSessionCookieFor( any( HttpServerExchange.class ), anyString() );
+		session = new AuthenticatedSession( SessionID.generateSessionId(), "Chrome", "localhost", SessionAccount.from( account ) );
+		doReturn( session ).when( sessionCache ).getSession( any( HttpServerExchange.class ) );
 	}
 
 	void forceUseCurrentMockedSessionIdWhileHandlingNotifications() {

@@ -1,7 +1,6 @@
 package kikaha.hazelcast;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -51,7 +50,7 @@ public class AbstractSessionManagerBehaviorTest {
 	protected void simulateThatReceivedCookieFromRequest() {
 		doReturn( sessionIdCookie ).when( sessionCache ).getSessionCookie( any( HttpServerExchange.class ) );
 		doNothing().when( sessionCache ).setSessionAsAttributeToExchange( any( HttpServerExchange.class ),
-			eq( sessionIdCookie.getValue() ) );
+			any( AuthenticatedSession.class ) );
 		doReturn( true ).when( sessionCache ).isValidSessionForExchange(
 			any( AuthenticatedSession.class ),
 			any( HttpServerExchange.class ) );

@@ -158,7 +158,7 @@ public class HazelcastSecurityContextFactory implements SecurityContextFactory {
 			if ( session.getAttribute( LAST_LOCATION ) == null ) {
 				final String location = exchange.getRelativePath();
 				session.setAttribute( LAST_LOCATION, location );
-				sessionCache.memorizeOrUpdate( session );
+				sessionCache.memorizeOrUpdate( exchange, session );
 			}
 		}
 	}
