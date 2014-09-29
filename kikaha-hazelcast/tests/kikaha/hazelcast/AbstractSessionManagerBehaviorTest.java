@@ -6,10 +6,12 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import io.undertow.security.api.SecurityContext;
+import io.undertow.security.idm.Account;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
 import io.undertow.server.handlers.CookieImpl;
 import kikaha.core.auth.AuthenticationRule;
+import kikaha.core.auth.FixedUsernameAndRolesAccount;
 
 import org.junit.After;
 import org.junit.Before;
@@ -26,9 +28,11 @@ import com.hazelcast.core.IMap;
 public class AbstractSessionManagerBehaviorTest {
 
 	final ServiceProvider provider = new ServiceProvider();
-	final Cookie sessionIdCookie = new CookieImpl( SessionCacheManager.SESSION_ID, SessionCacheManager.generateSessionId() );
+	final Account fixedAccount = new FixedUsernameAndRolesAccount( "username", "default" );
+	final SessionAccount sessionAccount = SessionAccount.from( fixedAccount );
+	final Cookie sessionIdCookie = new CookieImpl( SessionCacheManager.SESSION_ID, SessionID.generateSessionId() );
 	final AuthenticatedSession firefoxSession = new AuthenticatedSession( null, "Firefox", null, null );
-	final AuthenticatedSession chromeSession = new AuthenticatedSession( null, "Chrome", null, null );
+	final AuthenticatedSession chromeSession = new AuthenticatedSession( null, "Chrome", null, sessionAccount );
 
 	@Mock
 	SecurityContext securityContext;
@@ -42,6 +46,8 @@ public class AbstractSessionManagerBehaviorTest {
 	@Provided
 	HazelcastSecurityContextFactory factory;
 
+	WrappedSecurityContext wrappedSecurityContext;
+
 	protected void simulateThatReceivedCookieFromRequest() {
 		doReturn( sessionIdCookie ).when( sessionCache ).getSessionCookie( any( HttpServerExchange.class ) );
 		doNothing().when( sessionCache ).setSessionAsAttributeToExchange( any( HttpServerExchange.class ),
@@ -52,8 +58,9 @@ public class AbstractSessionManagerBehaviorTest {
 	}
 
 	protected void forceReturnMockedSecurityContext() {
-		doReturn( securityContext ).when( factory ).createSecurityContextWithDefaultFactory(
-			any( HttpServerExchange.class ), any( AuthenticationRule.class ) );
+		doReturn( wrappedSecurityContext )
+			.when( factory ).createSecurityContextWithDefaultFactory(
+				any( HttpServerExchange.class ), any( AuthenticationRule.class ) );
 	}
 
 	protected void simulateThatHaveNotReceivedCookieFromRequest() {
@@ -78,8 +85,7 @@ public class AbstractSessionManagerBehaviorTest {
 		factory = spy( factory );
 		factory.sessionCache = sessionCache;
 		doReturn( cache ).when( sessionCache ).produceSessionCache();
-		// doReturn( "HZ29BCB1391F4F4F468A2E339F32CEFC5F" ).when( sessionCache
-		// ).generateANewId();
+		wrappedSecurityContext = new WrappedSecurityContext( securityContext );
 	}
 
 	protected void resetMocks() {
@@ -90,7 +96,7 @@ public class AbstractSessionManagerBehaviorTest {
 			doReturn( cache ).when( sessionCache ).produceSessionCache();
 			factory = spy( factory );
 			factory.sessionCache = sessionCache;
-		} catch ( ServiceProviderException e ) {
+		} catch ( final ServiceProviderException e ) {
 			throw new RuntimeException( e );
 		}
 	}

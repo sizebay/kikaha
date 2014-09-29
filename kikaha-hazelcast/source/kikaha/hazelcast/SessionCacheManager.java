@@ -12,7 +12,6 @@ import trip.spi.Singleton;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
-import com.hazelcast.util.UuidUtil;
 
 /**
  * A service responsible to handle sessions persisted in Hazelcast data-grid.
@@ -42,10 +41,17 @@ public class SessionCacheManager {
 		return hazelcast.getMap( SESSION_CACHE );
 	}
 
+	public AuthenticatedSession getOrCreateSessionFor( final HttpServerExchange exchange ) {
+		AuthenticatedSession session = getSession( exchange );
+		if ( session == null )
+			session = createValidationSessionForExchange( exchange );
+		return session;
+	}
+
 	/**
 	 * Use data persisted in current {@link HttpServerExchange} to retrieve a
 	 * valid {@link AuthenticatedSession} from it.
-	 * 
+	 *
 	 * @param exchange
 	 * @return
 	 */
@@ -64,7 +70,7 @@ public class SessionCacheManager {
 	/**
 	 * Retrieve an {@link AuthenticatedSession} that matches the argument
 	 * {@code sessionId}.
-	 * 
+	 *
 	 * @param sessionId
 	 * @return
 	 */
@@ -88,14 +94,16 @@ public class SessionCacheManager {
 	}
 
 	AuthenticatedSession createValidationSessionForExchange( final HttpServerExchange exchange ) {
-		return AuthenticatedSession.from( exchange );
+		final AuthenticatedSession session = AuthenticatedSession.from( exchange );
+		saveSessionCookieFor( exchange, session.getId() );
+		return session;
 	}
 
 	/**
 	 * Create and memorize an {@link AuthenticatedSession} at the internal
 	 * cache. Also, set the session at the sent {@link HttpServerExchange}
 	 * argument for further usage.
-	 * 
+	 *
 	 * @param account
 	 * @param exchange
 	 * @return
@@ -104,11 +112,11 @@ public class SessionCacheManager {
 		val id = generateANewId();
 		val session = AuthenticatedSession.from( id, exchange, account );
 		saveSessionCookieFor( exchange, id );
-		return memorize( session );
+		return memorizeOrUpdate( session );
 	}
 
 	String generateANewId() {
-		return generateSessionId();
+		return SessionID.generateSessionId();
 	}
 
 	void saveSessionCookieFor( final HttpServerExchange exchange, final String id ) {
@@ -120,21 +128,21 @@ public class SessionCacheManager {
 
 	/**
 	 * Memorize an {@link AuthenticatedSession} at the internal cache.
-	 * 
+	 *
 	 * @param session
 	 * @return
 	 */
-	public AuthenticatedSession memorize( AuthenticatedSession session ) {
+	public AuthenticatedSession memorizeOrUpdate( final AuthenticatedSession session ) {
 		return getSessionCache().put( session.getId(), session );
 	}
 
 	/**
 	 * Remove the {@link AuthenticatedSession} persisted at
 	 * {@link HttpServerExchange} from internal cache.
-	 * 
+	 *
 	 * @param exchange
 	 */
-	public void removeSessionFrom( HttpServerExchange exchange ) {
+	public void removeSessionFrom( final HttpServerExchange exchange ) {
 		val sessionId = exchange.getAttachment( SESSION_KEY );
 		if ( sessionId != null ) {
 			remove( sessionId );
@@ -144,32 +152,11 @@ public class SessionCacheManager {
 
 	/**
 	 * Remove the {@link AuthenticatedSession} from internal cache.
-	 * 
+	 *
 	 * @param sessionId
 	 */
-	public void remove( String sessionId ) {
+	public void remove( final String sessionId ) {
 		getSessionCache().remove( sessionId );
 	}
 
-	/**
-	 * Generate a valid, pseudo-randomized, session id.<br>
-	 * <br>
-	 * <b>Note:</b> This code is a copy from {@link com.hazelcast.web.WebFilter}
-	 * 
-	 * @return
-	 */
-	public static synchronized String generateSessionId() {
-		final String id = UuidUtil.buildRandomUuidString();
-		final StringBuilder sb = new StringBuilder( "HZ" );
-		final char[] chars = id.toCharArray();
-		for ( final char c : chars ) {
-			if ( c != '-' ) {
-				if ( Character.isLetter( c ) )
-					sb.append( Character.toUpperCase( c ) );
-				else
-					sb.append( c );
-			}
-		}
-		return sb.toString();
-	}
 }

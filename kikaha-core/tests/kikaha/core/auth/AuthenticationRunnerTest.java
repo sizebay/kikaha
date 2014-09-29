@@ -26,6 +26,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import trip.spi.ServiceProvider;
+
 public class AuthenticationRunnerTest {
 
 	@Mock
@@ -111,7 +113,8 @@ public class AuthenticationRunnerTest {
 	AuthenticationRuleMatcher mockAuthRuleMatcher() {
 		val defaultConfig = DefaultConfiguration.loadDefaultConfig().getConfig( "server.auth" );
 		val authConfig = new DefaultAuthenticationConfiguration( defaultConfig );
-		val authRuleMatcher = spy( new AuthenticationRuleMatcher( authConfig ) );
+		val provider = new ServiceProvider();
+		val authRuleMatcher = spy( new AuthenticationRuleMatcher( provider, authConfig ) );
 		return authRuleMatcher;
 	}
 

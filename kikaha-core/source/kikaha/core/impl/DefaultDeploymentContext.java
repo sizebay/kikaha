@@ -29,47 +29,47 @@ public class DefaultDeploymentContext implements DeploymentContext {
 	final Map<String, Object> attributes = new HashMap<String, Object>();
 
 	@Override
-	public DeploymentContext register( RequestHook hook ) {
+	public DeploymentContext register( final RequestHook hook ) {
 		this.requestHooks.add( hook );
 		return this;
 	}
 
 	@Override
-	public DeploymentContext register( String uri, HttpHandler handler ) {
+	public DeploymentContext register( final String uri, final HttpHandler handler ) {
 		return register( uri, Methods.GET_STRING, handler );
 	}
 
 	@Override
-	public DeploymentContext register( String uri, String method, HttpHandler handler ) {
-		log.info( "Registering route: " + method + ":" + uri + "." );
+	public DeploymentContext register( final String uri, final String method, final HttpHandler handler ) {
+		log.info( "Registering route: " + method + ":" + uri + ": " + handler.getClass().getCanonicalName() );
 		this.rootHandler.add( method, uri, handler );
 		return this;
 	}
 
 	@Override
-	public <T> DeploymentContext attribute( Class<T> clazz, T object ) {
+	public <T> DeploymentContext attribute( final Class<T> clazz, final T object ) {
 		return attribute( clazz.getCanonicalName(), object );
 	}
 
 	@Override
-	public DeploymentContext attribute( String key, Object object ) {
+	public DeploymentContext attribute( final String key, final Object object ) {
 		attributes.put( key, object );
 		return this;
 	}
 
 	@Override
 	@SuppressWarnings( "unchecked" )
-	public <T> T attribute( Class<T> clazz ) {
+	public <T> T attribute( final Class<T> clazz ) {
 		return (T)attribute( clazz.getCanonicalName() );
 	}
 
 	@Override
-	public Object attribute( String key ) {
+	public Object attribute( final String key ) {
 		return attributes.get( key );
 	}
 
 	@Override
-	public DeploymentContext fallbackHandler( HttpHandler fallbackHandler ) {
+	public DeploymentContext fallbackHandler( final HttpHandler fallbackHandler ) {
 		rootHandler.setFallbackHandler( fallbackHandler );
 		return this;
 	}

@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 @Accessors( fluent = true )
 public class AuthenticationRule {
 
+	final String pattern;
 	final URLMatcher matcher;
 	final IdentityManager identityManager;
 	final List<AuthenticationMechanism> mechanisms;
@@ -27,6 +28,7 @@ public class AuthenticationRule {
 			final List<String> expectedRoles,
 			final NotificationReceiver notificationReceiver,
 			final SecurityContextFactory securityContextFactory ) {
+		this.pattern = pattern;
 		this.matcher = URLMatcher.compile( pattern );
 		this.identityManager = identityManager;
 		this.mechanisms = mechanisms;
@@ -36,8 +38,8 @@ public class AuthenticationRule {
 				.wrap( securityContextFactory );
 	}
 
-	public boolean matches( String url ) {
-		return matcher.matches( url );
+	public boolean matches( final String url ) {
+		return matcher.matches( url, null );
 	}
 
 	public boolean isThereSomeoneListeningForAuthenticationEvents() {

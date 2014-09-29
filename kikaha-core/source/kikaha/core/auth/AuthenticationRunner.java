@@ -23,22 +23,14 @@ public class AuthenticationRunner implements Runnable {
 	public void run() {
 		try {
 			context.setAuthenticationRequired();
-			if ( context.authenticate() && context.isAuthenticated() )
-				tryExecuteChain();
-			else
+			if ( context.authenticate() && context.isAuthenticated() ) {
+				if ( !chain.exchange().isResponseStarted() )
+					tryExecuteChain();
+			} else
 				endCommunicationWithClient();
-		} catch ( Throwable cause ) {
+		} catch ( final Throwable cause ) {
 			handleException( cause );
 		}
-	}
-
-	boolean matchesExpectedRoles() {
-		int matchedRoles = 0;
-		for ( val expectedRole : expectedRoles )
-			for ( val role : context.getAuthenticatedAccount().getRoles() )
-				if ( expectedRole.equals( role ) )
-					matchedRoles++;
-		return matchedRoles == expectedRoles.size();
 	}
 
 	void tryExecuteChain() throws UndertowStandaloneException {
@@ -48,8 +40,13 @@ public class AuthenticationRunner implements Runnable {
 			handlePermitionDenied();
 	}
 
-	void endCommunicationWithClient() {
-		chain.exchange().endExchange();
+	boolean matchesExpectedRoles() {
+		int matchedRoles = 0;
+		for ( val expectedRole : expectedRoles )
+			for ( val role : context.getAuthenticatedAccount().getRoles() )
+				if ( expectedRole.equals( role ) )
+					matchedRoles++;
+		return matchedRoles == expectedRoles.size();
 	}
 
 	void handlePermitionDenied() {
@@ -68,11 +65,11 @@ public class AuthenticationRunner implements Runnable {
 	}
 
 	void redirectToPermitionDeniedPage( final io.undertow.server.HttpServerExchange exchange ) {
-		exchange.setResponseCode( 307 );
+		exchange.setResponseCode( 303 );
 		exchange.getResponseHeaders().put( Headers.LOCATION, formAuthConfig.permitionDeniedPage() );
 	}
 
-	void handleException( Throwable cause ) {
+	void handleException( final Throwable cause ) {
 		cause.printStackTrace();
 		val exchange = chain.exchange();
 		if ( !exchange.isResponseStarted() ) {
@@ -80,5 +77,9 @@ public class AuthenticationRunner implements Runnable {
 			exchange.getResponseSender().send( "Internal Server Error: " + cause.getMessage() );
 		}
 		exchange.endExchange();
+	}
+
+	void endCommunicationWithClient() {
+		chain.exchange().endExchange();
 	}
 }

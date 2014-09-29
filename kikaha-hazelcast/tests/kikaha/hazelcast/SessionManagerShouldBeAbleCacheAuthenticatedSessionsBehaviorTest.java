@@ -1,5 +1,6 @@
 package kikaha.hazelcast;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -10,12 +11,17 @@ import static org.mockito.Mockito.verify;
 import io.undertow.security.api.SecurityNotification;
 import io.undertow.security.api.SecurityNotification.EventType;
 import io.undertow.security.idm.Account;
+import io.undertow.security.idm.IdentityManager;
 import io.undertow.server.HttpServerExchange;
 
 import java.security.Principal;
 import java.util.Collections;
 
-import kikaha.hazelcast.HazelcastSecurityContextFactory.IncludeSessionIntoCacheForAuthenticatedAccounts;
+import kikaha.core.api.conf.Configuration;
+import kikaha.core.auth.AuthenticationRule;
+import kikaha.core.impl.conf.DefaultConfiguration;
+import kikaha.hazelcast.HazelcastSecurityContextFactory.IncluderOfSessionIntoCacheForAuthenticatedAccounts;
+import lombok.val;
 
 import org.junit.Test;
 import org.mockito.Mock;
@@ -23,28 +29,39 @@ import org.mockito.Mock;
 public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 	extends AbstractSessionManagerBehaviorTest {
 
+	Configuration configuration = DefaultConfiguration.loadDefaultConfiguration();
+	HttpServerExchange exchange = createHttpExchange();
+
 	@Mock
 	Account account;
 
 	@Mock
 	Principal principal;
 
+	@Mock
+	IdentityManager manager;
+
 	AuthenticatedSession session;
-	IncludeSessionIntoCacheForAuthenticatedAccounts cacheNotifier;
+	IncluderOfSessionIntoCacheForAuthenticatedAccounts cacheNotifier;
 
 	@Test
 	public void ensureFullLifecycleBehavior() {
-
 		treatAnUnauthenticatedRequest();
 		resetMocks();
 		responseASecondRequestWithCachedData();
+	}
+
+	private HttpServerExchange createHttpExchange() {
+		final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
+		assertNotNull( exchange.getRequestHeaders() );
+		return exchange;
 	}
 
 	void treatAnUnauthenticatedRequest() {
 		simulateThatHaveNotReceivedCookieFromRequest();
 		forceReturnMockedSecurityContext();
 		memorizeCacheNotifier();
-		factory.createSecurityContextFor( new HttpServerExchange( null ), null );
+		factory.createSecurityContextFor( exchange, null );
 		simulateAsynNotificationWhenAuthenticationIsSuccessful();
 	}
 
@@ -83,7 +100,7 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 
 	SecurityNotification createAuthenticationNotification() {
 		return new SecurityNotification(
-			null, EventType.AUTHENTICATED, account,
+			exchange, EventType.AUTHENTICATED, account,
 			null, false, null, false );
 	}
 
@@ -91,7 +108,9 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 		simulateThatReceivedCookieFromRequest();
 		doReturn( chromeSession ).when( sessionCache ).getSession( any( String.class ) );
 		simulateAChromeUserAgentRequest();
-		factory.createSecurityContextFor( new HttpServerExchange( null ), null );
+		val rule = new AuthenticationRule( "", manager,
+			null, null, null, factory );
+		factory.createSecurityContextFor( new HttpServerExchange( null ), rule );
 		verify( factory ).preAuthenticatedSecurityContext( any( HttpServerExchange.class ), any( AuthenticatedSession.class ) );
 	}
 }

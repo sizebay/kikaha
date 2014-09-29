@@ -14,21 +14,25 @@ import kikaha.core.api.conf.AuthenticationRuleConfiguration;
 import lombok.Getter;
 import lombok.val;
 import lombok.experimental.Accessors;
+import trip.spi.ServiceProvider;
+import trip.spi.ServiceProviderException;
 
 @Getter
 @Accessors( fluent = true )
 @SuppressWarnings( "rawtypes" )
 public class AuthenticationRuleMatcher {
 
-	final Map<String, AuthenticationMechanism> mechanisms;
+	final Map<String, AuthenticationMechanismFactory> mechanisms;
 	final Map<String, IdentityManager> identityManagers;
 	final Map<String, NotificationReceiver> notificationReceivers;
 	final Map<String, SecurityContextFactory> securityContextFactories;
 	final List<AuthenticationRule> rules;
 	final AuthenticationConfiguration authConfig;
+	final ServiceProvider provider;
 
-	public AuthenticationRuleMatcher( AuthenticationConfiguration authConfig ) {
+	public AuthenticationRuleMatcher( final ServiceProvider provider, final AuthenticationConfiguration authConfig ) {
 		this.authConfig = authConfig;
+		this.provider = provider;
 		mechanisms = instantiateMechanismsFoundOnConfig();
 		identityManagers = instantiateIdentityManagersFoundOnConfig();
 		notificationReceivers = instantiateNotificationReceivers();
@@ -36,18 +40,18 @@ public class AuthenticationRuleMatcher {
 		rules = readRulesFromConfig();
 	}
 
-	Map<String, AuthenticationMechanism> instantiateMechanismsFoundOnConfig() {
-		val mechanisms = new HashMap<String, AuthenticationMechanism>();
-		for ( String id : authConfig.mechanisms().keySet() ) {
+	Map<String, AuthenticationMechanismFactory> instantiateMechanismsFoundOnConfig() {
+		val mechanisms = new HashMap<String, AuthenticationMechanismFactory>();
+		for ( val id : authConfig.mechanisms().keySet() ) {
 			val originalClass = authConfig.mechanisms().get( id );
-			mechanisms.put( id, (AuthenticationMechanism)instantiate( originalClass ) );
+			mechanisms.put( id, (AuthenticationMechanismFactory)instantiate( originalClass ) );
 		}
 		return mechanisms;
 	}
 
 	Map<String, IdentityManager> instantiateIdentityManagersFoundOnConfig() {
 		val identityManagers = new HashMap<String, IdentityManager>();
-		for ( String id : authConfig.identityManagers().keySet() ) {
+		for ( val id : authConfig.identityManagers().keySet() ) {
 			val originalClass = authConfig.identityManagers().get( id );
 			identityManagers.put( id, (IdentityManager)instantiate( originalClass ) );
 		}
@@ -56,7 +60,7 @@ public class AuthenticationRuleMatcher {
 
 	Map<String, NotificationReceiver> instantiateNotificationReceivers() {
 		val notificationReceivers = new HashMap<String, NotificationReceiver>();
-		for ( String id : authConfig.notificationReceivers().keySet() ) {
+		for ( val id : authConfig.notificationReceivers().keySet() ) {
 			val originalClass = authConfig.notificationReceivers().get( id );
 			notificationReceivers.put( id, (NotificationReceiver)instantiate( originalClass ) );
 		}
@@ -65,7 +69,7 @@ public class AuthenticationRuleMatcher {
 
 	Map<String, SecurityContextFactory> instantiateSecurityContextFactories() {
 		val securityContextFactories = new HashMap<String, SecurityContextFactory>();
-		for ( String id : authConfig.securityContextFactories().keySet() ) {
+		for ( val id : authConfig.securityContextFactories().keySet() ) {
 			val originalClass = authConfig.securityContextFactories().get( id );
 			securityContextFactories.put( id, (SecurityContextFactory)instantiate( originalClass ) );
 		}
@@ -102,14 +106,32 @@ public class AuthenticationRuleMatcher {
 			final AuthenticationRuleConfiguration ruleConf ) {
 		val mechanisms = new ArrayList<AuthenticationMechanism>();
 		for ( val mechanism : ruleConf.mechanisms() )
-			mechanisms.add( mechanisms().get( mechanism ) );
+			mechanisms.add( createMechanism( ruleConf, mechanism ) );
 		return mechanisms;
 	}
 
+	AuthenticationMechanism createMechanism( final AuthenticationRuleConfiguration ruleConf, final java.lang.String mechanism ) {
+		try {
+			val factory = mechanisms().get( mechanism );
+			provider.provideOn( factory );
+			return factory.create( ruleConf );
+		} catch ( final ServiceProviderException e ) {
+			throw new IllegalStateException( e );
+		}
+	}
+
 	public AuthenticationRule retrieveAuthenticationRuleForUrl( final String url ) {
-		for ( val rule : rules )
-			if ( rule.matches( url ) )
-				return rule;
+		if ( !isUrlFromAuthenticationResources( url ) )
+			for ( val rule : rules )
+				if ( rule.matches( url ) )
+					return rule;
 		return null;
+	}
+
+	boolean isUrlFromAuthenticationResources( final String url ) {
+		val auth = authConfig.formAuth();
+		return auth.errorPage().equals( url )
+			|| auth.loginPage().equals( url )
+			|| auth.permitionDeniedPage().equals( url );
 	}
 }

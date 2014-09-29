@@ -15,15 +15,15 @@ import trip.spi.Singleton;
 @Log
 @Singleton( exposedAs = DeploymentHook.class )
 public class AuthenticationRulesDeployment implements DeploymentHook {
-	
+
 	@Provided
 	ServiceProvider provider;
-	
+
 	@Provided
 	Configuration configuration;
 
 	@Override
-	public void onDeploy( DeploymentContext context ) {
+	public void onDeploy( final DeploymentContext context ) {
 		if ( haveAuthenticationRulesDefinedInConfigurationFile() ) {
 			log.info( "Configuring authentication rules..." );
 			val ruleMatcher = createRuleMatcher();
@@ -36,23 +36,23 @@ public class AuthenticationRulesDeployment implements DeploymentHook {
 	}
 
 	AuthenticationRuleMatcher createRuleMatcher() {
-		val ruleMatcher = new AuthenticationRuleMatcher( configuration.authentication() );
+		val ruleMatcher = new AuthenticationRuleMatcher( provider, configuration.authentication() );
 		provideOnMapEntries( ruleMatcher.identityManagers() );
 		provideOnMapEntries( ruleMatcher.notificationReceivers() );
 		provideOnMapEntries( ruleMatcher.mechanisms() );
 		provideOnMapEntries( ruleMatcher.securityContextFactories() );
 		return ruleMatcher;
 	}
-	
-	<T> void provideOnMapEntries( Map<String, T> map ) {
+
+	<T> void provideOnMapEntries( final Map<String, T> map ) {
 		try {
 			provider.provideOn( map.values() );
-		} catch ( ServiceProviderException e ) {
+		} catch ( final ServiceProviderException e ) {
 			throw new IllegalStateException( e );
 		}
 	}
 
 	@Override
-	public void onUndeploy( DeploymentContext context ) {
+	public void onUndeploy( final DeploymentContext context ) {
 	}
 }

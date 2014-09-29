@@ -18,6 +18,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import trip.spi.ServiceProvider;
+
 public class AuthenticationHookTest {
 
 	@Mock
@@ -31,7 +33,8 @@ public class AuthenticationHookTest {
 	public void initializeMocks() {
 		MockitoAnnotations.initMocks( this );
 		val config = DefaultConfiguration.loadDefaultConfiguration();
-		val authenticationRuleMatcher = new AuthenticationRuleMatcher( config.authentication() );
+		val provider = new ServiceProvider();
+		val authenticationRuleMatcher = new AuthenticationRuleMatcher( provider, config.authentication() );
 		authenticationHook = spy( new AuthenticationHook( authenticationRuleMatcher, config ) );
 	}
 

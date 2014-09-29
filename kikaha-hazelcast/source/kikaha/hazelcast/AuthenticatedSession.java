@@ -16,12 +16,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import lombok.val;
 import lombok.experimental.Accessors;
 
 @Getter
 @Accessors( fluent = true )
 @RequiredArgsConstructor
+@ToString
 public class AuthenticatedSession implements Serializable, Session {
 
 	private static final long serialVersionUID = -1702911555724253987L;
@@ -40,7 +42,7 @@ public class AuthenticatedSession implements Serializable, Session {
 	}
 
 	@Override
-	public void requestDone( HttpServerExchange serverExchange ) {
+	public void requestDone( final HttpServerExchange serverExchange ) {
 	}
 
 	@Override
@@ -54,7 +56,7 @@ public class AuthenticatedSession implements Serializable, Session {
 	}
 
 	@Override
-	public void setMaxInactiveInterval( int interval ) {
+	public void setMaxInactiveInterval( final int interval ) {
 	}
 
 	@Override
@@ -63,7 +65,7 @@ public class AuthenticatedSession implements Serializable, Session {
 	}
 
 	@Override
-	public Object getAttribute( String name ) {
+	public Object getAttribute( final String name ) {
 		return attributes.get( name );
 	}
 
@@ -73,17 +75,17 @@ public class AuthenticatedSession implements Serializable, Session {
 	}
 
 	@Override
-	public Object setAttribute( String name, Object value ) {
+	public Object setAttribute( final String name, final Object value ) {
 		return attributes.put( name, value );
 	}
 
 	@Override
-	public Object removeAttribute( String name ) {
+	public Object removeAttribute( final String name ) {
 		return attributes.remove( name );
 	}
 
 	@Override
-	public void invalidate( HttpServerExchange exchange ) {
+	public void invalidate( final HttpServerExchange exchange ) {
 	}
 
 	@Override
@@ -92,7 +94,7 @@ public class AuthenticatedSession implements Serializable, Session {
 	}
 
 	@Override
-	public String changeSessionId( HttpServerExchange exchange, SessionConfig config ) {
+	public String changeSessionId( final HttpServerExchange exchange, final SessionConfig config ) {
 		return id;
 	}
 
@@ -107,13 +109,14 @@ public class AuthenticatedSession implements Serializable, Session {
 			host, SessionAccount.from( account ) );
 	}
 
-	public static AuthenticatedSession from( HttpServerExchange exchange ) {
+	public static AuthenticatedSession from( final HttpServerExchange exchange ) {
 		val headers = exchange.getRequestHeaders();
 		return new AuthenticatedSession(
-			null, headers.getFirst( Headers.USER_AGENT ), null, null );
+			SessionID.generateSessionId(),
+			headers.getFirst( Headers.USER_AGENT ), null, null );
 	}
 
-	static String extractHostAddressFrom( HttpServerExchange exchange ) {
+	static String extractHostAddressFrom( final HttpServerExchange exchange ) {
 		final InetSocketAddress peerAddress = (InetSocketAddress)exchange.getConnection().getPeerAddress();
 		return peerAddress.getAddress().getHostAddress();
 	}
