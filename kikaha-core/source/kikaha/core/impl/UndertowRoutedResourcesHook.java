@@ -5,6 +5,7 @@ import io.undertow.server.HttpServerExchange;
 import kikaha.core.api.RequestHook;
 import kikaha.core.api.RequestHookChain;
 import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.url.URL;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor( staticName = "wrap" )
@@ -13,29 +14,18 @@ public class UndertowRoutedResourcesHook implements RequestHook {
 	final HttpHandler resourceHandler;
 
 	@Override
-	public void execute( RequestHookChain chain, HttpServerExchange exchange )
+	public void execute( final RequestHookChain chain, final HttpServerExchange exchange )
 			throws UndertowStandaloneException {
 		try {
 			fixRelativePath( exchange );
 			this.resourceHandler.handleRequest( exchange );
-		} catch ( Exception cause ) {
+		} catch ( final Exception cause ) {
 			throw new UndertowStandaloneException( cause );
 		}
 	}
 
-	void fixRelativePath( HttpServerExchange exchange ) {
-		final String relativePath = removeTrailingCharacter( exchange.getRelativePath() );
+	void fixRelativePath( final HttpServerExchange exchange ) {
+		final String relativePath = URL.removeTrailingCharacter( exchange.getRelativePath() );
 		exchange.setRelativePath( relativePath );
-	}
-
-	String removeTrailingCharacter( String original ) {
-		final StringBuilder builder = new StringBuilder( original );
-		while ( hasRemaningTrailingCharacter( builder ) )
-			builder.deleteCharAt( builder.length() - 1 );
-		return builder.toString();
-	}
-
-	boolean hasRemaningTrailingCharacter( final StringBuilder builder ) {
-		return builder != null && builder.length() > 1 && '/' == builder.charAt( builder.length() - 1 );
 	}
 }

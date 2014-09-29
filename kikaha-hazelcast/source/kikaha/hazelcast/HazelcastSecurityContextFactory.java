@@ -13,9 +13,11 @@ import kikaha.core.auth.DefaultSecurityContextFactory;
 import kikaha.core.auth.SecurityContextFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import lombok.extern.java.Log;
 import trip.spi.Provided;
 import trip.spi.Singleton;
 
+@Log
 @Singleton
 public class HazelcastSecurityContextFactory implements SecurityContextFactory {
 
@@ -106,8 +108,14 @@ public class HazelcastSecurityContextFactory implements SecurityContextFactory {
 				session.removeAttribute( LAST_LOCATION );
 				sessionCache.memorizeOrUpdate( session );
 			} catch ( final Throwable e ) {
-				e.printStackTrace();
+				handleFailure( e );
 			}
+		}
+
+		void handleFailure( final Throwable e ) {
+			log.severe( e.getMessage() );
+			e.printStackTrace();
+			throw new RuntimeException( e );
 		}
 
 		void sendRedirect( final HttpServerExchange exchange, final String location ) {

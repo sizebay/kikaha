@@ -1,8 +1,6 @@
 package kikaha.core.impl;
 
-import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
-import io.undertow.server.RoutingHandler;
 import io.undertow.util.Methods;
 
 import java.util.HashMap;
@@ -12,6 +10,8 @@ import java.util.Map;
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
 import kikaha.core.api.RequestHook;
+import kikaha.core.url.SimpleRoutingHandler;
+import kikaha.core.url.URL;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -25,7 +25,7 @@ public class DefaultDeploymentContext implements DeploymentContext {
 
 	final Iterable<DeploymentHook> deploymentHooks;
 	final List<RequestHook> requestHooks;
-	final RoutingHandler rootHandler = Handlers.routing();
+	final SimpleRoutingHandler rootHandler = new SimpleRoutingHandler();
 	final Map<String, Object> attributes = new HashMap<String, Object>();
 
 	@Override
@@ -40,7 +40,8 @@ public class DefaultDeploymentContext implements DeploymentContext {
 	}
 
 	@Override
-	public DeploymentContext register( final String uri, final String method, final HttpHandler handler ) {
+	public DeploymentContext register( String uri, final String method, final HttpHandler handler ) {
+		uri = URL.removeTrailingCharacter( uri );
 		log.info( "Registering route: " + method + ":" + uri + ": " + handler.getClass().getCanonicalName() );
 		this.rootHandler.add( method, uri, handler );
 		return this;

@@ -1,5 +1,7 @@
 package kikaha.core.url;
 
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -9,7 +11,7 @@ public class EndsWithMatcher implements Matcher {
 	final char[] patternChars;
 
 	@Override
-	public boolean matches( StringCursor string ) {
+	public boolean matches( StringCursor string , Map<String, String> foundParameters  ) {
 		val pattern = new StringCursor( patternChars );
 		char firstPatternChar = pattern.next();
 		return string.shiftCursorToNextChar( firstPatternChar )
