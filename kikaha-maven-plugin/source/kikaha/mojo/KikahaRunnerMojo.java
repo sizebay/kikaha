@@ -41,10 +41,10 @@ public class KikahaRunnerMojo extends AbstractMojo {
 
 	/**
 	 * The profile configuration to load when running the server.
-	 * 
-	 * @parameter default-value=""
+	 *
+	 * @parameter default-value="${project.basedir}/src/main/webapp"
 	 */
-	String profile;
+	String webresourcesPath;
 
 	/**
 	 * @parameter default-value="${plugin}"
@@ -56,7 +56,7 @@ public class KikahaRunnerMojo extends AbstractMojo {
 
 	/**
 	 * Used to construct artifacts for deletion/resolution...
-	 * 
+	 *
 	 * @component
 	 */
 	ArtifactFactory factory;
@@ -68,7 +68,7 @@ public class KikahaRunnerMojo extends AbstractMojo {
 
 	/**
 	 * Name of the generated JAR.
-	 * 
+	 *
 	 * @parameter alias="jarName" expression="${jar.finalName}"
 	 *            default-value="${project.build.finalName}"
 	 * @required
@@ -77,7 +77,7 @@ public class KikahaRunnerMojo extends AbstractMojo {
 
 	/**
 	 * Directory containing the build files.
-	 * 
+	 *
 	 * @parameter expression="${project.build.directory}"
 	 */
 	File buildDirectory;
@@ -89,10 +89,10 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
 			memorizeClassPathWithRunnableJar();
-			String commandLineString = getCommandLineString();
+			final String commandLineString = getCommandLineString();
 			System.out.println( "CML: " + commandLineString );
 			run( commandLineString );
-		} catch ( Exception e ) {
+		} catch ( final Exception e ) {
 			throw new MojoExecutionException( "Can't initialize Kikaha.", e );
 		}
 	}
@@ -101,7 +101,7 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	void memorizeClassPathWithRunnableJar()
 			throws DependencyResolutionRequiredException, ArtifactResolutionException, ArtifactNotFoundException {
 		final List<String> artifactsInClassPath = new ArrayList<>();
-		for ( Artifact artifact : (Set<Artifact>)this.project.getArtifacts() ) {
+		for ( final Artifact artifact : (Set<Artifact>)this.project.getArtifacts() ) {
 			final String artifactAbsolutePath = getArtifactAbsolutePath( artifact );
 			if ( !artifactsInClassPath.contains( artifactAbsolutePath ) ) {
 				this.classPath.append( artifactAbsolutePath ).append( SEPARATOR );
@@ -113,26 +113,26 @@ public class KikahaRunnerMojo extends AbstractMojo {
 			.append( SEPARATOR ).append( "." );
 	}
 
-	String getArtifactAbsolutePath( Artifact artifact )
+	String getArtifactAbsolutePath( final Artifact artifact )
 			throws ArtifactResolutionException, ArtifactNotFoundException {
 		this.resolver.resolve( artifact, Collections.EMPTY_LIST, this.localRepository );
 		return artifact.getFile().getAbsolutePath();
 	}
 
 	String getFinalArtifactName() {
-		String fileName = String.format( "%s.%s", this.finalName, this.project.getPackaging() );
+		final String fileName = String.format( "%s.%s", this.finalName, this.project.getPackaging() );
 		return new File( this.buildDirectory, fileName ).getAbsolutePath();
 	}
 
 	String getCommandLineString() {
 		return String.format(
-			"java -cp \"%s\" %s %s",
+			"java -cp \"%s\" %s \"%s\"",
 				this.classPath.toString(),
 				Main.class.getCanonicalName(),
-				this.profile != null ? this.profile : "" );
+				this.webresourcesPath != null ? this.webresourcesPath : "" );
 	}
 
-	void run( String commandLineString ) throws IOException, InterruptedException {
+	void run( final String commandLineString ) throws IOException, InterruptedException {
 		final Runtime runtime = Runtime.getRuntime();
 		final Process exec = runtime.exec( commandLineString );
 		runtime.addShutdownHook( new ProcessDestroyer( exec ) );
@@ -142,7 +142,7 @@ public class KikahaRunnerMojo extends AbstractMojo {
 			throw new RuntimeException( "The Kikaha has failed to run." );
 	}
 
-	void printAsynchronously( InputStream stream ) {
+	void printAsynchronously( final InputStream stream ) {
 		new Thread( new ProcessOutputPrinter( stream ) ).start();
 	}
 }

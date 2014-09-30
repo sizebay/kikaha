@@ -25,10 +25,9 @@ public class DefaultConfiguration implements Configuration {
 	private final String host = config().getString( "server.host" );
 
 	@Getter( lazy = true )
-	private final String resourcesPath = config().getString( "server.resources-path" );
-
-	@Getter( lazy = true )
 	private final AuthenticationConfiguration authentication = createAuthenticationConfig();
+
+	String resourcesPath;
 
 	@Getter( lazy = true )
 	private final SSLConfiguration ssl = createSSLConfiguration();
@@ -41,15 +40,26 @@ public class DefaultConfiguration implements Configuration {
 		return new DefaultAuthenticationConfiguration( config().getConfig( "server.auth" ) );
 	}
 
-	public static Configuration loadDefaultConfiguration() {
-		Config config = loadDefaultConfig();
+	@Override
+	public String resourcesPath() {
+		if ( resourcesPath == null )
+			resourcesPath = config().getString( "server.resources-path" );
+		return resourcesPath;
+	}
+
+	public void resourcesPath( final String resourcesPath ) {
+		this.resourcesPath = resourcesPath;
+	}
+
+	public static DefaultConfiguration loadDefaultConfiguration() {
+		final Config config = loadDefaultConfig();
 		return new DefaultConfiguration( config, "default" );
 	}
 
-	public static Configuration loadConfiguration( String rootPath ) {
-		Config defaultConfig = loadDefaultConfig();
-		Config root = defaultConfig.getConfig( rootPath );
-		Config config = root.withFallback( defaultConfig );
+	public static DefaultConfiguration loadConfiguration( final String rootPath ) {
+		final Config defaultConfig = loadDefaultConfig();
+		final Config root = defaultConfig.getConfig( rootPath );
+		final Config config = root.withFallback( defaultConfig );
 		return new DefaultConfiguration( config, rootPath );
 	}
 

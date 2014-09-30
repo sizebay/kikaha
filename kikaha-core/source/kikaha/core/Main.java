@@ -24,15 +24,15 @@ public class Main {
 			undertowServer.stop();
 	}
 
-	public static void main( String[] args ) throws InterruptedException, UndertowStandaloneException, IOException, ClassNotFoundException {
-		final Configuration config = args.length == 0 || isBlank( args[0] )
-				? DefaultConfiguration.loadDefaultConfiguration()
-				: DefaultConfiguration.loadConfiguration( args[0] );
+	public static void main( final String[] args ) throws InterruptedException, UndertowStandaloneException, IOException, ClassNotFoundException {
+		val config = DefaultConfiguration.loadDefaultConfiguration();
+		if ( args.length > 0 && !isBlank( args[0] ) )
+			config.resourcesPath( args[0] );
 		val main = new Main( config );
 		main.start();
 	}
 
-	static boolean isBlank( String string ) {
+	static boolean isBlank( final String string ) {
 		return string == null || string.isEmpty();
 	}
 }
