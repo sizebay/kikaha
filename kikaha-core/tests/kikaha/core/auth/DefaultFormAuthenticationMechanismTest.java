@@ -48,9 +48,21 @@ public class DefaultFormAuthenticationMechanismTest {
 
 	@SneakyThrows
 	String getAttributeAsString( final Object object, final String fieldName ) {
-		val field = object.getClass().getDeclaredField( fieldName );
-		field.setAccessible( true );
-		return (String)field.get( object );
+		final Class<? extends Object> clazz = object.getClass();
+		return getAttributeAsString( object, fieldName, clazz );
+	}
+
+	String getAttributeAsString( final Object object, final String fieldName, final Class<?> clazz ) throws IllegalAccessException {
+		try {
+			val field = clazz.getDeclaredField( fieldName );
+			field.setAccessible( true );
+			return (String)field.get( object );
+		} catch ( final NoSuchFieldException cause ) {
+			final Class<?> superclass = clazz.getSuperclass();
+			if ( superclass.equals( object.getClass() ) )
+				return null;
+			return getAttributeAsString( object, fieldName, superclass );
+		}
 	}
 
 	@Before
