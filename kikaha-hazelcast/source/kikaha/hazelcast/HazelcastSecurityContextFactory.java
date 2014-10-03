@@ -106,6 +106,7 @@ public class HazelcastSecurityContextFactory implements SecurityContextFactory {
 				final String location = (String)session.getAttribute( LAST_LOCATION );
 				sendRedirect( exchange, location );
 				session.removeAttribute( LAST_LOCATION );
+				sessionCache.remove( session.getId() );
 				sessionCache.memorizeOrUpdate( session );
 			} catch ( final Throwable e ) {
 				handleFailure( e );
