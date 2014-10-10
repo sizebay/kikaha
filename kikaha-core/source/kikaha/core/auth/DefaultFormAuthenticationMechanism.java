@@ -25,9 +25,9 @@ public class DefaultFormAuthenticationMechanism implements AuthenticationMechani
 	@Override
 	public AuthenticationMechanism create( final AuthenticationRuleConfiguration rule ) {
 		val config = configuration.authentication().formAuth();
-		val postLocation = rule.pattern().replaceAll( "\\*$", "" ) + config.postLocation();
 		return new FixedFormAuthenticationMechanism(
-			config.name(), config.loginPage(), config.errorPage(), postLocation );
+			config.name(), config.loginPage(),
+			config.errorPage(), config.postLocation() );
 	}
 }
 

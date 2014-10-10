@@ -43,7 +43,7 @@ public class DefaultFormAuthenticationMechanismTest {
 		assertThat( getAttributeAsString( mechanism, "name" ), is( "DefaultFormAuth" ) );
 		assertThat( getAttributeAsString( mechanism, "loginPage" ), is( "/auth/" ) );
 		assertThat( getAttributeAsString( mechanism, "errorPage" ), is( "/auth/error/" ) );
-		assertThat( getAttributeAsString( mechanism, "postLocation" ), is( "/auth/j_security_check" ) );
+		assertThat( getAttributeAsString( mechanism, "postLocation" ), is( "j_security_check" ) );
 	}
 
 	@SneakyThrows
