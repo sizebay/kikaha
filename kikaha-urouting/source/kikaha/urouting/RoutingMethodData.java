@@ -55,11 +55,12 @@ public class RoutingMethodData {
 
 	public static RoutingMethodData from(
 			final ExecutableElement method, final Class<? extends Annotation> httpMethodAnnotation ) {
-		final boolean isMultiPart = httpMethodAnnotation.equals( MultiPartFormData.class );
-		final String httpMethod = isMultiPart
-				? "POST" : httpMethodAnnotation.getSimpleName();
 		final String type = method.getEnclosingElement().asType().toString();
 		final String methodParams = extractMethodParamsFrom( method );
+		final boolean isMultiPart = httpMethodAnnotation.equals( MultiPartFormData.class )
+			|| methodParams.contains( "methodDataProvider.getFormParam" );
+		final String httpMethod = isMultiPart
+			? "POST" : httpMethodAnnotation.getSimpleName();
 		return createRouteMethodData( method, isMultiPart, httpMethod, type, methodParams );
 	}
 
