@@ -8,6 +8,8 @@ public interface Configuration {
 
 	String resourcesPath();
 
+	String welcomeFile();
+
 	Integer port();
 
 	String host();

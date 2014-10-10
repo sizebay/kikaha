@@ -25,6 +25,9 @@ public class DefaultConfiguration implements Configuration {
 	private final String host = config().getString( "server.host" );
 
 	@Getter( lazy = true )
+	private final String welcomeFile = config().getString( "server.welcome-file" );
+
+	@Getter( lazy = true )
 	private final AuthenticationConfiguration authentication = createAuthenticationConfig();
 
 	String resourcesPath;

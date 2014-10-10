@@ -112,12 +112,12 @@ public class UndertowServer {
 
 	protected ResourceHandler createResourceManager() {
 		final File location = retrieveWebAppFolder();
-		final FileResourceManager resourceManager = new FileResourceManager(location,
-				100);
+		final FileResourceManager resourceManager = new FileResourceManager( location, 100 );
 		log.info("Exposing resource files at " + location);
 		return Handlers.resource(resourceManager)
 				.setResourceManager(resourceManager)
-				.setDirectoryListingEnabled(false);
+				.setDirectoryListingEnabled( false )
+				.setWelcomeFiles( configuration.welcomeFile() );
 	}
 
 	protected File retrieveWebAppFolder() {
