@@ -13,6 +13,7 @@ import io.undertow.server.HttpServerExchange;
 
 import java.net.InetSocketAddress;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import kikaha.core.api.conf.Configuration;
@@ -110,7 +111,7 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 		doReturn( chromeSession ).when( sessionCache ).getSession( any( String.class ) );
 		simulateAChromeUserAgentRequest();
 		val rule = new AuthenticationRule( "", manager,
-			null, null, null, factory );
+			null, null, null, factory, new ArrayList<String>() );
 		factory.createSecurityContextFor( new HttpServerExchange( null ), rule );
 		verify( factory ).preAuthenticatedSecurityContext( any( HttpServerExchange.class ), any( AuthenticatedSession.class ) );
 	}

@@ -12,8 +12,10 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.val;
 import trip.spi.Provided;
+import trip.spi.Singleton;
 
 @Getter
+@Singleton
 public class HazelcastSessionManager implements SessionManager {
 
 	public final static String SESSION_CACHE = HazelcastSessionManager.class.getSimpleName();
