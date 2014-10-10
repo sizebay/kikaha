@@ -99,7 +99,8 @@ public class AuthenticationRuleMatcher {
 		return new AuthenticationRule(
 				ruleConf.pattern(), identityManager,
 				mechanisms, ruleConf.expectedRoles(),
-				notificationReceiver, securityContextFactory );
+			notificationReceiver, securityContextFactory,
+			ruleConf.exceptionPatterns() );
 	}
 
 	List<AuthenticationMechanism> extractNeededMechanisms(

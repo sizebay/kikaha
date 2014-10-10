@@ -6,6 +6,8 @@ public interface AuthenticationRuleConfiguration {
 
 	String pattern();
 
+	List<String> exceptionPatterns();
+
 	String identityManager();
 
 	String notificationReceiver();

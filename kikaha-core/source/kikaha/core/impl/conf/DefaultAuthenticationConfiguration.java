@@ -42,7 +42,7 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 		securityContextFactories = retrieveChildElementsAsClassMapFromConfigNode( "security-context-factories" );
 	}
 
-	public Map<String, Class<?>> retrieveChildElementsAsClassMapFromConfigNode( String rootNode ) {
+	public Map<String, Class<?>> retrieveChildElementsAsClassMapFromConfigNode( final String rootNode ) {
 		val classList = new HashMap<String, Class<?>>();
 		val node = config.getConfig( rootNode );
 		for ( val entry : node.entrySet() )
@@ -50,8 +50,8 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 		return classList;
 	}
 
-	Class convertCanonicalNameToClass( Entry<String, ConfigValue> entry ) {
-		String classCanonicalName = entry.getValue().unwrapped().toString();
+	Class convertCanonicalNameToClass( final Entry<String, ConfigValue> entry ) {
+		final String classCanonicalName = entry.getValue().unwrapped().toString();
 		return classFromCanonicalName( classCanonicalName );
 	}
 
@@ -62,19 +62,19 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 		return authRules;
 	}
 
-	private AuthenticationRuleConfiguration createAuthenticationRule( Config ruleConfig ) {
+	private AuthenticationRuleConfiguration createAuthenticationRule( final Config ruleConfig ) {
 		return new InheritedAuthenticationRuleConfiguration( ruleConfig, defaultRule() );
 	}
 
-	Class classFromCanonicalName( String classCanonicalName ) {
+	Class classFromCanonicalName( final String classCanonicalName ) {
 		try {
 			return Class.forName( classCanonicalName );
-		} catch ( ClassNotFoundException cause ) {
+		} catch ( final ClassNotFoundException cause ) {
 			throw bypass( cause );
 		}
 	}
 
-	IllegalStateException bypass( Exception cause ) {
+	IllegalStateException bypass( final Exception cause ) {
 		return new IllegalStateException( cause );
 	}
 }

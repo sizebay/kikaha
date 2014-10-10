@@ -33,11 +33,14 @@ class InheritedAuthenticationRuleConfiguration implements AuthenticationRuleConf
 	@Getter( lazy = true )
 	private final List<String> expectedRoles = config.getStringList( "expected-roles" );
 
+	@Getter( lazy = true )
+	private final List<String> exceptionPatterns = config.getStringList( "exclude-patterns" );
+
 	@Override
 	public String pattern() {
 		try {
 			return getPattern();
-		} catch ( Missing cause ) {
+		} catch ( final Missing cause ) {
 			return inheritedRule.pattern();
 		}
 	}
@@ -46,7 +49,7 @@ class InheritedAuthenticationRuleConfiguration implements AuthenticationRuleConf
 	public List<String> mechanisms() {
 		try {
 			return getMechanisms();
-		} catch ( Missing cause ) {
+		} catch ( final Missing cause ) {
 			return inheritedRule.mechanisms();
 		}
 	}
@@ -55,7 +58,7 @@ class InheritedAuthenticationRuleConfiguration implements AuthenticationRuleConf
 	public List<String> expectedRoles() {
 		try {
 			return getExpectedRoles();
-		} catch ( Missing cause ) {
+		} catch ( final Missing cause ) {
 			return inheritedRule.expectedRoles();
 		}
 	}
@@ -64,7 +67,7 @@ class InheritedAuthenticationRuleConfiguration implements AuthenticationRuleConf
 	public String identityManager() {
 		try {
 			return getIdentityManager();
-		} catch ( Missing cause ) {
+		} catch ( final Missing cause ) {
 			return inheritedRule.identityManager();
 		}
 	}
@@ -73,7 +76,7 @@ class InheritedAuthenticationRuleConfiguration implements AuthenticationRuleConf
 	public String notificationReceiver() {
 		try {
 			return getNotificationReceiver();
-		} catch ( Missing cause ) {
+		} catch ( final Missing cause ) {
 			return inheritedRule.notificationReceiver();
 		}
 	}
@@ -82,8 +85,17 @@ class InheritedAuthenticationRuleConfiguration implements AuthenticationRuleConf
 	public String securityContextFactory() {
 		try {
 			return getSecurityContextFactory();
-		} catch ( Missing cause ) {
+		} catch ( final Missing cause ) {
 			return inheritedRule.securityContextFactory();
+		}
+	}
+
+	@Override
+	public List<String> exceptionPatterns() {
+		try {
+			return getExceptionPatterns();
+		} catch ( final Missing cause ) {
+			return inheritedRule.exceptionPatterns();
 		}
 	}
 }

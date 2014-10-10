@@ -32,4 +32,7 @@ class DefaultAuthenticationRuleConfiguration implements AuthenticationRuleConfig
 
 	@Getter( lazy = true )
 	private final List<String> expectedRoles = config.getStringList( "expected-roles" );
+
+	@Getter( lazy = true )
+	private final List<String> exceptionPatterns = config.getStringList( "exclude-patterns" );
 }
