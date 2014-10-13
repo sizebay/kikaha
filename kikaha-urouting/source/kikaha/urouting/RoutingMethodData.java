@@ -67,11 +67,12 @@ public class RoutingMethodData {
 	private static RoutingMethodData createRouteMethodData(
 		final ExecutableElement method, final boolean isMultiPart,
 		final String httpMethod, final String type, final String methodParams ) {
+		final String returnType = extractReturnTypeFrom( method );
 		return new RoutingMethodData(
 			type, extractPackageName( type ), method.getSimpleName().toString(),
-			methodParams, extractReturnTypeFrom( method ), extractResponseContentTypeFrom( method ),
+			methodParams, returnType, extractResponseContentTypeFrom( method ),
 			measureHttpPathFrom( method ), httpMethod, extractServiceInterfaceFrom( method ),
-			hasIOBlockingOperations( methodParams ), isMultiPart );
+			hasIOBlockingOperations( methodParams ) || returnType != null, isMultiPart );
 	}
 
 	private static boolean hasIOBlockingOperations( final String methodParams ) {

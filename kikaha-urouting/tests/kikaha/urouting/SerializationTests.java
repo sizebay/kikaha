@@ -4,8 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
-import java.io.StringWriter;
 
 import kikaha.urouting.User.Address;
 import kikaha.urouting.api.Mimes;
@@ -26,47 +26,47 @@ public class SerializationTests extends TestCase {
 	@Test
 	@SneakyThrows
 	public void grantThatSerializeItAsXML() {
-		Serializer serializer = provider.load( Serializer.class, Mimes.XML );
-		StringWriter output = new StringWriter();
-		serializer.serialize( user, output );
-		String expected = readFile( "serialization.expected-xml.xml" );
-		assertThat( output.toString(), is( expected ) );
+		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		final Serializer serializer = provider.load( Serializer.class, Mimes.XML );
+		serializer.serialize( user, outputStream );
+		final String expected = readFile( "serialization.expected-xml.xml" );
+		assertThat( outputStream.toString(), is( expected ) );
 	}
 
 	@Test
 	@SneakyThrows
 	public void grantThatUnserializeXMLIntoObjectAsExpected() {
-		String xml = readFile( "serialization.expected-xml.xml" );
-		Unserializer unserializer = provider.load( Unserializer.class, Mimes.XML );
-		User user = unserializer.unserialize( new StringReader( xml ), User.class );
+		final String xml = readFile( "serialization.expected-xml.xml" );
+		final Unserializer unserializer = provider.load( Unserializer.class, Mimes.XML );
+		final User user = unserializer.unserialize( new StringReader( xml ), User.class );
 		assertIsValidUser( user );
 	}
 
 	@Test
 	@SneakyThrows
 	public void grantThatSerializeItAsJSON() {
-		Serializer serializer = provider.load( Serializer.class, Mimes.JSON );
-		StringWriter output = new StringWriter();
-		serializer.serialize( user, output );
-		String expected = readFile( "serialization.expected-json.json" );
-		assertThat( output.toString(), is( expected ) );
+		final Serializer serializer = provider.load( Serializer.class, Mimes.JSON );
+		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		serializer.serialize( user, outputStream );
+		final String expected = readFile( "serialization.expected-json.json" );
+		assertThat( outputStream.toString(), is( expected ) );
 	}
 
 	@Test
 	@SneakyThrows
 	public void grantThatUnserializeJSONIntoObjectAsExpected() {
-		String json = readFile( "serialization.expected-json.json" );
-		Unserializer unserializer = provider.load( Unserializer.class, Mimes.JSON );
-		User user = unserializer.unserialize( new StringReader( json ), User.class );
+		final String json = readFile( "serialization.expected-json.json" );
+		final Unserializer unserializer = provider.load( Unserializer.class, Mimes.JSON );
+		final User user = unserializer.unserialize( new StringReader( json ), User.class );
 		assertIsValidUser( user );
 	}
 
-	void assertIsValidUser( User user ) {
+	void assertIsValidUser( final User user ) {
 		assertNotNull( user );
 		assertThat( user.name, is( "gerolasdiwn" ) );
 		assertNotNull( user.addresses );
 		assertThat( user.addresses.size(), is( 1 ) );
-		Address address = user.addresses.get( 0 );
+		final Address address = user.addresses.get( 0 );
 		assertThat( address.street, is( "Madison Avenue" ) );
 		assertThat( address.number, is( 10 ) );
 	}

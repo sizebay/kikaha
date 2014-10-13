@@ -1,17 +1,18 @@
 package kikaha.urouting;
 
 import java.io.Closeable;
-import java.io.Writer;
+import java.io.OutputStream;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 
 @RequiredArgsConstructor( staticName="wrap" )
-public class UncloseableWriterWrapper extends Writer {
+public class UncloseableWriterWrapper extends OutputStream {
 
 	@Delegate( excludes=Closeable.class )
-	final Writer writer;
+	final OutputStream outputStream;
 
+	@Override
 	public void close() {
 	}
 }

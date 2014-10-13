@@ -30,16 +30,14 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
-		{{#hasIOBound}}
+		{{#returnType}}
 			if ( exchange.isInIoThread() ) {
 				exchange.dispatch(this);
 				return;
 			}
-			{{#isMultiPart}}
 			else if ( !exchange.isInIoThread() && !exchange.isBlocking() )
 				exchange.startBlocking();
-			{{/isMultiPart}}
-		{{/hasIOBound}}
+		{{/returnType}}
 		try {
 		{{#serviceInterface}}
 			final {{{serviceInterface}}} instance = serviceProvider.load( {{{serviceInterface}}}.class );

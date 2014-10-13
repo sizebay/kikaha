@@ -19,6 +19,12 @@ public class GeneratedRoutingMethod123 implements HttpHandler {
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
+			if ( exchange.isInIoThread() ) {
+				exchange.dispatch(this);
+				return;
+			}
+			else if ( !exchange.isInIoThread() && !exchange.isBlocking() )
+				exchange.startBlocking();
 		try {
 			final kikaha.urouting.samples.RetrieveRoutes instance = new kikaha.urouting.samples.RetrieveRoutes();
 			final String response = instance.renderRelatoMais( true );

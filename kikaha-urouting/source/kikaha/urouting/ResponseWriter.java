@@ -6,8 +6,7 @@ import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 
 import java.io.IOException;
-import java.io.Writer;
-import java.nio.channels.Channels;
+import java.io.OutputStream;
 
 import kikaha.urouting.api.Header;
 import kikaha.urouting.api.Mimes;
@@ -15,9 +14,6 @@ import kikaha.urouting.api.Response;
 import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Serializer;
 import lombok.extern.java.Log;
-
-import org.xnio.channels.StreamSinkChannel;
-
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
@@ -124,11 +120,10 @@ public class ResponseWriter {
 		if ( serializable == null )
 			return;
 
-		final StreamSinkChannel channel = exchange.getResponseChannel();
-		final Writer writer = Channels.newWriter( channel, encoding );
+		final OutputStream outputStream = exchange.getOutputStream();
 		final Serializer serializer = getSerializer( contentType );
-		serializer.serialize( serializable, UncloseableWriterWrapper.wrap( writer ) );
-		writer.flush();
+		serializer.serialize( serializable, UncloseableWriterWrapper.wrap( outputStream ) );
+		outputStream.flush();
 		exchange.endExchange();
 	}
 

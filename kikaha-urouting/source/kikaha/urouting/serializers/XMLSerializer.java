@@ -1,6 +1,6 @@
 package kikaha.urouting.serializers;
 
-import java.io.Writer;
+import java.io.OutputStream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -19,7 +19,7 @@ import trip.spi.Singleton;
 public class XMLSerializer implements Serializer {
 
 	@Override
-	public <T> void serialize( final T object, final Writer output ) throws RoutingException {
+	public <T> void serialize( final T object, final OutputStream output ) throws RoutingException {
 		try {
 			final Class<T> clazz = (Class<T>)object.getClass();
 			serialize( clazz, object, output );
@@ -28,7 +28,7 @@ public class XMLSerializer implements Serializer {
 		}
 	}
 
-	<T> void serialize( final Class<T> clazz, final T object, final Writer output ) throws JAXBException {
+	<T> void serialize( final Class<T> clazz, final T object, final OutputStream output ) throws JAXBException {
 		final JAXBContext context = JAXBContext.newInstance( clazz );
 		final String rootElementName = extractRootElementName( clazz );
 		final JAXBElement<T> element = new JAXBElement<T>( new QName( rootElementName ), clazz, object );

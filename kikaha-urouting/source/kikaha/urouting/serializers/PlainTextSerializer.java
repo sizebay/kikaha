@@ -1,7 +1,8 @@
 package kikaha.urouting.serializers;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.RoutingException;
@@ -14,11 +15,11 @@ public class PlainTextSerializer implements Serializer {
 	static final String NULL = "null";
 
 	@Override
-	public <T> void serialize( T object, Writer output ) throws RoutingException {
+	public <T> void serialize( final T object, final OutputStream output ) throws RoutingException {
 		try {
-			String serialized = object != null ? object.toString() : NULL;
-			output.write( serialized );
-		} catch ( IOException cause ) {
+			final String serialized = object != null ? object.toString() : NULL;
+			new OutputStreamWriter( output ).write( serialized );
+		} catch ( final IOException cause ) {
 			throw new RoutingException( cause );
 		}
 	}
