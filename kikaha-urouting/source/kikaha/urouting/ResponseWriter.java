@@ -95,14 +95,16 @@ public class ResponseWriter {
 	 * Serialize and send the {@code response} object to the HTTP Client.
 	 *
 	 * @param exchange
-	 * @param contentType
+	 * @param defaultContentType
 	 * @param response
 	 * @throws ServiceProviderException
 	 * @throws RoutingException
 	 * @throws IOException
 	 */
-	public void write( final HttpServerExchange exchange, final String contentType, final Response response )
+	public void write( final HttpServerExchange exchange, final String defaultContentType, final Response response )
 			throws ServiceProviderException, RoutingException, IOException {
+		final String contentType = response.contentType() != null
+			? response.contentType() : defaultContentType;
 		sendStatusCode( exchange, response.statusCode() );
 		sendHeaders( exchange, response );
 		sendContentTypeHeader( exchange, contentType );
