@@ -9,9 +9,6 @@ import io.undertow.server.handlers.form.FormParserFactory;
 {{/isMultiPart}}
 import trip.spi.Provided;
 import trip.spi.Singleton;
-{{#serviceInterface}}
-import trip.spi.ServiceProvider;
-{{/serviceInterface}}
 import kikaha.core.api.WebResource;
 import kikaha.urouting.ResponseWriter;
 import kikaha.urouting.RoutingMethodDataProvider;
@@ -21,12 +18,13 @@ import kikaha.urouting.RoutingMethodExceptionHandler;
 @WebResource( value="{{httpPath}}", method="{{httpMethod}}" )
 public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 
-	{{#serviceInterface}}
-	@Provided ServiceProvider serviceProvider;
-	{{/serviceInterface}}
 	@Provided ResponseWriter responseWriter;
 	@Provided RoutingMethodDataProvider methodDataProvider;
 	@Provided RoutingMethodExceptionHandler exceptionHandler;
+	
+	{{#serviceInterface}}
+	@Provided {{{serviceInterface}}} instance;
+	{{/serviceInterface}}
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
@@ -39,9 +37,6 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 				exchange.startBlocking();
 		{{/returnType}}
 		try {
-		{{#serviceInterface}}
-			final {{{serviceInterface}}} instance = serviceProvider.load( {{{serviceInterface}}}.class );
-		{{/serviceInterface}}
 		{{^serviceInterface}}
 			final {{{type}}} instance = new {{{type}}}();
 		{{/serviceInterface}}

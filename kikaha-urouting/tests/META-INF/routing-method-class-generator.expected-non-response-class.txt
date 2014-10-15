@@ -4,7 +4,6 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import trip.spi.Provided;
 import trip.spi.Singleton;
-import trip.spi.ServiceProvider;
 import kikaha.core.api.WebResource;
 import kikaha.urouting.ResponseWriter;
 import kikaha.urouting.RoutingMethodDataProvider;
@@ -14,15 +13,15 @@ import kikaha.urouting.RoutingMethodExceptionHandler;
 @WebResource( value="/hello/world", method="GET" )
 public class GeneratedRoutingMethod123 implements HttpHandler {
 
-	@Provided ServiceProvider serviceProvider;
 	@Provided ResponseWriter responseWriter;
 	@Provided RoutingMethodDataProvider methodDataProvider;
 	@Provided RoutingMethodExceptionHandler exceptionHandler;
+	
+	@Provided java.lang.String instance;
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
 		try {
-			final java.lang.String instance = serviceProvider.load( java.lang.String.class );
 			instance.renderRelatoMais(  );
 			responseWriter.write( exchange );
 		} catch ( Throwable cause ) {
