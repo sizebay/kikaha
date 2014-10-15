@@ -62,6 +62,16 @@ class FixedFormAuthenticationMechanism extends FormAuthenticationMechanism {
 
 	/**
 	 * This is just a fixed version of
+	 * {@link FormAuthenticationMechanism#servePage}
+	 */
+	@Override
+	protected Integer servePage( final HttpServerExchange exchange, final String location ) {
+		super.servePage( exchange, location );
+		return FOUND;
+	}
+
+	/**
+	 * This is just a fixed version of
 	 * {@link FormAuthenticationMechanism#handleRedirectBack}
 	 */
 	@Override
