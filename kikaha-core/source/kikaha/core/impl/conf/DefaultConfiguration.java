@@ -22,18 +22,18 @@ public class DefaultConfiguration implements Configuration {
 	private final Integer port = config().getInt( "server.port" );
 
 	@Getter( lazy = true )
-	private final String host = config().getString( "server.host" );
+	private final String host = getConfigString( "server.host" );
 
 	@Getter( lazy = true )
-	private final String welcomeFile = config().getString( "server.welcome-file" );
+	private final String welcomeFile = getConfigString( "server.welcome-file" );
 
 	@Getter( lazy = true )
 	private final AuthenticationConfiguration authentication = createAuthenticationConfig();
 
-	String resourcesPath;
-
 	@Getter( lazy = true )
 	private final SSLConfiguration ssl = createSSLConfiguration();
+
+	String resourcesPath;
 
 	SSLConfiguration createSSLConfiguration() {
 		return new DefaultSSLConfiguration( config().getConfig( "server.ssl" ) );
@@ -46,12 +46,18 @@ public class DefaultConfiguration implements Configuration {
 	@Override
 	public String resourcesPath() {
 		if ( resourcesPath == null )
-			resourcesPath = config().getString( "server.resources-path" );
+			resourcesPath = getConfigString( "server.resources-path" );
 		return resourcesPath;
 	}
 
 	public void resourcesPath( final String resourcesPath ) {
 		this.resourcesPath = resourcesPath;
+	}
+
+	String getConfigString( final String path ) {
+		return config().getString( path )
+			.replaceFirst( "^\"", "" )
+			.replaceFirst( "\"$", "" );
 	}
 
 	public static DefaultConfiguration loadDefaultConfiguration() {
