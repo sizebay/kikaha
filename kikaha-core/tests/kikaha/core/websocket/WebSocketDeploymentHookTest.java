@@ -4,10 +4,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import io.undertow.server.HttpHandler;
-import io.undertow.websockets.core.BufferedTextMessage;
 import io.undertow.websockets.core.CloseMessage;
-import io.undertow.websockets.core.WebSocketChannel;
-import io.undertow.websockets.spi.WebSocketHttpExchange;
 
 import java.io.IOException;
 
@@ -54,16 +51,14 @@ public class WebSocketDeploymentHookTest {
 class MyFirstWebSocket implements WebSocketHandler {
 
 	@Override
-	public void onOpen( final WebSocketChannel channel , final WebSocketHttpExchange exchange  ) {
+	public void onOpen( final WebSocketSession session ) {
 	}
 
 	@Override
-	public void onText( final WebSocketChannel channel , final BufferedTextMessage message  )
-		throws IOException {
+	public void onText( final WebSocketSession session, final String message ) throws IOException {
 	}
 
 	@Override
-	public void onClose( final WebSocketChannel channel , final CloseMessage cm  ) {
+	public void onClose( final WebSocketSession session, final CloseMessage cm ) {
 	}
-
 }

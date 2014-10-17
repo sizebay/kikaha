@@ -19,9 +19,19 @@ public class WebSocketConnectionCallbackHandler
 
 	@Override
 	public void onConnect( final WebSocketHttpExchange exchange, final WebSocketChannel channel ) {
-		handler.onOpen( channel, exchange );
-		channel.getReceiveSetter().set( new DelegatedReceiveListener( handler ) );
+		final WebSocketSession session = createSession( exchange, channel );
+		handler.onOpen( session );
+		session.clean();
+		channel.getReceiveSetter().set( createListener( session ) );
 		channel.resumeReceives();
+	}
+
+	public DelegatedReceiveListener createListener( final WebSocketSession session ) {
+		return new DelegatedReceiveListener( handler, session );
+	}
+
+	public WebSocketSession createSession( final WebSocketHttpExchange exchange, final WebSocketChannel channel ) {
+		return new WebSocketSession( exchange ).channel( channel );
 	}
 }
 
@@ -29,14 +39,15 @@ public class WebSocketConnectionCallbackHandler
 class DelegatedReceiveListener extends AbstractReceiveListener {
 
 	final WebSocketHandler handler;
+	final WebSocketSession session;
 
 	@Override
 	public void onFullTextMessage( final WebSocketChannel channel, final BufferedTextMessage message ) throws IOException {
-		handler.onText( channel, message );
+		handler.onText( session.channel( channel ), message.getData() );
 	}
 
 	@Override
 	protected void onCloseMessage( final CloseMessage cm, final WebSocketChannel channel ) {
-		handler.onClose( channel, cm );
+		handler.onClose( session.channel( channel ), cm );
 	}
 }

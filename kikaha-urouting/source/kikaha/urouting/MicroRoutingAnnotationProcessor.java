@@ -1,5 +1,7 @@
 package kikaha.urouting;
 
+import static kikaha.urouting.AnnotationProcessorUtil.retrieveMethodsAnnotatedWith;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Set;
@@ -20,7 +22,6 @@ import kikaha.urouting.api.MultiPartFormData;
 import kikaha.urouting.api.PATCH;
 import kikaha.urouting.api.POST;
 import kikaha.urouting.api.PUT;
-import trip.spi.helpers.filter.Filter;
 
 @SupportedAnnotationTypes( "kikaha.urouting.api.*" )
 public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
@@ -28,13 +29,13 @@ public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
 	RoutingMethodClassGenerator generator;
 
 	@Override
-	public synchronized void init( ProcessingEnvironment processingEnv ) {
+	public synchronized void init( final ProcessingEnvironment processingEnv ) {
 		super.init( processingEnv );
 		generator = new RoutingMethodClassGenerator( filer() );
 	}
 
 	@Override
-	public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv ) {
+	public boolean process( final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv ) {
 		try {
 			generateRoutingMethods( roundEnv, GET.class );
 			generateRoutingMethods( roundEnv, POST.class );
@@ -43,28 +44,20 @@ public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
 			generateRoutingMethods( roundEnv, PATCH.class );
 			generateRoutingMethods( roundEnv, MultiPartFormData.class );
 			return false;
-		} catch ( IOException e ) {
+		} catch ( final IOException e ) {
 			throw new IllegalStateException( e );
 		}
 	}
 
-	void generateRoutingMethods( RoundEnvironment roundEnv, Class<? extends Annotation> httpMethodAnnotation ) throws IOException {
-		Iterable<Element> elementsAnnotatedWith = retrieveMethodsAnnotatedWith( roundEnv, httpMethodAnnotation );
-		for ( Element method : elementsAnnotatedWith )
+	void generateRoutingMethods( final RoundEnvironment roundEnv, final Class<? extends Annotation> httpMethodAnnotation ) throws IOException {
+		final Iterable<Element> elementsAnnotatedWith = retrieveMethodsAnnotatedWith( roundEnv, httpMethodAnnotation );
+		for ( final Element method : elementsAnnotatedWith )
 			generateRoutingMethods( (ExecutableElement)method, roundEnv, httpMethodAnnotation );
 	}
 
-	void generateRoutingMethods( ExecutableElement method, RoundEnvironment roundEnv,
-			Class<? extends Annotation> httpMethodAnnotation ) throws IOException {
+	void generateRoutingMethods( final ExecutableElement method, final RoundEnvironment roundEnv,
+			final Class<? extends Annotation> httpMethodAnnotation ) throws IOException {
 		generator.generate( RoutingMethodData.from( method, httpMethodAnnotation ) );
-	}
-
-	@SuppressWarnings( "unchecked" )
-	Iterable<Element> retrieveMethodsAnnotatedWith( RoundEnvironment roundEnv, Class<? extends Annotation> annotation )
-			throws IOException {
-		return (Iterable<Element>)Filter.filter(
-				roundEnv.getElementsAnnotatedWith( annotation ),
-				new MethodsOnlyCondition() );
 	}
 
 	Filer filer() {
@@ -74,7 +67,7 @@ public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
 	/**
 	 * We just return the latest version of whatever JDK we run on. Stupid?
 	 * Yeah, but it's either that or warnings on all versions but 1. Blame Joe.
-	 * 
+	 *
 	 * PS: this method was copied from Project Lombok. ;)
 	 */
 	@Override

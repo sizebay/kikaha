@@ -60,6 +60,6 @@ public class AuthenticationRulesDeploymentTest {
 	@SuppressWarnings( "unchecked" )
 	public void ensureThatHaveProvideOnEveryMapReadFromConfig() {
 		deployment.onDeploy( deploymentContext );
-		verify( deployment, times( 4 ) ).provideOnMapEntries( any( Map.class ) );
+		verify( deployment, times( 4 ) ).provideOnMapEntries( (Map<String, Object>)any( Map.class ) );
 	}
 }

@@ -1,0 +1,85 @@
+package {{packageName}};
+
+import io.undertow.websockets.core.CloseMessage;
+
+import java.io.IOException;
+
+import kikaha.core.api.WebResource;
+import kikaha.core.websocket.WebSocketHandler;
+import kikaha.core.websocket.WebSocketSession;
+import trip.spi.Provided;
+import trip.spi.Singleton;
+
+@Singleton( exposedAs = WebSocketHandler.class )
+@WebResource(  value="{{httpPath}}", method="GET" )
+public class GeneratedWebSocket{{identifier}} implements WebSocketHandler {
+
+	@Provided kikaha.urouting.WebSocketDataProvider dataProvider;
+	{{#serviceInterface}}
+	@Provided {{{serviceInterface}}} instance;
+	{{/serviceInterface}}
+
+	@Override
+	public void onOpen( final WebSocketSession session ) {
+		{{#onOpenMethod}}
+		try {
+			instance().{{name}}(
+				{{{parameters}}}
+			);
+		} catch ( final Throwable cause ) {
+			onError( session, cause );
+		}
+		{{/onOpenMethod}}
+	}
+
+	@Override
+	public void onText( final WebSocketSession session, final String message )
+		throws IOException {
+		{{#onTextMethod}}
+		try {
+			instance().{{name}}(
+				{{{parameters}}}
+			);
+		} catch ( final Throwable cause ) {
+			onError( session, cause );
+		}
+		{{/onTextMethod}}
+	}
+
+	@Override
+	public void onClose( final WebSocketSession session, final CloseMessage cm ) {
+		{{#onCloseMethod}}
+		try {
+			instance().{{name}}(
+				{{{parameters}}}
+			);
+		} catch ( final Throwable cause ) {
+			onError( session, cause );
+		}
+		{{/onCloseMethod}}
+	}
+	
+	void onError( final WebSocketSession session, final Throwable cause ) {
+		{{#onErrorMethod}}
+		try {
+			instance().{{name}}(
+				{{{parameters}}}
+			);
+		} catch ( final Throwable e ) {
+			e.printStackTrace();
+		}
+		{{/onErrorMethod}}
+		{{^onErrorMethod}}
+			cause.printStackTrace();
+		{{/onErrorMethod}}
+	}
+
+	final {{serviceInterface}} instance() {
+		{{#serviceInterface}}
+		return instance;
+		{{/serviceInterface}}
+		{{^serviceInterface}}
+		return new {{{type}}}();
+		{{/serviceInterface}}
+	}
+}
