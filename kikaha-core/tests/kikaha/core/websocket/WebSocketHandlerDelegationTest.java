@@ -12,6 +12,7 @@ import io.undertow.websockets.core.BufferedTextMessage;
 import io.undertow.websockets.core.CloseMessage;
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
+import kikaha.core.url.URLMatcher;
 import lombok.SneakyThrows;
 
 import org.junit.Before;
@@ -51,7 +52,7 @@ public class WebSocketHandlerDelegationTest {
 	public void setup() {
 		doReturn( "/websocket" ).when( exchange ).getRequestURI();
 		doReturn( setter ).when( channel ).getReceiveSetter();
-		callbackHandler = spy(new WebSocketConnectionCallbackHandler( delegated ));
+		callbackHandler = spy( new WebSocketConnectionCallbackHandler( delegated, URLMatcher.compile( "" ) ) );
 	}
 
 	@Test

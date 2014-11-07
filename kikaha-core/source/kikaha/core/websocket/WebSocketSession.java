@@ -5,10 +5,12 @@ import io.undertow.websockets.core.WebSockets;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import kikaha.core.url.URLMatcher;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -17,37 +19,83 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors( fluent = true )
+@RequiredArgsConstructor
 public class WebSocketSession {
 
-	WebSocketHttpExchange originalExchange;
-	Map<String, List<String>> requestHeaders;
-	Map<String, List<String>> responseHeaders;
-	Map<String, List<String>> requestParameters;
-	Principal userPrincipal;
-	WebSocketChannel channel;
+	final WebSocketHttpExchange originalExchange;
+	final Map<String, List<String>> requestHeaders;
+	final Map<String, List<String>> responseHeaders;
+	final Map<String, String> requestParameters;
+	final URLMatcher urlMatcher;
+	final String requestURI;
+	final Principal userPrincipal;
+	final WebSocketChannel channel;
+	final Iterable<WebSocketChannel> peerConnections;
 
-	public WebSocketSession( final WebSocketHttpExchange originalExchange ) {
+	public WebSocketSession( final WebSocketHttpExchange originalExchange, final WebSocketChannel channel, final URLMatcher urlMatcher ) {
 		this.originalExchange = originalExchange;
+		this.urlMatcher = urlMatcher;
+		this.channel = channel;
 		this.requestHeaders = originalExchange.getRequestHeaders();
 		this.responseHeaders = originalExchange.getResponseHeaders();
-		this.requestParameters = originalExchange.getRequestParameters();
 		this.userPrincipal = originalExchange.getUserPrincipal();
+		this.requestURI = channel.getUrl();
+		this.peerConnections = retrievePeerConnectionsForCurrentURLRequest( channel );
+		this.requestParameters = extractRequestParameters( channel );
 	}
 
-	public Set<WebSocketChannel> peerConnections() {
-		return channel.getPeerConnections();
+	Map<String, String> extractRequestParameters( final WebSocketChannel channel ) {
+		final String url = channel.getUrl();
+		final HashMap<String, String> foundParameters = new HashMap<>();
+		if ( !urlMatcher.matches( url, foundParameters ) )
+			throw new UnsupportedOperationException( "There was a huge mistake on implementation: it doesn't matched URL: " + url );
+		return foundParameters;
 	}
 
-	void clean() {
-		this.originalExchange = null;
-		this.channel = null;
-		this.responseHeaders = null;
+	/**
+	 * Create a new {@link WebSocketSession} instance holding only
+	 * {@code peerConnections} related to {@link WebSocketChannel#getUrl()}
+	 * data.
+	 *
+	 * @param channel
+	 * @return
+	 */
+	public WebSocketSession channel( final WebSocketChannel channel ) {
+		final List<WebSocketChannel> hashSet = retrievePeerConnectionsForCurrentURLRequest( channel );
+		return cloneWith( channel, channel.getUrl(), hashSet );
 	}
 
+	List<WebSocketChannel> retrievePeerConnectionsForCurrentURLRequest( final WebSocketChannel channel ) {
+		final List<WebSocketChannel> hashSet = new ArrayList<>();
+		for ( final WebSocketChannel peer : channel.getPeerConnections() )
+			if ( channel.getUrl().equals( peer.getUrl() ) )
+				hashSet.add( peer );
+		return hashSet;
+	}
+
+	WebSocketSession cloneWith( final WebSocketChannel channel, final String requestURI, final Iterable<WebSocketChannel> peerConnections ) {
+		final Map<String, String> requestParameters = extractRequestParameters( channel );
+		return new WebSocketSession(
+			null, requestHeaders, null, requestParameters, urlMatcher, requestURI,
+			userPrincipal, channel, peerConnections );
+	}
+
+	/**
+	 * Prepare to send a message to someone.
+	 *
+	 * @param message
+	 * @return
+	 */
 	public Sender send( final String message ) {
 		return new Sender( message );
 	}
 
+	/**
+	 * Send a message to all Peer Connections related to current
+	 * {@code requestURI}.
+	 *
+	 * @param message
+	 */
 	public void broadcast( final String message ) {
 		for ( final WebSocketChannel peer : peerConnections() )
 			WebSockets.sendText( message, peer, null );
@@ -57,8 +105,14 @@ public class WebSocketSession {
 	public class Sender {
 		final String message;
 
-		public void to( final WebSocketChannel peer ) {
-			WebSockets.sendText( message, peer, null );
+		/**
+		 * Send the prepared message to respective {@code peers}.
+		 *
+		 * @param peers
+		 */
+		public void to( final WebSocketChannel... peers ) {
+			for ( final WebSocketChannel peer : peers )
+				WebSockets.sendText( message, peer, null );
 		}
 	}
 }

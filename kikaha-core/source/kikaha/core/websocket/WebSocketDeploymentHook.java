@@ -6,6 +6,8 @@ import io.undertow.websockets.WebSocketConnectionCallback;
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
 import kikaha.core.api.WebResource;
+import kikaha.core.url.URL;
+import kikaha.core.url.URLMatcher;
 import lombok.extern.java.Log;
 import trip.spi.ProvidedServices;
 import trip.spi.Singleton;
@@ -30,11 +32,13 @@ public class WebSocketDeploymentHook implements DeploymentHook {
 			log.warning( "No WebResource annotation found for " + handler.getClass().getCanonicalName() + ": Skipped!" );
 			return;
 		}
-		context.register( webResource.value(), "GET", wrappedWebsocketHandlerFrom( handler ) );
+		context.register( webResource.value(), "GET", wrappedWebsocketHandlerFrom( handler, webResource ) );
 	}
 
-	HttpHandler wrappedWebsocketHandlerFrom( final WebSocketHandler handler ) {
-		final WebSocketConnectionCallback callbackHandler = new WebSocketConnectionCallbackHandler( handler );
+	HttpHandler wrappedWebsocketHandlerFrom( final WebSocketHandler handler, final WebResource webResource ) {
+		final String url = URL.removeTrailingCharacter( webResource.value() );
+		final URLMatcher urlMatcher = URLMatcher.compile( "{protocol}://{host}" + url );
+		final WebSocketConnectionCallback callbackHandler = new WebSocketConnectionCallbackHandler( handler, urlMatcher );
 		return Handlers.websocket( callbackHandler );
 	}
 

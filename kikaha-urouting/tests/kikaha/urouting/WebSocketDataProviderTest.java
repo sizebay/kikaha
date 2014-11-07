@@ -4,10 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import kikaha.core.websocket.WebSocketSession;
 import lombok.SneakyThrows;
@@ -33,8 +31,8 @@ public class WebSocketDataProviderTest {
 	@Test
 	@SneakyThrows
 	public void ensureThatCouldProvideAPathParameter() {
-		final HashMap<String, List<String>> params = new HashMap<>();
-		params.put( "price", Arrays.asList( "123456.0321" ) );
+		final HashMap<String, String> params = new HashMap<>();
+		params.put( "price", "123456.0321" );
 		doReturn( params ).when( session ).requestParameters();
 		final Double pathParam = provider.getPathParam( session, "price", Double.class );
 		assertNotNull( pathParam );
@@ -44,8 +42,8 @@ public class WebSocketDataProviderTest {
 	@Test
 	@SneakyThrows
 	public void ensureThatCouldProvideAHeaderParameter() {
-		final HashMap<String, List<String>> params = new HashMap<>();
-		params.put( "Expires", Arrays.asList( "1234560321" ) );
+		final HashMap<String, String> params = new HashMap<>();
+		params.put( "Expires", "1234560321" );
 		doReturn( params ).when( session ).requestParameters();
 		final Date pathParam = provider.getPathParam( session, "Expires", Date.class );
 		assertNotNull( pathParam );

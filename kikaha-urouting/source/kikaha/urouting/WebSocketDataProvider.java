@@ -55,7 +55,7 @@ public class WebSocketDataProvider {
 	 */
 	public <T> T getPathParam( final WebSocketSession session, final String pathParam, final Class<T> clazz )
 			throws ConversionException, InstantiationException, IllegalAccessException {
-		final String value = first( session.requestParameters().get( pathParam ) );
+		final String value = session.requestParameters().get( pathParam );
 		if ( value == null )
 			return null;
 		return converterFactory.getConverterFor( clazz ).convert( value );

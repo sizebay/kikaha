@@ -9,6 +9,7 @@ import io.undertow.websockets.spi.WebSocketHttpExchange;
 
 import java.io.IOException;
 
+import kikaha.core.url.URLMatcher;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -16,22 +17,22 @@ public class WebSocketConnectionCallbackHandler
 	implements WebSocketConnectionCallback {
 
 	final WebSocketHandler handler;
+	final URLMatcher urlMatcher;
 
 	@Override
 	public void onConnect( final WebSocketHttpExchange exchange, final WebSocketChannel channel ) {
 		final WebSocketSession session = createSession( exchange, channel );
 		handler.onOpen( session );
-		session.clean();
 		channel.getReceiveSetter().set( createListener( session ) );
 		channel.resumeReceives();
 	}
 
-	public DelegatedReceiveListener createListener( final WebSocketSession session ) {
-		return new DelegatedReceiveListener( handler, session );
+	public WebSocketSession createSession( final WebSocketHttpExchange exchange, final WebSocketChannel channel ) {
+		return new WebSocketSession( exchange, channel, urlMatcher );
 	}
 
-	public WebSocketSession createSession( final WebSocketHttpExchange exchange, final WebSocketChannel channel ) {
-		return new WebSocketSession( exchange ).channel( channel );
+	public DelegatedReceiveListener createListener( final WebSocketSession session ) {
+		return new DelegatedReceiveListener( handler, session );
 	}
 }
 
