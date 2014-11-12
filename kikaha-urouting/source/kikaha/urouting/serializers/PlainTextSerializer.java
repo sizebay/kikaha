@@ -18,7 +18,9 @@ public class PlainTextSerializer implements Serializer {
 	public <T> void serialize( final T object, final OutputStream output ) throws RoutingException {
 		try {
 			final String serialized = object != null ? object.toString() : NULL;
-			new OutputStreamWriter( output ).write( serialized );
+			final OutputStreamWriter writer = new OutputStreamWriter( output );
+			writer.write( serialized );
+			writer.close();
 		} catch ( final IOException cause ) {
 			throw new RoutingException( cause );
 		}
