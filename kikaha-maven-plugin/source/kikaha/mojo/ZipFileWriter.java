@@ -49,7 +49,9 @@ public class ZipFileWriter {
 	String fixEntryName( String entryName ) {
 		for ( final String prefix : prefixesToStripOutFromName )
 			entryName = entryName.replaceFirst( prefix, "" );
-		return rootDirectory + "/" + entryName;
+		final String finalEntryName = rootDirectory + "/" + entryName;
+		// System.out.println( ":: Adding " + finalEntryName );
+		return finalEntryName;
 	}
 
 	public void close() throws MojoExecutionException {

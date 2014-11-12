@@ -171,7 +171,7 @@ public class KikahaPackagerMojo extends AbstractMojo {
 		try {
 			final String fileName = String.format( "%s.%s", this.finalName, this.project.getPackaging() );
 			final InputStream inputStream = new FileInputStream( new File( this.targetDirectory, fileName ) );
-			zip.add( fileName, inputStream );
+			zip.add( "lib/" + fileName, inputStream );
 		} catch ( final FileNotFoundException cause ) {
 			System.out.println( cause.getMessage() + ". Ignoring." );
 		}
