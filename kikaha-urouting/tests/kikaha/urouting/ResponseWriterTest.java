@@ -15,7 +15,6 @@ import io.undertow.util.Protocols;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import kikaha.urouting.ResponseWriter;
 import kikaha.urouting.api.Header;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Response;
@@ -39,7 +38,7 @@ import trip.spi.ServiceProviderException;
 
 @SuppressWarnings("unchecked")
 public class ResponseWriterTest extends TestCase {
-	
+
 	final HeaderMap headerMap = new HeaderMap();
 	final StreamConnection streamConnection = createStreamConnection();
 	final OptionMap options = OptionMap.EMPTY;
@@ -57,7 +56,7 @@ public class ResponseWriterTest extends TestCase {
 	}
 
 	private HttpServerExchange createHttpExchange() {
-		HttpServerExchange httpServerExchange = new HttpServerExchange( connection, null, headerMap, 200 );
+		final HttpServerExchange httpServerExchange = new HttpServerExchange( connection, null, headerMap, 200 );
 		httpServerExchange.setRequestMethod(new HttpString("GET"));
 		httpServerExchange.setProtocol(Protocols.HTTP_1_1);
 		return httpServerExchange;
@@ -66,41 +65,42 @@ public class ResponseWriterTest extends TestCase {
 	@SneakyThrows
 	private StreamConnection createStreamConnection() {
 		final StreamConnection streamConnection = mock( StreamConnection.class );
-		ConduitStreamSinkChannel sinkChannel = createSinkChannel();
+		final ConduitStreamSinkChannel sinkChannel = createSinkChannel();
 		when( streamConnection.getSinkChannel() ).thenReturn( sinkChannel );
-		ConduitStreamSourceChannel sourceChannel = createSourceChannel();
+		final ConduitStreamSourceChannel sourceChannel = createSourceChannel();
 		when( streamConnection.getSourceChannel() ).thenReturn( sourceChannel );
-		XnioIoThread ioThread = mock( XnioIoThread.class );
+		final XnioIoThread ioThread = mock( XnioIoThread.class );
 		when( streamConnection.getIoThread() ).thenReturn(ioThread);
 		return streamConnection;
 	}
 
 	private ConduitStreamSinkChannel createSinkChannel() throws IOException {
-		StreamSinkConduit sinkConduit = mock( StreamSinkConduit.class );
+		final StreamSinkConduit sinkConduit = mock( StreamSinkConduit.class );
 		when( sinkConduit.write(any( ByteBuffer.class )) ).thenReturn(1);
-		ConduitStreamSinkChannel sinkChannel = new ConduitStreamSinkChannel(null, sinkConduit);
+		final ConduitStreamSinkChannel sinkChannel = new ConduitStreamSinkChannel(null, sinkConduit);
 		return sinkChannel;
 	}
 
 	private ConduitStreamSourceChannel createSourceChannel() {
-		StreamSourceConduit sourceConduit = mock( StreamSourceConduit.class );
-		ConduitStreamSourceChannel sourceChannel = new ConduitStreamSourceChannel(null, sourceConduit);
+		final StreamSourceConduit sourceConduit = mock( StreamSourceConduit.class );
+		final ConduitStreamSourceChannel sourceChannel = new ConduitStreamSourceChannel(null, sourceConduit);
 		return sourceChannel;
 	}
-	
+
 	@Test
 	public void ensure() throws ServiceProviderException, RoutingException, IOException{
 		final Todo todo = new Todo( "Frankenstein" );
-		Response response = resource.persistTodo(todo);
+		final Response response = resource.persistTodo(todo);
 		write(response);
 		verify( writer ).sendHeader( any(HeaderMap.class), any(Header.class), any(String.class) );
 	}
 
-	private void write(Response response) throws ServiceProviderException,
+	private void write(final Response response) throws ServiceProviderException,
 			RoutingException, IOException {
 		try {
+			exchange.startBlocking();
 			writer.write(exchange, Mimes.JSON, response );
-		} catch ( NullPointerException cause ) {
+		} catch ( final NullPointerException cause ) {
 			cause.printStackTrace();
 		}
 	}

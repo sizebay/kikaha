@@ -116,10 +116,8 @@ public class ResponseWriter {
 	void sendBodyResponse(
 			final HttpServerExchange exchange, final String contentType,
 			final String encoding, final Object serializable )
-			throws ServiceProviderException, RoutingException, IOException {
-		if ( serializable == null )
-			return;
-
+		throws ServiceProviderException, RoutingException, IOException
+	{
 		final OutputStream outputStream = exchange.getOutputStream();
 		final Serializer serializer = getSerializer( contentType );
 		serializer.serialize( serializable, UncloseableWriterWrapper.wrap( outputStream ) );
