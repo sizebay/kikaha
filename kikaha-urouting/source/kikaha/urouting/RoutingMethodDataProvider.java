@@ -41,7 +41,7 @@ public class RoutingMethodDataProvider {
 	/**
 	 * Get a cookie from request converted to the {@code <T>} type as defined by
 	 * {@code clazz} argument.
-	 * 
+	 *
 	 * @param exchange
 	 * @param cookieParam
 	 * @param clazz
@@ -63,7 +63,7 @@ public class RoutingMethodDataProvider {
 	/**
 	 * Get a query parameter from request converted to the {@code <T>} type as
 	 * defined by {@code clazz} argument.
-	 * 
+	 *
 	 * @param exchange
 	 * @param queryParam
 	 * @param clazz
@@ -85,6 +85,8 @@ public class RoutingMethodDataProvider {
 	public <T> T getFormParam( final FormData form, final String formParam, final Class<T> clazz )
 			throws ConversionException, InstantiationException, IllegalAccessException {
 		final FormValue formValue = form.getFirst( formParam );
+		if ( formValue == null )
+			return null;
 		if ( formValue.isFile() )
 			return (T)formValue.getFile();
 		final String value = formValue.getValue();
@@ -94,7 +96,7 @@ public class RoutingMethodDataProvider {
 	/**
 	 * Get a header parameter from request converted to the {@code <T>} type as
 	 * defined by {@code clazz} argument.
-	 * 
+	 *
 	 * @param exchange
 	 * @param headerParam
 	 * @param clazz
@@ -114,7 +116,7 @@ public class RoutingMethodDataProvider {
 	/**
 	 * Get a path parameter from request converted to the {@code <T>} type as
 	 * defined by {@code clazz} argument.
-	 * 
+	 *
 	 * @param exchange
 	 * @param pathParam
 	 * @param clazz
@@ -133,7 +135,7 @@ public class RoutingMethodDataProvider {
 	/**
 	 * Get the body of current request and convert to {@code <T>} type as
 	 * defined by {@code clazz} argument.
-	 * 
+	 *
 	 * @param exchange
 	 * @param clazz
 	 * @return
@@ -148,7 +150,7 @@ public class RoutingMethodDataProvider {
 	 * Get the body of current request and convert to {@code <T>} type as
 	 * defined by {@code clazz} argument.<br>
 	 * <br>
-	 * 
+	 *
 	 * It searches for {@link Unserializer} implementations to convert sent data
 	 * from client into the desired object. The "Content-Type" header is the
 	 * information needed to define which {@link Unserializer} should be used to
@@ -156,7 +158,7 @@ public class RoutingMethodDataProvider {
 	 * found it uses the {@code defaulConsumingContentType} argument to seek
 	 * another one. It throws {@link RoutingException} when no decoder was
 	 * found.
-	 * 
+	 *
 	 * @param exchange
 	 * @param clazz
 	 * @param defaulConsumingContentType
@@ -181,14 +183,14 @@ public class RoutingMethodDataProvider {
 	 * argument. When no {@link Unserializer} is found it uses the
 	 * {@code defaulConsumingContentType} argument to seek another one. It
 	 * throws {@link RoutingException} when no decoder was found.
-	 * 
+	 *
 	 * @param contentType
 	 * @param defaulConsumingContentType
 	 * @return
 	 * @throws ServiceProviderException
 	 * @throws RoutingException
 	 */
-	private Unserializer getUnserializer( final String contentType, String defaulConsumingContentType ) throws ServiceProviderException,
+	private Unserializer getUnserializer( final String contentType, final String defaulConsumingContentType ) throws ServiceProviderException,
 			RoutingException {
 		Unserializer unserializer = provider.load( Unserializer.class, contentType );
 		if ( unserializer == null && defaulConsumingContentType != null )
@@ -200,7 +202,7 @@ public class RoutingMethodDataProvider {
 
 	/**
 	 * Retrieve ( or produces ) a request-time object.
-	 * 
+	 *
 	 * @param exchange
 	 * @param clazz
 	 * @return
