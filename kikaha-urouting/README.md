@@ -24,7 +24,7 @@ public class User {
 
 @Path( "users" )
 @Produces( Mimes.JSON )
-@Service
+@Singleton
 public class UserResource {
 
 	final Map<Long, User> users = new HashMap<Long, User>();
@@ -45,18 +45,13 @@ public class UserResource {
 	}
 }
 ```
-That's it!!! Now run your Undertow application with the [Undertow Maven Plugin](https://github.com/Skullabs/undertow-standalone/blob/master/undertow-maven-plugin/README.md) and see your application running. Basically, you have a route that expects a request ( via GET ) at "/users/{id}/" every time you want to retrieve a JSON representation of a user. Also, you could send a JSON representation of a new user ( via POST ) to "/users/{id}/".
+That's it!!! Now run your Undertow application with the [Kikaha Maven Plugin](https://github.com/Skullabs/kikaha/blob/master/kikaha-maven-plugin/README.md) and see your application running. Basically, you have a route that expects a request ( via GET ) at "/users/{id}/" every time you want to retrieve a JSON representation of a user. Also, you could send a JSON representation of a new user ( via POST ) to "/users/{id}/".
 
 
 ### Instaltion instructions
-Just include the bellow maven dependencies to your ```pom.xml```. Note that Undertow Extensions use [tRip](https://github.com/Skullabs/tRip) as an engine to provide implementations and allow our internal modularization.
+Just include the bellow maven dependencies to your ```pom.xml```.
 
 ```xml
-...
-    <properties>
-        <version.trip>0.14.1</version.trip>
-        <version.undertow>1.1-SNAPSHOT</version.undertow>
-    </properties>
 ...
     <dependencies>
         <!-- tRip Processor for IoC and Modularization.
