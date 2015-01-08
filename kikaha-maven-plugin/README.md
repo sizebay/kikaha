@@ -1,15 +1,10 @@
-## Undertow Maven Plugin
-Provide an easy to use development environment to run Undertow applications and their extensions.
+## Kikaha Maven Plugin
+Provide an easy to use development environment to run Kikaha applications and their extensions.
 
 ### Instaltion instructions
-Just include the bellow maven dependencies to your ```pom.xml```. Note that Undertow Extensions use [tRip](https://github.com/Skullabs/tRip) as an engine to provide implementations and allow our internal modularization.
+Just include the bellow maven dependencies to your ```pom.xml```.
 
 ```xml
-...
-    <properties>
-        <version.trip>0.14.1</version.trip>
-        <version.undertow>1.1-SNAPSHOT</version.undertow>
-    </properties>
 ...
     <build>
         <plugins>
@@ -22,10 +17,11 @@ Just include the bellow maven dependencies to your ```pom.xml```. Note that Unde
     </build>
 ```
 
-Now you are able to change to the current work directory of your project and run the Undertow Plugin goals.
+Now you are able to change to the current work directory of your project and run the plugin goals.
+
 ```console
 $ cd my-simple-project
-$ mvn clean install undertow:run
+$ mvn clean install kikaha:run
 jul 03, 2014 6:06:05 PM kikaha.core.HttpHandlerDeploymentHook onDeploy
 INFORMAÃıES: Looking for HttpHandler routes...
 jul 03, 2014 6:06:05 PM kikaha.core.DefaultDeploymentContext register
