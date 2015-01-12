@@ -63,12 +63,16 @@ class WebSocketParameterParser implements MethodParameterParser {
 	}
 
 	/**
-	 * Extract method parameter for a given {@VariableElement}
-	 * argument. The returned method parameter will be passed as argument to a
-	 * routing method.
+	 * Extract method parameter for a given {@link VariableElement} argument.
+	 * The returned method parameter will be passed as argument to a routing
+	 * method.
 	 *
+	 * @param method
 	 * @param parameter
 	 * @return
+	 */
+	/**
+	 *
 	 */
 	@Override
 	public String parse( final ExecutableElement method, final VariableElement parameter ) {

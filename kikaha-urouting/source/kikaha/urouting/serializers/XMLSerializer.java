@@ -9,6 +9,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 
+import kikaha.urouting.api.AbstractSerializer;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Serializer;
@@ -16,7 +17,7 @@ import trip.spi.Singleton;
 
 @SuppressWarnings( "unchecked" )
 @Singleton( name = Mimes.XML, exposedAs = Serializer.class )
-public class XMLSerializer implements Serializer {
+public class XMLSerializer extends AbstractSerializer {
 
 	@Override
 	public <T> void serialize( final T object, final OutputStream output ) throws RoutingException {

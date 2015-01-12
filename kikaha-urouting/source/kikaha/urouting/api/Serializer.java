@@ -1,8 +1,10 @@
 package kikaha.urouting.api;
 
-import java.io.OutputStream;
+import io.undertow.server.HttpServerExchange;
+
+import java.io.IOException;
 
 public interface Serializer {
 
-	<T> void serialize( final T object, final OutputStream output ) throws RoutingException;
+	<T> void serialize( final T object, final HttpServerExchange output ) throws IOException;
 }

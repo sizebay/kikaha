@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import kikaha.urouting.api.AbstractSerializer;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Serializer;
 import trip.spi.Singleton;
 
 @Singleton( name = Mimes.PLAIN_TEXT, exposedAs = Serializer.class )
-public class PlainTextSerializer implements Serializer {
+public class PlainTextSerializer extends AbstractSerializer {
 
 	static final String NULL = "";
 

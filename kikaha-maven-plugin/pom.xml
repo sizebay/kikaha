@@ -4,8 +4,8 @@
 
 	<parent>
 		<groupId>io.skullabs.kikaha</groupId>
-		<version>1.0.0</version>
-		<artifactId>kikaha-project</artifactId>
+		<version>1.1.0</version>
+		<artifactId>kikaha-parent</artifactId>
 	</parent>
 
 	<artifactId>kikaha-maven-plugin</artifactId>

@@ -6,7 +6,6 @@ import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import kikaha.urouting.api.Header;
 import kikaha.urouting.api.Mimes;
@@ -118,10 +117,8 @@ public class ResponseWriter {
 			final String encoding, final Object serializable )
 		throws ServiceProviderException, RoutingException, IOException
 	{
-		final OutputStream outputStream = exchange.getOutputStream();
 		final Serializer serializer = getSerializer( contentType );
-		serializer.serialize( serializable, UncloseableWriterWrapper.wrap( outputStream ) );
-		outputStream.flush();
+		serializer.serialize( serializable, exchange );
 		exchange.endExchange();
 	}
 

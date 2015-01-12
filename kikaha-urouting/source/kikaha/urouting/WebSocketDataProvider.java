@@ -25,7 +25,7 @@ public class WebSocketDataProvider {
 	 * Get a header parameter from request converted to the {@code <T>} type as
 	 * defined by {@code clazz} argument.
 	 *
-	 * @param exchange
+	 * @param session
 	 * @param headerParam
 	 * @param clazz
 	 * @return

@@ -1,10 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>io.skullabs.trip</groupId>
+		<version>1.2.3</version>
+		<artifactId>trip-project</artifactId>
+	</parent>
+
 	<groupId>io.skullabs.kikaha</groupId>
-	<version>1.0.0</version>
-	<artifactId>kikaha-project</artifactId>
+	<version>1.1.0</version>
+	<artifactId>kikaha-parent</artifactId>
 	<name>Kikaha</name>
 	<packaging>pom</packaging>
 
@@ -27,15 +32,23 @@
 			<id>skullabs-release-repository</id>
 			<name>Texo Release Repository</name>
 			<url>http://skullabs.io:8081/content/repositories/PublicRelease/</url>
-			<snapshots><enabled>false</enabled></snapshots>
-			<releases><enabled>true</enabled></releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
 		</repository>
 		<repository>
 			<id>skullabs-snapshot-repository</id>
 			<name>Texo Snapshot Repository</name>
 			<url>http://skullabs.io:8081/content/repositories/PublicSnapshot/</url>
-			<snapshots><enabled>true</enabled></snapshots>
-			<releases><enabled>false</enabled></releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
 		</repository>
 	</repositories>
 
@@ -67,19 +80,15 @@
 
 	<modules>
 		<module>kikaha-core</module>
-		<module>kikaha-build</module>
 		<module>kikaha-urouting</module>
 		<module>kikaha-hazelcast</module>
 		<module>kikaha-maven-plugin</module>
+		<module>kikaha-project</module>
 	</modules>
 
 	<properties>
 		<!-- Dependencies Versions -->
-		<version.junit>4.10</version.junit>
-		<version.lombok>1.14.8</version.lombok>
-		<version.mockito>1.9.5</version.mockito>
 		<version.undertow>1.1.1.Final</version.undertow>
-		<version.trip>1.2.1</version.trip>
 		<version.config>1.2.0</version.config>
 		<version.jackson>2.4.0</version.jackson>
 		<version.hazelcast>3.2.5</version.hazelcast>
@@ -94,32 +103,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- Test time dependencies -->
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${version.junit}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-all</artifactId>
-				<version>${version.mockito}</version>
-				<scope>test</scope>
-			</dependency>
-			<!-- Compile time dependencies -->
-			<dependency>
-				<groupId>org.projectlombok</groupId>
-				<artifactId>lombok</artifactId>
-				<version>${version.lombok}</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>io.skullabs.trip</groupId>
-				<artifactId>trip-processor</artifactId>
-				<version>${version.trip}</version>
-				<scope>provided</scope>
-			</dependency>
 			<!-- Module dependencies -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
@@ -140,12 +123,6 @@
 				<scope>compile</scope>
 			</dependency>
 			<!-- Main project dependencies -->
-			<dependency>
-				<groupId>io.skullabs.trip</groupId>
-				<artifactId>trip-core</artifactId>
-				<version>${version.trip}</version>
-				<scope>compile</scope>
-			</dependency>
 			<dependency>
 				<groupId>com.typesafe</groupId>
 				<artifactId>config</artifactId>
@@ -173,26 +150,6 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<!-- Mandatory dependencies -->
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.skullabs.trip</groupId>
-			<artifactId>trip-processor</artifactId>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<sourceDirectory>${project.basedir}/source</sourceDirectory>
@@ -251,24 +208,9 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.3</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${version.compiler.plugin}</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -394,6 +336,13 @@
 							</goals>
 						</execution>
 					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<configuration>
+						<excludePackageNames>kikaha.mojo</excludePackageNames>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>

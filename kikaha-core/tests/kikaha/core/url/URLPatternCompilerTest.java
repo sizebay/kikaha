@@ -1,13 +1,15 @@
 package kikaha.core.url;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.List;
 
 import lombok.val;
 
 import org.junit.Test;
+
+import tests.AssertThat;
 
 public class URLPatternCompilerTest {
 
@@ -38,7 +40,7 @@ public class URLPatternCompilerTest {
 		compiler.compile( "/user/*" );
 		assertThatHasExpectedSize( compiler, 3 );
 		assertFirstMatcherIsEqualsAndLastIsEndOfString( compiler );
-		assertThat( compiler.patternMatchers.get( 1 ), is( AnyStringUntilEndMatcher.class ) );
+		AssertThat.isInstance( compiler.patternMatchers.get( 1 ), AnyStringUntilEndMatcher.class );
 	}
 
 	@Test
@@ -60,7 +62,7 @@ public class URLPatternCompilerTest {
 
 	private void assertFirstMatcherIsEqualsAndLastIsEndOfString( final URLPatternCompiler compiler ) {
 		final List<Matcher> patternMatchers = compiler.patternMatchers;
-		assertThat( patternMatchers.get( 0 ), is( EqualsMatcher.class ) );
-		assertThat( patternMatchers.get( patternMatchers.size() - 1 ), is( EndOfStringMatcher.class ) );
+		AssertThat.isInstance( patternMatchers.get( 0 ), EqualsMatcher.class );
+		AssertThat.isInstance( patternMatchers.get( patternMatchers.size() - 1 ), EndOfStringMatcher.class );
 	}
 }

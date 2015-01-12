@@ -1,9 +1,7 @@
 package kikaha.core.auth;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import io.undertow.security.impl.BasicAuthenticationMechanism;
 import kikaha.core.impl.conf.DefaultAuthenticationConfiguration;
 import kikaha.core.impl.conf.DefaultConfiguration;
@@ -12,6 +10,7 @@ import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 
+import tests.AssertThat;
 import trip.spi.ServiceProvider;
 
 public class AuthenticationRuleMatcherTest {
@@ -30,13 +29,14 @@ public class AuthenticationRuleMatcherTest {
 	public void ensureThatCouldRetrieveRuleForProtectedURLAsDefinedInTestConfigurations() {
 		val rule = matcher.retrieveAuthenticationRuleForUrl( "/users/" );
 		assertNotNull( rule );
-		assertThat( rule.mechanisms().get( 0 ), is( BasicAuthenticationMechanism.class ) );
-		assertThat( rule.mechanisms().get( 1 ), is( BasicAuthenticationMechanism.class ) );
-		assertThat( rule.identityManager(), is( FixedUserAndPasswordIdentityManager.class ) );
+		AssertThat.isInstance( rule.mechanisms().get( 0 ), BasicAuthenticationMechanism.class );
+		AssertThat.isInstance( rule.mechanisms().get( 1 ), BasicAuthenticationMechanism.class );
+		AssertThat.isInstance( rule.identityManager(), FixedUserAndPasswordIdentityManager.class );
 		assertNull( rule.notificationReceiver() );
 		assertNotNull( rule.securityContextFactory() );
-		assertThat( rule.securityContextFactory(), is( PrePopulatedSecurityContextFactory.class ) );
-		assertThat( ( (PrePopulatedSecurityContextFactory)rule.securityContextFactory() ).wrapped, is( DefaultSecurityContextFactory.class ) );
+		AssertThat.isInstance( rule.securityContextFactory(), PrePopulatedSecurityContextFactory.class );
+		AssertThat.isInstance( ( (PrePopulatedSecurityContextFactory)rule.securityContextFactory() ).wrapped,
+			DefaultSecurityContextFactory.class );
 	}
 
 	@Test

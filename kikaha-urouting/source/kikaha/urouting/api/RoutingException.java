@@ -1,18 +1,20 @@
 package kikaha.urouting.api;
 
-public class RoutingException extends Exception {
+import java.io.IOException;
+
+public class RoutingException extends IOException {
 
 	private static final long serialVersionUID = -3572128955736929846L;
 
-	public RoutingException( String message, Throwable cause ) {
+	public RoutingException( final String message, final Throwable cause ) {
 		super( message, cause );
 	}
 
-	public RoutingException( String message ) {
+	public RoutingException( final String message ) {
 		super( message );
 	}
 
-	public RoutingException( Throwable cause ) {
+	public RoutingException( final Throwable cause ) {
 		super( cause );
 	}
 }

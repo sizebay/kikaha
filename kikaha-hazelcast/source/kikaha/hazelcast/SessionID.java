@@ -7,7 +7,7 @@ public class SessionID {
 	/**
 	 * Generate a valid, pseudo-randomized, session id.<br>
 	 * <br>
-	 * <b>Note:</b> This code is a copy from {@link com.hazelcast.web.WebFilter}
+	 * <b>Note:</b> This code is a copy from {@code com.hazelcast.web.WebFilter}
 	 *
 	 * @return
 	 */

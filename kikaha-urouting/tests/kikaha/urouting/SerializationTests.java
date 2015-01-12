@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 
 import kikaha.urouting.User.Address;
+import kikaha.urouting.api.AbstractSerializer;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Serializer;
 import kikaha.urouting.api.Unserializer;
@@ -27,7 +28,7 @@ public class SerializationTests extends TestCase {
 	@SneakyThrows
 	public void grantThatSerializeItAsXML() {
 		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		final Serializer serializer = provider.load( Serializer.class, Mimes.XML );
+		final AbstractSerializer serializer = (AbstractSerializer)provider.load( Serializer.class, Mimes.XML );
 		serializer.serialize( user, outputStream );
 		final String expected = readFile( "serialization.expected-xml.xml" );
 		assertThat( outputStream.toString(), is( expected ) );
@@ -45,7 +46,7 @@ public class SerializationTests extends TestCase {
 	@Test
 	@SneakyThrows
 	public void grantThatSerializeItAsJSON() {
-		final Serializer serializer = provider.load( Serializer.class, Mimes.JSON );
+		final AbstractSerializer serializer = (AbstractSerializer)provider.load( Serializer.class, Mimes.JSON );
 		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		serializer.serialize( user, outputStream );
 		final String expected = readFile( "serialization.expected-json.json" );
