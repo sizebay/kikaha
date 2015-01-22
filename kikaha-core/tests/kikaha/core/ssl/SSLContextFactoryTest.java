@@ -9,11 +9,13 @@ import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.val;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
+@Ignore
 public class SSLContextFactoryTest {
 
 	@Test
