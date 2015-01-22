@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.val;
+
 import org.junit.Test;
 
 public class URLMatcherTest {
@@ -62,5 +64,32 @@ public class URLMatcherTest {
 			assertFalse( matcher.matches( "/panel/admin/page/", null ) );
 			assertTrue( matcher.matches( "/panel/admin/page/123/", null ) );
 		}
+	}
+
+	@Test
+	public void ensureThatCanReplacePatternPlaceholders() {
+		val params = new HashMap<String, String>();
+		val matcher = URLMatcher.compile( "/users/{id}/page/" );
+		assertTrue( matcher.matches( "/users/123/page/", params ) );
+		val replacer = URLMatcher.compile( "/new/user/{id}/view/" );
+		assertEquals( "/new/user/123/view/", replacer.replace( params ) );
+	}
+
+	@Test
+	public void ensureThatCanReplacePatternPlaceholdersAtEndOfString() {
+		val params = new HashMap<String, String>();
+		val matcher = URLMatcher.compile( "/users/{id}" );
+		assertTrue( matcher.matches( "/users/123", params ) );
+		val replacer = URLMatcher.compile( "/new/user/{id}" );
+		assertEquals( "/new/user/123", replacer.replace( params ) );
+	}
+
+	@Test
+	public void ensureThatCanReplacePatternPlaceholdersForEntireString() {
+		val params = new HashMap<String, String>();
+		val matcher = URLMatcher.compile( "{string}" );
+		assertTrue( matcher.matches( "users/123/*", params ) );
+		val replacer = URLMatcher.compile( "/new/{string}" );
+		assertEquals( "/new/users/123/*", replacer.replace( params ) );
 	}
 }

@@ -16,4 +16,10 @@ public class PlaceHolderForAnyStringUntilEndMatcher implements Matcher {
 		foundParameters.put( placeholder, string.substringFromLastMark() );
 		return true;
 	}
+
+	@Override
+	public void replace( final StringBuilder buffer , final Map<String, String> foundParameters  ) {
+		if ( foundParameters.containsKey( placeholder ) )
+			buffer.append( foundParameters.get( placeholder ) );
+	}
 }

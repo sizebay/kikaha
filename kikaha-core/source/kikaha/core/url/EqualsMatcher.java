@@ -19,4 +19,9 @@ public class EqualsMatcher implements Matcher {
 		val pattern = new StringCursor( patternChars );
 		return pattern.matches( string );
 	}
+
+	@Override
+	public void replace( final StringBuilder buffer , final Map<String, String> foundParameters  ) {
+		buffer.append( patternChars );
+	}
 }

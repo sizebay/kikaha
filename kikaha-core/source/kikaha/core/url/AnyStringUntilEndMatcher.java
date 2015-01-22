@@ -9,4 +9,9 @@ public class AnyStringUntilEndMatcher implements Matcher {
 		string.end();
 		return true;
 	}
+
+	@Override
+	public void replace( final StringBuilder buffer , final Map<String, String> foundParameters  ) {
+		throw new UnsupportedOperationException();
+	}
 }

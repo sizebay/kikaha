@@ -34,6 +34,13 @@ public class StringCursor {
 	}
 
 	/**
+	 * Create a mark positioned at the end of string.
+	 */
+	public void markAtEnd() {
+		mark = cursor;
+	}
+
+	/**
 	 * Create a mark positioned at current cursor. The {@code shiftedCharacters}
 	 * argument fixes the gap between the current cursor and the expected
 	 * position relative to cursor.
@@ -76,13 +83,17 @@ public class StringCursor {
 	 * @param ch
 	 * @return
 	 */
-	boolean shiftCursorToNextChar( final char ch ) {
+	public boolean shiftCursorToNextChar( final char ch ) {
 		mark();
 		while ( hasNext() )
 			if ( next() == ch )
 				return true;
 		flip();
 		return false;
+	}
+
+	public String substringUntilCursor() {
+		return new String( chars, 0, cursor );
 	}
 
 	/**

@@ -30,6 +30,18 @@ public class URLMatcher implements Matcher {
 		compiler.compile( string );
 		return new URLMatcher( compiler.patternMatchers );
 	}
+
+	public String replace( final Map<String, String> foundParameters ) {
+		val buffer = new StringBuilder();
+		replace( buffer, foundParameters );
+		return buffer.toString();
+	}
+
+	@Override
+	public void replace( final StringBuilder buffer, final Map<String, String> foundParameters ) {
+		for ( final Matcher matcher : patternMatchers )
+			matcher.replace( buffer, foundParameters );
+	}
 }
 
 class URLPatternCompiler {
