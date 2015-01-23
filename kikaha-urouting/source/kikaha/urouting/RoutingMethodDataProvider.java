@@ -173,6 +173,14 @@ public class RoutingMethodDataProvider {
 		if ( contentEncoding == null )
 			contentEncoding = "UTF-8";
 		final String contentType = exchange.getRequestHeaders().getFirst( Headers.CONTENT_TYPE_STRING );
+		return unserializeReceivedBodyStream( exchange, clazz, defaulConsumingContentType, contentEncoding, contentType );
+	}
+
+	<T> T unserializeReceivedBodyStream( final HttpServerExchange exchange, final Class<T> clazz, final String defaulConsumingContentType,
+		final String contentEncoding, final String contentType ) throws ServiceProviderException, RoutingException
+	{
+		if ( !exchange.isBlocking() )
+			exchange.startBlocking();
 		final Unserializer unserializer = getUnserializer( contentType, defaulConsumingContentType );
 		final Reader reader = Channels.newReader( exchange.getRequestChannel(), contentEncoding );
 		return unserializer.unserialize( reader, clazz );

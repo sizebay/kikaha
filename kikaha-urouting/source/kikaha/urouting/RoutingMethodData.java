@@ -4,13 +4,13 @@ import static java.lang.String.format;
 
 import java.lang.annotation.Annotation;
 
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 
+import kikaha.urouting.api.AsyncResponse;
 import kikaha.urouting.api.Consumes;
 import kikaha.urouting.api.Context;
 import kikaha.urouting.api.CookieParam;
@@ -24,6 +24,7 @@ import kikaha.urouting.api.QueryParam;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import trip.spi.Singleton;
 import trip.spi.Stateless;
 
@@ -45,6 +46,7 @@ public class RoutingMethodData {
 	final String serviceInterface;
 	final boolean hasIOBound;
 	final boolean isMultiPart;
+	final boolean asyncMode;
 
 	@Getter( lazy = true )
 	private final Long identifier = createIdentifier();
@@ -54,47 +56,55 @@ public class RoutingMethodData {
 	}
 
 	public static RoutingMethodData from(
-			final ExecutableElement method, final Class<? extends Annotation> httpMethodAnnotation ) {
-		final String type = method.getEnclosingElement().asType().toString();
-		final String methodParams = extractMethodParamsFrom( method );
-		final boolean isMultiPart = httpMethodAnnotation.equals( MultiPartFormData.class )
+		final ExecutableElement method,
+		final Class<? extends Annotation> httpMethodAnnotation )
+	{
+		val type = method.getEnclosingElement().asType().toString();
+		val methodParams = extractMethodParamsFrom( method );
+		val isMultiPart = httpMethodAnnotation.equals( MultiPartFormData.class )
 			|| methodParams.contains( "methodDataProvider.getFormParam" );
-		final String httpMethod = isMultiPart
+		val isAsyncMode = methodParams.contains( "asyncResponse" );
+		val httpMethod = isMultiPart
 			? "POST" : httpMethodAnnotation.getSimpleName();
-		return createRouteMethodData( method, isMultiPart, httpMethod, type, methodParams );
+		return createRouteMethodData( method, isMultiPart, httpMethod, type, methodParams, isAsyncMode );
 	}
 
 	private static RoutingMethodData createRouteMethodData(
 		final ExecutableElement method, final boolean isMultiPart,
-		final String httpMethod, final String type, final String methodParams ) {
-		final String returnType = extractReturnTypeFrom( method );
+		final String httpMethod, final String type,
+		final String methodParams, final boolean isAsyncMode )
+	{
+		val returnType = extractReturnTypeFrom( method );
 		return new RoutingMethodData(
 			type, extractPackageName( type ), method.getSimpleName().toString(),
 			methodParams, returnType, extractResponseContentTypeFrom( method ),
 			measureHttpPathFrom( method ), httpMethod, extractServiceInterfaceFrom( method ),
-			hasIOBlockingOperations( methodParams ) || returnType != null, isMultiPart );
+			hasIOBlockingOperations( methodParams ) || returnType != null, isMultiPart,
+			isAsyncMode );
 	}
 
-	private static boolean hasIOBlockingOperations( final String methodParams ) {
+	private static boolean hasIOBlockingOperations( final String methodParams )
+	{
 		return methodParams.contains( "methodDataProvider.getBody" )
 			|| methodParams.contains( "methodDataProvider.getFormParam" );
 	}
 
-	public static String extractPackageName( final String canonicalName ) {
+	public static String extractPackageName( final String canonicalName )
+	{
 		return canonicalName.replaceAll( "^(.*)\\.[^\\.]+", "$1" );
 	}
 
 	static String extractReturnTypeFrom( final ExecutableElement method ) {
-		final String returnTypeAsString = method.getReturnType().toString();
+		val returnTypeAsString = method.getReturnType().toString();
 		if ( "void".equals( returnTypeAsString ) )
 			return null;
 		return returnTypeAsString;
 	}
 
 	static String extractMethodParamsFrom( final ExecutableElement method ) {
-		final StringBuilder buffer = new StringBuilder().append( METHOD_PARAM_EOL );
+		val buffer = new StringBuilder().append( METHOD_PARAM_EOL );
 		boolean first = true;
-		for ( final VariableElement parameter : method.getParameters() ) {
+		for ( val parameter : method.getParameters() ) {
 			if ( !first )
 				buffer.append( ',' );
 			buffer.append( extractMethodParamFrom( method, parameter ) ).append( METHOD_PARAM_EOL );
@@ -114,23 +124,25 @@ public class RoutingMethodData {
 	 */
 	// XXX: bad, ugly and huge method
 	static String extractMethodParamFrom( final ExecutableElement method, final VariableElement parameter ) {
-		final String targetType = parameter.asType().toString();
-		final PathParam pathParam = parameter.getAnnotation( PathParam.class );
+		val targetType = parameter.asType().toString();
+		val pathParam = parameter.getAnnotation( PathParam.class );
 		if ( pathParam != null )
 			return getParam( PathParam.class, pathParam.value(), targetType );
-		final QueryParam queryParam = parameter.getAnnotation( QueryParam.class );
+		val queryParam = parameter.getAnnotation( QueryParam.class );
 		if ( queryParam != null )
 			return getParam( QueryParam.class, queryParam.value(), targetType );
-		final HeaderParam headerParam = parameter.getAnnotation( HeaderParam.class );
+		val headerParam = parameter.getAnnotation( HeaderParam.class );
 		if ( headerParam != null )
 			return getParam( HeaderParam.class, headerParam.value(), targetType );
-		final CookieParam cookieParam = parameter.getAnnotation( CookieParam.class );
+		val cookieParam = parameter.getAnnotation( CookieParam.class );
 		if ( cookieParam != null )
 			return getParam( CookieParam.class, cookieParam.value(), targetType );
-		final FormParam formParam = parameter.getAnnotation( FormParam.class );
+		val formParam = parameter.getAnnotation( FormParam.class );
 		if ( formParam != null )
 			return getFormParam( formParam.value(), targetType );
-		final Context dataParam = parameter.getAnnotation( Context.class );
+		if ( AsyncResponse.class.getCanonicalName().equals( targetType ) )
+			return format( "asyncResponse" );
+		val dataParam = parameter.getAnnotation( Context.class );
 		if ( dataParam != null )
 			return format( "methodDataProvider.getData( exchange, %s.class )", targetType );
 		return getBodyParam( method, targetType );
@@ -172,11 +184,11 @@ public class RoutingMethodData {
 	}
 
 	static String measureHttpPathFrom( final ExecutableElement method ) {
-		final Element classElement = method.getEnclosingElement();
-		final Path pathAnnotationOfClass = classElement.getAnnotation( Path.class );
-		final String rootPath = pathAnnotationOfClass != null ? pathAnnotationOfClass.value() : "/";
-		final Path pathAnnotationOfMethod = method.getAnnotation( Path.class );
-		final String methodPath = pathAnnotationOfMethod != null ? pathAnnotationOfMethod.value() : "/";
+		val classElement = method.getEnclosingElement();
+		val pathAnnotationOfClass = classElement.getAnnotation( Path.class );
+		val rootPath = pathAnnotationOfClass != null ? pathAnnotationOfClass.value() : "/";
+		val pathAnnotationOfMethod = method.getAnnotation( Path.class );
+		val methodPath = pathAnnotationOfMethod != null ? pathAnnotationOfMethod.value() : "/";
 		return generateHttpPath( rootPath, methodPath );
 	}
 
@@ -186,8 +198,8 @@ public class RoutingMethodData {
 	}
 
 	static String extractServiceInterfaceFrom( final ExecutableElement method ) {
-		final TypeElement classElement = (TypeElement)method.getEnclosingElement();
-		final String canonicalName = getServiceInterfaceProviderClass( classElement ).toString();
+		val classElement = (TypeElement)method.getEnclosingElement();
+		val canonicalName = getServiceInterfaceProviderClass( classElement ).toString();
 		if ( Singleton.class.getCanonicalName().equals( canonicalName )
 				|| Stateless.class.getCanonicalName().equals( canonicalName ) )
 			return classElement.asType().toString();
@@ -196,10 +208,10 @@ public class RoutingMethodData {
 
 	static TypeMirror getServiceInterfaceProviderClass( final TypeElement service ) {
 		try {
-			final Singleton singleton = service.getAnnotation( Singleton.class );
+			val singleton = service.getAnnotation( Singleton.class );
 			if ( singleton != null )
 				singleton.exposedAs();
-			final Stateless stateless = service.getAnnotation( Stateless.class );
+			val stateless = service.getAnnotation( Stateless.class );
 			if ( stateless != null )
 				stateless.exposedAs();
 			return service.asType();

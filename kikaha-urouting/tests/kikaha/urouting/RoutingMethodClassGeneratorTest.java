@@ -31,7 +31,7 @@ public class RoutingMethodClassGeneratorTest extends TestCase {
 		RoutingMethodData data = createData( null, "application/json", "", "java.lang.String" );
 		data = fixAnIdentier( data, 123 );
 		generator.generate( data );
-		String expectedGeneratedClass = readFile( "routing-method-class-generator.expected-non-response-class.txt" );
+		final String expectedGeneratedClass = readFile( "routing-method-class-generator.expected-non-response-class.txt" );
 		assertEquals( expectedGeneratedClass, outputFile.toString() );
 	}
 
@@ -42,7 +42,7 @@ public class RoutingMethodClassGeneratorTest extends TestCase {
 		RoutingMethodData data = createData( "String", null, "true" );
 		data = fixAnIdentier( data, 123 );
 		generator.generate( data );
-		String expectedGeneratedClass = readFile( "routing-method-class-generator.expected-response-and-param-but-no-content-type-class.txt" );
+		final String expectedGeneratedClass = readFile( "routing-method-class-generator.expected-response-and-param-but-no-content-type-class.txt" );
 		assertEquals( expectedGeneratedClass, outputFile.toString() );
 	}
 
@@ -58,28 +58,28 @@ public class RoutingMethodClassGeneratorTest extends TestCase {
 		assertThat( firstGeneratedClass, not( outputFile.toString() ) );
 	}
 
-	RoutingMethodData createData( String returnType, String responseContentType, String params ) {
+	RoutingMethodData createData( final String returnType, final String responseContentType, final String params ) {
 		return createData( returnType, responseContentType, params, null );
 	}
 
-	RoutingMethodData createData( String returnType, String responseContentType, String params, String serviceInterface ) {
+	RoutingMethodData createData( final String returnType, final String responseContentType, final String params, final String serviceInterface ) {
 		return new RoutingMethodData(
 			RetrieveRoutes.class.getCanonicalName(),
 			RetrieveRoutes.class.getPackage().toString(),
 			"renderRelatoMais", params, returnType, responseContentType,
-			"/hello/world", "GET", serviceInterface, false, false );
+			"/hello/world", "GET", serviceInterface, false, false, false );
 	}
 
 	@SneakyThrows
 	Filer createAnnotationFiler() {
-		JavaFileObject fileObject = mock( JavaFileObject.class );
+		final JavaFileObject fileObject = mock( JavaFileObject.class );
 		when( fileObject.openWriter() ).thenReturn( outputFile );
-		Filer filer = mock( Filer.class );
+		final Filer filer = mock( Filer.class );
 		when( filer.createSourceFile( any( String.class ) ) ).thenReturn( fileObject );
 		return filer;
 	}
 
-	RoutingMethodData fixAnIdentier( RoutingMethodData data, long time ) {
+	RoutingMethodData fixAnIdentier( final RoutingMethodData data, final long time ) {
 		final RoutingMethodData stub = spy( data );
 		when( stub.getIdentifier() ).thenReturn( time );
 		return stub;

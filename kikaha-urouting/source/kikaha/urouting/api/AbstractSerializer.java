@@ -11,6 +11,8 @@ public abstract class AbstractSerializer implements Serializer {
 
 	@Override
 	public <T> void serialize( final T object, final HttpServerExchange exchange ) throws IOException {
+		if ( !exchange.isBlocking() )
+			exchange.startBlocking();
 		final OutputStream outputStream = exchange.getOutputStream();
 		serialize( object, UncloseableWriterWrapper.wrap( outputStream ) );
 		outputStream.flush();

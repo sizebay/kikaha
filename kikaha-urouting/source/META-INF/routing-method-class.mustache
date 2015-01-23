@@ -13,6 +13,9 @@ import kikaha.core.api.WebResource;
 import kikaha.urouting.ResponseWriter;
 import kikaha.urouting.RoutingMethodDataProvider;
 import kikaha.urouting.RoutingMethodExceptionHandler;
+{{#asyncMode}}
+import kikaha.urouting.api.AsyncResponse;
+{{/asyncMode}}
 
 @Singleton( exposedAs=HttpHandler.class )
 @WebResource( value="{{httpPath}}", method="{{httpMethod}}" )
@@ -44,10 +47,11 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 			final FormDataParser parser = FormParserFactory.builder().build().createParser(exchange);
 			final FormData formData = parser.parseBlocking();
 		{{/isMultiPart}}
+		{{^asyncMode}}
 		{{#returnType}}
 			final {{{returnType}}} response = instance.{{methodName}}( {{{methodParams}}} );
 			{{#responseContentType}}
-				responseWriter.write( exchange, "{{responseContentType}}", response );
+				responseWriter.write( exchange, "{{{responseContentType}}}", response );
 			{{/responseContentType}}
 			{{^responseContentType}}
 				responseWriter.write( exchange, response );
@@ -57,8 +61,22 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 			instance.{{methodName}}( {{{methodParams}}} );
 			responseWriter.write( exchange );
 		{{/returnType}}
+		{{/asyncMode}}
+		{{#asyncMode}}
+			{{#responseContentType}}
+			final AsyncResponse asyncResponse = new AsyncResponse( exchange, responseWriter, "{{{responseContentType}}}" );
+			{{/responseContentType}}
+			{{^responseContentType}}
+			final AsyncResponse asyncResponse = new AsyncResponse( exchange, responseWriter );
+			{{/responseContentType}}
+			exchange.dispatch();
+			instance.{{methodName}}( {{{methodParams}}} );
+		{{/asyncMode}}
 		} catch ( Throwable cause ) {
 			responseWriter.write( exchange, exceptionHandler.handle( cause ) );
+			{{#asyncMode}}
+			exchange.endExchange();
+			{{/asyncMode}}
 		}
 	}
 }
