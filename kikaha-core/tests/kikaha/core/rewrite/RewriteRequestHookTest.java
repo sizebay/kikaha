@@ -50,16 +50,26 @@ public class RewriteRequestHookTest {
 	@SneakyThrows
 	public void ensureThatCouldRewriteVirtualHost()
 	{
-		val exchange = createVirtualHostExchange();
+		val exchange = createVirtualHostExchange( "customer.localdomain" );
 		val hook = new RewriteRequestHook( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
 		hook.execute( chain, exchange );
 		assertEquals( "/customer/documents", exchange.getRelativePath() );
 	}
 
-	HttpServerExchange createVirtualHostExchange()
+	@Test
+	@SneakyThrows
+	public void ensureThatCouldRewriteVirtualHostAtPort8080()
+	{
+		val exchange = createVirtualHostExchange( "customer.localdomain:8080" );
+		val hook = new RewriteRequestHook( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
+		hook.execute( chain, exchange );
+		assertEquals( "/customer/documents", exchange.getRelativePath() );
+	}
+
+	HttpServerExchange createVirtualHostExchange( final String virtualHost )
 	{
 		val requestHeaders = new HeaderMap();
-		requestHeaders.add( Headers.HOST, "customer.localdomain" );
+		requestHeaders.add( Headers.HOST, virtualHost );
 		val exchange = new HttpServerExchange( null, requestHeaders, null, 0 );
 		exchange.setRelativePath( "/documents" );
 		return exchange;
@@ -93,4 +103,5 @@ public class RewriteRequestHookTest {
 		hook.execute( chain, exchange );
 		assertEquals( "/user/1234/edit/", exchange.getRelativePath() );
 	}
+
 }

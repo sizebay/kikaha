@@ -56,7 +56,8 @@ public class RewriteRequestHook implements RequestHook {
 		for ( val rule : rewriteRules )
 			if ( !rule.apply( exchange, properties ) )
 				return;
-		exchange.setRelativePath( targetPath.replace( properties ) );
+		val newpath = targetPath.replace( properties );
+		exchange.setRelativePath( newpath );
 	}
 
 	List<BiFunction<HttpServerExchange, Map<String, String>, Boolean>> createWriteRules()
@@ -81,6 +82,8 @@ public class RewriteRequestHook implements RequestHook {
 		val cursor = new StringCursor( hostHeader );
 		if ( !cursor.shiftCursorToNextChar( ':' ) )
 			cursor.end();
+		else
+			cursor.prev();
 		val host = cursor.substringUntilCursor();
 		return host;
 	}

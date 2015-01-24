@@ -26,6 +26,11 @@ public class StringCursor {
 		return chars[cursor++];
 	}
 
+	public char prev()
+	{
+		return chars[cursor--];
+	}
+
 	/**
 	 * Create a mark positioned at current cursor.
 	 */
