@@ -20,11 +20,10 @@ public class FormDataProducer implements ContextProducer<FormData> {
 	final FormParserFactory formParserFactory = FormParserFactory.builder().build();
 
 	@Override
-	public FormData produce( HttpServerExchange exchange ) throws RoutingException {
+	public FormData produce( final HttpServerExchange exchange ) throws RoutingException {
 		try {
 			final FormDataParser parser = formParserFactory.createParser( exchange );
-			parser.parseBlocking();
-			return exchange.getAttachment( FormDataParser.FORM_DATA );
+			return parser.parseBlocking();
 		} catch ( NullPointerException | IOException cause ) {
 			log.severe( cause.getMessage() );
 			throw new RoutingException( COULD_NOT_PRODUCE_FORM_DATA );

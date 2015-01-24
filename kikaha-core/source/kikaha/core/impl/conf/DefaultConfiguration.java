@@ -2,6 +2,7 @@ package kikaha.core.impl.conf;
 
 import kikaha.core.api.conf.AuthenticationConfiguration;
 import kikaha.core.api.conf.Configuration;
+import kikaha.core.api.conf.Routes;
 import kikaha.core.api.conf.SSLConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,9 @@ public class DefaultConfiguration implements Configuration {
 	@Getter( lazy = true )
 	private final SSLConfiguration ssl = createSSLConfiguration();
 
+	@Getter( lazy = true )
+	private final Routes routes = readRoutes();
+
 	String resourcesPath;
 
 	SSLConfiguration createSSLConfiguration() {
@@ -58,6 +62,11 @@ public class DefaultConfiguration implements Configuration {
 		return config().getString( path )
 			.replaceFirst( "^\"", "" )
 			.replaceFirst( "\"$", "" );
+	}
+
+	Routes readRoutes()
+	{
+		return new DefaultRoutes( config().getConfig( "server.routes" ) );
 	}
 
 	public static DefaultConfiguration loadDefaultConfiguration() {

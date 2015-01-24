@@ -2,8 +2,6 @@ package kikaha.core;
 
 import io.undertow.Handlers;
 import io.undertow.Undertow;
-import io.undertow.Undertow.Builder;
-import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 
@@ -21,10 +19,12 @@ import kikaha.core.api.UndertowStandaloneException;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.DefaultDeploymentContext;
 import kikaha.core.impl.DefaultHttpRequestHandler;
+import kikaha.core.impl.RelativePathFixerRequestHook;
 import kikaha.core.impl.UndertowRoutedResourcesHook;
 import kikaha.core.ssl.SSLContextFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import lombok.experimental.Accessors;
 import lombok.extern.java.Log;
 import trip.spi.ServiceProvider;
@@ -54,14 +54,13 @@ public class UndertowServer {
 	 * @throws UndertowStandaloneException
 	 */
 	public void start() throws UndertowStandaloneException {
-		final long start = System.currentTimeMillis();
+		val start = System.currentTimeMillis();
 		bootstrap();
 		this.server = createServer();
 		this.server.start();
-		final long elapsed = System.currentTimeMillis() - start;
+		val elapsed = System.currentTimeMillis() - start;
 		log.info("Server started in " + elapsed + "ms.");
-		log.info("Server is listening at " + host() + ":"
-				+ configuration().port());
+		log.info( "Server is listening at " + host() + ":" + configuration().port() );
 		Runtime.getRuntime().addShutdownHook( new UndertowShutdownHook(this) );
 	}
 
@@ -73,7 +72,7 @@ public class UndertowServer {
 	protected void bootstrap() throws UndertowStandaloneException {
 		try {
 			provideSomeDependenciesForFurtherInjections();
-			final DefaultDeploymentContext deploymentContext = createDeploymentContext();
+			val deploymentContext = createDeploymentContext();
 			runDeploymentHooks(deploymentContext);
 			deployWebResourceFolder(deploymentContext);
 			finishDeployment(deploymentContext);
@@ -90,16 +89,15 @@ public class UndertowServer {
 
 	protected DefaultDeploymentContext createDeploymentContext()
 			throws ServiceProviderException {
-		final Iterable<DeploymentHook> deploymentHooks = provider
-			.loadAll( DeploymentHook.class );
-		final Iterable<RequestHook> requestHooks = provider
-			.loadAll( RequestHook.class );
-		final List<RequestHook> mutableListOfHooks = mutableList(requestHooks);
+		val deploymentHooks = provider.loadAll( DeploymentHook.class );
+		val requestHooks = provider.loadAll( RequestHook.class );
+		val mutableListOfHooks = mutableList( requestHooks );
+		mutableListOfHooks.add( 0, new RelativePathFixerRequestHook() );
 		return new DefaultDeploymentContext(deploymentHooks, mutableListOfHooks);
 	}
 
 	protected void runDeploymentHooks(final DeploymentContext deploymentContext) {
-		for (final DeploymentHook hook : deploymentContext.deploymentHooks()) {
+		for ( val hook : deploymentContext.deploymentHooks() ) {
 			log.fine("Dispatching deployment hook: "
 					+ hook.getClass().getCanonicalName());
 			hook.onDeploy(deploymentContext);
@@ -111,8 +109,8 @@ public class UndertowServer {
 	}
 
 	protected ResourceHandler createResourceManager() {
-		final File location = retrieveWebAppFolder();
-		final FileResourceManager resourceManager = new FileResourceManager( location, 100 );
+		val location = retrieveWebAppFolder();
+		val resourceManager = new FileResourceManager( location, 100 );
 		log.info("Exposing resource files at " + location);
 		return Handlers.resource(resourceManager)
 				.setResourceManager(resourceManager)
@@ -121,33 +119,32 @@ public class UndertowServer {
 	}
 
 	protected File retrieveWebAppFolder() {
-		final File location = new File(configuration().resourcesPath());
+		val location = new File( configuration().resourcesPath() );
 		if (!location.exists())
 			location.mkdir();
 		return location;
 	}
 
 	protected void finishDeployment(final DefaultDeploymentContext deploymentContext) {
-		final HttpHandler rootHandler = deploymentContext.rootHandler();
-		final UndertowRoutedResourcesHook undertowRoutedResources = UndertowRoutedResourcesHook
-				.wrap(rootHandler);
+		val rootHandler = deploymentContext.rootHandler();
+		val undertowRoutedResources = UndertowRoutedResourcesHook.wrap( rootHandler );
 		deploymentContext.register(undertowRoutedResources);
 	}
 
 	protected Undertow createServer() {
-		final Builder builder = Undertow.builder();
-		final SSLContext sslContext = readConfiguredSSLContext();
+		val builder = Undertow.builder();
+		val sslContext = readConfiguredSSLContext();
 		if ( sslContext == null )
 			builder.addHttpListener( configuration().port(), host() );
 		else
 			builder.addHttpsListener( configuration().port(), host(), sslContext );
-		return builder.setHandler(
-			new DefaultHttpRequestHandler( this.deploymentContext() ) ).build();
+		return builder.setHandler( new DefaultHttpRequestHandler(
+			this.deploymentContext() ) ).build();
 	}
 
 	SSLContext readConfiguredSSLContext() {
 		try {
-			final SSLContextFactory factory = provider.load( SSLContextFactory.class );
+			val factory = provider.load( SSLContextFactory.class );
 			return factory.createSSLContext();
 		} catch ( IOException | ServiceProviderException cause ) {
 			throw new RuntimeException( cause );
@@ -167,13 +164,12 @@ public class UndertowServer {
 	}
 
 	private ServiceProvider newServiceProvider() {
-		final ServiceProvider serviceProvider = new ServiceProvider();
-		return serviceProvider;
+		return new ServiceProvider();
 	}
 
 	static <T> List<T> mutableList(final Iterable<T> immutable) {
-		final ArrayList<T> mutableList = new ArrayList<T>();
-		for (final T item : immutable)
+		val mutableList = new ArrayList<T>();
+		for ( val item : immutable )
 			mutableList.add(item);
 		return mutableList;
 	}

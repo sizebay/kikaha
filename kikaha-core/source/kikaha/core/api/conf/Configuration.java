@@ -18,5 +18,7 @@ public interface Configuration {
 
 	SSLConfiguration ssl();
 
+	Routes routes();
+
 	Config config();
 }
