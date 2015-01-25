@@ -1,0 +1,37 @@
+package kikaha.core.rewrite;
+
+import io.undertow.server.HttpServerExchange;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import kikaha.core.api.conf.RewritableRule;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
+import lombok.extern.java.Log;
+
+@Log
+@RequiredArgsConstructor
+public class DefaultMatcher implements RequestMatcher {
+
+	final List<RequestMatcher> listOfMatchers;
+
+	@Override
+	public Boolean apply( final HttpServerExchange t, final Map<String, String> u )
+	{
+		for ( val matcher : listOfMatchers )
+			if ( !matcher.apply( t, u ) )
+				return false;
+		log.info( "All matchers was okay!" );
+		return true;
+	}
+
+	public static RequestMatcher from( final RewritableRule rule )
+	{
+		val list = new ArrayList<RequestMatcher>();
+		list.add( VirtualHostMatcher.from( rule.virtualHost() ) );
+		list.add( PathMatcher.from( rule.path() ) );
+		return new DefaultMatcher( list );
+	}
+}

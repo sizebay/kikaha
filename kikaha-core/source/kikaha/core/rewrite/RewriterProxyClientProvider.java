@@ -5,7 +5,6 @@ import io.undertow.client.ClientConnection;
 import io.undertow.client.UndertowClient;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.ServerConnection;
-import io.undertow.server.handlers.ResponseCodeHandler;
 import io.undertow.server.handlers.proxy.ProxyCallback;
 import io.undertow.server.handlers.proxy.ProxyClient;
 import io.undertow.server.handlers.proxy.ProxyConnection;
@@ -14,10 +13,14 @@ import io.undertow.util.AttachmentKey;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import kikaha.core.api.conf.RewritableRule;
+import kikaha.core.url.URLMatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import lombok.extern.java.Log;
 
 import org.xnio.IoUtils;
 import org.xnio.OptionMap;
@@ -33,6 +36,7 @@ import org.xnio.OptionMap;
  * @author Stuart Douglas
  * @author Miere Teixeira
  */
+@Log
 @RequiredArgsConstructor
 public class RewriterProxyClientProvider implements ProxyClient {
 
@@ -40,45 +44,44 @@ public class RewriterProxyClientProvider implements ProxyClient {
 
 	final AttachmentKey<ClientConnection> clientAttachmentKey = AttachmentKey.create( ClientConnection.class );
 	final UndertowClient client = UndertowClient.getInstance();
-	final Rewriter rewriter;
+	final RequestMatcher requestMatcher;
+	final URLMatcher targetMatcher;
+	final String targetPath;
 
 	@Override
-	public ProxyTarget findTarget( final HttpServerExchange exchange ) { return TARGET; }
+	public ProxyTarget findTarget( final HttpServerExchange exchange )
+	{
+		val properties = new HashMap<String, String>();
+		if ( !requestMatcher.apply( exchange, properties ) ) {
+			log.severe( "No rules matched to this request." );
+			return null;
+		}
+		return TARGET;
+	}
 
 	@Override
-	public void getConnection( final ProxyTarget target, final HttpServerExchange originalExchange,
+	public void getConnection( final ProxyTarget target, final HttpServerExchange exchange,
 		final ProxyCallback<ProxyConnection> callback,
 		final long timeout, final TimeUnit timeUnit )
 	{
-		rewriter.rewrite( originalExchange,
-			exchange -> getConnection( exchange, callback ),
-			exchange -> send404Response( exchange ) );
-	}
-
-	void send404Response( final HttpServerExchange exchange )
-	{
 		try {
-			ResponseCodeHandler.HANDLE_404.handleRequest( exchange );
-		} catch ( final Exception e ) {
-			throw new RuntimeException( e );
-		}
-	}
-
-	void getConnection( final HttpServerExchange exchange, final ProxyCallback<ProxyConnection> callback )
-	{
-		try {
-			val existing = exchange.getConnection().getAttachment( clientAttachmentKey );
-			if ( existing != null )
-				if ( existing.isOpen() ) {
-					callback.completed( exchange, new ProxyConnection( existing, exchange.getRelativePath() ) );
-					return;
-				} else
-					exchange.getConnection().removeAttachment( clientAttachmentKey );
-			client.connect( new ConnectNotifier( callback, exchange ), new URI( exchange.getRelativePath() ), exchange.getIoThread(),
-				exchange.getConnection().getBufferPool(), OptionMap.EMPTY );
+			getConnection( exchange, callback );
 		} catch ( final URISyntaxException e ) {
 			throw new RuntimeException( e );
 		}
+	}
+
+	void getConnection( final HttpServerExchange exchange, final ProxyCallback<ProxyConnection> callback ) throws URISyntaxException
+	{
+		val existing = exchange.getConnection().getAttachment( clientAttachmentKey );
+		if ( existing != null )
+			if ( existing.isOpen() ) {
+				callback.completed( exchange, new ProxyConnection( existing, targetPath ) );
+				return;
+			} else
+				exchange.getConnection().removeAttachment( clientAttachmentKey );
+		client.connect( new ConnectNotifier( callback, exchange ), new URI( targetPath ), exchange.getIoThread(),
+			exchange.getConnection().getBufferPool(), OptionMap.EMPTY );
 	}
 
 	@RequiredArgsConstructor
@@ -94,7 +97,7 @@ public class RewriterProxyClientProvider implements ProxyClient {
 			serverConnection.putAttachment( clientAttachmentKey, connection );
 			serverConnection.addCloseListener( serverConnection1 -> IoUtils.safeClose( connection ) );
 			connection.getCloseSetter().set( channel -> serverConnection.removeAttachment( clientAttachmentKey ) );
-			callback.completed( exchange, new ProxyConnection( connection, exchange.getRelativePath() ) );
+			callback.completed( exchange, new ProxyConnection( connection, targetPath ) );
 		}
 
 		@Override
@@ -102,5 +105,13 @@ public class RewriterProxyClientProvider implements ProxyClient {
 		{
 			callback.failed( exchange );
 		}
+	}
+
+	public static ProxyClient from( final RewritableRule rule )
+	{
+		return new RewriterProxyClientProvider(
+			DefaultMatcher.from( rule ),
+			URLMatcher.compile( rule.target() ),
+			rule.target() );
 	}
 }

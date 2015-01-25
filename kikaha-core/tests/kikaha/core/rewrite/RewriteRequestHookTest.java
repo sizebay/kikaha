@@ -8,6 +8,7 @@ import io.undertow.util.Headers;
 import kikaha.core.api.RequestHookChain;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.conf.DefaultConfiguration;
+import kikaha.core.impl.conf.DefaultRewritableRoute;
 import lombok.SneakyThrows;
 import lombok.val;
 
@@ -51,8 +52,8 @@ public class RewriteRequestHookTest {
 	public void ensureThatCouldRewriteVirtualHost()
 	{
 		val exchange = createVirtualHostExchange( "customer.localdomain" );
-		val rule = new Rewriter( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
-		val hook = new RewriteRequestHook( rule );
+		val rule = new DefaultRewritableRoute( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
+		val hook = RewriteRequestHook.from( rule );
 		hook.execute( chain, exchange );
 		assertEquals( "/customer/documents", exchange.getRelativePath() );
 	}
@@ -62,8 +63,8 @@ public class RewriteRequestHookTest {
 	public void ensureThatCouldRewriteVirtualHostAtPort8080()
 	{
 		val exchange = createVirtualHostExchange( "customer.localdomain:8080" );
-		val rule = new Rewriter( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
-		val hook = new RewriteRequestHook( rule );
+		val rule = new DefaultRewritableRoute( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
+		val hook = RewriteRequestHook.from( rule );
 		hook.execute( chain, exchange );
 		assertEquals( "/customer/documents", exchange.getRelativePath() );
 	}
@@ -83,8 +84,8 @@ public class RewriteRequestHookTest {
 	{
 		val exchange = createPathDefinedExchange();
 		val path = "/{domain}-{action}.jsp?id={id}";
-		val rule = new Rewriter( "{virtualHost}", path, "/{domain}/{id}/{action}/" );
-		val hook = new RewriteRequestHook( rule );
+		val rule = new DefaultRewritableRoute( "{virtualHost}", path, "/{domain}/{id}/{action}/" );
+		val hook = RewriteRequestHook.from( rule );
 		hook.execute( chain, exchange );
 		assertEquals( "/user/1234/edit/", exchange.getRelativePath() );
 	}
@@ -101,9 +102,8 @@ public class RewriteRequestHookTest {
 	public void ensureThatRewriteApplingRuleFoundInConfigurationFile()
 	{
 		val exchange = createPathDefinedExchange();
-		val rewriteRoute = configuration.routes().rewriteRoutes().get( 4 );
-		val rule = new Rewriter( rewriteRoute );
-		val hook = new RewriteRequestHook( rule );
+		val rule = configuration.routes().rewriteRoutes().get( 4 );
+		val hook = RewriteRequestHook.from( rule );
 		hook.execute( chain, exchange );
 		assertEquals( "/user/1234/edit/", exchange.getRelativePath() );
 	}
