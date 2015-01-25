@@ -2,7 +2,7 @@ package kikaha.core.rewrite;
 
 import static org.junit.Assert.assertEquals;
 import kikaha.core.api.conf.Configuration;
-import kikaha.core.api.conf.RewriteRoute;
+import kikaha.core.api.conf.RewritableRule;
 import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -28,28 +28,28 @@ public class RouteConfigurationTest {
 		ensureReadFourthRouteAsExpected( routes.get( 3 ) );
 	}
 
-	private void ensureReadFirstRouteAsExpected( final RewriteRoute rewriteRoute )
+	private void ensureReadFirstRouteAsExpected( final RewritableRule rewriteRoute )
 	{
 		assertEquals( "test.localdomain", rewriteRoute.virtualHost() );
 		assertEquals( "/admin/{something}", rewriteRoute.path() );
 		assertEquals( "/test/{something}/admin", rewriteRoute.target() );
 	}
 
-	private void ensureReadSecondRouteAsExpected( final RewriteRoute rewriteRoute )
+	private void ensureReadSecondRouteAsExpected( final RewritableRule rewriteRoute )
 	{
 		assertEquals( "{virtualHost}", rewriteRoute.virtualHost() );
 		assertEquals( "/admin/{something}", rewriteRoute.path() );
 		assertEquals( "/test/{something}/admin", rewriteRoute.target() );
 	}
 
-	private void ensureReadThirdRouteAsExpected( final RewriteRoute rewriteRoute )
+	private void ensureReadThirdRouteAsExpected( final RewritableRule rewriteRoute )
 	{
 		assertEquals( "test.localdomain", rewriteRoute.virtualHost() );
 		assertEquals( "/{path}", rewriteRoute.path() );
 		assertEquals( "/test/{something}/admin", rewriteRoute.target() );
 	}
 
-	private void ensureReadFourthRouteAsExpected( final RewriteRoute rewriteRoute )
+	private void ensureReadFourthRouteAsExpected( final RewritableRule rewriteRoute )
 	{
 		assertEquals( "{virtualHost}", rewriteRoute.virtualHost() );
 		assertEquals( "/{path}", rewriteRoute.path() );

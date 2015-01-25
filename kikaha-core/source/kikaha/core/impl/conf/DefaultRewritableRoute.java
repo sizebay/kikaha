@@ -1,6 +1,6 @@
 package kikaha.core.impl.conf;
 
-import kikaha.core.api.conf.RewriteRoute;
+import kikaha.core.api.conf.RewritableRule;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @Accessors( fluent = true )
 @NoArgsConstructor
 @AllArgsConstructor
-public class DefaultRewriteRoute implements RewriteRoute {
+public class DefaultRewritableRoute implements RewritableRule {
 
 	String virtualHost;
 	String path;

@@ -51,7 +51,8 @@ public class RewriteRequestHookTest {
 	public void ensureThatCouldRewriteVirtualHost()
 	{
 		val exchange = createVirtualHostExchange( "customer.localdomain" );
-		val hook = new RewriteRequestHook( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
+		val rule = new Rewriter( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
+		val hook = new RewriteRequestHook( rule );
 		hook.execute( chain, exchange );
 		assertEquals( "/customer/documents", exchange.getRelativePath() );
 	}
@@ -61,7 +62,8 @@ public class RewriteRequestHookTest {
 	public void ensureThatCouldRewriteVirtualHostAtPort8080()
 	{
 		val exchange = createVirtualHostExchange( "customer.localdomain:8080" );
-		val hook = new RewriteRequestHook( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
+		val rule = new Rewriter( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
+		val hook = new RewriteRequestHook( rule );
 		hook.execute( chain, exchange );
 		assertEquals( "/customer/documents", exchange.getRelativePath() );
 	}
@@ -81,7 +83,8 @@ public class RewriteRequestHookTest {
 	{
 		val exchange = createPathDefinedExchange();
 		val path = "/{domain}-{action}.jsp?id={id}";
-		val hook = new RewriteRequestHook( "{virtualHost}", path, "/{domain}/{id}/{action}/" );
+		val rule = new Rewriter( "{virtualHost}", path, "/{domain}/{id}/{action}/" );
+		val hook = new RewriteRequestHook( rule );
 		hook.execute( chain, exchange );
 		assertEquals( "/user/1234/edit/", exchange.getRelativePath() );
 	}
@@ -99,7 +102,8 @@ public class RewriteRequestHookTest {
 	{
 		val exchange = createPathDefinedExchange();
 		val rewriteRoute = configuration.routes().rewriteRoutes().get( 4 );
-		val hook = new RewriteRequestHook( rewriteRoute );
+		val rule = new Rewriter( rewriteRoute );
+		val hook = new RewriteRequestHook( rule );
 		hook.execute( chain, exchange );
 		assertEquals( "/user/1234/edit/", exchange.getRelativePath() );
 	}

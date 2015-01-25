@@ -36,6 +36,10 @@ public class DefaultDeploymentContext implements DeploymentContext {
 
 	@Override
 	public DeploymentContext register( final String uri, final HttpHandler handler ) {
+		register( uri, "PATCH", handler );
+		register( uri, Methods.PUT_STRING, handler );
+		register( uri, Methods.POST_STRING, handler );
+		register( uri, Methods.DELETE_STRING, handler );
 		return register( uri, Methods.GET_STRING, handler );
 	}
 

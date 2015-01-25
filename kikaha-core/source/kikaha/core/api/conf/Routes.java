@@ -4,5 +4,7 @@ import java.util.List;
 
 public interface Routes {
 
-	List<RewriteRoute> rewriteRoutes();
+	List<RewritableRule> rewriteRoutes();
+
+	List<RewritableRule> reverseProxyRoutes();
 }

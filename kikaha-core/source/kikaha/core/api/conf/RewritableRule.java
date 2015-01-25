@@ -1,6 +1,6 @@
 package kikaha.core.api.conf;
 
-public interface RewriteRoute {
+public interface RewritableRule {
 
 	String virtualHost();
 
