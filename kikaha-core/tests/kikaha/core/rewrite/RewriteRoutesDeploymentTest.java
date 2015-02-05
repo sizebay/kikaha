@@ -1,7 +1,6 @@
 package kikaha.core.rewrite;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import io.undertow.server.handlers.proxy.ProxyHandler;
@@ -36,9 +35,7 @@ public class RewriteRoutesDeploymentTest {
 	{
 		deployment.onDeploy( context );
 		verify( context, times( 5 ) ).register( any( RequestHook.class ) );
-		verify( context ).register(
-			eq( "/{domain}-{action}.jsp?id={id}" ),
-			any( ProxyHandler.class ) );
+		verify( context ).rootHandler( any( ProxyHandler.class ) );
 	}
 
 	@Before

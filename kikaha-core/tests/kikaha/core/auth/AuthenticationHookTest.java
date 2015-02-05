@@ -9,7 +9,7 @@ import static org.mockito.Mockito.verify;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.api.RequestHookChain;
-import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.api.KikahaException;
 import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.val;
 
@@ -39,7 +39,7 @@ public class AuthenticationHookTest {
 	}
 
 	@Test
-	public void ensureThatCallTheHookInIOThreadWhenHasRuleThatMatchesTheRelativePath() throws UndertowStandaloneException {
+	public void ensureThatCallTheHookInIOThreadWhenHasRuleThatMatchesTheRelativePath() throws KikahaException {
 		doNothing().when( chain ).executeInWorkerThread( any( Runnable.class ) );
 		doReturn( securityContext ).when( authenticationHook ).createSecurityContext( any( HttpServerExchange.class ),
 				any( AuthenticationRule.class ) );
@@ -49,7 +49,7 @@ public class AuthenticationHookTest {
 	}
 
 	@Test
-	public void ensureThatCallTheHookInSameThreadWhenThereWasRuleThatMatchesTheRelativePath() throws UndertowStandaloneException {
+	public void ensureThatCallTheHookInSameThreadWhenThereWasRuleThatMatchesTheRelativePath() throws KikahaException {
 		doReturn( "invalid-authenticated-url/" ).when( authenticationHook ).retrieveRelativePath( any( HttpServerExchange.class ) );
 		authenticationHook.execute( chain, null );
 		verify( chain, never() ).executeInWorkerThread( any( Runnable.class ) );

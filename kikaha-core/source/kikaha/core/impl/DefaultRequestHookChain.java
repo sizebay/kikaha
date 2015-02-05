@@ -7,7 +7,7 @@ import java.util.Iterator;
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.RequestHook;
 import kikaha.core.api.RequestHookChain;
-import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.api.KikahaException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -24,7 +24,7 @@ public class DefaultRequestHookChain implements RequestHookChain {
 	private final Iterator<RequestHook> hooks = context.requestHooks().iterator();
 
 	@Override
-	public void executeNext() throws UndertowStandaloneException {
+	public void executeNext() throws KikahaException {
 		final RequestHook hook = getNextHookClass();
 		executeHook( hook );
 	}
@@ -35,7 +35,7 @@ public class DefaultRequestHookChain implements RequestHookChain {
 	}
 
 	@Override
-	public void executeInWorkerThread( final Runnable hook ) throws UndertowStandaloneException {
+	public void executeInWorkerThread( final Runnable hook ) throws KikahaException {
 		if ( this.isInIOThread() )
 			this.dispatchToWorkerThread( hook );
 		else {
@@ -48,13 +48,13 @@ public class DefaultRequestHookChain implements RequestHookChain {
 		this.exchange.dispatch( hook );
 	}
 
-	void executeHook( final RequestHook hook ) throws UndertowStandaloneException {
+	void executeHook( final RequestHook hook ) throws KikahaException {
 		hook.execute( this, this.exchange );
 	}
 
-	public RequestHook getNextHookClass() throws UndertowStandaloneException {
+	public RequestHook getNextHookClass() throws KikahaException {
 		if ( !this.hooks().hasNext() )
-			throw new UndertowStandaloneException( "No hook available found." );
+			throw new KikahaException( "No hook available found." );
 		return this.hooks().next();
 	}
 }

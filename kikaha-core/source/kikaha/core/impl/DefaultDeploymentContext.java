@@ -13,7 +13,9 @@ import kikaha.core.api.RequestHook;
 import kikaha.core.url.SimpleRoutingHandler;
 import kikaha.core.url.URL;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.java.Log;
 
@@ -25,8 +27,13 @@ public class DefaultDeploymentContext implements DeploymentContext {
 
 	final Iterable<DeploymentHook> deploymentHooks;
 	final List<RequestHook> requestHooks;
-	final SimpleRoutingHandler rootHandler = new SimpleRoutingHandler();
+
 	final Map<String, Object> attributes = new HashMap<String, Object>();
+	final SimpleRoutingHandler routingHandler = new SimpleRoutingHandler();
+
+	@NonNull
+	@Setter
+	HttpHandler rootHandler = routingHandler;
 
 	@Override
 	public DeploymentContext register( final RequestHook hook ) {
@@ -47,7 +54,7 @@ public class DefaultDeploymentContext implements DeploymentContext {
 	public DeploymentContext register( String uri, final String method, final HttpHandler handler ) {
 		uri = URL.removeTrailingCharacter( uri );
 		log.info( "Registering route: " + method + ":" + uri + ": " + handler.getClass().getCanonicalName() );
-		this.rootHandler.add( method, uri, handler );
+		this.routingHandler.add( method, uri, handler );
 		return this;
 	}
 
@@ -75,7 +82,7 @@ public class DefaultDeploymentContext implements DeploymentContext {
 
 	@Override
 	public DeploymentContext fallbackHandler( final HttpHandler fallbackHandler ) {
-		rootHandler.setFallbackHandler( fallbackHandler );
+		routingHandler.setFallbackHandler( fallbackHandler );
 		return this;
 	}
 }

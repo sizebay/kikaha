@@ -4,25 +4,27 @@ import io.undertow.server.HttpHandler;
 
 public interface DeploymentContext {
 
-	DeploymentContext register( RequestHook hook );
+	DeploymentContext register( final RequestHook hook );
 
 	Iterable<DeploymentHook> deploymentHooks();
 
 	Iterable<RequestHook> requestHooks();
 
-	DeploymentContext register( String uri, HttpHandler handler );
+	DeploymentContext register( final String uri, final HttpHandler handler );
 
-	DeploymentContext register( String uri, String method, HttpHandler handler );
+	DeploymentContext register( final String uri, final String method, final HttpHandler handler );
 
-	<T> DeploymentContext attribute( Class<T> clazz, T object );
+	<T> DeploymentContext attribute( final Class<T> clazz, final T object );
 
-	DeploymentContext attribute( String key, Object object );
+	DeploymentContext attribute( final String key, final Object object );
 
-	<T> T attribute( Class<T> clazz );
+	<T> T attribute( final Class<T> clazz );
 
-	Object attribute( String key );
+	Object attribute( final String key );
 
 	HttpHandler rootHandler();
 
-	DeploymentContext fallbackHandler( HttpHandler fallbackHandler );
+	DeploymentContext rootHandler( final HttpHandler handler );
+
+	DeploymentContext fallbackHandler( final HttpHandler fallbackHandler );
 }

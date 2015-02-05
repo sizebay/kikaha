@@ -16,7 +16,7 @@ import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
 import kikaha.core.api.RequestHook;
 import kikaha.core.api.RequestHookChain;
-import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.api.KikahaException;
 import kikaha.core.impl.DefaultDeploymentContext;
 import kikaha.core.impl.DefaultRequestHookChain;
 import lombok.Getter;
@@ -31,13 +31,13 @@ public class DefaultRequestHookChainTest {
 	final Runnable someThread = spy( new Thread() );
 
 	@Test
-	public void ensureThatCouldExecuteARequestHookInChain() throws UndertowStandaloneException {
+	public void ensureThatCouldExecuteARequestHookInChain() throws KikahaException {
 		chain.executeNext();
 		assertThat( requestHook.isExecuted(), is( true ) );
 	}
 
 	@Test
-	public void ensureThatDispatchedToWorkerThread() throws UndertowStandaloneException {
+	public void ensureThatDispatchedToWorkerThread() throws KikahaException {
 		doReturn( true ).when( chain ).isInIOThread();
 		doNothing().when( chain ).dispatchToWorkerThread( someThread );
 		chain.executeInWorkerThread( someThread );
@@ -45,7 +45,7 @@ public class DefaultRequestHookChainTest {
 	}
 
 	@Test
-	public void ensureThatNotDispatchRequestToWorkerThread() throws UndertowStandaloneException {
+	public void ensureThatNotDispatchRequestToWorkerThread() throws KikahaException {
 		doReturn( false ).when( chain ).isInIOThread();
 		doNothing().when( chain ).dispatchToWorkerThread( someThread );
 		chain.executeInWorkerThread( someThread );
@@ -66,7 +66,7 @@ class BooleanRequestHook implements RequestHook {
 	boolean executed;
 
 	@Override
-	public void execute( RequestHookChain chain, HttpServerExchange exchange ) throws UndertowStandaloneException {
+	public void execute( RequestHookChain chain, HttpServerExchange exchange ) throws KikahaException {
 		executed = true;
 	}
 }

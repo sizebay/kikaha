@@ -2,7 +2,7 @@ package kikaha.core;
 
 import java.io.IOException;
 
-import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.api.KikahaException;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ public class Main {
 	private final Configuration configuration;
 	private UndertowServer undertowServer;
 
-	public void start() throws UndertowStandaloneException {
+	public void start() throws KikahaException {
 		undertowServer = new UndertowServer( configuration );
 		undertowServer.start();
 	}
@@ -24,7 +24,7 @@ public class Main {
 			undertowServer.stop();
 	}
 
-	public static void main( final String[] args ) throws InterruptedException, UndertowStandaloneException, IOException, ClassNotFoundException {
+	public static void main( final String[] args ) throws InterruptedException, KikahaException, IOException, ClassNotFoundException {
 		val config = DefaultConfiguration.loadDefaultConfiguration();
 		if ( args.length > 0 && !isBlank( args[0] ) )
 			config.resourcesPath( args[0] );

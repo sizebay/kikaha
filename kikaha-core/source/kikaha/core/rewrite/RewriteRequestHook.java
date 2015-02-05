@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import kikaha.core.api.RequestHook;
 import kikaha.core.api.RequestHookChain;
-import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.api.KikahaException;
 import kikaha.core.api.conf.RewritableRule;
 import kikaha.core.url.URLMatcher;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class RewriteRequestHook implements RequestHook {
 	final URLMatcher targetPath;
 
 	@Override
-	public void execute( final RequestHookChain chain, final HttpServerExchange exchange ) throws UndertowStandaloneException
+	public void execute( final RequestHookChain chain, final HttpServerExchange exchange ) throws KikahaException
 	{
 		val properties = new HashMap<String, String>();
 		if ( requestMatcher.apply( exchange, properties ) )

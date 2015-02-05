@@ -1,7 +1,6 @@
 package kikaha.core.rewrite;
 
 import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.proxy.ProxyHandler;
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
@@ -15,8 +14,6 @@ import trip.spi.Singleton;
 @Singleton( exposedAs = DeploymentHook.class )
 public class RewriteRoutesDeployment
 	implements DeploymentHook {
-
-	static final HttpHandler HANDLER_404 = new NotFoundHandler();
 
 	@Provided
 	Configuration configuration;
@@ -40,29 +37,17 @@ public class RewriteRoutesDeployment
 	void deployReverseProxyRoutes( final DeploymentContext context )
 	{
 		val routes = configuration.routes().reverseProxyRoutes();
+		HttpHandler lastHandler = context.rootHandler();
 		for ( val route : routes ) {
 			log.info( "Deploying reverse proxy rule: " + route );
 			val proxyClient = RewriterProxyClientProvider.from( route );
-			val handler = new ProxyHandler( proxyClient, HANDLER_404 );
-			context.register( route.path(), handler );
+			lastHandler = new ProxyHandler( proxyClient, lastHandler );
 		}
+		context.rootHandler( lastHandler );
 	}
 
 	@Override
 	public void onUndeploy( final DeploymentContext context )
 	{
 	}
-}
-
-@Log
-class NotFoundHandler implements HttpHandler {
-
-	@Override
-	public void handleRequest( final HttpServerExchange exchange ) throws Exception
-	{
-		exchange.setResponseCode( 404 );
-		exchange.endExchange();
-		log.info( "Exchange ended with 404 status" );
-	}
-
 }

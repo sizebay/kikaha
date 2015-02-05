@@ -19,7 +19,7 @@ import java.util.List;
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.RequestHook;
 import kikaha.core.api.RequestHookChain;
-import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.api.KikahaException;
 import kikaha.core.impl.DefaultHttpRequestHandler;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -55,7 +55,7 @@ public class DefaultHttpRequestHandlerTest {
 	}
 
 	@Test
-	public void ensureThatDelegateRequestToMockedRequestHook() throws Exception, UndertowStandaloneException {
+	public void ensureThatDelegateRequestToMockedRequestHook() throws Exception, KikahaException {
 		doReturn( createHookChain() ).when( context ).requestHooks();
 		val handler = new DefaultHttpRequestHandler( context );
 		handler.handleRequest( exchange );

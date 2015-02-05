@@ -6,7 +6,7 @@ import io.undertow.util.Headers;
 import java.util.Collection;
 
 import kikaha.core.api.RequestHookChain;
-import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.api.KikahaException;
 import kikaha.core.api.conf.FormAuthConfiguration;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -33,7 +33,7 @@ public class AuthenticationRunner implements Runnable {
 		}
 	}
 
-	void tryExecuteChain() throws UndertowStandaloneException {
+	void tryExecuteChain() throws KikahaException {
 		if ( matchesExpectedRoles() )
 			chain.executeNext();
 		else

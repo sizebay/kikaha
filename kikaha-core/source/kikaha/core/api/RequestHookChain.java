@@ -4,7 +4,7 @@ import io.undertow.server.HttpServerExchange;
 
 public interface RequestHookChain {
 
-	void executeNext() throws UndertowStandaloneException;
+	void executeNext() throws KikahaException;
 
 	DeploymentContext context();
 
@@ -12,6 +12,6 @@ public interface RequestHookChain {
 
 	boolean isInIOThread();
 
-	void executeInWorkerThread( Runnable hook ) throws UndertowStandaloneException;
+	void executeInWorkerThread( Runnable hook ) throws KikahaException;
 
 }

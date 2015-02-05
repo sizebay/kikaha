@@ -4,7 +4,7 @@
 
 	<parent>
 		<groupId>io.skullabs.kikaha</groupId>
-		<version>1.2.0</version>
+		<version>1.3.0</version>
 		<artifactId>kikaha-parent</artifactId>
 	</parent>
 

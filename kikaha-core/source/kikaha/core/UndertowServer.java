@@ -15,7 +15,7 @@ import javax.net.ssl.SSLContext;
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
 import kikaha.core.api.RequestHook;
-import kikaha.core.api.UndertowStandaloneException;
+import kikaha.core.api.KikahaException;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.DefaultDeploymentContext;
 import kikaha.core.impl.DefaultHttpRequestHandler;
@@ -51,9 +51,9 @@ public class UndertowServer {
 	/**
 	 * Start the Undertow Standalone Server.
 	 *
-	 * @throws UndertowStandaloneException
+	 * @throws KikahaException
 	 */
-	public void start() throws UndertowStandaloneException {
+	public void start() throws KikahaException {
 		val start = System.currentTimeMillis();
 		bootstrap();
 		this.server = createServer();
@@ -67,9 +67,9 @@ public class UndertowServer {
 	/**
 	 * Run all life cycle initialization routines of Undertow Standalone.
 	 *
-	 * @throws UndertowStandaloneException
+	 * @throws KikahaException
 	 */
-	protected void bootstrap() throws UndertowStandaloneException {
+	protected void bootstrap() throws KikahaException {
 		try {
 			provideSomeDependenciesForFurtherInjections();
 			val deploymentContext = createDeploymentContext();
@@ -78,7 +78,7 @@ public class UndertowServer {
 			finishDeployment(deploymentContext);
 			this.deploymentContext = deploymentContext;
 		} catch (final ServiceProviderException cause) {
-			throw new UndertowStandaloneException(cause);
+			throw new KikahaException(cause);
 		}
 	}
 
