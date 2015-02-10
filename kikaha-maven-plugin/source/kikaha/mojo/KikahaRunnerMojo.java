@@ -1,15 +1,14 @@
 package kikaha.mojo;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import kikaha.core.Main;
-import lombok.RequiredArgsConstructor;
+import kikaha.mojo.runner.MainClassService;
+import lombok.val;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -82,35 +81,47 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	 */
 	File buildDirectory;
 
+	/**
+	 * Directory containing the build files.
+	 *
+	 * @parameter expression="${project.build.resources[0].directory}"
+	 */
+	File resourceDirectory;
+
 	StringBuilder classPath = new StringBuilder();
 	String standaloneJar;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			memorizeClassPathWithRunnableJar();
-			final String commandLineString = getCommandLineString();
-			System.out.println( "CML: " + commandLineString );
-			run( commandLineString );
+			val classpath = memorizeClassPathWithRunnableJar();
+			val service = new MainClassService( Main.class.getCanonicalName(), classpath, asList( webresourcesPath ) );
+			val process = service.start();
+			if ( process.waitFor() > 0 )
+				throw new RuntimeException( "Kikaha has unexpectedly finished." );
 		} catch ( final Exception e ) {
 			throw new MojoExecutionException( "Can't initialize Kikaha.", e );
 		}
 	}
+	
+	List<String> asList( String...strings ){
+		val list = new ArrayList<String>();
+		for ( val string : strings )
+			list.add( string );
+		return list;
+	}
 
 	@SuppressWarnings( "unchecked" )
-	void memorizeClassPathWithRunnableJar()
+	List<String> memorizeClassPathWithRunnableJar()
 			throws DependencyResolutionRequiredException, ArtifactResolutionException, ArtifactNotFoundException {
-		final List<String> artifactsInClassPath = new ArrayList<>();
-		for ( final Artifact artifact : (Set<Artifact>)this.project.getArtifacts() ) {
-			final String artifactAbsolutePath = getArtifactAbsolutePath( artifact );
-			if ( !artifactsInClassPath.contains( artifactAbsolutePath ) ) {
-				this.classPath.append( artifactAbsolutePath ).append( SEPARATOR );
+		val artifactsInClassPath = new ArrayList<String>();
+		for ( val artifact : (Set<Artifact>)this.project.getArtifacts() ) {
+			val artifactAbsolutePath = getArtifactAbsolutePath( artifact );
+			if ( !artifactsInClassPath.contains( artifactAbsolutePath ) )
 				artifactsInClassPath.add( artifactAbsolutePath );
-			}
 		}
-		this.classPath
-			.append( getFinalArtifactName() )
-			.append( SEPARATOR ).append( "." );
+		artifactsInClassPath.add( getFinalArtifactName() );
+		return artifactsInClassPath;
 	}
 
 	String getArtifactAbsolutePath( final Artifact artifact )
@@ -122,38 +133,5 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	String getFinalArtifactName() {
 		final String fileName = String.format( "%s.%s", this.finalName, this.project.getPackaging() );
 		return new File( this.buildDirectory, fileName ).getAbsolutePath();
-	}
-
-	String getCommandLineString() {
-		return String.format(
-			"java -cp \"%s\" %s \"%s\"",
-				this.classPath.toString(),
-				Main.class.getCanonicalName(),
-				this.webresourcesPath != null ? this.webresourcesPath : "" );
-	}
-
-	void run( final String commandLineString ) throws IOException, InterruptedException {
-		final Runtime runtime = Runtime.getRuntime();
-		final Process exec = runtime.exec( commandLineString );
-		runtime.addShutdownHook( new ProcessDestroyer( exec ) );
-		printAsynchronously( exec.getInputStream() );
-		printAsynchronously( exec.getErrorStream() );
-		if ( exec.waitFor() > 0 )
-			throw new RuntimeException( "The Kikaha has failed to run." );
-	}
-
-	void printAsynchronously( final InputStream stream ) {
-		new Thread( new ProcessOutputPrinter( stream ) ).start();
-	}
-}
-
-@RequiredArgsConstructor
-class ProcessDestroyer extends Thread {
-	final Process process;
-
-	@Override
-	public void run() {
-		process.destroy();
-		System.out.println( "Kikaha has shutting down!" );
 	}
 }

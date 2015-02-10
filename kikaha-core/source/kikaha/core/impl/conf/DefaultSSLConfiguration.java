@@ -32,7 +32,7 @@ public class DefaultSSLConfiguration implements SSLConfiguration {
 	@Override
 	public boolean isEmpty() {
 		return isBlank( keystore() )
-			|| isBlank( truststore() );
+			&& isBlank( truststore() );
 	}
 
 	boolean isBlank( String str ) {

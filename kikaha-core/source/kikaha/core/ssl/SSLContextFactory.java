@@ -18,6 +18,7 @@ import javax.net.ssl.TrustManagerFactory;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.api.conf.SSLConfiguration;
 import lombok.val;
+import lombok.extern.java.Log;
 
 import org.xnio.IoUtils;
 
@@ -29,6 +30,7 @@ import trip.spi.Singleton;
  *
  * @author Miere Teixeira
  */
+@Log
 @Singleton
 // TODO: improve capability of SSL support making more integration tests.
 public class SSLContextFactory {
@@ -71,6 +73,10 @@ public class SSLContextFactory {
 
 	public KeyStore loadKeyStore( final String name, final String password ) throws IOException {
 		val stream = getClass().getClassLoader().getResourceAsStream( name );
+		if ( stream == null ){
+			log.warning( "Could not open " + name + " certificate." );
+			return null;
+		}
 		return loadKeyStore( stream, password );
 	}
 
@@ -109,7 +115,8 @@ public class SSLContextFactory {
 		TrustManager[] trustManagers = null;
 		try {
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
-			trustManagerFactory.init( trustStore );
+			if ( trustStore != null )
+				trustManagerFactory.init( trustStore );
 			trustManagers = trustManagerFactory.getTrustManagers();
 		} catch ( NoSuchAlgorithmException | KeyStoreException e ) {
 			throw new IOException( "Unable to initialise TrustManager[]", e );
