@@ -42,6 +42,7 @@ public class UndertowServer {
 	private final Configuration configuration;
 	private DeploymentContext deploymentContext;
 	private Undertow server;
+	volatile String mode = "HTTP";
 
 	public UndertowServer( final Configuration configuration ) {
 		this.provider = newServiceProvider();
@@ -60,7 +61,7 @@ public class UndertowServer {
 		this.server.start();
 		val elapsed = System.currentTimeMillis() - start;
 		log.info("Server started in " + elapsed + "ms.");
-		log.info( "Server is listening at " + host() + ":" + configuration().port() );
+		log.info( "Server is listening at " + host() + ":" + configuration().port() + " in " + mode + " mode." );
 		Runtime.getRuntime().addShutdownHook( new UndertowShutdownHook(this) );
 	}
 
@@ -136,10 +137,11 @@ public class UndertowServer {
 		val sslContext = readConfiguredSSLContext();
 		if ( sslContext == null )
 			builder.addHttpListener( configuration().port(), host() );
-		else
+		else{
 			builder.addHttpsListener( configuration().port(), host(), sslContext );
-		return builder.setHandler( new DefaultHttpRequestHandler(
-			this.deploymentContext() ) ).build();
+			mode = "HTTPS";
+		}
+		return builder.setHandler( new DefaultHttpRequestHandler( this.deploymentContext() ) ).build();
 	}
 
 	SSLContext readConfiguredSSLContext() {

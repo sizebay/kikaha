@@ -25,9 +25,7 @@ public class VirtualHostMatcher implements RequestMatcher {
 			log.warning( "No HOST header found." );
 			return true;
 		}
-		log.info( "HOST HEADER: " + hostHeader );
 		val host = stripHostFromHeader( hostHeader );
-		log.info( "HOST: " + host );
 		return virtualHost.matches( host, properties );
 	}
 

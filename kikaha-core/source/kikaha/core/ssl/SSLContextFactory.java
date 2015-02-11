@@ -18,7 +18,6 @@ import javax.net.ssl.TrustManagerFactory;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.api.conf.SSLConfiguration;
 import lombok.val;
-import lombok.extern.java.Log;
 
 import org.xnio.IoUtils;
 
@@ -30,7 +29,6 @@ import trip.spi.Singleton;
  *
  * @author Miere Teixeira
  */
-@Log
 @Singleton
 // TODO: improve capability of SSL support making more integration tests.
 public class SSLContextFactory {
@@ -74,7 +72,10 @@ public class SSLContextFactory {
 	public KeyStore loadKeyStore( final String name, final String password ) throws IOException {
 		val stream = getClass().getClassLoader().getResourceAsStream( name );
 		if ( stream == null ){
-			log.warning( "Could not open " + name + " certificate." );
+			if ( name != null && !name.isEmpty() ){
+				val msg = "Could not open " + name + " certificate.";
+				throw new IOException( msg );
+			}
 			return null;
 		}
 		return loadKeyStore( stream, password );
@@ -94,45 +95,42 @@ public class SSLContextFactory {
 
 	public SSLContext createSSLContext( 
 		final KeyStore keyStore, final KeyStore trustStore, final String keystorePassword )
-			throws IOException {
+			throws IOException
+	{
 		val keyManagers = createKeyManagers( keyStore, keystorePassword );
 		val trustManagers = createTrustManagers( trustStore );
 		return createSSLContext( keyManagers, trustManagers );
 	}
 
 	SSLContext createSSLContext( KeyManager[] keyManagers, TrustManager[] trustManagers ) throws IOException {
-		SSLContext sslContext;
 		try {
-			sslContext = SSLContext.getInstance( configuration.ssl().certSecurityProvider() );
+			val sslContext = SSLContext.getInstance( configuration.ssl().certSecurityProvider() );
 			sslContext.init( keyManagers, trustManagers, null );
+			return sslContext;
 		} catch ( NoSuchAlgorithmException | KeyManagementException e ) {
 			throw new IOException( "Unable to create and initialise the SSLContext", e );
 		}
-		return sslContext;
 	}
 
 	TrustManager[] createTrustManagers( final KeyStore trustStore ) throws IOException {
-		TrustManager[] trustManagers = null;
+		if ( trustStore == null )
+			return null;
 		try {
-			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
-			if ( trustStore != null )
+			val trustManagerFactory = TrustManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
 				trustManagerFactory.init( trustStore );
-			trustManagers = trustManagerFactory.getTrustManagers();
+			return trustManagerFactory.getTrustManagers();
 		} catch ( NoSuchAlgorithmException | KeyStoreException e ) {
 			throw new IOException( "Unable to initialise TrustManager[]", e );
 		}
-		return trustManagers;
 	}
 
 	KeyManager[] createKeyManagers( final KeyStore keyStore, final String keystorePassword ) throws IOException {
-		KeyManager[] keyManagers;
 		try {
-			KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
+			val keyManagerFactory = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
 			keyManagerFactory.init( keyStore, keystorePassword.toCharArray() );
-			keyManagers = keyManagerFactory.getKeyManagers();
+			return keyManagerFactory.getKeyManagers();
 		} catch ( NoSuchAlgorithmException | UnrecoverableKeyException | KeyStoreException e ) {
 			throw new IOException( "Unable to initialise KeyManager[]", e );
 		}
-		return keyManagers;
 	}
 }

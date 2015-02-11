@@ -20,7 +20,6 @@ import kikaha.core.api.conf.RewritableRule;
 import kikaha.core.url.URLMatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import lombok.extern.java.Log;
 
 import org.xnio.IoUtils;
 import org.xnio.OptionMap;
@@ -36,7 +35,6 @@ import org.xnio.OptionMap;
  * @author Stuart Douglas
  * @author Miere Teixeira
  */
-@Log
 @RequiredArgsConstructor
 public class RewriterProxyClientProvider implements ProxyClient {
 
@@ -52,10 +50,8 @@ public class RewriterProxyClientProvider implements ProxyClient {
 	public ProxyTarget findTarget( final HttpServerExchange exchange )
 	{
 		val properties = new HashMap<String, String>();
-		if ( !requestMatcher.apply( exchange, properties ) ) {
-			log.severe( "No rules matched to this request." );
+		if ( !requestMatcher.apply( exchange, properties ) )
 			return null;
-		}
 		return TARGET;
 	}
 
