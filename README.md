@@ -1,5 +1,7 @@
 # Kikaha
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.skullabs.kikaha/kikaha-project/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.skullabs.kikaha/kikaha-project)
+[![Codeship Status](https://www.codeship.io/projects/3e90ba20-7994-0132-52d3-5ad3a80e87e7/status?branch=master)](https://www.codeship.io/projects/55927)
+
 
 Kikaha is a micro container writen over the fast Undertow core. was developed with two core ideas in mind:
 - provides a lightweight micro container (written over the powerful undertow core), as alternative environment to to run web applications
