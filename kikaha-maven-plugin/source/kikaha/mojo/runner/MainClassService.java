@@ -68,11 +68,15 @@ public class MainClassService {
 
 	String joinClassPath(List<String> paths) {
 		val pathSeparator = System.getProperty("path.separator");
+		return join( paths, pathSeparator );
+	}
+
+	String join( List<String> strings, final String separator ) {
 		val buffer = new StringBuilder();
 		boolean first = true;
-		for (val path : paths) {
+		for (val path : strings) {
 			if (!first)
-				buffer.append(pathSeparator);
+				buffer.append(separator);
 			buffer.append(path);
 			first = false;
 		}

@@ -1,5 +1,7 @@
 package kikaha.core.ssl;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
@@ -70,15 +72,25 @@ public class SSLContextFactory {
 	}
 
 	public KeyStore loadKeyStore( final String name, final String password ) throws IOException {
-		val stream = getClass().getClassLoader().getResourceAsStream( name );
-		if ( stream == null ){
-			if ( name != null && !name.isEmpty() ){
-				val msg = "Could not open " + name + " certificate.";
-				throw new IOException( msg );
-			}
+		if ( name == null || name.isEmpty() )
 			return null;
+
+		val stream = openFile( name );
+		if ( stream == null ){
+			val msg = "Could not open " + name + " certificate.";
+			throw new IOException( msg );
 		}
+
+		System.out.println( "INFO: loading key store " + name );
 		return loadKeyStore( stream, password );
+	}
+
+	InputStream openFile( final String name ) {
+		try {
+			return new FileInputStream( name );
+		} catch ( FileNotFoundException e ) {
+			return getClass().getClassLoader().getResourceAsStream( name );
+		}
 	}
 
 	public KeyStore loadKeyStore( final InputStream stream, final String password ) throws IOException {

@@ -135,8 +135,9 @@ public class KikahaPackagerMojo extends AbstractMojo {
 	}
 
 	@SuppressWarnings( "unchecked" )
-	void copyDependenciesToZip( final ZipFileWriter zip ) throws ArtifactResolutionException, ArtifactNotFoundException,
-		FileNotFoundException {
+	void copyDependenciesToZip( final ZipFileWriter zip )
+			throws ArtifactResolutionException, ArtifactNotFoundException, FileNotFoundException
+	{
 		final Set<String> namesAlreadyIncludedToZip = new HashSet<>();
 		for ( final Artifact artifact : (Set<Artifact>)this.project.getArtifacts() ) {
 			final String artifactAbsolutePath = getArtifactAbsolutePath( artifact );
@@ -148,9 +149,9 @@ public class KikahaPackagerMojo extends AbstractMojo {
 	}
 
 	void copyDependencyToZip(
-		final ZipFileWriter zip,
-		final Artifact artifact,
-		final String artifactAbsolutePath ) throws FileNotFoundException
+			final ZipFileWriter zip,
+			final Artifact artifact,
+			final String artifactAbsolutePath ) throws FileNotFoundException
 	{
 		if ( artifact.getScope().equals( "provided" ) )
 			return;
@@ -161,7 +162,7 @@ public class KikahaPackagerMojo extends AbstractMojo {
 	}
 
 	String getArtifactAbsolutePath( final Artifact artifact )
-		throws ArtifactResolutionException, ArtifactNotFoundException
+			throws ArtifactResolutionException, ArtifactNotFoundException
 	{
 		this.resolver.resolve( artifact, Collections.EMPTY_LIST, this.localRepository );
 		return artifact.getFile().getAbsolutePath();
@@ -190,7 +191,7 @@ public class KikahaPackagerMojo extends AbstractMojo {
 	}
 
 	void copyToZip( final ZipFileWriter zip, final String rootDirectory, final File file )
-		throws IOException, FileNotFoundException
+			throws IOException, FileNotFoundException
 	{
 		final String fileName = ( rootDirectory + "/" + file.getName() ).replaceFirst( "^/", "" );
 		if ( file.isDirectory() )
@@ -200,7 +201,7 @@ public class KikahaPackagerMojo extends AbstractMojo {
 	}
 
 	void copyFileToZip( final ZipFileWriter zip, final File file, final String fileName )
-		throws FileNotFoundException, IOException
+			throws FileNotFoundException, IOException
 	{
 		@Cleanup final InputStream content = new FileInputStream( file );
 		zip.add( fileName, content );
