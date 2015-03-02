@@ -35,6 +35,7 @@ public class ResponseWriter {
 	 */
 	public void write( final HttpServerExchange exchange ) {
 		sendStatusCode( exchange, 204 );
+		exchange.endExchange();
 	}
 
 	/**
