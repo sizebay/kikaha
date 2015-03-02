@@ -6,12 +6,14 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import trip.spi.Singleton;
 import trip.spi.Stateless;
 import trip.spi.helpers.filter.Condition;
@@ -95,7 +97,16 @@ class MethodsOnlyCondition implements Condition<Element> {
 
 	@Override
 	public boolean check( final Element object ) {
-		return object.getKind().equals( ElementKind.METHOD );
+		val parentClass = object.getEnclosingElement();
+		return object.getKind().equals( ElementKind.METHOD )
+				&& isNotAbstract( parentClass );
+	}
+
+	private boolean isNotAbstract( Element parentClass ) {
+		for ( val modifier : parentClass.getModifiers() )
+			if ( Modifier.ABSTRACT.equals( modifier ) )
+				return false;
+		return true;
 	}
 }
 
