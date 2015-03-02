@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import kikaha.core.api.conf.RewritableRule;
-import kikaha.core.url.URLMatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -43,7 +42,6 @@ public class RewriterProxyClientProvider implements ProxyClient {
 	final AttachmentKey<ClientConnection> clientAttachmentKey = AttachmentKey.create( ClientConnection.class );
 	final UndertowClient client = UndertowClient.getInstance();
 	final RequestMatcher requestMatcher;
-	final URLMatcher targetMatcher;
 	final String targetPath;
 
 	@Override
@@ -107,7 +105,6 @@ public class RewriterProxyClientProvider implements ProxyClient {
 	{
 		return new RewriterProxyClientProvider(
 			DefaultMatcher.from( rule ),
-			URLMatcher.compile( rule.target() ),
 			rule.target() );
 	}
 }

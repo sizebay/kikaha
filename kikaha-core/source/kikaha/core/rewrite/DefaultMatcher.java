@@ -9,9 +9,7 @@ import java.util.Map;
 import kikaha.core.api.conf.RewritableRule;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import lombok.extern.java.Log;
 
-@Log
 @RequiredArgsConstructor
 public class DefaultMatcher implements RequestMatcher {
 
@@ -23,7 +21,6 @@ public class DefaultMatcher implements RequestMatcher {
 		for ( val matcher : listOfMatchers )
 			if ( !matcher.apply( t, u ) )
 				return false;
-		log.info( "All matchers was okay!" );
 		return true;
 	}
 
