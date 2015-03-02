@@ -25,17 +25,19 @@ public class AnnotationProcessorUtil {
 
 	@SuppressWarnings( "unchecked" )
 	public static Iterable<Element> retrieveMethodsAnnotatedWith( final RoundEnvironment roundEnv,
-		final Class<? extends Annotation> annotation ) {
+			final Class<? extends Annotation> annotation )
+	{
 		return (Iterable<Element>)Filter.filter(
-			roundEnv.getElementsAnnotatedWith( annotation ),
-			new MethodsOnlyCondition() );
+				roundEnv.getElementsAnnotatedWith( annotation ),
+				new MethodsOnlyCondition() );
 	}
 
 	public static ExecutableElement retrieveFirstMethodAnnotatedWith( final TypeElement typeElement,
-		final Class<? extends Annotation> annotation ) {
+			final Class<? extends Annotation> annotation )
+	{
 		return (ExecutableElement)Filter.first(
-			typeElement.getEnclosedElements(),
-			new AnnotatedMethodsCondition( annotation ) );
+				typeElement.getEnclosedElements(),
+				new AnnotatedMethodsCondition( annotation ) );
 	}
 
 	public static String extractServiceInterfaceFrom( final ExecutableElement method ) {
@@ -46,7 +48,7 @@ public class AnnotationProcessorUtil {
 	public static String extractServiceInterfaceFrom( final TypeElement classElement ) {
 		final String canonicalName = getServiceInterfaceProviderClass( classElement ).toString();
 		if ( Singleton.class.getCanonicalName().equals( canonicalName )
-			|| Stateless.class.getCanonicalName().equals( canonicalName ) )
+				|| Stateless.class.getCanonicalName().equals( canonicalName ) )
 			return classElement.asType().toString();
 		return canonicalName;
 	}
@@ -88,8 +90,8 @@ public class AnnotationProcessorUtil {
 
 	public interface MethodParameterParser {
 		String parse(
-			final ExecutableElement method,
-			final VariableElement variable );
+				final ExecutableElement method,
+				final VariableElement variable );
 	}
 }
 
@@ -102,8 +104,8 @@ class MethodsOnlyCondition implements Condition<Element> {
 				&& isNotAbstract( parentClass );
 	}
 
-	private boolean isNotAbstract( Element parentClass ) {
-		for ( val modifier : parentClass.getModifiers() )
+	private boolean isNotAbstract( Element clazz ) {
+		for ( val modifier : clazz.getModifiers() )
 			if ( Modifier.ABSTRACT.equals( modifier ) )
 				return false;
 		return true;
@@ -119,6 +121,6 @@ class AnnotatedMethodsCondition implements Condition<Element> {
 	public boolean check( final Element element ) {
 		final MethodsOnlyCondition methodsOnlyCondition = new MethodsOnlyCondition();
 		return methodsOnlyCondition.check( element )
-			&& element.getAnnotation( annotationType ) != null;
+				&& element.getAnnotation( annotationType ) != null;
 	}
 }
