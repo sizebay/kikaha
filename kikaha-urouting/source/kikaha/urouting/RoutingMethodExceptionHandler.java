@@ -16,6 +16,10 @@ public class RoutingMethodExceptionHandler {
 
 	@Provided
 	ServiceProvider provider;
+
+	@Provided
+	UnhandledExceptionHandler fallbackHandler;
+
 	Map<Class<?>, ExceptionHandler<?>> handlers;
 
 	@SuppressWarnings( "unchecked" )
@@ -28,7 +32,7 @@ public class RoutingMethodExceptionHandler {
 				return handler.handle( cause );
 			clazz = clazz.getSuperclass();
 		}
-		throw new UnhandledException( cause );
+		return fallbackHandler.handle( new UnhandledException( cause ) );
 	}
 
 	protected Map<Class<?>, ExceptionHandler<?>> handlers() {
