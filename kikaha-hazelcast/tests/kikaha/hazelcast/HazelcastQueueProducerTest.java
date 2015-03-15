@@ -6,20 +6,17 @@ import static org.junit.Assert.assertThat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import kikaha.hazelcast.Source;
+import kikaha.hazelcast.config.HazelcastTestCase;
+import lombok.SneakyThrows;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
-import trip.spi.ServiceProviderException;
 
-import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.IQueue;
 
-public class HazelcastQueueProducerTest {
+public class HazelcastQueueProducerTest extends HazelcastTestCase {
 
 	static final Integer MAX_PRODUCED_JOBS = 100;
 
@@ -44,16 +41,10 @@ public class HazelcastQueueProducerTest {
 			assertThat( consumedJobs.take().get(), is( true ) );
 	}
 
-	@Before
-	public void setup() throws ServiceProviderException {
-		provider.provideOn( this );
+	@SneakyThrows
+	public void provideExtraDependencies( ServiceProvider provider ) {
 		provider.provideOn( consumer );
 		consumer.start();
-	}
-
-	@After
-	public void shutdownHazelcast() {
-		Hazelcast.shutdownAll();
 	}
 
 	class QueueOfBooleansConsumer extends Thread {

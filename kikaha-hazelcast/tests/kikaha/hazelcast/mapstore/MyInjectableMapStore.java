@@ -1,5 +1,6 @@
-package kikaha;
+package kikaha.hazelcast.mapstore;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -12,7 +13,9 @@ import com.hazelcast.core.MapStore;
 
 @Log
 @Singleton
-public class MyInjectableMapStore implements MapStore<String, Object> {
+public class MyInjectableMapStore implements MapStore<String, Object>, Serializable {
+
+	private static final long serialVersionUID = -4432429890495577870L;
 
 	@Provided
 	Store store;

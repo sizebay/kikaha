@@ -1,16 +1,14 @@
-package kikaha.hazelcast;
+package kikaha.hazelcast.mapstore;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 
 import java.io.Serializable;
 
-import kikaha.Store;
-import kikaha.core.api.conf.Configuration;
-import kikaha.core.impl.conf.DefaultConfiguration;
+import kikaha.hazelcast.Source;
+import kikaha.hazelcast.config.HazelcastTestCase;
 import lombok.SneakyThrows;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -22,9 +20,7 @@ import trip.spi.ServiceProvider;
 import com.hazelcast.core.IMap;
 
 @RunWith( MockitoJUnitRunner.class )
-public class TripManagedContextTest {
-
-	final ServiceProvider provider = new ServiceProvider();
+public class MapStoreInjectionTest extends HazelcastTestCase {
 
 	@Mock
 	Store mockedStore;
@@ -40,17 +36,12 @@ public class TripManagedContextTest {
 		verify( mockedStore ).loadAllKeys();
 	}
 
-	@Before
 	@SneakyThrows
-	public void provideDependencies() {
-		System.setProperty( "hazelcast.config", "tests/hazelcast-test.xml" );
-		System.setProperty( "hazelcast.logging.type", "jdk" );
-		provider.providerFor( Configuration.class, DefaultConfiguration.loadDefaultConfiguration() );
+	public void provideExtraDependencies( ServiceProvider provider ) {
 		provider.providerFor( Store.class, mockedStore );
-		provider.provideOn( this );
 	}
 
-	class Data implements Serializable {
+	public static class Data implements Serializable {
 		private static final long serialVersionUID = 7392064664318236619L;
 	}
 }

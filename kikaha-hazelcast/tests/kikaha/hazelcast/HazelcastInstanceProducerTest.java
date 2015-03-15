@@ -6,24 +6,17 @@ import static org.junit.Assert.assertNotSame;
 import java.io.Serializable;
 import java.util.Date;
 
-import kikaha.hazelcast.HazelcastInstanceProducer;
+import kikaha.hazelcast.config.HazelcastTestCase;
 import lombok.Getter;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import trip.spi.Provided;
-import trip.spi.ServiceProvider;
-import trip.spi.ServiceProviderException;
 
-import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 
-public class HazelcastInstanceProducerTest {
-
-	final ServiceProvider provider = new ServiceProvider();
+public class HazelcastInstanceProducerTest extends HazelcastTestCase {
 
 	@Provided
 	HazelcastInstanceProducer producer;
@@ -45,16 +38,6 @@ public class HazelcastInstanceProducerTest {
 
 	IMap<String, Object> produceMap( HazelcastInstance instance ) {
 		return instance.getMap( "map" );
-	}
-
-	@Before
-	public void setup() throws ServiceProviderException {
-		provider.provideOn( this );
-	}
-
-	@After
-	public void shutdownHazelcast() {
-		Hazelcast.shutdownAll();
 	}
 
 	@Getter

@@ -6,12 +6,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.CountDownLatch;
 
-import kikaha.core.api.conf.Configuration;
-import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.SneakyThrows;
 import lombok.val;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import trip.spi.Provided;
@@ -22,9 +19,8 @@ import com.hazelcast.config.MapConfig.EvictionPolicy;
 import com.hazelcast.config.MaxSizeConfig.MaxSizePolicy;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.MapStore;
-import com.typesafe.config.Config;
 
-public class ConfigParserTest {
+public class ConfigParserTest extends HazelcastTestCase {
 
 	final CountDownLatch counterOfMapStoreInvocation = new CountDownLatch( 1 );
 
@@ -74,16 +70,7 @@ public class ConfigParserTest {
 		assertTrue( entryListeners.get( 0 ).getImplementation().getClass().equals( MyEntryListener.class ) );
 	}
 
-	@Before
-	@SneakyThrows
-	public void injectDependencies() {
-		val config = DefaultConfiguration.loadDefaultConfiguration();
-
-		val provider = new ServiceProvider();
+	protected void provideExtraDependencies( final ServiceProvider provider ) {
 		provider.providerFor( CountDownLatch.class, counterOfMapStoreInvocation );
-		provider.providerFor( Config.class, config.config() );
-		provider.providerFor( Configuration.class, config );
-
-		provider.provideOn( this );
 	}
 }

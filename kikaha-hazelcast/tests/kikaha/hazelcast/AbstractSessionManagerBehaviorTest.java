@@ -11,20 +11,18 @@ import io.undertow.server.handlers.Cookie;
 import io.undertow.server.handlers.CookieImpl;
 import kikaha.core.auth.AuthenticationRule;
 import kikaha.core.auth.FixedUsernameAndRolesAccount;
+import kikaha.hazelcast.config.HazelcastTestCase;
+import lombok.SneakyThrows;
 
-import org.junit.After;
-import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
-import trip.spi.ServiceProviderException;
 
-import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.IMap;
 
-public class AbstractSessionManagerBehaviorTest {
+public class AbstractSessionManagerBehaviorTest extends HazelcastTestCase {
 
 	final ServiceProvider provider = new ServiceProvider();
 	final Account fixedAccount = new FixedUsernameAndRolesAccount( "username", "default" );
@@ -76,9 +74,8 @@ public class AbstractSessionManagerBehaviorTest {
 			.createValidationSessionForExchange( any( HttpServerExchange.class ) );
 	}
 
-	@Before
-	public void setup() throws ServiceProviderException {
-		provider.provideOn( this );
+	@Override
+	protected void afterProvideDependencies() {
 		MockitoAnnotations.initMocks( this );
 		sessionCache = spy( sessionCache );
 		factory = spy( factory );
@@ -87,21 +84,8 @@ public class AbstractSessionManagerBehaviorTest {
 		wrappedSecurityContext = new WrappedSecurityContext( securityContext );
 	}
 
+	@SneakyThrows
 	protected void resetMocks() {
-		try {
-			provider.provideOn( this );
-			MockitoAnnotations.initMocks( this );
-			sessionCache = spy( sessionCache );
-			doReturn( cache ).when( sessionCache ).produceSessionCache();
-			factory = spy( factory );
-			factory.sessionCache = sessionCache;
-		} catch ( final ServiceProviderException e ) {
-			throw new RuntimeException( e );
-		}
-	}
-
-	@After
-	public void shutdownHazelcast() {
-		Hazelcast.shutdownAll();
+		injectDependencies();
 	}
 }

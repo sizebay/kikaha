@@ -5,23 +5,19 @@ import static org.junit.Assert.assertEquals;
 import java.io.Serializable;
 import java.util.Date;
 
-import kikaha.hazelcast.Source;
+import kikaha.hazelcast.config.HazelcastTestCase;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
-import trip.spi.ServiceProviderException;
 
-import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.IMap;
 
-public class HazelcastMapProducerTest {
+public class HazelcastMapProducerTest extends HazelcastTestCase {
 
 	final ServiceProvider provider = new ServiceProvider();
 
@@ -44,16 +40,6 @@ public class HazelcastMapProducerTest {
 	void persist( User user ) {
 		Long id = user.getId();
 		users.put( id, user );
-	}
-
-	@Before
-	public void setup() throws ServiceProviderException {
-		provider.provideOn( this );
-	}
-
-	@After
-	public void shutdownHazelcast() {
-		Hazelcast.shutdownAll();
 	}
 }
 
