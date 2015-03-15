@@ -1,7 +1,16 @@
 package kikaha.hazelcast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import kikaha.core.api.conf.Configuration;
-import kikaha.hazelcast.HazelcastConfiguration.ClusterClientConfig;
+import kikaha.hazelcast.config.DistributableStructuresConfigParser;
+import kikaha.hazelcast.config.HazelcastConfiguration;
+import kikaha.hazelcast.config.HazelcastConfiguration.ClusterClientConfig;
+import kikaha.hazelcast.config.MapConfiguration;
+import lombok.Getter;
+import lombok.val;
 import lombok.extern.java.Log;
 import trip.spi.Producer;
 import trip.spi.Provided;
@@ -13,6 +22,7 @@ import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.GroupConfig;
+import com.hazelcast.config.MapConfig;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -26,10 +36,18 @@ public class HazelcastInstanceProducer {
 
 	@Provided
 	HazelcastConfiguration hazelcastConfig;
-	HazelcastInstance instance;
 
 	@Provided
-	Configuration undertowConfiguration;
+	HazelcastTripManagedContext managedContext;
+
+	@Provided
+	DistributableStructuresConfigParser parser;
+
+	@Getter( lazy = true )
+	private final HazelcastInstance instance = createHazelcastInstance();
+
+	@Provided
+	Configuration config;
 
 	/**
 	 * Produce a Hazelcast Instance. It will ensure that has only one instance
@@ -43,9 +61,7 @@ public class HazelcastInstanceProducer {
 	 */
 	@Producer
 	public HazelcastInstance produceHazelcastInstance() {
-		if ( instance == null )
-			instance = createHazelcastInstance();
-		return instance;
+		return getInstance();
 	}
 
 	/**
@@ -61,12 +77,16 @@ public class HazelcastInstanceProducer {
 	 * @return a HazelcastInstance
 	 */
 	public HazelcastInstance createHazelcastInstance() {
-		if ( hazelcastConfig.mode().equals( HazelcastConfiguration.MODE_CLIENT ) ) {
-			final ClientConfig clientConfig = loadClientConfig();
-			return HazelcastClient.newHazelcastClient( clientConfig );
+		try {
+			if ( hazelcastConfig.mode().equals( HazelcastConfiguration.MODE_CLIENT ) ) {
+				final ClientConfig clientConfig = loadClientConfig();
+				return HazelcastClient.newHazelcastClient( clientConfig );
+			}
+			final Config cfg = loadConfig();
+			return Hazelcast.newHazelcastInstance( cfg );
+		} catch ( Exception cause ) {
+			throw new IllegalStateException( cause );
 		}
-		final Config cfg = loadConfig();
-		return Hazelcast.newHazelcastInstance( cfg );
 	}
 
 	ClientConfig loadClientConfig() {
@@ -96,20 +116,23 @@ public class HazelcastInstanceProducer {
 		return clientConfig;
 	}
 
-	Config loadConfig() {
+	Config loadConfig() throws Exception {
 		try {
 			Config config = provider.load( Config.class );
 			if ( config == null )
 				config = createConfig();
 			return config;
 		} catch ( ServiceProviderException cause ) {
-			log.warning( "Could not read Hazelcast Configuration: " + cause.getMessage() + ". Creating one manually." );
+			log.warning( "Could not read Hazelcast Programmatically Configuration: " + cause.getMessage() + ". Creating one manually." );
 			return createConfig();
 		}
 	}
 
-	private Config createConfig() {
+	Config createConfig() throws Exception {
 		final Config config = new XmlConfigBuilder().build();
+		config.setManagedContext( managedContext );
+		loadMapConfigs( config );
+
 		final GroupConfig groupConfig = config.getGroupConfig();
 		final ClusterClientConfig clusterClient = hazelcastConfig.clusterClient();
 
@@ -117,6 +140,27 @@ public class HazelcastInstanceProducer {
 			configureGroupIdentification( clusterClient, groupConfig );
 
 		return config;
+	}
+
+	void loadMapConfigs( Config config ) throws Exception {
+		val configs = parseConfigs(
+				"server.hazelcast.data.maps", "server.hazelcast.data-defaults.map",
+				MapConfiguration.class, MapConfig.class );
+		val mapConfigs = new HashMap<String, MapConfig>();
+		for ( val mapConf : configs )
+			mapConfigs.put( mapConf.getName(), mapConf );
+		config.setMapConfigs( mapConfigs );
+	}
+
+	<T> List<T> parseConfigs( String itemsPath, String defaultsPath, Class<?> configClass, Class<T> returnType ) throws Exception {
+		val defaultConf = config.config().getConfig( defaultsPath );
+		val confs = new ArrayList<T>();
+		for ( val entryConf : config.config().getConfigList( itemsPath ) ) {
+			val newConfig = entryConf.withFallback( defaultConf );
+			val parsedConf = parser.parse( newConfig, configClass, returnType );
+			confs.add( parsedConf );
+		}
+		return confs;
 	}
 
 	/**
@@ -133,7 +177,7 @@ public class HazelcastInstanceProducer {
 		if ( !isBlank( clusterClient.groupname() ) )
 			groupConfig.setName( clusterClient.groupname() );
 		else
-			groupConfig.setName( undertowConfiguration.applicationName() );
+			groupConfig.setName( config.applicationName() );
 		if ( !isBlank( clusterClient.password() ) )
 			groupConfig.setPassword( clusterClient.password() );
 	}

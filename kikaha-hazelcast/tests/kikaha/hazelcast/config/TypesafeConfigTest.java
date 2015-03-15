@@ -1,9 +1,9 @@
-package kikaha.hazelcast;
+package kikaha.hazelcast.config;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import kikaha.core.impl.conf.DefaultConfiguration;
-import kikaha.hazelcast.TypesafeConfigurationCompatibilization;
+import kikaha.hazelcast.config.TypesafeConfigurationCompatibilization;
 
 import com.typesafe.config.Config;
 

@@ -1,4 +1,4 @@
-package kikaha.hazelcast;
+package kikaha.hazelcast.config;
 
 import com.typesafe.config.*;
 import com.typesafe.config.ConfigException.Missing;

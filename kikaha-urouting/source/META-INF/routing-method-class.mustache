@@ -64,10 +64,10 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 		{{/asyncMode}}
 		{{#asyncMode}}
 			{{#responseContentType}}
-			final AsyncResponse asyncResponse = new AsyncResponse( exchange, responseWriter, "{{{responseContentType}}}" );
+			final AsyncResponse asyncResponse = new AsyncResponse( exchange, responseWriter, exceptionHandler, "{{{responseContentType}}}" );
 			{{/responseContentType}}
 			{{^responseContentType}}
-			final AsyncResponse asyncResponse = new AsyncResponse( exchange, responseWriter );
+			final AsyncResponse asyncResponse = new AsyncResponse( exchange, responseWriter, exceptionHandler );
 			{{/responseContentType}}
 			exchange.dispatch();
 			instance.{{methodName}}( {{{methodParams}}} );

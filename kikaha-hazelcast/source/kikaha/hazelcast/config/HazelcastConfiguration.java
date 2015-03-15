@@ -1,4 +1,4 @@
-package kikaha.hazelcast;
+package kikaha.hazelcast.config;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import com.typesafe.config.Config;
 
 /**
  * Represents the entries defined in application.conf file that belongs to
- * hazelcast behavior configuration in Undertow Standalone Extension.
+ * hazelcast behavior configuration in Kikaha.
  */
 @Getter
 @Accessors( fluent = true )
@@ -40,7 +40,7 @@ public class HazelcastConfiguration {
 	@Getter
 	@Accessors( fluent = true )
 	@RequiredArgsConstructor
-	static class ClusterClientConfig {
+	public static class ClusterClientConfig {
 
 		final Config config;
 
