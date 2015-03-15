@@ -118,8 +118,8 @@ public class DistributableStructuresConfigParser {
 
 	Setter listDelegatedSetter( Method method, String configPath, Class<?> parameterType ) {
 		return ( instance, config ) -> {
-			for ( val confEntry : config.getConfigList( configPath ) ) {
-				val value = parse( confEntry, parameterType );
+			for ( Config confEntry : config.getConfigList( configPath ) ) {
+				Object value = parse( confEntry, parameterType );
 				method.invoke( instance, value );
 			}
 			return null;
@@ -128,7 +128,7 @@ public class DistributableStructuresConfigParser {
 
 	Setter delegatedSetter( Method method, String configPath, Class<?> targetClass ) {
 		return ( instance, config ) -> {
-			val value = parse( config.getConfig( configPath ), targetClass );
+			Object value = parse( config.getConfig( configPath ), targetClass );
 			return method.invoke( instance, value );
 		};
 	}
@@ -136,17 +136,17 @@ public class DistributableStructuresConfigParser {
 	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	Setter enumeratorSetter( Method method, String configPath, Class<?> enumeratorClazz ) {
 		return ( instance, config ) -> {
-			val value = config.getString( configPath );
-			val enumValue = Enum.valueOf( (Class)enumeratorClazz, value );
+			String value = config.getString( configPath );
+			Object enumValue = Enum.valueOf( (Class)enumeratorClazz, value );
 			return method.invoke( instance, enumValue );
 		};
 	}
 
 	Setter classInstantiatorSetter( Method method, String methodName, String configPath ) {
 		return ( instance, config ) -> {
-			val className = config.getString( configPath );
-			val type = Class.forName( className );
-			val impl = newInstanceOf( type );
+			String className = config.getString( configPath );
+			Class<?> type = Class.forName( className );
+			Object impl = newInstanceOf( type );
 			return method.invoke( instance, impl );
 		};
 	}
@@ -164,7 +164,7 @@ public class DistributableStructuresConfigParser {
 
 	Setter defaultSetter( Method method, String configPath ) {
 		return ( instance, config ) -> {
-			val value = config.getAnyRef( configPath );
+			Object value = config.getAnyRef( configPath );
 			return method.invoke( instance, value );
 		};
 	}
