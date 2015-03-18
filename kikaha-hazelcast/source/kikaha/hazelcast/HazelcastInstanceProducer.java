@@ -9,6 +9,7 @@ import kikaha.hazelcast.config.DistributableStructuresConfigParser;
 import kikaha.hazelcast.config.HazelcastConfiguration;
 import kikaha.hazelcast.config.HazelcastConfiguration.ClusterClientConfig;
 import kikaha.hazelcast.config.MapConfiguration;
+import kikaha.hazelcast.config.QueueConfiguration;
 import lombok.Getter;
 import lombok.val;
 import lombok.extern.java.Log;
@@ -23,6 +24,7 @@ import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.GroupConfig;
 import com.hazelcast.config.MapConfig;
+import com.hazelcast.config.QueueConfig;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -132,6 +134,7 @@ public class HazelcastInstanceProducer {
 		final Config config = new XmlConfigBuilder().build();
 		config.setManagedContext( managedContext );
 		loadMapConfigs( config );
+		loadQueueConfigs( config );
 
 		final GroupConfig groupConfig = config.getGroupConfig();
 		final ClusterClientConfig clusterClient = hazelcastConfig.clusterClient();
@@ -150,6 +153,16 @@ public class HazelcastInstanceProducer {
 		for ( val mapConf : configs )
 			mapConfigs.put( mapConf.getName(), mapConf );
 		config.setMapConfigs( mapConfigs );
+	}
+
+	void loadQueueConfigs( Config config ) throws Exception {
+		val configs = parseConfigs(
+				"server.hazelcast.data.queues", "server.hazelcast.data-defaults.queue",
+				QueueConfiguration.class, QueueConfig.class );
+		val mapConfigs = new HashMap<String, QueueConfig>();
+		for ( val mapConf : configs )
+			mapConfigs.put( mapConf.getName(), mapConf );
+		config.setQueueConfigs( mapConfigs );
 	}
 
 	<T> List<T> parseConfigs( String itemsPath, String defaultsPath, Class<?> configClass, Class<T> returnType ) throws Exception {

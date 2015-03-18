@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.CountDownLatch;
 
+import kikaha.hazelcast.Source;
 import lombok.SneakyThrows;
 import lombok.val;
 
@@ -18,6 +19,7 @@ import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.MapConfig.EvictionPolicy;
 import com.hazelcast.config.MaxSizeConfig.MaxSizePolicy;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IQueue;
 import com.hazelcast.core.MapStore;
 
 public class ConfigParserTest extends HazelcastTestCase {
@@ -26,6 +28,10 @@ public class ConfigParserTest extends HazelcastTestCase {
 
 	@Provided
 	HazelcastInstance instance;
+
+	@Provided
+	@Source( "unconfigured-queue" )
+	IQueue<String> unconfiguredQueue;
 
 	@Test
 	@SneakyThrows
@@ -68,6 +74,21 @@ public class ConfigParserTest extends HazelcastTestCase {
 		assertEquals( false, entryListeners.get( 0 ).isLocal() );
 		assertEquals( true, entryListeners.get( 0 ).isIncludeValue() );
 		assertTrue( entryListeners.get( 0 ).getImplementation().getClass().equals( MyEntryListener.class ) );
+	}
+
+	@Test
+	public void ensureThatCouldParseBasicTypesFromQueueData() {
+		val queueConfig = instance.getConfig().getQueueConfig( "sample" );
+		assertNotNull( queueConfig );
+		assertEquals( "sample", queueConfig.getName() );
+		assertEquals( Integer.MAX_VALUE, queueConfig.getMaxSize() );
+		assertEquals( 0, queueConfig.getAsyncBackupCount() );
+		assertEquals( -1, queueConfig.getEmptyQueueTtl() );
+		val listenerConfig = queueConfig.getItemListenerConfigs().get( 0 );
+		assertTrue( listenerConfig.getImplementation().getClass().equals( MyQueueItemListener.class ) );
+		val storeConfig = queueConfig.getQueueStoreConfig();
+		assertTrue( storeConfig.getStoreImplementation().getClass().equals( MyQueueStore.class ) );
+
 	}
 
 	protected void provideExtraDependencies( final ServiceProvider provider ) {

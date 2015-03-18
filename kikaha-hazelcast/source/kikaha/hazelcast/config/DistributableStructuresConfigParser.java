@@ -11,6 +11,7 @@ import trip.spi.ServiceProviderException;
 import trip.spi.Singleton;
 
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException.Missing;
 
 /**
  * This parser class intend to parse an Typesafe Config item and transform into
@@ -46,13 +47,17 @@ public class DistributableStructuresConfigParser {
 		}
 	}
 
-	public <T> T parse( Config config, Class<?> clazz, final java.lang.Class<T> delegatedClazz )
+	public <T> T parse( Config config, Class<?> clazz, final Class<T> delegatedClazz )
 			throws Exception
 	{
 		val instance = delegatedClazz.newInstance();
 		val setterMethods = retrieveSetterMethods( clazz, instance.getClass() );
 		for ( val setter : setterMethods )
-			setter.set( instance, config );
+			try {
+				setter.set( instance, config );
+			} catch ( Missing cause ) {
+				continue;
+			}
 		return instance;
 	}
 
