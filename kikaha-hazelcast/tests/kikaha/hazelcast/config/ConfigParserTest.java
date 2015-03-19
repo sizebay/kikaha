@@ -47,6 +47,5 @@ public class ConfigParserTest extends HazelcastTestCase {
 
 	protected void provideExtraDependencies( final ServiceProvider provider ) {
 		provider.providerFor( CountDownLatch.class, counterInvocation );
-		System.setProperty( "hazelcast.config", "tests/hazelcast-test.xml" );
 	}
 }

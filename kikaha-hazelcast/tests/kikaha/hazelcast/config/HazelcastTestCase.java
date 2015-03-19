@@ -16,7 +16,7 @@ import com.hazelcast.core.Hazelcast;
 import com.typesafe.config.Config;
 
 @RunWith( MockitoJUnitRunner.class )
-public class HazelcastTestCase {
+public abstract class HazelcastTestCase {
 
 	@Before
 	@SneakyThrows
@@ -26,7 +26,9 @@ public class HazelcastTestCase {
 		provider.providerFor( Config.class, config.config() );
 		provider.providerFor( Configuration.class, config );
 
+		System.setProperty( "hazelcast.config", "tests/hazelcast-test.xml" );
 		provideExtraDependencies( provider );
+
 		provider.provideOn( this );
 		afterProvideDependencies();
 	}

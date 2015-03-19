@@ -22,7 +22,7 @@ import trip.spi.ServiceProvider;
 
 import com.hazelcast.core.IMap;
 
-public class AbstractSessionManagerBehaviorTest extends HazelcastTestCase {
+public abstract class AbstractSessionManagerBehaviorTest extends HazelcastTestCase {
 
 	final ServiceProvider provider = new ServiceProvider();
 	final Account fixedAccount = new FixedUsernameAndRolesAccount( "username", "default" );
