@@ -1,13 +1,24 @@
-<hazelcast xsi:schemaLocation="http://www.hazelcast.com/schema/config
-    http://www.hazelcast.com/schema/config/hazelcast-config-3.0.xsd"
-    xmlns="http://www.hazelcast.com/schema/config"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<hazelcast xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.2.xsd"
+           xmlns="http://www.hazelcast.com/schema/config"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<group>
+		<name>dev</name>
+		<password></password>
+	</group>
 
 	<map name="map-configured-to-use-map-store">
 		<map-store>
-			<class-name>kikaha.MyInjectableMapStore</class-name>
+			<class-name>kikaha.hazelcast.config.MyInjectableMapStore
+			</class-name>
 			<write-delay-seconds>0</write-delay-seconds>
 		</map-store>
 	</map>
+
+	<queue name="queue-configured-to-use-queue-store">
+		<queue-store>
+			<class-name>kikaha.hazelcast.config.MyQueueStore</class-name>
+		</queue-store>
+	</queue>
 
 </hazelcast>

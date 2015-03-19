@@ -1,20 +1,13 @@
-package kikaha.hazelcast;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+package kikaha.hazelcast.config;
 
 import kikaha.core.api.conf.Configuration;
-import kikaha.hazelcast.config.DistributableStructuresConfigParser;
-import kikaha.hazelcast.config.HazelcastConfiguration;
 import kikaha.hazelcast.config.HazelcastConfiguration.ClusterClientConfig;
-import kikaha.hazelcast.config.MapConfiguration;
-import kikaha.hazelcast.config.QueueConfiguration;
 import lombok.Getter;
 import lombok.val;
 import lombok.extern.java.Log;
 import trip.spi.Producer;
 import trip.spi.Provided;
+import trip.spi.ProvidedServices;
 import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
 import trip.spi.Singleton;
@@ -23,8 +16,6 @@ import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.GroupConfig;
-import com.hazelcast.config.MapConfig;
-import com.hazelcast.config.QueueConfig;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -32,6 +23,9 @@ import com.hazelcast.core.HazelcastInstance;
 @Log
 @Singleton
 public class HazelcastInstanceProducer {
+
+	@Getter( lazy = true )
+	private final HazelcastInstance instance = createHazelcastInstance();
 
 	@Provided
 	ServiceProvider provider;
@@ -43,13 +37,10 @@ public class HazelcastInstanceProducer {
 	HazelcastTripManagedContext managedContext;
 
 	@Provided
-	DistributableStructuresConfigParser parser;
-
-	@Getter( lazy = true )
-	private final HazelcastInstance instance = createHazelcastInstance();
-
-	@Provided
 	Configuration config;
+
+	@ProvidedServices( exposedAs = HazelcastConfigurationListener.class )
+	Iterable<HazelcastConfigurationListener> configListeners;
 
 	/**
 	 * Produce a Hazelcast Instance. It will ensure that has only one instance
@@ -133,8 +124,7 @@ public class HazelcastInstanceProducer {
 	Config createConfig() throws Exception {
 		final Config config = new XmlConfigBuilder().build();
 		config.setManagedContext( managedContext );
-		loadMapConfigs( config );
-		loadQueueConfigs( config );
+		notifyConfigListeners( config );
 
 		final GroupConfig groupConfig = config.getGroupConfig();
 		final ClusterClientConfig clusterClient = hazelcastConfig.clusterClient();
@@ -145,35 +135,9 @@ public class HazelcastInstanceProducer {
 		return config;
 	}
 
-	void loadMapConfigs( Config config ) throws Exception {
-		val configs = parseConfigs(
-				"server.hazelcast.data.maps", "server.hazelcast.data-defaults.map",
-				MapConfiguration.class, MapConfig.class );
-		val mapConfigs = new HashMap<String, MapConfig>();
-		for ( val mapConf : configs )
-			mapConfigs.put( mapConf.getName(), mapConf );
-		config.setMapConfigs( mapConfigs );
-	}
-
-	void loadQueueConfigs( Config config ) throws Exception {
-		val configs = parseConfigs(
-				"server.hazelcast.data.queues", "server.hazelcast.data-defaults.queue",
-				QueueConfiguration.class, QueueConfig.class );
-		val mapConfigs = new HashMap<String, QueueConfig>();
-		for ( val mapConf : configs )
-			mapConfigs.put( mapConf.getName(), mapConf );
-		config.setQueueConfigs( mapConfigs );
-	}
-
-	<T> List<T> parseConfigs( String itemsPath, String defaultsPath, Class<?> configClass, Class<T> returnType ) throws Exception {
-		val defaultConf = config.config().getConfig( defaultsPath );
-		val confs = new ArrayList<T>();
-		for ( val entryConf : config.config().getConfigList( itemsPath ) ) {
-			val newConfig = entryConf.withFallback( defaultConf );
-			val parsedConf = parser.parse( newConfig, configClass, returnType );
-			confs.add( parsedConf );
-		}
-		return confs;
+	void notifyConfigListeners( final Config config ) throws Exception {
+		for ( val configListener : configListeners )
+			configListener.configCreated( config );
 	}
 
 	/**

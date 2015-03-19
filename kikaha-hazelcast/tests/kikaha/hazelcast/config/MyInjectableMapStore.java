@@ -1,9 +1,10 @@
-package kikaha.hazelcast.mapstore;
+package kikaha.hazelcast.config;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 import lombok.extern.java.Log;
 import trip.spi.Provided;
@@ -18,15 +19,11 @@ public class MyInjectableMapStore implements MapStore<String, Object>, Serializa
 	private static final long serialVersionUID = -4432429890495577870L;
 
 	@Provided
-	Store store;
-
-	public MyInjectableMapStore() {
-		log.info( "STORE" );
-	}
+	CountDownLatch store;
 
 	@Override
 	public Object load( String key ) {
-		log.info( key );
+		store.countDown();
 		return null;
 	}
 
@@ -38,7 +35,7 @@ public class MyInjectableMapStore implements MapStore<String, Object>, Serializa
 
 	@Override
 	public Set<String> loadAllKeys() {
-		return store.loadAllKeys();
+		return null;
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package kikaha.hazelcast;
+package kikaha.hazelcast.config;
 
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;

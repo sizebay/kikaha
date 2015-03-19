@@ -3,20 +3,26 @@ package kikaha.hazelcast.config;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+
+import trip.spi.Provided;
+import trip.spi.Singleton;
 
 import com.hazelcast.core.QueueStore;
 
+@Singleton
 public class MyQueueStore implements QueueStore<String> {
+
+	@Provided
+	CountDownLatch store;
 
 	@Override
 	public void store( Long key, String value ) {
-		// TODO Auto-generated method stub
-
+		store.countDown();
 	}
 
 	@Override
 	public void storeAll( Map<Long, String> map ) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -34,7 +40,6 @@ public class MyQueueStore implements QueueStore<String> {
 
 	@Override
 	public String load( Long key ) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -46,7 +51,6 @@ public class MyQueueStore implements QueueStore<String> {
 
 	@Override
 	public Set<Long> loadAllKeys() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

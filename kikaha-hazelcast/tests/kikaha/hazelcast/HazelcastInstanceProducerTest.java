@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotSame;
 import java.io.Serializable;
 import java.util.Date;
 
+import kikaha.hazelcast.config.HazelcastInstanceProducer;
 import kikaha.hazelcast.config.HazelcastTestCase;
 import lombok.Getter;
 

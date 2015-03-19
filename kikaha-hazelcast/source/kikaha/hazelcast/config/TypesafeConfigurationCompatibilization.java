@@ -36,7 +36,7 @@ public class TypesafeConfigurationCompatibilization {
 	}
 
 	public void memorizeProperty( String fullKey, Object value ) {
-		if ( value != null )
+		if ( value != null && System.getProperty( fullKey ) == null )
 			System.setProperty( fullKey, value.toString() );
 	}
 

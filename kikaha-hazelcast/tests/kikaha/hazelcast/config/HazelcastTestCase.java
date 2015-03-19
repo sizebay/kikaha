@@ -7,12 +7,15 @@ import lombok.val;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import trip.spi.ServiceProvider;
 
 import com.hazelcast.core.Hazelcast;
 import com.typesafe.config.Config;
 
+@RunWith( MockitoJUnitRunner.class )
 public class HazelcastTestCase {
 
 	@Before
