@@ -54,7 +54,7 @@
 
 	<properties>
 		<!-- Dependencies Versions -->
-		<version.undertow>1.1.1.Final</version.undertow>
+		<version.undertow>1.2.6.Final</version.undertow>
 		<version.config>1.2.0</version.config>
 		<version.jackson>2.5.3</version.jackson>
 		<version.hazelcast>3.4.2</version.hazelcast>

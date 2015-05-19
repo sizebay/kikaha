@@ -214,7 +214,7 @@ public class RoutingMethodData {
 			val stateless = service.getAnnotation( Stateless.class );
 			if ( stateless != null )
 				stateless.exposedAs();
-			return service.asType();
+			return new EmptyTypeMirror();
 		} catch ( final MirroredTypeException cause ) {
 			return cause.getTypeMirror();
 		}
