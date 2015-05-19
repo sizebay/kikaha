@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Singleton( name = Mimes.JSON, exposedAs = Unserializer.class )
 public class JSONUnserializer implements Unserializer {
 	
-	final ObjectMapper mapper = new ObjectMapper();
+	final ObjectMapper mapper = Jackson.createMapper();
 
 	@Override
 	public <T> T unserialize(Reader input, Class<T> targetClass) throws RoutingException {

@@ -12,8 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Singleton( name = Mimes.JSON, exposedAs = Serializer.class )
 public class JSONSerializer extends AbstractSerializer {
-
-	final ObjectMapper mapper = new ObjectMapper();
+	
+	final ObjectMapper mapper = Jackson.createMapper();
 
 	@Override
 	public <T> void serialize( final T object, final OutputStream output ) throws IOException {
