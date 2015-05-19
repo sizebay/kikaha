@@ -95,7 +95,7 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
 			val classpath = memorizeClassPathWithRunnableJar();
-			val service = new MainClassService( Main.class.getCanonicalName(), classpath, asList( webresourcesPath ) );
+			val service = new MainClassService( resourceDirectory, Main.class.getCanonicalName(), classpath, asList( webresourcesPath ) );
 			val process = service.start();
 			if ( process.waitFor() > 0 )
 				throw new RuntimeException( "Kikaha has unexpectedly finished." );
@@ -121,6 +121,7 @@ public class KikahaRunnerMojo extends AbstractMojo {
 				artifactsInClassPath.add( artifactAbsolutePath );
 		}
 		artifactsInClassPath.add( getFinalArtifactName() );
+		artifactsInClassPath.add( resourceDirectory.getAbsolutePath() );
 		return artifactsInClassPath;
 	}
 

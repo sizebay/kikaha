@@ -15,10 +15,12 @@ public class MainClassService {
 	volatile Process processCurrentlyActive;
 	final Thread destroyer;
 	final String mainClass;
+	final File workingDirectory;
 	final List<String> classpath;
 	final List<String> arguments;
 	
-	public MainClassService( final String mainClass, final List<String> classpath, List<String> arguments ) {
+	public MainClassService( final File workingDirectory, final String mainClass, final List<String> classpath, List<String> arguments ) {
+		this.workingDirectory = workingDirectory;
 		this.mainClass = mainClass;
 		this.classpath = classpath;
 		this.arguments = arguments;
@@ -42,6 +44,7 @@ public class MainClassService {
 	public Process start() throws IOException {
 		val commandLine = createCommandLine();
 		val builder = new ProcessBuilder(commandLine);
+		builder.directory( workingDirectory );
 		builder.redirectErrorStream(true);
 
 		processCurrentlyActive = builder.start();
