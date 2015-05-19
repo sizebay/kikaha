@@ -50,7 +50,6 @@
 		<module>kikaha-urouting</module>
 		<module>kikaha-hazelcast</module>
 		<module>kikaha-maven-plugin</module>
-		<module>kikaha-project</module>
 	</modules>
 
 	<properties>
