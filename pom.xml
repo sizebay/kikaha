@@ -62,7 +62,7 @@
 		<version.lombok>1.14.8</version.lombok>
 		<version.mockito>1.10.19</version.mockito>
 		<!-- Plugin's Versions -->
-		<version.compiler.plugin>2.5.1</version.compiler.plugin>
+		<version.compiler.plugin>3.3</version.compiler.plugin>
 		<version.eclipse.plugin>2.9</version.eclipse.plugin>
 		<version.maven.plugin>2.3.2</version.maven.plugin>
 		<version.assembly.plugin>2.2.1</version.assembly.plugin>
@@ -234,6 +234,7 @@
 				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${version.compiler.plugin}</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -242,7 +243,7 @@
 					<encoding>UTF-8</encoding>
 					<includes>
 						<include>**/*.java</include>
-						<include>META-INF/*</include>
+<!-- 						<include>META-INF/*</include> -->
 					</includes>
 					<generatedSourcesDirectory>${project.build.directory}/generated-sources/annotations</generatedSourcesDirectory>
 					<generatedTestSourcesDirectory>${project.build.directory}/generated-sources/test-annotations</generatedTestSourcesDirectory>
