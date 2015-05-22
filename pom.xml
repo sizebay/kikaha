@@ -5,7 +5,10 @@
 	<version>1.4.0</version>
 	<artifactId>kikaha-parent</artifactId>
 	<name>Kikaha</name>
+	<description>An absurdly fast micro container writen over Undertow</description>
 	<packaging>pom</packaging>
+
+	<url>https://github.com/Skullabs/kikaha</url>
 
 	<licenses>
 		<license>
