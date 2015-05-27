@@ -79,6 +79,7 @@ public class WrappedSecurityContext implements SecurityContext {
 	}
 
 	@Override
+	@Deprecated
 	public IdentityManager getIdentityManager() {
 		return target.getIdentityManager();
 	}

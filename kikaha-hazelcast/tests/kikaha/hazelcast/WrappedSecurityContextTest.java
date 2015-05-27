@@ -55,6 +55,7 @@ public class WrappedSecurityContextTest {
 		verify( interceptorBeforeAuthenticate ).intercep();
 	}
 
+	@SuppressWarnings("deprecation")
 	private void runAllPublicMethodsOfWrappedSecurityContext() {
 		context.addAuthenticationMechanism( mechanism );
 		context.authenticate();
@@ -73,6 +74,7 @@ public class WrappedSecurityContextTest {
 		context.setAuthenticationRequired();
 	}
 
+	@SuppressWarnings("deprecation")
 	private void ensureHaveDelegatedAllPublicMethodsToMockedContext() {
 		verify( mockedContext ).addAuthenticationMechanism( eq( mechanism ) );
 		verify( mockedContext ).authenticate();
