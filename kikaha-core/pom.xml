@@ -4,7 +4,7 @@
 
 	<parent>
 		<groupId>io.skullabs.kikaha</groupId>
-		<version>1.4.0</version>
+		<version>1.4.1-SNAPSHOT</version>
 		<artifactId>kikaha-parent</artifactId>
 	</parent>
 
@@ -13,6 +13,10 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<dependency>
+			<groupId>io.skullabs.trip</groupId>
+			<artifactId>trip-core</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>io.undertow</groupId>
 			<artifactId>undertow-core</artifactId>
