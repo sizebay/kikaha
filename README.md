@@ -1,5 +1,5 @@
 # Kikaha
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.skullabs.kikaha/kikaha-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.skullabs.kikaha/kikaha-project)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.skullabs.kikaha/kikaha-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.skullabs.kikaha/kikaha-parent)
 [![Codeship Status](https://img.shields.io/codeship/3e90ba20-7994-0132-52d3-5ad3a80e87e7/master.svg)](https://www.codeship.io/projects/55927)
 
 
