@@ -119,19 +119,19 @@
 			<!-- Module dependencies -->
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.4.1-SNAPSHOT</version>
+				<version>1.4.1</version>
 				<artifactId>kikaha-core</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.4.1-SNAPSHOT</version>
+				<version>1.4.1</version>
 				<artifactId>kikaha-urouting</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.4.1-SNAPSHOT</version>
+				<version>1.4.1</version>
 				<artifactId>kikaha-hazelcast</artifactId>
 				<scope>compile</scope>
 			</dependency>
@@ -254,7 +254,7 @@
 				<!-- Preconfiguring kikaha maven plugin -->
 				<plugin>
 					<groupId>io.skullabs.kikaha</groupId>
-					<version>1.4.1-SNAPSHOT</version>
+					<version>1.4.1</version>
 					<artifactId>kikaha-maven-plugin</artifactId>
 					<configuration>
 						<webresourcesPath>${config.dir.web}</webresourcesPath>
