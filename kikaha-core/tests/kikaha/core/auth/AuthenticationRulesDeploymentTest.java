@@ -46,14 +46,14 @@ public class AuthenticationRulesDeploymentTest {
 	@Test
 	public void ensureThatHaveDeployedTheAuthenticationHook() {
 		deployment.onDeploy( deploymentContext );
-		verify( deploymentContext ).register( isA( AuthenticationHook.class ) );
+		verify( deploymentContext ).rootHandler( isA( AuthenticationHttpHandler.class ) );
 	}
 
 	@Test
 	public void ensureThatWillNotDeployTheAuthenticationHookWhenNoAuthenticationRuleIsDefinedInConfigFile() {
 		doReturn( false ).when( deployment ).haveAuthenticationRulesDefinedInConfigurationFile();
 		deployment.onDeploy( deploymentContext );
-		verify( deploymentContext, never() ).register( isA( AuthenticationHook.class ) );
+		verify( deploymentContext, never() ).rootHandler( isA( AuthenticationHttpHandler.class ) );
 	}
 
 	@Test

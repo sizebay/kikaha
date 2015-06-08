@@ -6,7 +6,6 @@ import static org.mockito.Mockito.verify;
 import io.undertow.server.handlers.proxy.ProxyHandler;
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
-import kikaha.core.api.RequestHook;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.SneakyThrows;
@@ -34,8 +33,7 @@ public class RewriteRoutesDeploymentTest {
 	public void ensureThatHaveDeployedFiveRewriteRoutesDefinedInConfFile()
 	{
 		deployment.onDeploy( context );
-		verify( context, times( 5 ) ).register( any( RequestHook.class ) );
-		verify( context ).rootHandler( any( ProxyHandler.class ) );
+		verify( context, times( 6 ) ).rootHandler( any( ProxyHandler.class ) );
 	}
 
 	@Before

@@ -10,7 +10,6 @@ import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.HttpServerExchangeStub;
-import kikaha.core.api.RequestHookChain;
 import kikaha.core.impl.conf.DefaultAuthenticationConfiguration;
 import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.val;
@@ -30,9 +29,6 @@ public class PrePopulatedSecurityContextFactoryTest {
 	@Mock
 	SecurityContextFactory wrappedFactory;
 	PrePopulatedSecurityContextFactory finalFactory;
-
-	@Mock
-	RequestHookChain requestChain;
 
 	HttpServerExchange exchange;
 	AuthenticationRule matchedRule;
@@ -63,7 +59,6 @@ public class PrePopulatedSecurityContextFactoryTest {
 
 	void initializeExchange() {
 		this.exchange = HttpServerExchangeStub.createHttpExchange();
-		doReturn( exchange ).when( requestChain ).exchange();
 	}
 
 	void initializeFactories() {

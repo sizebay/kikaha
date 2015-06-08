@@ -11,8 +11,9 @@ public interface Configuration {
 	String welcomeFile();
 
 	Integer port();
-
+	Integer securePort();
 	String host();
+	String secureHost();
 
 	AuthenticationConfiguration authentication();
 

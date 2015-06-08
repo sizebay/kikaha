@@ -4,11 +4,7 @@ import io.undertow.server.HttpHandler;
 
 public interface DeploymentContext {
 
-	DeploymentContext register( final RequestHook hook );
-
 	Iterable<DeploymentHook> deploymentHooks();
-
-	Iterable<RequestHook> requestHooks();
 
 	DeploymentContext register( final String uri, final HttpHandler handler );
 

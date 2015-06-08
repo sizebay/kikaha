@@ -10,13 +10,13 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import io.undertow.security.api.SecurityContext;
+import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import kikaha.core.HttpServerExchangeStub;
-import kikaha.core.api.RequestHookChain;
 import kikaha.core.impl.conf.DefaultAuthenticationConfiguration;
 import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.val;
@@ -34,7 +34,7 @@ public class AuthenticationRunnerTest {
 	SecurityContext securityContext;
 
 	@Mock
-	RequestHookChain requestChain;
+	HttpHandler rootHandler;
 
 	AuthenticationRunner authHandler;
 	HttpServerExchange exchange;
@@ -54,21 +54,21 @@ public class AuthenticationRunnerTest {
 		when( securityContext.isAuthenticated() ).thenReturn( true );
 		when( securityContext.getAuthenticatedAccount() ).thenReturn( new FixedUsernameAndRolesAccount( createExpectedRoles(), null ) );
 		authHandler.run();
-		verify( requestChain ).executeNext();
+		verify( rootHandler ).handleRequest(exchange);
 	}
 
 	@Test
 	public void ensureThatNotCallTheTargetHttpHandlerWhenDoesntMatchExpectedRoles() throws Exception {
 		doNothing().when( authHandler ).endCommunicationWithClient();
-		doNothing().when( authHandler ).sendForbidenError( any( HttpServerExchange.class ) );
+		doNothing().when( authHandler ).sendForbidenError();
 		when( securityContext.authenticate() ).thenReturn( true );
 		when( securityContext.isAuthenticated() ).thenReturn( true );
 		val accountWithUnexpectedRoles = new FixedUsernameAndRolesAccount( new HashSet<String>(), null );
 		when( securityContext.getAuthenticatedAccount() ).thenReturn( accountWithUnexpectedRoles );
 		authHandler.run();
-		verify( requestChain, never() ).executeNext();
+		verify( rootHandler, never() ).handleRequest(exchange);
 		verify( authHandler ).handlePermitionDenied();
-		verify( authHandler ).sendForbidenError( any( HttpServerExchange.class ) );
+		verify( authHandler ).sendForbidenError();
 	}
 
 	@Test
@@ -76,7 +76,7 @@ public class AuthenticationRunnerTest {
 		doNothing().when( authHandler ).endCommunicationWithClient();
 		when( securityContext.authenticate() ).thenReturn( false );
 		authHandler.run();
-		verify( requestChain, never() ).executeNext();
+		verify( rootHandler, never() ).handleRequest(exchange);
 		verify( authHandler ).endCommunicationWithClient();
 	}
 
@@ -85,7 +85,7 @@ public class AuthenticationRunnerTest {
 		doThrow( new IllegalStateException() ).when( securityContext ).authenticate();
 		doNothing().when( authHandler ).handleException( any( Throwable.class ) );
 		authHandler.run();
-		verify( requestChain, never() ).executeNext();
+		verify( rootHandler, never() ).handleRequest(exchange);
 		verify( authHandler ).handleException( isA( IllegalStateException.class ) );
 	}
 
@@ -98,7 +98,6 @@ public class AuthenticationRunnerTest {
 
 	void initializeExchange() {
 		this.exchange = HttpServerExchangeStub.createHttpExchange();
-		doReturn( exchange ).when( requestChain ).exchange();
 	}
 
 	void initializeAuthHandler() {
@@ -106,8 +105,8 @@ public class AuthenticationRunnerTest {
 			.loadDefaultConfiguration().authentication().formAuth();
 		val matcher = mockAuthRuleMatcher();
 		this.matchedRule = spy( matcher.retrieveAuthenticationRuleForUrl( "/user" ) );
-		this.authHandler = spy( new AuthenticationRunner(
-			securityContext, requestChain, createExpectedRoles(), formAuthConfig ) );
+		this.authHandler = spy( new AuthenticationRunner( exchange, rootHandler,
+			securityContext, createExpectedRoles(), formAuthConfig ) );
 	}
 
 	AuthenticationRuleMatcher mockAuthRuleMatcher() {

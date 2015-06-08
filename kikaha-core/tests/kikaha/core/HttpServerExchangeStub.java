@@ -62,6 +62,7 @@ public class HttpServerExchangeStub {
 		HttpServerExchange httpServerExchange = new HttpServerExchange( connection, null, headerMap, 200 );
 		httpServerExchange.setRequestMethod( new HttpString( "GET" ) );
 		httpServerExchange.setProtocol( Protocols.HTTP_1_1 );
+		httpServerExchange.setRelativePath("/test");
 		return httpServerExchange;
 	}
 }

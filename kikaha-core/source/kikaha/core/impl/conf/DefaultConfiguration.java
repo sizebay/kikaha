@@ -26,6 +26,12 @@ public class DefaultConfiguration implements Configuration {
 	private final String host = getConfigString( "server.host" );
 
 	@Getter( lazy = true )
+	private final Integer securePort = config().getInt( "server.secure-port" );
+
+	@Getter( lazy = true )
+	private final String secureHost = getConfigString( "server.secure-host" );
+
+	@Getter( lazy = true )
 	private final String welcomeFile = getConfigString( "server.welcome-file" );
 
 	@Getter( lazy = true )

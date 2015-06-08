@@ -30,7 +30,8 @@ public class RewriteRoutesDeployment
 		val routes = configuration.routes().rewriteRoutes();
 		for ( val route : routes ) {
 			log.info( "Deploying rewrite rule: " + route );
-			context.register( RewriteRequestHook.from( route ) );
+			val rewriteHandler = RewriteRequestHook.from( route, context.rootHandler() );
+			context.rootHandler( rewriteHandler );
 		}
 	}
 

@@ -4,12 +4,10 @@ import io.undertow.server.HttpHandler;
 import io.undertow.util.Methods;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
-import kikaha.core.api.RequestHook;
 import kikaha.core.url.SimpleRoutingHandler;
 import kikaha.core.url.URL;
 import lombok.Getter;
@@ -25,21 +23,14 @@ import lombok.extern.java.Log;
 @RequiredArgsConstructor
 public class DefaultDeploymentContext implements DeploymentContext {
 
-	final Iterable<DeploymentHook> deploymentHooks;
-	final List<RequestHook> requestHooks;
-
 	final Map<String, Object> attributes = new HashMap<String, Object>();
 	final SimpleRoutingHandler routingHandler = new SimpleRoutingHandler();
-
+	
 	@NonNull
 	@Setter
 	HttpHandler rootHandler = routingHandler;
 
-	@Override
-	public DeploymentContext register( final RequestHook hook ) {
-		this.requestHooks.add( hook );
-		return this;
-	}
+	final Iterable<DeploymentHook> deploymentHooks;
 
 	@Override
 	public DeploymentContext register( final String uri, final HttpHandler handler ) {
