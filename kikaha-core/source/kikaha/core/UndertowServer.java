@@ -14,13 +14,10 @@ import javax.net.ssl.SSLContext;
 
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
-import kikaha.core.api.RequestHook;
 import kikaha.core.api.KikahaException;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.DefaultDeploymentContext;
 import kikaha.core.impl.DefaultHttpRequestHandler;
-import kikaha.core.impl.RelativePathFixerRequestHook;
-import kikaha.core.impl.UndertowRoutedResourcesHook;
 import kikaha.core.ssl.SSLContextFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -56,17 +53,23 @@ public class UndertowServer {
 	 */
 	public void start() throws KikahaException {
 		val start = System.currentTimeMillis();
+		Runtime.getRuntime().addShutdownHook( new UndertowShutdownHook(this) );
 		bootstrap();
 		this.server = createServer();
 		this.server.start();
 		val elapsed = System.currentTimeMillis() - start;
-		log.info("Server started in " + elapsed + "ms.");
-		log.info( "Server is listening at " + host() + ":" + configuration().port() + " in " + mode + " mode." );
-		Runtime.getRuntime().addShutdownHook( new UndertowShutdownHook(this) );
+		reportStartupStatus(elapsed);
+	}
+
+	private void reportStartupStatus(final long elapsed) {
+		log.info( "Server started in " + elapsed + "ms.");
+		log.info( "Server is listening HTTP at " + configuration.host() + ":" + configuration().port() );
+		if ( mode.equals( "HTTPS" ) )
+			log.info( "Server is also listening HTTPS at " + configuration.secureHost() + ":" + configuration().securePort() );
 	}
 
 	/**
-	 * Run all life cycle initialization routines of Undertow Standalone.
+	 * Run all life cycle initialization routines.
 	 *
 	 * @throws KikahaException
 	 */
@@ -76,7 +79,6 @@ public class UndertowServer {
 			val deploymentContext = createDeploymentContext();
 			runDeploymentHooks(deploymentContext);
 			deployWebResourceFolder(deploymentContext);
-			finishDeployment(deploymentContext);
 			this.deploymentContext = deploymentContext;
 		} catch (final ServiceProviderException cause) {
 			throw new KikahaException(cause);
@@ -91,10 +93,7 @@ public class UndertowServer {
 	protected DefaultDeploymentContext createDeploymentContext()
 			throws ServiceProviderException {
 		val deploymentHooks = provider.loadAll( DeploymentHook.class );
-		val requestHooks = provider.loadAll( RequestHook.class );
-		val mutableListOfHooks = mutableList( requestHooks );
-		mutableListOfHooks.add( 0, new RelativePathFixerRequestHook() );
-		return new DefaultDeploymentContext(deploymentHooks, mutableListOfHooks);
+		return new DefaultDeploymentContext(deploymentHooks);
 	}
 
 	protected void runDeploymentHooks(final DeploymentContext deploymentContext) {
@@ -126,22 +125,17 @@ public class UndertowServer {
 		return location;
 	}
 
-	protected void finishDeployment(final DefaultDeploymentContext deploymentContext) {
-		val rootHandler = deploymentContext.rootHandler();
-		val undertowRoutedResources = UndertowRoutedResourcesHook.wrap( rootHandler );
-		deploymentContext.register(undertowRoutedResources);
-	}
-
 	protected Undertow createServer() {
-		val builder = Undertow.builder();
+		val builder = Undertow.builder()
+				.addHttpListener( configuration().port(), configuration().host() )
+				.setWorkerThreads( 200 );
 		val sslContext = readConfiguredSSLContext();
-		if ( sslContext == null )
-			builder.addHttpListener( configuration().port(), host() );
-		else{
-			builder.addHttpsListener( configuration().port(), host(), sslContext );
+		if ( sslContext != null ) {
+			builder.addHttpsListener( configuration().securePort(), configuration().secureHost(), sslContext );
 			mode = "HTTPS";
 		}
-		return builder.setHandler( new DefaultHttpRequestHandler( this.deploymentContext() ) ).build();
+		val defaultHandler = new DefaultHttpRequestHandler( this.deploymentContext() );
+		return builder.setHandler( defaultHandler ).build();
 	}
 
 	SSLContext readConfiguredSSLContext() {
@@ -151,13 +145,6 @@ public class UndertowServer {
 		} catch ( IOException | ServiceProviderException cause ) {
 			throw new RuntimeException( cause );
 		}
-	}
-
-	private String host() {
-		String host = configuration().host();
-		if (host == "*")
-			host = "0.0.0.0";
-		return host;
 	}
 
 	public void stop() {

@@ -39,7 +39,7 @@ public class SSLUndertowServer {
 		val provider = new ServiceProvider();
 		provider.providerFor( Configuration.class, config );
 		val sslContextFactory = provider.load( SSLContextFactory.class );
-		val context = sslContextFactory.createSSLContext( "server.keystore", "server.truststore", "password" );
+		val context = sslContextFactory.createSSLContext( "tests/server.keystore", "tests/server.truststore", "password" );
 		startServer( context );
 	}
 
