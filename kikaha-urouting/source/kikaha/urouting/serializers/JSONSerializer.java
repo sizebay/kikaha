@@ -1,22 +1,26 @@
 package kikaha.urouting.serializers;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import io.undertow.server.HttpServerExchange;
 
-import kikaha.urouting.api.AbstractSerializer;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Serializer;
+import lombok.val;
 import trip.spi.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Singleton( name = Mimes.JSON, exposedAs = Serializer.class )
-public class JSONSerializer extends AbstractSerializer {
+public class JSONSerializer implements Serializer {
 	
 	final ObjectMapper mapper = Jackson.createMapper();
 
 	@Override
-	public <T> void serialize( final T object, final OutputStream output ) throws IOException {
-		mapper.writeValue( output, object );
+	public <T> void serialize(T object, HttpServerExchange exchange) throws IOException {
+		val buffer = ByteBuffer.wrap( mapper.writeValueAsBytes(object) );
+		exchange.getResponseSender().send( buffer );
+		exchange.dispatch();
 	}
 }

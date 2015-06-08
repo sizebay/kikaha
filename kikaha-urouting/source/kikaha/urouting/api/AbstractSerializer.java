@@ -7,6 +7,9 @@ import java.io.OutputStream;
 
 import kikaha.urouting.UncloseableWriterWrapper;
 
+/**
+ * Blocking serializer abstraction.
+ */
 public abstract class AbstractSerializer implements Serializer {
 
 	@Override
