@@ -76,8 +76,8 @@
 		<!-- Configs -->
 		<config.dir.source>${project.basedir}/src/main/java</config.dir.source>
 		<config.dir.resource>${project.basedir}/src/main/resources</config.dir.resource>
-		<config.dir.test.source>${project.basedir}/src/main/java</config.dir.test.source>
-		<config.dir.test.resource>${project.basedir}/src/main/resources</config.dir.test.resource>
+		<config.dir.test.source>${project.basedir}/src/test/java</config.dir.test.source>
+		<config.dir.test.resource>${project.basedir}/src/test/resources</config.dir.test.resource>
 		<config.dir.output>${project.basedir}/target</config.dir.output>
 		<config.dir.web>${project.basedir}/src/main/webapp</config.dir.web>
 		<config.skip.tests>false</config.skip.tests>
