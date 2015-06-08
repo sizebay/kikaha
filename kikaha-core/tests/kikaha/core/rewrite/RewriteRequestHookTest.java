@@ -1,11 +1,12 @@
 package kikaha.core.rewrite;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
+import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderMap;
 import io.undertow.util.Headers;
-import kikaha.core.api.RequestHookChain;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.conf.DefaultConfiguration;
 import kikaha.core.impl.conf.DefaultRewritableRoute;
@@ -26,7 +27,7 @@ import trip.spi.ServiceProvider;
 public class RewriteRequestHookTest {
 
 	@Mock
-	RequestHookChain chain;
+	HttpHandler chain;
 
 	@Provided
 	Configuration configuration;
@@ -44,7 +45,7 @@ public class RewriteRequestHookTest {
 	@SneakyThrows
 	public void ensureThatHaveDelegatedRequestToNextHookInTheChain()
 	{
-		verify( chain ).executeNext();
+		verify( chain ).handleRequest( any( HttpServerExchange.class ) );
 	}
 
 	@Test
@@ -53,8 +54,8 @@ public class RewriteRequestHookTest {
 	{
 		val exchange = createVirtualHostExchange( "customer.localdomain" );
 		val rule = new DefaultRewritableRoute( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
-		val hook = RewriteRequestHook.from( rule );
-		hook.execute( chain, exchange );
+		val hook = RewriteRequestHook.from( rule, chain );
+		hook.handleRequest(exchange);
 		assertEquals( "/customer/documents", exchange.getRelativePath() );
 	}
 
@@ -64,8 +65,8 @@ public class RewriteRequestHookTest {
 	{
 		val exchange = createVirtualHostExchange( "customer.localdomain:8080" );
 		val rule = new DefaultRewritableRoute( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
-		val hook = RewriteRequestHook.from( rule );
-		hook.execute( chain, exchange );
+		val hook = RewriteRequestHook.from( rule, chain );
+		hook.handleRequest(exchange);
 		assertEquals( "/customer/documents", exchange.getRelativePath() );
 	}
 
@@ -85,8 +86,8 @@ public class RewriteRequestHookTest {
 		val exchange = createPathDefinedExchange();
 		val path = "/{domain}-{action}.jsp?id={id}";
 		val rule = new DefaultRewritableRoute( "{virtualHost}", path, "/{domain}/{id}/{action}/" );
-		val hook = RewriteRequestHook.from( rule );
-		hook.execute( chain, exchange );
+		val hook = RewriteRequestHook.from( rule, chain );
+		hook.handleRequest(exchange);
 		assertEquals( "/user/1234/edit/", exchange.getRelativePath() );
 	}
 
@@ -103,8 +104,8 @@ public class RewriteRequestHookTest {
 	{
 		val exchange = createPathDefinedExchange();
 		val rule = configuration.routes().rewriteRoutes().get( 4 );
-		val hook = RewriteRequestHook.from( rule );
-		hook.execute( chain, exchange );
+		val hook = RewriteRequestHook.from( rule, chain );
+		hook.handleRequest(exchange);
 		assertEquals( "/user/1234/edit/", exchange.getRelativePath() );
 	}
 
