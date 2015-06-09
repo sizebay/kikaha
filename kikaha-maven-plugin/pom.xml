@@ -83,7 +83,7 @@
 				<configuration>
 					<show>private</show>
 					<nohelp>true</nohelp>
-					<excludes>**/*Mojo.java</excludes>
+					<excludePackageNames>kikaha.mojo</excludePackageNames>
 				</configuration>
 			</plugin>
 		</plugins>
