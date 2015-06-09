@@ -9,10 +9,10 @@ import java.io.IOException;
 
 import kikaha.urouting.api.ContextProducer;
 import kikaha.urouting.api.RoutingException;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import trip.spi.Singleton;
 
-@Log
+@Slf4j
 @Singleton( exposedAs = ContextProducer.class )
 public class FormDataProducer implements ContextProducer<FormData> {
 
@@ -25,7 +25,7 @@ public class FormDataProducer implements ContextProducer<FormData> {
 			final FormDataParser parser = formParserFactory.createParser( exchange );
 			return parser.parseBlocking();
 		} catch ( NullPointerException | IOException cause ) {
-			log.severe( cause.getMessage() );
+			log.error( cause.getMessage(), cause );
 			throw new RoutingException( COULD_NOT_PRODUCE_FORM_DATA );
 		}
 	}

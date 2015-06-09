@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import trip.spi.Provided;
 import trip.spi.Singleton;
 
 import com.hazelcast.core.MapStore;
 
-@Log
+@Slf4j
 @Singleton
 public class MyInjectableMapStore implements MapStore<String, Object>, Serializable {
 

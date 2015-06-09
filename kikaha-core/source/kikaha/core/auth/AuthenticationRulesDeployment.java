@@ -6,13 +6,13 @@ import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentHook;
 import kikaha.core.api.conf.Configuration;
 import lombok.val;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
 import trip.spi.Singleton;
 
-@Log
+@Slf4j
 @Singleton( exposedAs = DeploymentHook.class )
 public class AuthenticationRulesDeployment implements DeploymentHook {
 

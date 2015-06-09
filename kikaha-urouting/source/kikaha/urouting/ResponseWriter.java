@@ -12,7 +12,7 @@ import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Response;
 import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Serializer;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
@@ -21,7 +21,7 @@ import trip.spi.Singleton;
 /**
  * A helper class to write responses to the HTTP Client.
  */
-@Log
+@Slf4j
 @Singleton
 public class ResponseWriter {
 
@@ -132,7 +132,7 @@ public class ResponseWriter {
 			throws ServiceProviderException {
 		Serializer serializer = provider.load( Serializer.class, contentType );
 		if ( serializer == null ) {
-			log.warning( "No serializer found for " + contentType + ". Falling back to " + defaultContentType );
+			log.warn( "No serializer found for " + contentType + ". Falling back to " + defaultContentType );
 			serializer = provider.load( Serializer.class, defaultContentType );
 		}
 		return serializer;

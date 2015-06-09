@@ -4,7 +4,7 @@ import kikaha.core.api.conf.Configuration;
 import kikaha.hazelcast.config.HazelcastConfiguration.ClusterClientConfig;
 import lombok.Getter;
 import lombok.val;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import trip.spi.Producer;
 import trip.spi.Provided;
 import trip.spi.ProvidedServices;
@@ -20,7 +20,7 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
-@Log
+@Slf4j
 @Singleton
 public class HazelcastInstanceProducer {
 
@@ -91,7 +91,7 @@ public class HazelcastInstanceProducer {
 				clientConfig = createClientConfiguration();
 			return clientConfig;
 		} catch ( ServiceProviderException cause ) {
-			log.warning( "Could not read Hazelcast Client Configuration: " + cause.getMessage() + ". Creating one manually." );
+			log.warn( "Could not read Hazelcast Client Configuration: " + cause.getMessage() + ". Creating one manually." );
 			return createClientConfiguration();
 		}
 	}
@@ -118,7 +118,7 @@ public class HazelcastInstanceProducer {
 				config = createConfig();
 			return config;
 		} catch ( ServiceProviderException cause ) {
-			log.warning( "Could not read Hazelcast Programmatically Configuration: " + cause.getMessage() + ". Creating one manually." );
+			log.warn( "Could not read Hazelcast Programmatically Configuration: " + cause.getMessage() + ". Creating one manually." );
 			return createConfig();
 		}
 	}

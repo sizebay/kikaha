@@ -13,11 +13,11 @@ import kikaha.core.auth.DefaultSecurityContextFactory;
 import kikaha.core.auth.SecurityContextFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import trip.spi.Provided;
 import trip.spi.Singleton;
 
-@Log
+@Slf4j
 @Singleton
 public class HazelcastSecurityContextFactory implements SecurityContextFactory {
 
@@ -116,8 +116,7 @@ public class HazelcastSecurityContextFactory implements SecurityContextFactory {
 		}
 
 		void handleFailure( final Throwable e ) {
-			log.severe( e.getMessage() );
-			e.printStackTrace();
+			log.error( e.getMessage(), e );
 			throw new RuntimeException( e );
 		}
 

@@ -23,13 +23,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.experimental.Accessors;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
 
 import com.typesafe.config.Config;
 
-@Log
+@Slf4j
 @Getter
 @Accessors(fluent = true)
 @RequiredArgsConstructor
@@ -98,7 +98,7 @@ public class UndertowServer {
 
 	protected void runDeploymentHooks(final DeploymentContext deploymentContext) {
 		for ( val hook : deploymentContext.deploymentHooks() ) {
-			log.fine("Dispatching deployment hook: "
+			log.debug("Dispatching deployment hook: "
 					+ hook.getClass().getCanonicalName());
 			hook.onDeploy(deploymentContext);
 		}

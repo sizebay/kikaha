@@ -22,6 +22,7 @@ import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.samples.TodoResource;
 import kikaha.urouting.samples.TodoResource.Todo;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import org.junit.Test;
 import org.xnio.OptionMap;
@@ -36,6 +37,7 @@ import org.xnio.conduits.StreamSourceConduit;
 import trip.spi.Provided;
 import trip.spi.ServiceProviderException;
 
+@Slf4j
 @SuppressWarnings("unchecked")
 public class ResponseWriterTest extends TestCase {
 
@@ -101,7 +103,7 @@ public class ResponseWriterTest extends TestCase {
 			exchange.startBlocking();
 			writer.write(exchange, Mimes.JSON, response );
 		} catch ( final NullPointerException cause ) {
-			cause.printStackTrace();
+			log.error( cause.getMessage(), cause );
 		}
 	}
 }
