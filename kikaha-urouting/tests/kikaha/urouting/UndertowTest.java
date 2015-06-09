@@ -1,9 +1,7 @@
 package kikaha.urouting;
 
-import java.io.IOException;
-
 import kikaha.core.Main;
-import kikaha.core.api.KikahaException;
+import lombok.SneakyThrows;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -15,7 +13,8 @@ import org.junit.Test;
 public class UndertowTest {
 
 	@Test
-	public void runUndertow() throws ClassNotFoundException, InterruptedException, KikahaException, IOException {
+	@SneakyThrows
+	public void runUndertow() {
 		Main.main( null );
 	}
 }
