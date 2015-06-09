@@ -3,10 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.skullabs.kikaha</groupId>
-	<version>1.4.1-SNAPSHOT</version>
+	<version>1.4.2</version>
 	<artifactId>kikaha-project</artifactId>
 
 	<name>Kikaha: simple project (BOM)</name>
+	<description>Kikaha: simple project (BOM)</description>
 	<packaging>pom</packaging>
 
 	<url>https://github.com/Skullabs/kikaha</url>
@@ -76,8 +77,8 @@
 		<!-- Configs -->
 		<config.dir.source>${project.basedir}/src/main/java</config.dir.source>
 		<config.dir.resource>${project.basedir}/src/main/resources</config.dir.resource>
-		<config.dir.test.source>${project.basedir}/src/main/java</config.dir.test.source>
-		<config.dir.test.resource>${project.basedir}/src/main/resources</config.dir.test.resource>
+		<config.dir.test.source>${project.basedir}/src/test/java</config.dir.test.source>
+		<config.dir.test.resource>${project.basedir}/src/test/resources</config.dir.test.resource>
 		<config.dir.output>${project.basedir}/target</config.dir.output>
 		<config.dir.web>${project.basedir}/src/main/webapp</config.dir.web>
 		<config.skip.tests>false</config.skip.tests>
@@ -119,19 +120,19 @@
 			<!-- Module dependencies -->
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.4.1</version>
+				<version>1.4.2</version>
 				<artifactId>kikaha-core</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.4.1</version>
+				<version>1.4.2</version>
 				<artifactId>kikaha-urouting</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.4.1</version>
+				<version>1.4.2</version>
 				<artifactId>kikaha-hazelcast</artifactId>
 				<scope>compile</scope>
 			</dependency>
@@ -254,7 +255,7 @@
 				<!-- Preconfiguring kikaha maven plugin -->
 				<plugin>
 					<groupId>io.skullabs.kikaha</groupId>
-					<version>1.4.1</version>
+					<version>1.4.2</version>
 					<artifactId>kikaha-maven-plugin</artifactId>
 					<configuration>
 						<webresourcesPath>${config.dir.web}</webresourcesPath>

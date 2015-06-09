@@ -111,7 +111,7 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 		doReturn( chromeSession ).when( sessionCache ).getSession( any( String.class ) );
 		simulateAChromeUserAgentRequest();
 		val rule = new AuthenticationRule( "", manager,
-			null, null, null, factory, new ArrayList<String>() );
+			new ArrayList<>(), new ArrayList<>(), null, factory, new ArrayList<>() );
 		factory.createSecurityContextFor( new HttpServerExchange( null ), rule );
 		verify( factory ).preAuthenticatedSecurityContext( any( HttpServerExchange.class ), any( AuthenticatedSession.class ) );
 	}

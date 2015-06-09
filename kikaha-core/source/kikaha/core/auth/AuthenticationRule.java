@@ -9,6 +9,7 @@ import java.util.List;
 
 import kikaha.core.url.URLMatcher;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.val;
 import lombok.experimental.Accessors;
 
@@ -26,12 +27,14 @@ public class AuthenticationRule {
 	final SecurityContextFactory securityContextFactory;
 
 	public AuthenticationRule(
-			final String pattern, final IdentityManager identityManager,
-			final List<AuthenticationMechanism> mechanisms,
-			final List<String> expectedRoles,
-			final NotificationReceiver notificationReceiver,
-		final SecurityContextFactory securityContextFactory,
-		final List<String> exceptionPatterns ) {
+		@NonNull final String pattern,
+		@NonNull final IdentityManager identityManager,
+		@NonNull final List<AuthenticationMechanism> mechanisms,
+		@NonNull final List<String> expectedRoles,
+		final NotificationReceiver notificationReceiver,
+		@NonNull final SecurityContextFactory securityContextFactory,
+		@NonNull final List<String> exceptionPatterns )
+	{
 		this.pattern = pattern;
 		this.matcher = URLMatcher.compile( pattern );
 		this.identityManager = identityManager;

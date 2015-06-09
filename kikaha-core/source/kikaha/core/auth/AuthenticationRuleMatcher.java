@@ -92,15 +92,35 @@ public class AuthenticationRuleMatcher {
 	}
 
 	AuthenticationRule convertConfToRule( final AuthenticationRuleConfiguration ruleConf ) {
-		val identityManager = identityManagers().get( ruleConf.identityManager() );
-		val notificationReceiver = notificationReceivers().get( ruleConf.notificationReceiver() );
-		val securityContextFactory = securityContextFactories().get( ruleConf.securityContextFactory() );
+		val identityManager = getIdentityManagerFor(ruleConf);
+		val notificationReceiver = getNotificationReceiverFor(ruleConf);
+		val securityContextFactory = getSecurityContextFor(ruleConf);
 		val mechanisms = extractNeededMechanisms( ruleConf );
 		return new AuthenticationRule(
 				ruleConf.pattern(), identityManager,
 				mechanisms, ruleConf.expectedRoles(),
 			notificationReceiver, securityContextFactory,
 			ruleConf.exceptionPatterns() );
+	}
+
+	IdentityManager getIdentityManagerFor( final AuthenticationRuleConfiguration ruleConf ) {
+		val identityManager = identityManagers().get( ruleConf.identityManager() );
+		if ( identityManager == null )
+			throw new IllegalArgumentException("No IdentityManager registered for "
+					+ ruleConf.identityManager() );
+		return identityManager;
+	}
+
+	NotificationReceiver getNotificationReceiverFor( final AuthenticationRuleConfiguration ruleConf) {
+		return notificationReceivers().get( ruleConf.notificationReceiver() );
+	}
+
+	SecurityContextFactory getSecurityContextFor( final AuthenticationRuleConfiguration ruleConf) {
+		val securityContextFactory = securityContextFactories().get( ruleConf.securityContextFactory() );
+		if ( securityContextFactory == null )
+			throw new IllegalArgumentException("No SecurityContextFactory registered for "
+					+ ruleConf.securityContextFactory() );
+		return securityContextFactory;
 	}
 
 	List<AuthenticationMechanism> extractNeededMechanisms(
