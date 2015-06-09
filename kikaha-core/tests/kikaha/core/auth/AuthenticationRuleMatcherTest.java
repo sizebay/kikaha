@@ -44,4 +44,23 @@ public class AuthenticationRuleMatcherTest {
 		val rule = matcher.retrieveAuthenticationRuleForUrl( "users/" );
 		assertNull( rule );
 	}
+	
+	@Test( expected=IllegalArgumentException.class )
+	public void ensureThatThrowsExceptionWhenCantFindSecurityContextFactory(){
+		String path = "server.auth-invalid-security-context-factory";
+		loadInvalidAuthConfigPath(path);
+	}
+	
+	@Test( expected=IllegalArgumentException.class )
+	public void ensureThatThrowsExceptionWhenCantFindIdentityManager(){
+		String path = "server.auth-invalid-identity-manager";
+		loadInvalidAuthConfigPath(path);
+	}
+
+	private void loadInvalidAuthConfigPath(String path) {
+		val loadedDefaultConfig = DefaultConfiguration.loadDefaultConfig();
+		val invalidConfig = loadedDefaultConfig.getConfig( path ).withFallback(loadedDefaultConfig.getConfig("server.auth"));
+		val authConfig = new DefaultAuthenticationConfiguration( invalidConfig );
+		new AuthenticationRuleMatcher( provider, authConfig );
+	}
 }
