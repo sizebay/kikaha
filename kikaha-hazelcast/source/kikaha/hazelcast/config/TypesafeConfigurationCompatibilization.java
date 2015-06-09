@@ -16,7 +16,8 @@ public class TypesafeConfigurationCompatibilization {
 
 	public void compatibilize() {
 		ConfigObject parameters = getHazelcastConfigureParameters();
-		memorizeProperties( parameters, HAZELCAST );
+		if ( parameters != null )
+			memorizeProperties( parameters, HAZELCAST );
 	}
 
 	void memorizeProperties( Map<String, ConfigValue> parameters, String rootKey ) {
