@@ -26,6 +26,7 @@ public class AuthenticationRule {
 	final NotificationReceiver notificationReceiver;
 	final SecurityContextFactory securityContextFactory;
 
+	// UNCHECKED: this constructor should not be checked
 	public AuthenticationRule(
 		@NonNull final String pattern,
 		@NonNull final IdentityManager identityManager,
@@ -34,6 +35,7 @@ public class AuthenticationRule {
 		final NotificationReceiver notificationReceiver,
 		@NonNull final SecurityContextFactory securityContextFactory,
 		@NonNull final List<String> exceptionPatterns )
+	// CHECKED
 	{
 		this.pattern = pattern;
 		this.matcher = URLMatcher.compile( pattern );

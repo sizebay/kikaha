@@ -64,7 +64,7 @@ public class UndertowServer {
 	private void reportStartupStatus(final long elapsed) {
 		log.info( "Server started in " + elapsed + "ms.");
 		log.info( "Server is listening HTTP at " + configuration.host() + ":" + configuration().port() );
-		if ( mode.equals( "HTTPS" ) )
+		if ( "HTTPS".equals( mode ) )
 			log.info( "Server is also listening HTTPS at " + configuration.secureHost() + ":" + configuration().securePort() );
 	}
 

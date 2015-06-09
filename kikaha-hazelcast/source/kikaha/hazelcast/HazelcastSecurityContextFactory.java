@@ -108,7 +108,9 @@ public class HazelcastSecurityContextFactory implements SecurityContextFactory {
 				session.removeAttribute( LAST_LOCATION );
 				sessionCache.remove( session.getId() );
 				sessionCache.memorizeOrUpdate( session );
+			// UNCHECKED: It should handle any exception thrown
 			} catch ( final Throwable e ) {
+			// CHECKED
 				handleFailure( e );
 			}
 		}

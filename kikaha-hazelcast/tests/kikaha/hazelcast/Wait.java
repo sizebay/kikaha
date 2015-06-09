@@ -1,6 +1,6 @@
 package kikaha.hazelcast;
 
-public class Wait {
+public abstract class Wait {
 
 	/**
 	 * Non-blocking, but CPU throttle, wait routine.<br>

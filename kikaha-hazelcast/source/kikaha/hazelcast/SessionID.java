@@ -2,7 +2,7 @@ package kikaha.hazelcast;
 
 import com.hazelcast.util.UuidUtil;
 
-public class SessionID {
+public abstract class SessionID {
 
 	/**
 	 * Generate a valid, pseudo-randomized, session id.<br>

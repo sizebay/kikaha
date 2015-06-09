@@ -157,7 +157,8 @@ public class ResponseWriter {
 
 	HeaderMap sendContentTypeHeader( final HttpServerExchange exchange, final String contentType ) {
 		final HeaderMap responseHeaders = exchange.getResponseHeaders();
-		responseHeaders.add( new HttpString( Headers.CONTENT_TYPE_STRING ), contentType );
+		if ( responseHeaders.contains( Headers.CONTENT_TYPE_STRING ) )
+			responseHeaders.add( new HttpString( Headers.CONTENT_TYPE_STRING ), contentType );
 		return responseHeaders;
 	}
 

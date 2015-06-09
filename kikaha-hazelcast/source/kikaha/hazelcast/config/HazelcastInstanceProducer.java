@@ -77,7 +77,9 @@ public class HazelcastInstanceProducer {
 			}
 			final Config cfg = loadConfig();
 			return Hazelcast.newHazelcastInstance( cfg );
+		// UNCHECKED: It should handle any exception thrown
 		} catch ( Exception cause ) {
+		// CHECKED
 			throw new IllegalStateException( cause );
 		}
 	}

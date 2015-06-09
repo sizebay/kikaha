@@ -29,7 +29,9 @@ public class AuthenticationRunner implements Runnable {
 					tryExecuteChain();
 			} else
 				endCommunicationWithClient();
+		// UNCHECKED: It really should handle all exceptions here
 		} catch ( final Throwable cause ) {
+		// CHECKED
 			handleException( cause );
 		}
 	}

@@ -2,8 +2,6 @@ package kikaha.hazelcast;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
-import kikaha.hazelcast.AuthenticationEventInterceptor;
-import kikaha.hazelcast.WrappedSecurityContext;
 import io.undertow.security.api.AuthenticationMechanism;
 import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.api.SecurityContext;
@@ -17,12 +15,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  * Many tests described here is just ensuring that the delegating process are
- * working well, once the {@code Delegate} annotation from lombok becomes
+ * working well, once the {@code @Delegate} annotation from lombok becomes
  * deprecated recently.
  *
  * @author Miere Teixeira
  */
 @RunWith( MockitoJUnitRunner.class )
+// UNCHECKED: long methods were ignored here
 public class WrappedSecurityContextTest {
 
 	@Mock

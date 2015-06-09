@@ -8,8 +8,8 @@ import java.security.PrivilegedAction;
 
 public interface SecurityContextHandler {
 
-	public static SecurityContextHandler DEFAULT = new DefaultSecurityContextHandler();
-	public static SecurityContextHandler PRIVILEGED = new PrivilegedSecurityContextHandler();
+	SecurityContextHandler DEFAULT = new DefaultSecurityContextHandler();
+	SecurityContextHandler PRIVILEGED = new PrivilegedSecurityContextHandler();
 
 	void setSecurityContext( final HttpServerExchange exchange, final SecurityContext securityContext );
 
