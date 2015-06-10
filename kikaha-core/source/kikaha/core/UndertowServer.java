@@ -2,6 +2,7 @@ package kikaha.core;
 
 import io.undertow.Handlers;
 import io.undertow.Undertow;
+import io.undertow.Undertow.Builder;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 
@@ -18,6 +19,7 @@ import kikaha.core.api.KikahaException;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.DefaultDeploymentContext;
 import kikaha.core.impl.DefaultHttpRequestHandler;
+import kikaha.core.impl.DefaultUndertowServerConfiguration;
 import kikaha.core.ssl.SSLContextFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -37,13 +39,23 @@ public class UndertowServer {
 
 	private final ServiceProvider provider;
 	private final Configuration configuration;
+
+	private DefaultUndertowServerConfiguration undertowServerConf;
 	private DeploymentContext deploymentContext;
 	private Undertow server;
-	volatile String mode = "HTTP";
+
+	private String mode = "HTTP";
 
 	public UndertowServer( final Configuration configuration ) {
 		this.provider = newServiceProvider();
 		this.configuration = configuration;
+		provideSomeDependenciesForFurtherInjections();
+		Runtime.getRuntime().addShutdownHook( new UndertowShutdownHook(this) );
+	}
+
+	protected void provideSomeDependenciesForFurtherInjections() {
+		provider.providerFor( Configuration.class, configuration );
+		provider.providerFor( Config.class, configuration.config() );
 	}
 
 	/**
@@ -53,7 +65,6 @@ public class UndertowServer {
 	 */
 	public void start() throws KikahaException {
 		val start = System.currentTimeMillis();
-		Runtime.getRuntime().addShutdownHook( new UndertowShutdownHook(this) );
 		bootstrap();
 		this.server = createServer();
 		this.server.start();
@@ -75,7 +86,6 @@ public class UndertowServer {
 	 */
 	protected void bootstrap() throws KikahaException {
 		try {
-			provideSomeDependenciesForFurtherInjections();
 			val deploymentContext = createDeploymentContext();
 			runDeploymentHooks(deploymentContext);
 			deployWebResourceFolder(deploymentContext);
@@ -83,11 +93,6 @@ public class UndertowServer {
 		} catch (final ServiceProviderException cause) {
 			throw new KikahaException(cause);
 		}
-	}
-
-	protected void provideSomeDependenciesForFurtherInjections() {
-		provider.providerFor( Configuration.class, configuration );
-		provider.providerFor( Config.class, configuration().config() );
 	}
 
 	protected DefaultDeploymentContext createDeploymentContext()
@@ -126,16 +131,30 @@ public class UndertowServer {
 	}
 
 	protected Undertow createServer() {
-		val builder = Undertow.builder()
-				.addHttpListener( configuration().port(), configuration().host() )
-				.setWorkerThreads( 200 );
+		val builder = Undertow.builder().addHttpListener(
+				configuration().port(), configuration().host() );
+		appendSSLListenerIfConfigured(builder);
+		configureServerOptions(builder);
+		val defaultHandler = new DefaultHttpRequestHandler( this.deploymentContext() );
+		return builder.setHandler( defaultHandler ).build();
+	}
+
+	private void configureServerOptions( Builder builder ) {
+		try {
+			val serverOptionsConfiguration = provider.load(DefaultUndertowServerConfiguration.class);
+			serverOptionsConfiguration.configure(builder);
+		} catch (ServiceProviderException e) {
+			log.error("Can't configure the server. Shutting down...", e);
+			System.exit(1);
+		}
+	}
+
+	private void appendSSLListenerIfConfigured(final Builder builder) {
 		val sslContext = readConfiguredSSLContext();
 		if ( sslContext != null ) {
 			builder.addHttpsListener( configuration().securePort(), configuration().secureHost(), sslContext );
 			mode = "HTTPS";
 		}
-		val defaultHandler = new DefaultHttpRequestHandler( this.deploymentContext() );
-		return builder.setHandler( defaultHandler ).build();
 	}
 
 	SSLContext readConfiguredSSLContext() {
