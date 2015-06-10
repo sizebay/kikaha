@@ -43,25 +43,6 @@ public class SerializationTests extends TestCase {
 		assertIsValidUser( user );
 	}
 
-	@Test
-	@SneakyThrows
-	public void grantThatSerializeItAsJSON() {
-		final AbstractSerializer serializer = (AbstractSerializer)provider.load( Serializer.class, Mimes.JSON );
-		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		serializer.serialize( user, outputStream );
-		final String expected = readFile( "serialization.expected-json.json" );
-		assertThat( outputStream.toString(), is( expected ) );
-	}
-
-	@Test
-	@SneakyThrows
-	public void grantThatUnserializeJSONIntoObjectAsExpected() {
-		final String json = readFile( "serialization.expected-json.json" );
-		final Unserializer unserializer = provider.load( Unserializer.class, Mimes.JSON );
-		final User user = unserializer.unserialize( new StringReader( json ), User.class );
-		assertIsValidUser( user );
-	}
-
 	void assertIsValidUser( final User user ) {
 		assertNotNull( user );
 		assertThat( user.name, is( "gerolasdiwn" ) );

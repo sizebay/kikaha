@@ -52,6 +52,7 @@
 	<modules>
 		<module>kikaha-core</module>
 		<module>kikaha-urouting</module>
+		<module>kikaha-urouting-jackson</module>
 		<module>kikaha-hazelcast</module>
 		<module>kikaha-maven-plugin</module>
 		<module>kikaha-project</module>
@@ -131,6 +132,12 @@
 				<groupId>io.skullabs.kikaha</groupId>
 				<version>1.5.0-SNAPSHOT</version>
 				<artifactId>kikaha-urouting</artifactId>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.skullabs.kikaha</groupId>
+				<version>1.5.0-SNAPSHOT</version>
+				<artifactId>kikaha-urouting-jackson</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>

@@ -1,4 +1,4 @@
-package kikaha.urouting.serializers;
+package kikaha.urouting.serializers.jackson;
 
 import java.io.IOException;
 import java.io.Reader;

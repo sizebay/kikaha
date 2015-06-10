@@ -1,4 +1,4 @@
-package kikaha.urouting.serializers;
+package kikaha.urouting.serializers.jackson;
 
 import io.undertow.server.HttpServerExchange;
 
@@ -20,7 +20,12 @@ public class JSONSerializer implements Serializer {
 	@Override
 	public <T> void serialize(T object, HttpServerExchange exchange) throws IOException {
 		val buffer = ByteBuffer.wrap( mapper.writeValueAsBytes(object) );
-		exchange.getResponseSender().send( buffer );
+		send(exchange, buffer);
 		exchange.dispatch();
+	}
+
+	public void send(HttpServerExchange exchange,
+			final java.nio.ByteBuffer buffer) {
+		exchange.getResponseSender().send( buffer );
 	}
 }
