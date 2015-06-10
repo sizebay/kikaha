@@ -44,7 +44,7 @@ public class DefaultDeploymentContext implements DeploymentContext {
 	@Override
 	public DeploymentContext register( String uri, final String method, final HttpHandler handler ) {
 		uri = URL.removeTrailingCharacter( uri );
-		log.info( "Registering route: " + method + ":" + uri + ": " + handler.getClass().getCanonicalName() );
+		log.info( "  > Registering route: " + method + ":" + uri );
 		this.routingHandler.add( method, uri, handler );
 		return this;
 	}
