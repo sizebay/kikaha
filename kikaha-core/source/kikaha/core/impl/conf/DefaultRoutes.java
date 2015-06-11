@@ -6,7 +6,6 @@ import java.util.List;
 import kikaha.core.api.conf.RewritableRule;
 import kikaha.core.api.conf.Routes;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.experimental.Accessors;
 
@@ -14,16 +13,21 @@ import com.typesafe.config.Config;
 
 @Getter
 @Accessors( fluent = true )
-@RequiredArgsConstructor
 public class DefaultRoutes implements Routes {
 
+	final List<RewritableRule> rewriteRoutes;
+	final List<RewritableRule> reverseProxyRoutes;
+	final String responseEncoding;
+	final String requestEncoding;
 	final Config config;
 
-	@Getter( lazy = true )
-	private final List<RewritableRule> rewriteRoutes = parseRewritableRuleAtPath( "rewrite" );
-
-	@Getter( lazy = true )
-	private final List<RewritableRule> reverseProxyRoutes = parseRewritableRuleAtPath( "reverse" );
+	public DefaultRoutes( final Config config ) {
+		this.config = config;
+		this.requestEncoding = config.getString("request-encoding");
+		this.responseEncoding = config.getString("response-encoding");
+		this.rewriteRoutes = parseRewritableRuleAtPath( "rewrite" );
+		this.reverseProxyRoutes = parseRewritableRuleAtPath( "reverse" );
+	}
 
 	List<RewritableRule> parseRewritableRuleAtPath( final String path )
 	{

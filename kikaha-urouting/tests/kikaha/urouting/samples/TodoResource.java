@@ -7,9 +7,11 @@ import java.util.Map;
 
 import kikaha.urouting.api.Consumes;
 import kikaha.urouting.api.DefaultResponse;
+import kikaha.urouting.api.GET;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.POST;
 import kikaha.urouting.api.Path;
+import kikaha.urouting.api.PathParam;
 import kikaha.urouting.api.Produces;
 import kikaha.urouting.api.Response;
 import lombok.EqualsAndHashCode;
@@ -31,6 +33,12 @@ public class TodoResource {
 	public Response persistTodo(Todo user) {
 		todos.put(user.getId(), user);
 		return DefaultResponse.created("todos/" + user.getId());
+	}
+
+	@GET
+	@Path( "{id}" )
+	public Todo getTodo( @PathParam("id") Long id ) {
+		return todos.get(id);
 	}
 
 	@Getter

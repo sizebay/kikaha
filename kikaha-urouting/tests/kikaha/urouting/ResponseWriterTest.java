@@ -1,6 +1,8 @@
 package kikaha.urouting;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -18,7 +20,6 @@ import java.nio.ByteBuffer;
 import kikaha.urouting.api.Header;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Response;
-import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.samples.TodoResource;
 import kikaha.urouting.samples.TodoResource.Todo;
 import lombok.SneakyThrows;
@@ -90,15 +91,38 @@ public class ResponseWriterTest extends TestCase {
 	}
 
 	@Test
-	public void ensure() throws ServiceProviderException, RoutingException, IOException{
+	@SneakyThrows
+	public void ensureThatCanCallPOSTResourceAndHaveItsHeadersAndStatusSentAsExpected() {
 		final Todo todo = new Todo( "Frankenstein" );
 		final Response response = resource.persistTodo(todo);
 		write(response);
-		verify( writer ).sendHeader( any(HeaderMap.class), any(Header.class), any(String.class) );
+		verify( writer ).sendStatusCode( any(), eq(201) );
+		verify( writer, atLeastOnce() ).sendHeader( any(HeaderMap.class), any(Header.class), any(String.class) );
 	}
 
-	private void write(final Response response) throws ServiceProviderException,
-			RoutingException, IOException {
+	@SneakyThrows
+	private void write(final Response response) {
+		try {
+			exchange.startBlocking();
+			writer.write(exchange, Mimes.JSON, response );
+		} catch ( final NullPointerException cause ) {
+			log.error( cause.getMessage(), cause );
+		}
+	}
+
+	@Test
+	@SneakyThrows
+	public void ensureThatCanCallGETResourceAndHaveItsHeadersAndStatusSentAsExpected() {
+		final Todo todo = new Todo( "Frankenstein" );
+		resource.persistTodo(todo);
+		final Todo persistedTodo = resource.getTodo(todo.getId());
+		write( persistedTodo );
+		verify( writer ).sendStatusCode( any(), eq(200) );
+		verify( writer, atLeastOnce() ).sendContentTypeHeader( any(), eq(Mimes.JSON));
+	}
+
+	@SneakyThrows
+	private void write(final Todo response) {
 		try {
 			exchange.startBlocking();
 			writer.write(exchange, Mimes.JSON, response );

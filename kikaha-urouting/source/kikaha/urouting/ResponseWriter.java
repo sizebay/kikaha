@@ -7,6 +7,7 @@ import io.undertow.util.HttpString;
 
 import java.io.IOException;
 
+import kikaha.core.api.conf.Configuration;
 import kikaha.urouting.api.Header;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Response;
@@ -27,6 +28,9 @@ public class ResponseWriter {
 
 	@Provided
 	ServiceProvider provider;
+	
+	@Provided
+	Configuration kikahaConf;
 
 	/**
 	 * Writes a response to HTTP Client informing that no content was available.
@@ -123,9 +127,8 @@ public class ResponseWriter {
 		exchange.endExchange();
 	}
 
-	Serializer getSerializer( final String contentType )
-			throws ServiceProviderException {
-		return getSerializer( contentType, Mimes.PLAIN_TEXT );
+	Serializer getSerializer( final String contentType ) throws ServiceProviderException {
+		return getSerializer( contentType, getDefaultContentType() );
 	}
 
 	Serializer getSerializer( final String contentType, final String defaultContentType )
@@ -139,15 +142,15 @@ public class ResponseWriter {
 	}
 
 	void sendHeaders( final HttpServerExchange exchange, final Response response ) {
-		final HeaderMap responseHeaders = sendContentTypeHeader( exchange, response.contentType() );
+		final HeaderMap responseHeaders = exchange.getResponseHeaders();
 		for ( final Header header : response.headers() )
 			for ( final String value : header.values() )
 				sendHeader(responseHeaders, header, value);
 	}
 
-	void sendHeader(final HeaderMap responseHeaders,
-			final Header header, final String value) {
-		responseHeaders.add( new HttpString( header.name() ), value );
+	void sendHeader(final HeaderMap responseHeaders, final Header header, final String value) {
+		final HttpString headerName = new HttpString( header.name() );
+		responseHeaders.add( headerName, value );
 	}
 
 	HttpServerExchange sendStatusCode( final HttpServerExchange exchange, final Integer statusCode ) {
@@ -155,15 +158,14 @@ public class ResponseWriter {
 		return exchange;
 	}
 
-	HeaderMap sendContentTypeHeader( final HttpServerExchange exchange, final String contentType ) {
+	void sendContentTypeHeader( final HttpServerExchange exchange, final String contentType ) {
 		final HeaderMap responseHeaders = exchange.getResponseHeaders();
-		if ( responseHeaders.contains( Headers.CONTENT_TYPE_STRING ) )
+		if ( !responseHeaders.contains( Headers.CONTENT_TYPE_STRING ) && contentType != null )
 			responseHeaders.add( new HttpString( Headers.CONTENT_TYPE_STRING ), contentType );
-		return responseHeaders;
 	}
 
 	String getDefaultEncoding() {
-		return "UTF-8";
+		return kikahaConf.routes().responseEncoding();
 	}
 
 	String getDefaultContentType() {

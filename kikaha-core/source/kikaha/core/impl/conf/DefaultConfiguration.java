@@ -18,32 +18,28 @@ public class DefaultConfiguration implements Configuration {
 
 	final Config config;
 	final String applicationName;
-
-	@Getter( lazy = true )
-	private final Integer port = config().getInt( "server.port" );
-
-	@Getter( lazy = true )
-	private final String host = getConfigString( "server.host" );
-
-	@Getter( lazy = true )
-	private final Integer securePort = config().getInt( "server.secure-port" );
-
-	@Getter( lazy = true )
-	private final String secureHost = getConfigString( "server.secure-host" );
-
-	@Getter( lazy = true )
-	private final String welcomeFile = getConfigString( "server.welcome-file" );
-
-	@Getter( lazy = true )
-	private final AuthenticationConfiguration authentication = createAuthenticationConfig();
-
-	@Getter( lazy = true )
-	private final SSLConfiguration ssl = createSSLConfiguration();
-
-	@Getter( lazy = true )
-	private final Routes routes = readRoutes();
-
+	final Integer port;
+	final String host;
+	final Integer securePort;
+	final String secureHost;
+	final String welcomeFile;
+	final AuthenticationConfiguration authentication;
+	final SSLConfiguration ssl;
+	final Routes routes;
 	String resourcesPath;
+	
+	public DefaultConfiguration( final Config config, final String applicationName ) {
+		this.config = config;
+		this.applicationName = applicationName;
+		this.port = config().getInt( "server.port" );
+		this.host = getConfigString( "server.host" );
+		this.securePort = config().getInt( "server.secure-port" );
+		this.secureHost = getConfigString( "server.secure-host" );
+		this.welcomeFile = getConfigString( "server.welcome-file" );
+		this.authentication = createAuthenticationConfig();
+		this.ssl = createSSLConfiguration();
+		this.routes = readRoutes();
+	}
 
 	SSLConfiguration createSSLConfiguration() {
 		return new DefaultSSLConfiguration( config().getConfig( "server.ssl" ) );
@@ -70,8 +66,7 @@ public class DefaultConfiguration implements Configuration {
 			.replaceFirst( "\"$", "" );
 	}
 
-	Routes readRoutes()
-	{
+	Routes readRoutes() {
 		return new DefaultRoutes( config().getConfig( "server.routes" ) );
 	}
 
