@@ -44,9 +44,9 @@
 			<name>Ricardo Mattiazzi Baumgartner</name>
 		</developer>
 		<developer>
-			<id>selomke</id>
-			<email>cesar.selomke@gmail.com</email>
-			<name>Cesar Henrique Selomke</name>
+			<id>selonke</id>
+			<email>cesar.selonke@gmail.com</email>
+			<name>Cesar Henrique Selonke</name>
 		</developer>
 		<developer>
 			<id>miere</id>
@@ -231,7 +231,7 @@
 		<testSourceDirectory>${config.dir.test.source}</testSourceDirectory>
 		<directory>${config.dir.output}</directory>
 		<outputDirectory>${config.dir.output}/classes</outputDirectory>
-		<testOutputDirectory>${project.basedir}/output/test-classes</testOutputDirectory>
+		<testOutputDirectory>${config.dir.output}/test-classes</testOutputDirectory>
 		<resources>
 			<resource>
 				<directory>${config.dir.resource}</directory>
