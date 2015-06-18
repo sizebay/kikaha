@@ -263,7 +263,7 @@
 				</excludes>
 			</testResource>
 			<testResource>
-				<directory>${project.build.directory}/generated-sources/test-annotations</directory>
+				<directory>${project.build.directory}/generated-test-sources/annotations</directory>
 				<includes>
 					<include>**/*.*</include>
 				</includes>
@@ -306,6 +306,8 @@
 						<optimize>true</optimize>
 						<debug>false</debug>
 						<encoding>${config.encoding.source}</encoding>
+						<generatedTestSourcesDirectory>${project.build.directory}/generated-test-sources/annotations</generatedTestSourcesDirectory>
+						<generatedSourcesDirectory>${project.build.directory}/generated-sources/annotations</generatedSourcesDirectory>
 					</configuration>
 				</plugin>
 				<plugin>
