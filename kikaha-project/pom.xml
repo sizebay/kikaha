@@ -70,7 +70,6 @@
 		<!-- Extra dependencies -->
 		<version.hikaricp>2.3.5</version.hikaricp>
 		<version.pgjdbc-ng>0.5</version.pgjdbc-ng>
-		<version.mariadb>1.1.8</version.mariadb>
 		<!-- Plugin's Versions -->
 		<version.compiler.plugin>3.3</version.compiler.plugin>
 		<version.resources.plugin>2.6</version.resources.plugin>
@@ -217,9 +216,9 @@
 				<version>${version.pgjdbc-ng}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.mariadb.jdbc</groupId>
-				<artifactId>mariadb-java-client</artifactId>
-				<version>${version.mariadb}</version>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>5.1.30</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
