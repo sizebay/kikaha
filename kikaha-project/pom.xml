@@ -67,6 +67,10 @@
 		<version.junit>4.12</version.junit>
 		<version.lombok>1.14.8</version.lombok>
 		<version.mockito>1.10.19</version.mockito>
+		<!-- Extra dependencies -->
+		<version.hikaricp>2.3.5</version.hikaricp>
+		<version.pgjdbc-ng>0.5</version.pgjdbc-ng>
+		<version.mariadb>1.1.8</version.mariadb>
 		<!-- Plugin's Versions -->
 		<version.compiler.plugin>3.3</version.compiler.plugin>
 		<version.resources.plugin>2.6</version.resources.plugin>
@@ -185,6 +189,7 @@
 				<artifactId>slf4j-api</artifactId>
 				<version>${version.slf4j}</version>
 			</dependency>
+			<!-- Recommended module dependencies -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-simple</artifactId>
@@ -196,9 +201,25 @@
 				<version>${version.slf4j}</version>
 			</dependency>
 			<dependency>
-			    <groupId>ch.qos.logback</groupId>
-			    <artifactId>logback-classic</artifactId>
-			    <version>${version.logback}</version>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${version.logback}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.zaxxer</groupId>
+				<artifactId>HikariCP</artifactId>
+				<version>${version.hikaricp}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.impossibl.pgjdbc-ng</groupId>
+				<artifactId>pgjdbc-ng</artifactId>
+				<classifier>complete</classifier>
+				<version>${version.pgjdbc-ng}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mariadb.jdbc</groupId>
+				<artifactId>mariadb-java-client</artifactId>
+				<version>${version.mariadb}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -219,10 +240,6 @@
 		<dependency>
 			<groupId>io.skullabs.trip</groupId>
 			<artifactId>trip-processor</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.skullabs.kikaha</groupId>
-			<artifactId>kikaha-urouting</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -291,7 +308,9 @@
 					<executions>
 						<execution>
 							<phase>package</phase>
-							<goals><goal>package</goal></goals>
+							<goals>
+								<goal>package</goal>
+							</goals>
 						</execution>
 					</executions>
 				</plugin>
