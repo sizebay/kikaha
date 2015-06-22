@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Reader;
 
 import kikaha.urouting.api.Mimes;
-import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Unserializer;
 import trip.spi.Singleton;
 
@@ -12,15 +11,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Singleton( name = Mimes.JSON, exposedAs = Unserializer.class )
 public class JSONUnserializer implements Unserializer {
-	
+
 	final ObjectMapper mapper = Jackson.createMapper();
 
 	@Override
-	public <T> T unserialize(Reader input, Class<T> targetClass) throws RoutingException {
-		try {
-			return mapper.readValue(input, targetClass);
-		} catch ( IOException cause ) {
-			throw new RoutingException(cause);
-		}
+	public <T> T unserialize(final Reader input, final Class<T> targetClass) throws IOException {
+		return mapper.readValue(input, targetClass);
 	}
 }

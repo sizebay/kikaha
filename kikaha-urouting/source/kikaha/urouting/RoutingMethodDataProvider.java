@@ -7,6 +7,7 @@ import io.undertow.server.handlers.form.FormData.FormValue;
 import io.undertow.util.Headers;
 import io.undertow.util.PathTemplateMatch;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.nio.channels.Channels;
 import java.util.Queue;
@@ -139,10 +140,9 @@ public class RoutingMethodDataProvider {
 	 * @param exchange
 	 * @param clazz
 	 * @return
-	 * @throws ServiceProviderException
-	 * @throws RoutingException
+	 * @throws IOException
 	 */
-	public <T> T getBody( final HttpServerExchange exchange, final Class<T> clazz ) throws ServiceProviderException, RoutingException {
+	public <T> T getBody( final HttpServerExchange exchange, final Class<T> clazz ) throws IOException {
 		return getBody( exchange, clazz, null );
 	}
 
@@ -163,12 +163,10 @@ public class RoutingMethodDataProvider {
 	 * @param clazz
 	 * @param defaulConsumingContentType
 	 * @return
-	 * @throws ServiceProviderException
-	 * @throws RoutingException
-	 *             when no {@link Unserializer} implementation was found
+	 * @throws IOException
 	 */
 	public <T> T getBody( final HttpServerExchange exchange, final Class<T> clazz, final String defaulConsumingContentType )
-			throws ServiceProviderException, RoutingException {
+			throws IOException {
 		String contentEncoding = exchange.getRequestHeaders().getFirst( Headers.CONTENT_ENCODING_STRING );
 		if ( contentEncoding == null )
 			contentEncoding = "UTF-8";
@@ -177,7 +175,7 @@ public class RoutingMethodDataProvider {
 	}
 
 	<T> T unserializeReceivedBodyStream( final HttpServerExchange exchange, final Class<T> clazz, final String defaulConsumingContentType,
-		final String contentEncoding, final String contentType ) throws ServiceProviderException, RoutingException
+		final String contentEncoding, final String contentType ) throws IOException
 	{
 		if ( !exchange.isBlocking() )
 			exchange.startBlocking();
@@ -195,17 +193,19 @@ public class RoutingMethodDataProvider {
 	 * @param contentType
 	 * @param defaulConsumingContentType
 	 * @return
-	 * @throws ServiceProviderException
-	 * @throws RoutingException
+	 * @throws IOException
 	 */
-	private Unserializer getUnserializer( final String contentType, final String defaulConsumingContentType ) throws ServiceProviderException,
-			RoutingException {
-		Unserializer unserializer = provider.load( Unserializer.class, contentType );
-		if ( unserializer == null && defaulConsumingContentType != null )
+	private Unserializer getUnserializer( final String contentType, final String defaulConsumingContentType ) throws IOException {
+		try {
+			Unserializer unserializer = provider.load( Unserializer.class, contentType );
+			if ( unserializer == null && defaulConsumingContentType != null )
 			unserializer = provider.load( Unserializer.class, defaulConsumingContentType );
-		if ( unserializer == null )
-			throw new RoutingException( "BadRequest: No unserializer found this request." );
-		return unserializer;
+			if ( unserializer == null )
+				throw new RoutingException( "BadRequest: No unserializer found this request." );
+			return unserializer;
+		} catch (final ServiceProviderException e) {
+			throw new IOException(e);
+		}
 	}
 
 	/**
