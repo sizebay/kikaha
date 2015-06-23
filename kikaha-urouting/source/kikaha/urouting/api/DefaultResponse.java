@@ -70,6 +70,10 @@ public class DefaultResponse implements Response {
 				.header("Location", location);
 	}
 
+	public static DefaultResponse accepted() {
+		return response().statusCode(202);
+	}
+
 	public static DefaultResponse movedPermanently() {
 		return response().statusCode(301);
 	}
