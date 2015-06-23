@@ -1,6 +1,6 @@
 package kikaha.core.api;
 
-public interface DeploymentHook {
+public interface DeploymentListener {
 
 	void onDeploy( DeploymentContext context );
 

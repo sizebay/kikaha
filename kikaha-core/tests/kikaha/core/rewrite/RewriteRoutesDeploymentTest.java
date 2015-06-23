@@ -5,7 +5,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import io.undertow.server.handlers.proxy.ProxyHandler;
 import kikaha.core.api.DeploymentContext;
-import kikaha.core.api.DeploymentHook;
+import kikaha.core.api.DeploymentListener;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.SneakyThrows;
@@ -26,7 +26,7 @@ public class RewriteRoutesDeploymentTest {
 	@Mock
 	DeploymentContext context;
 
-	@Provided( exposedAs = DeploymentHook.class )
+	@Provided( exposedAs = DeploymentListener.class )
 	RewriteRoutesDeployment deployment;
 
 	@Test

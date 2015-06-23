@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import kikaha.core.api.DeploymentContext;
-import kikaha.core.api.DeploymentHook;
+import kikaha.core.api.DeploymentListener;
 import kikaha.core.url.SimpleRoutingHandler;
 import kikaha.core.url.URL;
 import lombok.Getter;
@@ -30,7 +30,7 @@ public class DefaultDeploymentContext implements DeploymentContext {
 	@Setter
 	HttpHandler rootHandler = routingHandler;
 
-	final Iterable<DeploymentHook> deploymentHooks;
+	final Iterable<DeploymentListener> deploymentHooks;
 
 	@Override
 	public DeploymentContext register( final String uri, final HttpHandler handler ) {

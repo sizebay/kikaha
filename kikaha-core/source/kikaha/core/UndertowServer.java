@@ -14,7 +14,7 @@ import java.util.List;
 import javax.net.ssl.SSLContext;
 
 import kikaha.core.api.DeploymentContext;
-import kikaha.core.api.DeploymentHook;
+import kikaha.core.api.DeploymentListener;
 import kikaha.core.api.KikahaException;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.DefaultDeploymentContext;
@@ -97,7 +97,7 @@ public class UndertowServer {
 
 	protected DefaultDeploymentContext createDeploymentContext()
 			throws ServiceProviderException {
-		val deploymentHooks = provider.loadAll( DeploymentHook.class );
+		val deploymentHooks = provider.loadAll( DeploymentListener.class );
 		return new DefaultDeploymentContext(deploymentHooks);
 	}
 

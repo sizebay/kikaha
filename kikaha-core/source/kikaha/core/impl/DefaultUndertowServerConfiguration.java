@@ -47,12 +47,15 @@ public class DefaultUndertowServerConfiguration {
 
 	private void setWorkerThreads(final Builder builder, final Config config) {
 		val workerThreads = config.getInt("worker-threads");
-		if ( workerThreads > 0 )
+		if ( workerThreads > 0 ){
+			log.info("  > worker-threads: " + workerThreads );
 			builder.setWorkerThreads(workerThreads);
+		}
 	}
 
 	private void setBufferSize(final Builder builder, final Config config) {
 		val bufferSize = config.getInt("buffer-size");
+		log.info("  > buffer-size: " + bufferSize );
 		builder.setBufferSize(bufferSize);
 	}
 

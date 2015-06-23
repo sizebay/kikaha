@@ -4,7 +4,7 @@ import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
 import io.undertow.websockets.WebSocketConnectionCallback;
 import kikaha.core.api.DeploymentContext;
-import kikaha.core.api.DeploymentHook;
+import kikaha.core.api.DeploymentListener;
 import kikaha.core.api.WebResource;
 import kikaha.core.url.URL;
 import kikaha.core.url.URLMatcher;
@@ -13,8 +13,8 @@ import trip.spi.ProvidedServices;
 import trip.spi.Singleton;
 
 @Slf4j
-@Singleton( exposedAs = DeploymentHook.class )
-public class WebSocketDeploymentHook implements DeploymentHook {
+@Singleton( exposedAs = DeploymentListener.class )
+public class WebSocketDeploymentHook implements DeploymentListener {
 
 	@ProvidedServices( exposedAs = WebSocketHandler.class )
 	Iterable<WebSocketHandler> handlers;

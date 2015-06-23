@@ -9,7 +9,7 @@ import io.undertow.websockets.core.CloseMessage;
 import java.io.IOException;
 
 import kikaha.core.api.DeploymentContext;
-import kikaha.core.api.DeploymentHook;
+import kikaha.core.api.DeploymentListener;
 import kikaha.core.api.WebResource;
 import lombok.SneakyThrows;
 
@@ -28,7 +28,7 @@ public class WebSocketDeploymentHookTest {
 	@Mock
 	DeploymentContext context;
 
-	@Provided( exposedAs = DeploymentHook.class )
+	@Provided( exposedAs = DeploymentListener.class )
 	WebSocketDeploymentHook deploymentHook;
 
 	@Before
