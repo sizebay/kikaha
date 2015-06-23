@@ -70,6 +70,10 @@ public class DefaultResponse implements Response {
 				.header("Location", location);
 	}
 
+	public static DefaultResponse movedPermanently() {
+		return response().statusCode(301);
+	}
+
 	public static DefaultResponse notModified() {
 		return response().statusCode(304);
 	}
@@ -83,6 +87,44 @@ public class DefaultResponse implements Response {
 				.header("Location", location);
 	}
 
+	public static DefaultResponse temporaryRedirect( final String location ) {
+		return response().statusCode(307)
+				.header("Location", location);
+	}
+
+	public static DefaultResponse temporaryRedirect( final URI location ) {
+		return temporaryRedirect( location.toString() );
+	}
+
+	public static DefaultResponse permanentRedirect( final String location ) {
+		return response().statusCode(308)
+				.header("Location", location);
+	}
+
+	public static DefaultResponse permanentRedirect( final URI location ) {
+		return permanentRedirect( location.toString() );
+	}
+
+	public static DefaultResponse badRequest() {
+		return response().statusCode(400);
+	}
+
+	public static DefaultResponse unauthorized() {
+		return response().statusCode(401);
+	}
+
+	public static DefaultResponse forbiden() {
+		return response().statusCode(403);
+	}
+
+	public static DefaultResponse notFound() {
+		return response().statusCode(404);
+	}
+
+	public static DefaultResponse preconditionFailed() {
+		return response().statusCode(412);
+	}
+
 	public static DefaultResponse serverError() {
 		return response().statusCode(500);
 	}
@@ -90,19 +132,5 @@ public class DefaultResponse implements Response {
 	public static DefaultResponse serverError( final String string ) {
 		return response().statusCode(500)
 				.entity(string);
-	}
-
-	public static DefaultResponse temporaryRedirect() {
-		return response().statusCode(307);
-	}
-
-	public static DefaultResponse temporaryRedirect( final String location ) {
-		return response().statusCode(307)
-				.header("Location", location);
-	}
-
-	public static DefaultResponse temporaryRedirect( final URI location ) {
-		return response().statusCode(307)
-				.header("Location", location.toString());
 	}
 }
