@@ -24,7 +24,7 @@ public class DefaultResponse implements Response {
 	@NonNull String contentType = Mimes.PLAIN_TEXT;
 	@NonNull List<Header> headers = new ArrayList<>();
 
-	public DefaultResponse header( String name, String value ) {
+	public DefaultResponse header( final String name, final String value ) {
 		Header header = getHeader( name );
 		if ( header == null ) {
 			header = new DefaultHeader( name );
@@ -34,22 +34,26 @@ public class DefaultResponse implements Response {
 		return this;
 	}
 
-	protected Header getHeader( String name ) {
-		for ( Header header : headers )
+	protected Header getHeader( final String name ) {
+		for ( final Header header : headers )
 			if ( header.name().equals(name) )
 				return header;
 		return null;
 	}
-	
-	private static DefaultResponse response() {
+
+	public static DefaultResponse response() {
 		return new DefaultResponse();
+	}
+
+	public static DefaultResponse response( final int statusCode ) {
+		return new DefaultResponse().statusCode(statusCode);
 	}
 
 	public static DefaultResponse ok() {
 		return response().statusCode(200);
 	}
 
-	public static DefaultResponse ok( Object entity ) {
+	public static DefaultResponse ok( final Object entity ) {
 		return ok().entity(entity);
 	}
 
@@ -61,7 +65,7 @@ public class DefaultResponse implements Response {
 		return response().statusCode(201);
 	}
 
-	public static DefaultResponse created( String location ) {
+	public static DefaultResponse created( final String location ) {
 		return response().statusCode(201)
 				.header("Location", location);
 	}
@@ -74,7 +78,7 @@ public class DefaultResponse implements Response {
 		return response().statusCode(303);
 	}
 
-	public static DefaultResponse seeOther( String location ) {
+	public static DefaultResponse seeOther( final String location ) {
 		return response().statusCode(303)
 				.header("Location", location);
 	}
@@ -83,7 +87,7 @@ public class DefaultResponse implements Response {
 		return response().statusCode(500);
 	}
 
-	public static DefaultResponse serverError( String string ) {
+	public static DefaultResponse serverError( final String string ) {
 		return response().statusCode(500)
 				.entity(string);
 	}
@@ -92,12 +96,12 @@ public class DefaultResponse implements Response {
 		return response().statusCode(307);
 	}
 
-	public static DefaultResponse temporaryRedirect( String location ) {
+	public static DefaultResponse temporaryRedirect( final String location ) {
 		return response().statusCode(307)
 				.header("Location", location);
 	}
 
-	public static DefaultResponse temporaryRedirect( URI location ) {
+	public static DefaultResponse temporaryRedirect( final URI location ) {
 		return response().statusCode(307)
 				.header("Location", location.toString());
 	}
