@@ -6,6 +6,7 @@ import trip.spi.ProviderContext;
 import trip.spi.Singleton;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IExecutorService;
 import com.hazelcast.core.IList;
 import com.hazelcast.core.ILock;
 import com.hazelcast.core.IMap;
@@ -23,7 +24,7 @@ public class HazelcastDistributedDataStructuresProducer {
 	@Producer
 	@SuppressWarnings( "rawtypes" )
 	public IMap produceIMaps( final ProviderContext context ) {
-		final String name = retrieveMapNameFrom( context );
+		final String name = retrieveSourceNameFrom( context );
 		final IMap map = hazelcast.getMap( name );
 		return map;
 	}
@@ -31,7 +32,7 @@ public class HazelcastDistributedDataStructuresProducer {
 	@Producer
 	@SuppressWarnings( "rawtypes" )
 	public IQueue produceIQueues( final ProviderContext context ) {
-		final String name = retrieveMapNameFrom( context );
+		final String name = retrieveSourceNameFrom( context );
 		final IQueue queue = hazelcast.getQueue( name );
 		return queue;
 	}
@@ -39,7 +40,7 @@ public class HazelcastDistributedDataStructuresProducer {
 	@Producer
 	@SuppressWarnings( "rawtypes" )
 	public MultiMap produceMultimap( final ProviderContext context ) {
-		final String name = retrieveMapNameFrom( context );
+		final String name = retrieveSourceNameFrom( context );
 		final MultiMap mmap = hazelcast.getMultiMap( name );
 		return mmap;
 	}
@@ -47,7 +48,7 @@ public class HazelcastDistributedDataStructuresProducer {
 	@Producer
 	@SuppressWarnings( "rawtypes" )
 	public ISet produceSet( final ProviderContext context ) {
-		final String name = retrieveMapNameFrom( context );
+		final String name = retrieveSourceNameFrom( context );
 		final ISet set = hazelcast.getSet( name );
 		return set;
 	}
@@ -55,7 +56,7 @@ public class HazelcastDistributedDataStructuresProducer {
 	@Producer
 	@SuppressWarnings( "rawtypes" )
 	public IList produceList( final ProviderContext context ) {
-		final String name = retrieveMapNameFrom( context );
+		final String name = retrieveSourceNameFrom( context );
 		final IList list = hazelcast.getList( name );
 		return list;
 	}
@@ -63,19 +64,25 @@ public class HazelcastDistributedDataStructuresProducer {
 	@Producer
 	@SuppressWarnings( "rawtypes" )
 	public ITopic produceTopic( final ProviderContext context ) {
-		final String name = retrieveMapNameFrom( context );
+		final String name = retrieveSourceNameFrom( context );
 		final ITopic topic = hazelcast.getTopic( name );
 		return topic;
 	}
 
 	@Producer
 	public ILock produceLock( final ProviderContext context ) {
-		final String name = retrieveMapNameFrom( context );
+		final String name = retrieveSourceNameFrom( context );
 		final ILock lock = hazelcast.getLock( name );
 		return lock;
 	}
 
-	String retrieveMapNameFrom( final ProviderContext context ) {
+	@Producer
+	public IExecutorService produceIExecutorService( final ProviderContext context ) {
+		final String name = retrieveSourceNameFrom( context );
+		return hazelcast.getExecutorService(name);
+	}
+
+	String retrieveSourceNameFrom( final ProviderContext context ) {
 		final Source name = context.getAnnotation( Source.class );
 		if ( name != null )
 			return name.value();

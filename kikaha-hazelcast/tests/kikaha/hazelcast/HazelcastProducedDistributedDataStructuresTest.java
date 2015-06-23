@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import trip.spi.Provided;
 
+import com.hazelcast.core.IExecutorService;
 import com.hazelcast.core.IList;
 import com.hazelcast.core.ILock;
 import com.hazelcast.core.IMap;
@@ -48,6 +49,10 @@ public class HazelcastProducedDistributedDataStructuresTest extends HazelcastTes
 	@Source( "atomic-booleans" )
 	ILock lock;
 
+	@Provided
+	@Source( "executor-service" )
+	IExecutorService executorService;
+
 	@Test
 	public void ensureThatEveryParamSupposedToBeProvidedWasCorrectlyProvided() {
 		assertTrue( IMap.class.isInstance( map ) );
@@ -57,5 +62,6 @@ public class HazelcastProducedDistributedDataStructuresTest extends HazelcastTes
 		assertTrue( IList.class.isInstance( list ) );
 		assertTrue( ITopic.class.isInstance( topic ) );
 		assertTrue( ILock.class.isInstance( lock ) );
+		assertTrue( IExecutorService.class.isInstance( executorService ) );
 	}
 }
