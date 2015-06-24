@@ -79,10 +79,6 @@ public class SessionManagerShouldBeAbleCacheAuthenticatedSessionsBehaviorTest
 		doReturn( null ).when( sessionCache ).memorize( any( Account.class ), any( HttpServerExchange.class ) );
 		cacheNotifier.handleNotification( createAuthenticationNotification() );
 		verify( sessionCache ).memorize( any( Account.class ), any( HttpServerExchange.class ) );
-		// verify( cacheNotifier ).createSessionFrom( eq( account ), any(
-		// HttpServerExchange.class ) );
-		// verify( cache ).put( eq( sessionIdCookie.getValue() ), any(
-		// AuthenticatedSession.class ) );
 	}
 
 	void mockAccount() {

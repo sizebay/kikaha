@@ -19,10 +19,8 @@ import kikaha.urouting.api.ConverterFactory;
 import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Unserializer;
 import trip.spi.Provided;
-import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
 import trip.spi.Singleton;
-import trip.spi.helpers.KeyValueProviderContext;
 
 /**
  * Provides data to a routing method.
@@ -34,10 +32,10 @@ public class RoutingMethodDataProvider {
 	ConverterFactory converterFactory;
 
 	@Provided
-	ServiceProvider provider;
+	ContextProducerFactory contextProducerFactory;
 
 	@Provided
-	ContextProducerFactory contextProducerFactory;
+	SerializerAndUnserializerProvider serializerAndUnserializerProvider;
 
 	/**
 	 * Get a cookie from request converted to the {@code <T>} type as defined by
@@ -179,33 +177,9 @@ public class RoutingMethodDataProvider {
 	{
 		if ( !exchange.isBlocking() )
 			exchange.startBlocking();
-		final Unserializer unserializer = getUnserializer( contentType, defaulConsumingContentType );
+		final Unserializer unserializer = serializerAndUnserializerProvider.getUnserializerFor( contentType, defaulConsumingContentType );
 		final Reader reader = Channels.newReader( exchange.getRequestChannel(), contentEncoding );
 		return unserializer.unserialize( reader, clazz );
-	}
-
-	/**
-	 * Retrieves an {@link Unserializer} for a given {@code contentType}
-	 * argument. When no {@link Unserializer} is found it uses the
-	 * {@code defaulConsumingContentType} argument to seek another one. It
-	 * throws {@link RoutingException} when no decoder was found.
-	 *
-	 * @param contentType
-	 * @param defaulConsumingContentType
-	 * @return
-	 * @throws IOException
-	 */
-	private Unserializer getUnserializer( final String contentType, final String defaulConsumingContentType ) throws IOException {
-		try {
-			Unserializer unserializer = provider.load( Unserializer.class, contentType );
-			if ( unserializer == null && defaulConsumingContentType != null )
-			unserializer = provider.load( Unserializer.class, defaulConsumingContentType );
-			if ( unserializer == null )
-				throw new RoutingException( "BadRequest: No unserializer found this request." );
-			return unserializer;
-		} catch (final ServiceProviderException e) {
-			throw new IOException(e);
-		}
 	}
 
 	/**
@@ -221,9 +195,6 @@ public class RoutingMethodDataProvider {
 		final ContextProducer<T> producerFor = contextProducerFactory.producerFor( clazz );
 		if ( producerFor != null )
 			return producerFor.produce( exchange );
-
-		final KeyValueProviderContext context = new KeyValueProviderContext();
-		context.attribute( HttpServerExchange.class, exchange );
-		return provider.load( clazz, context );
+		throw new RoutingException("No context provider for " + clazz.getCanonicalName() );
 	}
 }

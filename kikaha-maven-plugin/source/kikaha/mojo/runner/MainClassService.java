@@ -67,12 +67,19 @@ public class MainClassService {
 	List<String> createCommandLine() {
 		val commandLine = new ArrayList<String>();
 		commandLine.add(getJavaExecutable());
-		commandLine.add(jvmArgs);
+		commandLine.addAll(getJvmArgsAsList());
 		commandLine.add("-cp");
 		commandLine.add(joinClassPath(classpath));
 		commandLine.add(mainClass);
 		commandLine.addAll(arguments);
 		return commandLine;
+	}
+
+	List<String> getJvmArgsAsList(){
+		final List<String> list = new ArrayList<String>();
+		for ( final String arg : jvmArgs.split(" ") )
+			list.add(arg);
+		return list;
 	}
 
 	String getJavaExecutable() {

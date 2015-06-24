@@ -1,16 +1,17 @@
 package kikaha.hazelcast;
 
-import kikaha.hazelcast.config.HazelcastConfiguration;
 import io.undertow.security.idm.Account;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
 import io.undertow.server.handlers.CookieImpl;
 import io.undertow.util.AttachmentKey;
-import lombok.Getter;
+import kikaha.hazelcast.config.HazelcastConfiguration;
 import lombok.val;
 import trip.spi.Provided;
 import trip.spi.Singleton;
 
+import com.hazelcast.config.Config;
+import com.hazelcast.config.MapConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 
@@ -33,21 +34,29 @@ public class SessionCacheManager {
 	@Provided
 	HazelcastConfiguration configuration;
 
-	@Getter( lazy = true )
-	private final IMap<String, AuthenticatedSession> sessionCache = produceSessionCache();
-
-	IMap<String, AuthenticatedSession> produceSessionCache() {
-		val hazelcastConfig = hazelcast.getConfig();
-		val expirableConfig = hazelcastConfig.getMapConfig( SESSION_CACHE );
-		expirableConfig.setTimeToLiveSeconds( configuration.sessionTimeToLive() );
-		return hazelcast.getMap( SESSION_CACHE );
-	}
+	IMap<String, AuthenticatedSession> sessionCache;
 
 	public AuthenticatedSession getOrCreateSessionFor( final HttpServerExchange exchange ) {
 		AuthenticatedSession session = getSession( exchange );
 		if ( session == null )
 			session = createValidationSessionForExchange( exchange );
 		return session;
+	}
+
+	private IMap<String, AuthenticatedSession> getSessionCache(){
+		if ( sessionCache == null )
+			synchronized( this ){
+				if ( sessionCache == null )
+					sessionCache = produceSessionCache();
+			}
+		return sessionCache;
+	}
+
+	IMap<String, AuthenticatedSession> produceSessionCache() {
+		final Config hazelcastConfig = hazelcast.getConfig();
+		final MapConfig expirableConfig = hazelcastConfig.getMapConfig( SESSION_CACHE );
+		expirableConfig.setTimeToLiveSeconds( configuration.sessionTimeToLive() );
+		return hazelcast.getMap( SESSION_CACHE );
 	}
 
 	/**

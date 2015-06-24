@@ -13,24 +13,20 @@ import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Response;
 import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Serializer;
-import lombok.extern.slf4j.Slf4j;
 import trip.spi.Provided;
-import trip.spi.ServiceProvider;
-import trip.spi.ServiceProviderException;
 import trip.spi.Singleton;
 
 /**
  * A helper class to write responses to the HTTP Client.
  */
-@Slf4j
 @Singleton
 public class ResponseWriter {
 
 	@Provided
-	ServiceProvider provider;
-	
-	@Provided
 	Configuration kikahaConf;
+
+	@Provided
+	SerializerAndUnserializerProvider serializerAndUnserializerProvider;
 
 	/**
 	 * Writes a response to HTTP Client informing that no content was available.
@@ -47,13 +43,12 @@ public class ResponseWriter {
 	 *
 	 * @param exchange
 	 * @param response
-	 * @throws ServiceProviderException
 	 * @throws RoutingException
 	 * @throws IOException
 	 * @see Response
 	 */
 	public void write( final HttpServerExchange exchange, final Response response )
-			throws ServiceProviderException, RoutingException, IOException {
+			throws RoutingException, IOException {
 		write( exchange, getDefaultContentType(), response );
 	}
 
@@ -62,13 +57,12 @@ public class ResponseWriter {
 	 *
 	 * @param exchange
 	 * @param response
-	 * @throws ServiceProviderException
 	 * @throws RoutingException
 	 * @throws IOException
 	 * @see Response
 	 */
 	public void write( final HttpServerExchange exchange, final Object response )
-			throws ServiceProviderException, RoutingException, IOException {
+			throws RoutingException, IOException {
 		write( exchange, getDefaultContentType(), response );
 	}
 
@@ -80,12 +74,11 @@ public class ResponseWriter {
 	 * @param exchange
 	 * @param contentType
 	 * @param response
-	 * @throws ServiceProviderException
 	 * @throws RoutingException
 	 * @throws IOException
 	 */
 	public void write( final HttpServerExchange exchange, final String contentType, final Object response )
-			throws ServiceProviderException, RoutingException, IOException {
+			throws RoutingException, IOException {
 		sendStatusCode( exchange, 200 );
 		sendContentTypeHeader( exchange, contentType );
 		sendBodyResponse( exchange, contentType, getDefaultEncoding(), response );
@@ -97,12 +90,11 @@ public class ResponseWriter {
 	 * @param exchange
 	 * @param defaultContentType
 	 * @param response
-	 * @throws ServiceProviderException
 	 * @throws RoutingException
 	 * @throws IOException
 	 */
 	public void write( final HttpServerExchange exchange, final String defaultContentType, final Response response )
-			throws ServiceProviderException, RoutingException, IOException {
+			throws RoutingException, IOException {
 		final String contentType = response.contentType() != null
 			? response.contentType() : defaultContentType;
 		sendStatusCode( exchange, response.statusCode() );
@@ -112,7 +104,7 @@ public class ResponseWriter {
 	}
 
 	void sendBodyResponse( final HttpServerExchange exchange, final Response response )
-			throws ServiceProviderException, RoutingException, IOException {
+			throws RoutingException, IOException {
 		sendBodyResponse( exchange,
 				response.contentType(), response.encoding(), response.entity() );
 	}
@@ -120,25 +112,15 @@ public class ResponseWriter {
 	void sendBodyResponse(
 			final HttpServerExchange exchange, final String contentType,
 			final String encoding, final Object serializable )
-		throws ServiceProviderException, RoutingException, IOException
+		throws RoutingException, IOException
 	{
 		final Serializer serializer = getSerializer( contentType );
 		serializer.serialize( serializable, exchange );
 		exchange.endExchange();
 	}
 
-	Serializer getSerializer( final String contentType ) throws ServiceProviderException {
-		return getSerializer( contentType, getDefaultContentType() );
-	}
-
-	Serializer getSerializer( final String contentType, final String defaultContentType )
-			throws ServiceProviderException {
-		Serializer serializer = provider.load( Serializer.class, contentType );
-		if ( serializer == null ) {
-			log.warn( "No serializer found for " + contentType + ". Falling back to " + defaultContentType );
-			serializer = provider.load( Serializer.class, defaultContentType );
-		}
-		return serializer;
+	Serializer getSerializer( final String contentType ) throws IOException {
+		return serializerAndUnserializerProvider.getSerializerFor( contentType, getDefaultContentType() );
 	}
 
 	void sendHeaders( final HttpServerExchange exchange, final Response response ) {

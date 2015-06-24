@@ -35,7 +35,7 @@ public abstract class HazelcastTestCase {
 
 	protected void afterProvideDependencies() {}
 
-	protected void provideExtraDependencies( ServiceProvider provider ) {}
+	protected void provideExtraDependencies( final ServiceProvider provider ) {}
 
 	@After
 	public void shutdownHazelcast() {

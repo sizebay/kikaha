@@ -10,25 +10,26 @@ import java.io.StringReader;
 import kikaha.urouting.User.Address;
 import kikaha.urouting.api.AbstractSerializer;
 import kikaha.urouting.api.Mimes;
-import kikaha.urouting.api.Serializer;
 import kikaha.urouting.api.Unserializer;
 import lombok.SneakyThrows;
 
 import org.junit.Test;
 
-import trip.spi.ServiceProvider;
+import trip.spi.Provided;
 
 public class SerializationTests extends TestCase {
 
-	final ServiceProvider provider = new ServiceProvider();
 	final User user = new User( "gerolasdiwn",
 			new Address( "Madison Avenue", 10 ) );
+
+	@Provided
+	SerializerAndUnserializerProvider provider;
 
 	@Test
 	@SneakyThrows
 	public void grantThatSerializeItAsXML() {
 		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		final AbstractSerializer serializer = (AbstractSerializer)provider.load( Serializer.class, Mimes.XML );
+		final AbstractSerializer serializer = (AbstractSerializer)provider.getSerializerFor(Mimes.XML, Mimes.XML );
 		serializer.serialize( user, outputStream );
 		final String expected = readFile( "serialization.expected-xml.xml" );
 		assertThat( outputStream.toString(), is( expected ) );
@@ -38,7 +39,7 @@ public class SerializationTests extends TestCase {
 	@SneakyThrows
 	public void grantThatUnserializeXMLIntoObjectAsExpected() {
 		final String xml = readFile( "serialization.expected-xml.xml" );
-		final Unserializer unserializer = provider.load( Unserializer.class, Mimes.XML );
+		final Unserializer unserializer = provider.getUnserializerFor( Mimes.XML, Mimes.XML );
 		final User user = unserializer.unserialize( new StringReader( xml ), User.class );
 		assertIsValidUser( user );
 	}
