@@ -77,7 +77,8 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	/**
 	 * JVM args to sent to Kikaha.
 	 *
-	 * @parameter default-value=""
+	 * @parameter  expression=" -Xms64m -Xmx256m "
+	 * 			   default-value=" -Xms64m -Xmx256m "
 	 * @required
 	 */
 	String jvmArgs;
