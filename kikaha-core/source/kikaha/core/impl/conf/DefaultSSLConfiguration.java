@@ -17,6 +17,7 @@ public class DefaultSSLConfiguration implements SSLConfiguration {
 	final String password;
 	final String certSecurityProvider;
 	final String keystoreSecurityProvider;
+	final boolean autoRedirectFromHttpToHttps;
 
 	public DefaultSSLConfiguration( final Config config ) {
 		this.keystore = config.getString( "keystore" );
@@ -24,6 +25,7 @@ public class DefaultSSLConfiguration implements SSLConfiguration {
 		this.password = config.getString( "password" );
 		this.certSecurityProvider = config.getString( "cert-security-provider" );
 		this.keystoreSecurityProvider = config.getString( "keystore-security-provider" );
+		this.autoRedirectFromHttpToHttps = config.getBoolean( "auto-redirect-http-to-https" );
 	}
 
 	@Override
@@ -32,7 +34,7 @@ public class DefaultSSLConfiguration implements SSLConfiguration {
 			&& isBlank( truststore() );
 	}
 
-	boolean isBlank( String str ) {
+	boolean isBlank( final String str ) {
 		return str == null || str.isEmpty();
 	}
 }

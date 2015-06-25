@@ -36,30 +36,30 @@ public abstract class HttpServerExchangeStub {
 	@SneakyThrows
 	private static StreamConnection createStreamConnection() {
 		final StreamConnection streamConnection = mock( StreamConnection.class );
-		ConduitStreamSinkChannel sinkChannel = createSinkChannel();
+		final ConduitStreamSinkChannel sinkChannel = createSinkChannel();
 		when( streamConnection.getSinkChannel() ).thenReturn( sinkChannel );
-		ConduitStreamSourceChannel sourceChannel = createSourceChannel();
+		final ConduitStreamSourceChannel sourceChannel = createSourceChannel();
 		when( streamConnection.getSourceChannel() ).thenReturn( sourceChannel );
-		XnioIoThread ioThread = mock( XnioIoThread.class );
+		final XnioIoThread ioThread = mock( XnioIoThread.class );
 		when( streamConnection.getIoThread() ).thenReturn( ioThread );
 		return streamConnection;
 	}
 
 	private static ConduitStreamSinkChannel createSinkChannel() throws IOException {
-		StreamSinkConduit sinkConduit = mock( StreamSinkConduit.class );
+		final StreamSinkConduit sinkConduit = mock( StreamSinkConduit.class );
 		when( sinkConduit.write( any( ByteBuffer.class ) ) ).thenReturn( 1 );
-		ConduitStreamSinkChannel sinkChannel = new ConduitStreamSinkChannel( null, sinkConduit );
+		final ConduitStreamSinkChannel sinkChannel = new ConduitStreamSinkChannel( null, sinkConduit );
 		return sinkChannel;
 	}
 
 	private static ConduitStreamSourceChannel createSourceChannel() {
-		StreamSourceConduit sourceConduit = mock( StreamSourceConduit.class );
-		ConduitStreamSourceChannel sourceChannel = new ConduitStreamSourceChannel( null, sourceConduit );
+		final StreamSourceConduit sourceConduit = mock( StreamSourceConduit.class );
+		final ConduitStreamSourceChannel sourceChannel = new ConduitStreamSourceChannel( null, sourceConduit );
 		return sourceChannel;
 	}
 
-	private static HttpServerExchange createHttpExchange( ServerConnection connection, HeaderMap headerMap ) {
-		HttpServerExchange httpServerExchange = new HttpServerExchange( connection, null, headerMap, 200 );
+	private static HttpServerExchange createHttpExchange( final ServerConnection connection, final HeaderMap headerMap ) {
+		final HttpServerExchange httpServerExchange = new HttpServerExchange( connection, new HeaderMap(), headerMap, 200 );
 		httpServerExchange.setRequestMethod( new HttpString( "GET" ) );
 		httpServerExchange.setProtocol( Protocols.HTTP_1_1 );
 		httpServerExchange.setRelativePath("/test");

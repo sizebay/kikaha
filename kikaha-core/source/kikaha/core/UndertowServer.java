@@ -3,6 +3,7 @@ package kikaha.core;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
+import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 
@@ -20,6 +21,7 @@ import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.DefaultDeploymentContext;
 import kikaha.core.impl.DefaultHttpRequestHandler;
 import kikaha.core.impl.DefaultUndertowServerConfiguration;
+import kikaha.core.rewrite.AutoHTTPSRedirectHandler;
 import kikaha.core.ssl.SSLContextFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -124,26 +126,33 @@ public class UndertowServer {
 	}
 
 	protected File retrieveWebAppFolder() {
-		val location = new File( configuration().resourcesPath() );
+		final File location = new File( configuration().resourcesPath() );
 		if (!location.exists())
 			location.mkdir();
 		return location;
 	}
 
 	protected Undertow createServer() {
-		val builder = Undertow.builder().addHttpListener(
+		final Builder builder = Undertow.builder().addHttpListener(
 				configuration().port(), configuration().host() );
 		appendSSLListenerIfConfigured(builder);
 		configureServerOptions(builder);
-		val defaultHandler = new DefaultHttpRequestHandler( this.deploymentContext() );
+		final HttpHandler defaultHandler = loadDefaultHttpHandler();
 		return builder.setHandler( defaultHandler ).build();
 	}
 
-	private void configureServerOptions( Builder builder ) {
+	HttpHandler loadDefaultHttpHandler() {
+		HttpHandler defaultHandler = new DefaultHttpRequestHandler( this.deploymentContext() );
+		if ( configuration().ssl().autoRedirectFromHttpToHttps() )
+			defaultHandler = new AutoHTTPSRedirectHandler(defaultHandler);
+		return defaultHandler;
+	}
+
+	private void configureServerOptions( final Builder builder ) {
 		try {
 			val serverOptionsConfiguration = provider.load(DefaultUndertowServerConfiguration.class);
 			serverOptionsConfiguration.configure(builder);
-		} catch (ServiceProviderException e) {
+		} catch (final ServiceProviderException e) {
 			log.error("Can't configure the server. Shutting down...", e);
 			System.exit(1);
 		}
