@@ -1,16 +1,24 @@
 package kikaha.urouting.serializers.jackson;
 
 import lombok.val;
+import trip.spi.Producer;
+import trip.spi.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
+@Singleton
 public class Jackson {
 
-	static ObjectMapper createMapper() {
-		val module = new JaxbAnnotationModule();
+	private static final ObjectMapper INSTANCE = createMapper();
+
+	private static ObjectMapper createMapper() {
 		val mapper = new ObjectMapper();
-		mapper.registerModule(module);
+		mapper.findAndRegisterModules();
 		return mapper;
+	}
+	
+	@Producer
+	public ObjectMapper objectMapper(){
+		return INSTANCE;
 	}
 }
