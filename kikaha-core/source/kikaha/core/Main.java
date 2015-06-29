@@ -1,20 +1,28 @@
 package kikaha.core;
 
-import kikaha.core.api.KikahaException;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class Main {
 
 	private final Configuration configuration;
 	private UndertowServer undertowServer;
 
-	public void start() throws KikahaException {
-		undertowServer = new UndertowServer( configuration );
-		undertowServer.start();
+	public void start() {
+		try {
+			undertowServer = new UndertowServer( configuration );
+			undertowServer.start();
+		// UNCHECKED: It should handle any exception thrown here
+		} catch ( Throwable cause ) {
+		// CHECKED
+			log.error("Can't start Kikaha", cause);
+			System.exit(1);
+		}
 	}
 
 	public void stop() {

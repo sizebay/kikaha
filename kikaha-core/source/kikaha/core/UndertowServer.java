@@ -52,7 +52,7 @@ public class UndertowServer {
 		this.provider = newServiceProvider();
 		this.configuration = configuration;
 		provideSomeDependenciesForFurtherInjections();
-		Runtime.getRuntime().addShutdownHook( new UndertowShutdownHook(this) );
+		Runtime.getRuntime().addShutdownHook( new UndertowShutdownHook() );
 	}
 
 	protected void provideSomeDependenciesForFurtherInjections() {
@@ -176,7 +176,7 @@ public class UndertowServer {
 	}
 
 	public void stop() {
-		this.server().stop();
+		this.server.stop();
 		log.info("Server stopped!");
 	}
 
@@ -191,13 +191,11 @@ public class UndertowServer {
 		return mutableList;
 	}
 
-	@RequiredArgsConstructor
-	static class UndertowShutdownHook extends Thread {
-		final UndertowServer server;
+	class UndertowShutdownHook extends Thread {
 
 		@Override
 		public void run() {
-			server.stop();
+			UndertowServer.this.stop();
 		}
 	}
 }
