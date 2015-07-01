@@ -67,6 +67,7 @@
 		<version.junit>4.12</version.junit>
 		<version.lombok>1.14.8</version.lombok>
 		<version.mockito>1.10.19</version.mockito>
+		<version.jmustache>1.10</version.jmustache>
 		<!-- Extra dependencies -->
 		<version.hikaricp>2.3.5</version.hikaricp>
 		<version.pgjdbc-ng>0.5</version.pgjdbc-ng>
@@ -192,6 +193,11 @@
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>${version.slf4j}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.samskivert</groupId>
+				<artifactId>jmustache</artifactId>
+				<version>${version.jmustache}</version>
 			</dependency>
 			<!-- Recommended module dependencies -->
 			<dependency>

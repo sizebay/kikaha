@@ -43,6 +43,11 @@
 			<name>Ricardo Mattiazzi Baumgartner</name>
 		</developer>
 		<developer>
+			<id>selonke</id>
+			<email>cesar.selonke@gmail.com</email>
+			<name>Cesar Selonke</name>
+		</developer>
+		<developer>
 			<id>miere</id>
 			<email>miere.teixeira@gmail.com</email>
 			<name>Miere Liniel Teixeira</name>
@@ -55,6 +60,7 @@
 		<module>kikaha-urouting-jackson</module>
 		<module>kikaha-hazelcast</module>
 		<module>kikaha-maven-plugin</module>
+		<module>kikaha-mustache</module>
 		<module>kikaha-project</module>
 	</modules>
 
@@ -69,6 +75,7 @@
 		<version.junit>4.12</version.junit>
 		<version.lombok>1.14.8</version.lombok>
 		<version.mockito>1.10.19</version.mockito>
+		<version.jmustache>1.10</version.jmustache>
 		<!-- Plugin's Versions -->
 		<version.compiler.plugin>3.3</version.compiler.plugin>
 		<version.resources.plugin>2.6</version.resources.plugin>
@@ -192,6 +199,11 @@
 				<artifactId>slf4j-log4j12</artifactId>
 				<version>${version.slf4j}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.samskivert</groupId>
+				<artifactId>jmustache</artifactId>
+				<version>${version.jmustache}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
