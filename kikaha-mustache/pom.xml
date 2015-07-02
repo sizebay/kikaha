@@ -18,6 +18,10 @@
 			<artifactId>kikaha-core</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>kikaha-hazelcast</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.samskivert</groupId>
 			<artifactId>jmustache</artifactId>
 		</dependency>

@@ -61,7 +61,7 @@ public class UndertowServer {
 	}
 
 	/**
-	 * Start the Undertow Standalone Server.
+	 * Start the server.
 	 *
 	 * @throws KikahaException
 	 */
