@@ -42,7 +42,7 @@ public class MustacheSerializerTest {
 	@Test
 	@SneakyThrows
 	public void ensureThatCompileATemplateWithoutRetrieveFromCache() {
-		doReturn( false ).when( config ).getBoolean( eq( "mustache.cache-templates" ) );
+		doReturn( false ).when( config ).getBoolean( eq( "server.mustache.cache-templates" ) );
 		val response = readSimulatedResponse();
 		val output = new StringWriter();
 		serializer.serialize( response.entity(), output );
@@ -53,7 +53,7 @@ public class MustacheSerializerTest {
 	@Test
 	@SneakyThrows
 	public void ensureThatCompileATemplateRetrievingFromCache() {
-		doReturn( true ).when( config ).getBoolean( eq( "mustache.cache-templates" ) );
+		doReturn( true ).when( config ).getBoolean( eq( "server.mustache.cache-templates" ) );
 		val response = readSimulatedResponse();
 		val output = new StringWriter();
 		serializer.serialize( response.entity(), output );

@@ -30,7 +30,7 @@ public class MustacheSerializer {
 	final Map<String, Template> cachedTemplates = new HashMap<>();
 
 	@Getter( lazy = true )
-	private final boolean shouldCacheTemplates = configuration.config().getBoolean( "mustache.cache-templates" );
+	private final boolean shouldCacheTemplates = configuration.config().getBoolean( "server.mustache.cache-templates" );
 
 	@Getter( lazy = true )
 	private final Function<String, Template> templateCreator = createTemplateCreator();

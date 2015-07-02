@@ -8,4 +8,6 @@ faces-config.xml
 .DS_Store
 .cache
 .factorypath
+.idea
+*.iml
 pom.xml.*
