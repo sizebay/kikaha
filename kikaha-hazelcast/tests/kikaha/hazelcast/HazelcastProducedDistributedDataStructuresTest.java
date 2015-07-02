@@ -20,6 +20,7 @@ import com.hazelcast.core.IQueue;
 import com.hazelcast.core.ISet;
 import com.hazelcast.core.ITopic;
 import com.hazelcast.core.MultiMap;
+import com.hazelcast.core.ReplicatedMap;
 
 public class HazelcastProducedDistributedDataStructuresTest extends HazelcastTestCase {
 
@@ -55,6 +56,10 @@ public class HazelcastProducedDistributedDataStructuresTest extends HazelcastTes
 	@Source( "executor-service" )
 	IExecutorService executorService;
 	
+	@Provided
+	@Source( "replicated-map" )
+	ReplicatedMap<Long,AtomicBoolean> replicatedMap;
+	
 	IMapListener listener = new IMapListener();
 
 	@Test
@@ -68,7 +73,7 @@ public class HazelcastProducedDistributedDataStructuresTest extends HazelcastTes
 		assertTrue( ITopic.class.isInstance( topic ) );
 		assertTrue( ILock.class.isInstance( lock ) );
 		assertTrue( IExecutorService.class.isInstance( executorService ) );
-		
+		assertTrue( ReplicatedMap.class.isInstance( replicatedMap ) );
 	}
 
 	@Override

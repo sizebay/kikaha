@@ -17,8 +17,10 @@ import com.hazelcast.core.IQueue;
 import com.hazelcast.core.ISet;
 import com.hazelcast.core.ITopic;
 import com.hazelcast.core.MultiMap;
+import com.hazelcast.core.ReplicatedMap;
 
 @Singleton
+@SuppressWarnings( "rawtypes" )
 public class HazelcastDistributedDataStructuresProducer {
 
 	@Provided
@@ -28,7 +30,6 @@ public class HazelcastDistributedDataStructuresProducer {
 	HazelcastProducedDataListenerFactory listenerFactory;
 
 	@Producer
-	@SuppressWarnings( "rawtypes" )
 	public IMap produceIMaps( final ProviderContext context ) {
 		final String name = retrieveSourceNameFrom( context );
 		final IMap map = hazelcast.getMap( name );
@@ -37,7 +38,6 @@ public class HazelcastDistributedDataStructuresProducer {
 	}
 
 	@Producer
-	@SuppressWarnings( "rawtypes" )
 	public IQueue produceIQueues( final ProviderContext context ) {
 		final String name = retrieveSourceNameFrom( context );
 		final IQueue queue = hazelcast.getQueue( name );
@@ -46,7 +46,6 @@ public class HazelcastDistributedDataStructuresProducer {
 	}
 
 	@Producer
-	@SuppressWarnings( "rawtypes" )
 	public MultiMap produceMultimap( final ProviderContext context ) {
 		final String name = retrieveSourceNameFrom( context );
 		final MultiMap mmap = hazelcast.getMultiMap( name );
@@ -55,7 +54,6 @@ public class HazelcastDistributedDataStructuresProducer {
 	}
 
 	@Producer
-	@SuppressWarnings( "rawtypes" )
 	public ISet produceSet( final ProviderContext context ) {
 		final String name = retrieveSourceNameFrom( context );
 		final ISet set = hazelcast.getSet( name );
@@ -64,7 +62,6 @@ public class HazelcastDistributedDataStructuresProducer {
 	}
 
 	@Producer
-	@SuppressWarnings( "rawtypes" )
 	public IList produceList( final ProviderContext context ) {
 		final String name = retrieveSourceNameFrom( context );
 		final IList list = hazelcast.getList( name );
@@ -73,7 +70,6 @@ public class HazelcastDistributedDataStructuresProducer {
 	}
 
 	@Producer
-	@SuppressWarnings( "rawtypes" )
 	public ITopic produceTopic( final ProviderContext context ) {
 		final String name = retrieveSourceNameFrom( context );
 		final ITopic topic = hazelcast.getTopic( name );
@@ -95,6 +91,14 @@ public class HazelcastDistributedDataStructuresProducer {
 		final IExecutorService executorService = hazelcast.getExecutorService(name);
 		notifyDataWasProduced(executorService, IExecutorService.class);
 		return executorService;
+	}
+	
+	@Producer
+	public ReplicatedMap produceReplicatedMap( final ProviderContext context ) {
+		final String name = retrieveSourceNameFrom( context );
+		final ReplicatedMap data = hazelcast.getReplicatedMap(name);
+		notifyDataWasProduced(data, ReplicatedMap.class);
+		return data;
 	}
 
 	String retrieveSourceNameFrom( final ProviderContext context ) {
