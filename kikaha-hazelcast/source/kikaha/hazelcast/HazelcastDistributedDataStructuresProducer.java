@@ -16,6 +16,7 @@ import com.hazelcast.core.IMap;
 import com.hazelcast.core.IQueue;
 import com.hazelcast.core.ISet;
 import com.hazelcast.core.ITopic;
+import com.hazelcast.core.IdGenerator;
 import com.hazelcast.core.MultiMap;
 import com.hazelcast.core.ReplicatedMap;
 
@@ -98,6 +99,14 @@ public class HazelcastDistributedDataStructuresProducer {
 		final String name = retrieveSourceNameFrom( context );
 		final ReplicatedMap data = hazelcast.getReplicatedMap(name);
 		notifyDataWasProduced(data, ReplicatedMap.class);
+		return data;
+	}
+	
+	@Producer
+	public IdGenerator produceIdGenerator( final ProviderContext context ) {
+		final String name = retrieveSourceNameFrom( context );
+		final IdGenerator data = hazelcast.getIdGenerator(name);
+		notifyDataWasProduced(data, IdGenerator.class);
 		return data;
 	}
 

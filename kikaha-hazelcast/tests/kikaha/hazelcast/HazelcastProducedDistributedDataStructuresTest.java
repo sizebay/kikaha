@@ -19,6 +19,7 @@ import com.hazelcast.core.IMap;
 import com.hazelcast.core.IQueue;
 import com.hazelcast.core.ISet;
 import com.hazelcast.core.ITopic;
+import com.hazelcast.core.IdGenerator;
 import com.hazelcast.core.MultiMap;
 import com.hazelcast.core.ReplicatedMap;
 
@@ -57,6 +58,10 @@ public class HazelcastProducedDistributedDataStructuresTest extends HazelcastTes
 	IExecutorService executorService;
 	
 	@Provided
+	@Source( "id-generator" )
+	IdGenerator idGenerator;
+	
+	@Provided
 	@Source( "replicated-map" )
 	ReplicatedMap<Long,AtomicBoolean> replicatedMap;
 	
@@ -74,6 +79,7 @@ public class HazelcastProducedDistributedDataStructuresTest extends HazelcastTes
 		assertTrue( ILock.class.isInstance( lock ) );
 		assertTrue( IExecutorService.class.isInstance( executorService ) );
 		assertTrue( ReplicatedMap.class.isInstance( replicatedMap ) );
+		assertTrue( IdGenerator.class.isInstance( idGenerator ) );
 	}
 
 	@Override
