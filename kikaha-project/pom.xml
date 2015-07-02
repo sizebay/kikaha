@@ -145,6 +145,12 @@
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
 				<version>1.5.0-SNAPSHOT</version>
+				<artifactId>kikaha-urouting-mustache</artifactId>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.skullabs.kikaha</groupId>
+				<version>1.5.0-SNAPSHOT</version>
 				<artifactId>kikaha-hazelcast</artifactId>
 				<scope>compile</scope>
 			</dependency>

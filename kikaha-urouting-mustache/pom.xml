@@ -8,8 +8,8 @@
 		<artifactId>kikaha-parent</artifactId>
 	</parent>
 
-	<artifactId>kikaha-mustache</artifactId>
-	<name>Kikaha: Java Mustache Support</name>
+	<artifactId>kikaha-urouting-mustache</artifactId>
+	<name>Kikaha: micro routing: Java Mustache Support</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
