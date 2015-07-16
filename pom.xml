@@ -59,6 +59,7 @@
 		<module>kikaha-urouting</module>
 		<module>kikaha-urouting-jackson</module>
 		<module>kikaha-urouting-mustache</module>
+		<module>kikaha-urouting-jaxb</module>
 		<module>kikaha-hazelcast</module>
 		<module>kikaha-maven-plugin</module>
 		<module>kikaha-project</module>

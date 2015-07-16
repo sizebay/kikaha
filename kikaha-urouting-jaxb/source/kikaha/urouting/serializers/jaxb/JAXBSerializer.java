@@ -1,4 +1,4 @@
-package kikaha.urouting.serializers;
+package kikaha.urouting.serializers.jaxb;
 
 import java.io.OutputStream;
 
@@ -19,7 +19,7 @@ import trip.spi.Singleton;
 @SuppressWarnings( "unchecked" )
 @ContentType(Mimes.XML)
 @Singleton( exposedAs = Serializer.class )
-public class XMLSerializer extends AbstractSerializer {
+public class JAXBSerializer extends AbstractSerializer {
 
 	@Override
 	public <T> void serialize( final T object, final OutputStream output ) throws RoutingException {

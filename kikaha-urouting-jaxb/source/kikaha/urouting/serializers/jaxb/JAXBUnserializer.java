@@ -1,4 +1,4 @@
-package kikaha.urouting.serializers;
+package kikaha.urouting.serializers.jaxb;
 
 import java.io.Reader;
 
@@ -15,7 +15,7 @@ import trip.spi.Singleton;
 @SuppressWarnings("unchecked")
 @ContentType(Mimes.XML)
 @Singleton( exposedAs = Unserializer.class )
-public class XMLUnserializer implements Unserializer {
+public class JAXBUnserializer implements Unserializer {
 
 	@Override
 	public <T> T unserialize( Reader input, Class<T> clazz ) throws RoutingException {
