@@ -21,7 +21,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import trip.spi.ServiceProvider;
+import trip.spi.DefaultServiceProvider;
 import trip.spi.ServiceProviderException;
 
 public class SSLUndertowServer {
@@ -33,7 +33,7 @@ public class SSLUndertowServer {
 	@Before
 	public void startServer() throws IOException, ServiceProviderException {
 		val config = DefaultConfiguration.loadDefaultConfiguration();
-		val provider = new ServiceProvider();
+		val provider = new DefaultServiceProvider();
 		provider.providerFor( Configuration.class, config );
 		val sslContextFactory = provider.load( SSLContextFactory.class );
 		val context = sslContextFactory.createSSLContext( "tests/server.keystore", "tests/server.truststore", "password" );
@@ -58,9 +58,9 @@ public class SSLUndertowServer {
 	@SneakyThrows
 	public void ensureThatCouldRequestAsHttps() {
 		SSLFixSSLHandshakeException.applyFixPatch();
-		HttpURLConnection httpConnection = (HttpURLConnection)new URL( "https://localhost:9990/" ).openConnection();
+		final HttpURLConnection httpConnection = (HttpURLConnection)new URL( "https://localhost:9990/" ).openConnection();
 		assertThat( httpConnection.getResponseMessage(), is( "OK" ) );
-		String headerValue = httpConnection.getHeaderFields().get( SCHEME ).get( 0 );
+		final String headerValue = httpConnection.getHeaderFields().get( SCHEME ).get( 0 );
 		assertThat( headerValue, is( "https" ) );
 	}
 

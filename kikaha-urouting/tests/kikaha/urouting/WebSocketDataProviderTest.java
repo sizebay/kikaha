@@ -18,8 +18,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.Provided;
-import trip.spi.ServiceProvider;
 
 @RunWith( MockitoJUnitRunner.class )
 public class WebSocketDataProviderTest {
@@ -55,6 +55,6 @@ public class WebSocketDataProviderTest {
 	@Before
 	@SneakyThrows
 	public void provideDependencies() {
-		new ServiceProvider().provideOn( this );
+		new DefaultServiceProvider().provideOn( this );
 	}
 }

@@ -20,8 +20,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xnio.OptionMap;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.Provided;
-import trip.spi.ServiceProvider;
 
 import com.typesafe.config.Config;
 
@@ -29,24 +29,24 @@ public class DefaultUndertowServerConfigurationTest {
 
 	@Provided
 	DefaultUndertowServerConfiguration undertowServerConf;
-	
+
 	@Test
 	public void ensureThatHasSetTheDefaultValues(){
-		Builder builder = Undertow.builder()
+		final Builder builder = Undertow.builder()
 				.setServerOption(ENABLE_CONNECTOR_STATISTICS, true)
 				.setServerOption(RECORD_REQUEST_START_TIME, true);
 		undertowServerConf.configure(builder);
-		Exposed undertow = new Exposed( builder.build() );
+		final Exposed undertow = new Exposed( builder.build() );
 		ensureUndertowHasDefaultIntValues( undertow );
 		ensureUndertowHasDefaultServerOptions(undertow);
 	}
 
 	private void ensureUndertowHasDefaultIntValues(Exposed undertow) {
-		int bufferSize = undertow.getFieldValue("bufferSize", Integer.TYPE);
+		final int bufferSize = undertow.getFieldValue("bufferSize", Integer.TYPE);
 		assertEquals(16384, bufferSize);
-		int ioThreads = undertow.getFieldValue("ioThreads", Integer.TYPE);
+		final int ioThreads = undertow.getFieldValue("ioThreads", Integer.TYPE);
 		assertEquals(2, ioThreads);
-		int workerThreads = undertow.getFieldValue("workerThreads", Integer.TYPE);
+		final int workerThreads = undertow.getFieldValue("workerThreads", Integer.TYPE);
 		assertEquals(200, workerThreads);
 	}
 
@@ -61,13 +61,13 @@ public class DefaultUndertowServerConfigurationTest {
 	@Before
 	@SneakyThrows
 	public void setup() {
-		val serviceProvider = new ServiceProvider();
+		val serviceProvider = new DefaultServiceProvider();
 		val configuration = DefaultConfiguration.loadDefaultConfiguration();
 		serviceProvider.providerFor( Configuration.class, configuration );
 		serviceProvider.providerFor( Config.class, configuration.config() );
 		serviceProvider.provideOn( this );
 	}
-	
+
 	@RequiredArgsConstructor
 	class Exposed {
 

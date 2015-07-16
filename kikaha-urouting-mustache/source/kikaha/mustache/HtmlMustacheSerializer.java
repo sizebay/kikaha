@@ -6,12 +6,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import kikaha.urouting.UncloseableWriterWrapper;
+import kikaha.urouting.api.ContentType;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Serializer;
 import trip.spi.Provided;
 import trip.spi.Singleton;
 
-@Singleton( name = Mimes.HTML, exposedAs = Serializer.class )
+@ContentType( Mimes.HTML )
+@Singleton( exposedAs = Serializer.class )
 public class HtmlMustacheSerializer implements Serializer {
 
 	@Provided

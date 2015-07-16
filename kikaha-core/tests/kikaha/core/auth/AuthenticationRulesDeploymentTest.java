@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import trip.spi.ServiceProvider;
+import trip.spi.DefaultServiceProvider;
 import trip.spi.ServiceProviderException;
 
 public class AuthenticationRulesDeploymentTest {
@@ -37,7 +37,7 @@ public class AuthenticationRulesDeploymentTest {
 	@Before
 	public void initializeDeployment() throws ServiceProviderException {
 		val deployment = new AuthenticationRulesDeployment();
-		val provider = new ServiceProvider();
+		val provider = new DefaultServiceProvider();
 		provider.providerFor( Configuration.class, DefaultConfiguration.loadDefaultConfiguration() );
 		provider.provideOn( deployment );
 		this.deployment = spy( deployment );

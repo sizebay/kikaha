@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import trip.spi.ServiceProvider;
+import trip.spi.DefaultServiceProvider;
 
 public class AuthenticationHookTest {
 
@@ -29,7 +29,7 @@ public class AuthenticationHookTest {
 
 	@Mock
 	SecurityContext securityContext;
-	
+
 	@Mock
 	HttpHandler rootHandler;
 
@@ -39,7 +39,7 @@ public class AuthenticationHookTest {
 	public void initializeMocks() {
 		MockitoAnnotations.initMocks( this );
 		val config = DefaultConfiguration.loadDefaultConfiguration();
-		val provider = new ServiceProvider();
+		val provider = new DefaultServiceProvider();
 		val authenticationRuleMatcher = new AuthenticationRuleMatcher( provider, config.authentication() );
 		authenticationHook = spy( new AuthenticationHttpHandler( authenticationRuleMatcher, config, rootHandler ) );
 	}

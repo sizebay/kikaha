@@ -11,11 +11,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import tests.AssertThat;
+import trip.spi.DefaultServiceProvider;
 import trip.spi.ServiceProvider;
 
 public class AuthenticationRuleMatcherTest {
 
-	ServiceProvider provider = new ServiceProvider();
+	ServiceProvider provider = new DefaultServiceProvider();
 	AuthenticationRuleMatcher matcher;
 
 	@Before
@@ -44,16 +45,16 @@ public class AuthenticationRuleMatcherTest {
 		val rule = matcher.retrieveAuthenticationRuleForUrl( "users/" );
 		assertNull( rule );
 	}
-	
+
 	@Test( expected=IllegalArgumentException.class )
 	public void ensureThatThrowsExceptionWhenCantFindSecurityContextFactory(){
-		String path = "server.auth-invalid-security-context-factory";
+		final String path = "server.auth-invalid-security-context-factory";
 		loadInvalidAuthConfigPath(path);
 	}
-	
+
 	@Test( expected=IllegalArgumentException.class )
 	public void ensureThatThrowsExceptionWhenCantFindIdentityManager(){
-		String path = "server.auth-invalid-identity-manager";
+		final String path = "server.auth-invalid-identity-manager";
 		loadInvalidAuthConfigPath(path);
 	}
 

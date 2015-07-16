@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * or an {@link Unserializer} will handle.
  */
 @Documented
-@Target( ElementType.METHOD )
+@Target( ElementType.TYPE )
 @Retention( RetentionPolicy.RUNTIME )
 public @interface ContentType {
 	String value();

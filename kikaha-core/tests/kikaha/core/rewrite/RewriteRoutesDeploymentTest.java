@@ -17,8 +17,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.Provided;
-import trip.spi.ServiceProvider;
 
 @RunWith( MockitoJUnitRunner.class )
 public class RewriteRoutesDeploymentTest {
@@ -40,7 +40,7 @@ public class RewriteRoutesDeploymentTest {
 	@SneakyThrows
 	public void provideDependencies()
 	{
-		val provider = new ServiceProvider();
+		val provider = new DefaultServiceProvider();
 		provider.providerFor( Configuration.class, DefaultConfiguration.loadDefaultConfiguration() );
 		provider.provideOn( this );
 	}

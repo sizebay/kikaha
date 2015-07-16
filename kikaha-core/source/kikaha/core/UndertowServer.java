@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import trip.spi.DefaultServiceProvider;
 import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
 
@@ -181,7 +182,7 @@ public class UndertowServer {
 	}
 
 	private ServiceProvider newServiceProvider() {
-		return new ServiceProvider();
+		return new DefaultServiceProvider();
 	}
 
 	static <T> List<T> mutableList(final Iterable<T> immutable) {

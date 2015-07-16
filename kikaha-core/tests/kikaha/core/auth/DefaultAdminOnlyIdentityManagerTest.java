@@ -14,12 +14,13 @@ import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
 
 public class DefaultAdminOnlyIdentityManagerTest {
 
-	final ServiceProvider provider = new ServiceProvider();
+	final ServiceProvider provider = new DefaultServiceProvider();
 	IdentityManager identityManager;
 
 	@Before

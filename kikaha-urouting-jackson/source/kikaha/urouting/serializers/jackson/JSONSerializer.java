@@ -5,15 +5,17 @@ import io.undertow.server.HttpServerExchange;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import kikaha.urouting.api.ContentType;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Serializer;
 import lombok.val;
 import trip.spi.Provided;
 import trip.spi.Singleton;
 
-@Singleton( name = Mimes.JSON, exposedAs = Serializer.class )
+@ContentType(Mimes.JSON)
+@Singleton( exposedAs = Serializer.class )
 public class JSONSerializer implements Serializer {
-	
+
 	@Provided
 	Jackson jackson;
 

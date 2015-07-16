@@ -11,8 +11,6 @@ import static org.mockito.Mockito.verify;
 import java.io.StringWriter;
 
 import kikaha.core.api.conf.Configuration;
-import kikaha.mustache.MustacheResponse;
-import kikaha.mustache.MustacheSerializer;
 import lombok.SneakyThrows;
 import lombok.val;
 
@@ -22,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
 
@@ -76,7 +75,7 @@ public class MustacheSerializerTest {
 		doReturn( "tests" ).when( configuration ).resourcesPath();
 		doReturn( config ).when( configuration ).config();
 
-		final ServiceProvider serviceProvider = new ServiceProvider();
+		final ServiceProvider serviceProvider = new DefaultServiceProvider();
 		serviceProvider.providerFor( Configuration.class, configuration );
 		serviceProvider.provideOn( this );
 		serializer = spy( serializer );

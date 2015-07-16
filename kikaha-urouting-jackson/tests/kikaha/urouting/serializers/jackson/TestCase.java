@@ -7,12 +7,13 @@ import lombok.SneakyThrows;
 
 import org.junit.Before;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
 
 public class TestCase {
 
-	final ServiceProvider provider = new ServiceProvider();
+	final ServiceProvider provider = new DefaultServiceProvider();
 
 	@Before
 	public void setup() throws ServiceProviderException {
@@ -21,8 +22,8 @@ public class TestCase {
 
 	@SneakyThrows
 	protected String readFile( String fileName ) {
-		String fullFileName = String.format( "tests/META-INF/%s", fileName );
-		byte[] bytes = Files.readAllBytes( Paths.get( fullFileName ) );
+		final String fullFileName = String.format( "tests/META-INF/%s", fileName );
+		final byte[] bytes = Files.readAllBytes( Paths.get( fullFileName ) );
 		return new String( bytes );
 	}
 

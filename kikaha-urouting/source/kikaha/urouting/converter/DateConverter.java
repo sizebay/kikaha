@@ -8,7 +8,7 @@ import kikaha.urouting.api.AbstractConverter;
 import kikaha.urouting.api.ConversionException;
 import trip.spi.Singleton;
 
-@Singleton( exposedAs = AbstractConverter.class, name = "date-converter" )
+@Singleton( exposedAs = AbstractConverter.class )
 public class DateConverter extends AbstractConverter<Date> {
 
 	@Override
@@ -27,18 +27,18 @@ public class DateConverter extends AbstractConverter<Date> {
 
 	private Date tryToConvertFromLong( String value ) {
 		try {
-			long parsedLong = Long.parseLong( value );
+			final long parsedLong = Long.parseLong( value );
 			return new Date( parsedLong );
-		} catch ( NumberFormatException e ) {
+		} catch ( final NumberFormatException e ) {
 			return null;
 		}
 	}
 
 	private Date tryToConvertFromInternationDateFormat( String value ) {
 		try {
-			SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+			final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
 			return dateFormat.parse( value );
-		} catch ( ParseException e ) {
+		} catch ( final ParseException e ) {
 			return null;
 		}
 	}

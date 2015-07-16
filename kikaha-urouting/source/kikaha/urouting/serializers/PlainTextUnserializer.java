@@ -3,11 +3,13 @@ package kikaha.urouting.serializers;
 import java.io.IOException;
 import java.io.Reader;
 
-import trip.spi.Singleton;
+import kikaha.urouting.api.ContentType;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Unserializer;
+import trip.spi.Singleton;
 
-@Singleton( name = Mimes.PLAIN_TEXT, exposedAs = Unserializer.class )
+@ContentType(Mimes.PLAIN_TEXT)
+@Singleton( exposedAs = Unserializer.class )
 public class PlainTextUnserializer implements Unserializer {
 
 	@SuppressWarnings("unchecked")

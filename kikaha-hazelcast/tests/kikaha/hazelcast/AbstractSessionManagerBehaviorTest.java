@@ -17,6 +17,7 @@ import lombok.SneakyThrows;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
 
@@ -24,7 +25,7 @@ import com.hazelcast.core.IMap;
 
 public abstract class AbstractSessionManagerBehaviorTest extends HazelcastTestCase {
 
-	final ServiceProvider provider = new ServiceProvider();
+	final ServiceProvider provider = new DefaultServiceProvider();
 	final Account fixedAccount = new FixedUsernameAndRolesAccount( "username", "default" );
 	final SessionAccount sessionAccount = SessionAccount.from( fixedAccount );
 	final Cookie sessionIdCookie = new CookieImpl( SessionCacheManager.SESSION_ID, SessionID.generateSessionId() );

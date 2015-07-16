@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
 
@@ -68,7 +69,7 @@ public class DefaultFormAuthenticationMechanismTest {
 	@Before
 	public void provideDependencies() throws ServiceProviderException {
 		MockitoAnnotations.initMocks( this );
-		provider = new ServiceProvider();
+		provider = new DefaultServiceProvider();
 		provider.providerFor( Configuration.class, DefaultConfiguration.loadDefaultConfiguration() );
 		wrapper = createFormMechanismWrapper();
 		doReturn( "/auth/*" ).when( config ).pattern();

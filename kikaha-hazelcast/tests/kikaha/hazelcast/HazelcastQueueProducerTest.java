@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 
 import org.junit.Test;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
 
@@ -20,7 +21,7 @@ public class HazelcastQueueProducerTest extends HazelcastTestCase {
 
 	static final Integer MAX_PRODUCED_JOBS = 100;
 
-	final ServiceProvider provider = new ServiceProvider();
+	final ServiceProvider provider = new DefaultServiceProvider();
 	final QueueOfBooleansConsumer consumer = new QueueOfBooleansConsumer();
 
 	@Provided
@@ -41,6 +42,7 @@ public class HazelcastQueueProducerTest extends HazelcastTestCase {
 			assertThat( consumedJobs.take().get(), is( true ) );
 	}
 
+	@Override
 	@SneakyThrows
 	public void provideExtraDependencies( ServiceProvider provider ) {
 		provider.provideOn( consumer );
@@ -61,11 +63,11 @@ public class HazelcastQueueProducerTest extends HazelcastTestCase {
 		public void run() {
 			for ( int i = 0; i < MAX_PRODUCED_JOBS; i++ )
 				try {
-					AtomicBoolean atomicBoolean = producedJobs.take();
+					final AtomicBoolean atomicBoolean = producedJobs.take();
 					atomicBoolean.set( true );
 					consumedJobs.put( atomicBoolean );
 					counter.countDown();
-				} catch ( InterruptedException e ) {
+				} catch ( final InterruptedException e ) {
 					e.printStackTrace();
 				}
 		}

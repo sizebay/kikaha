@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import trip.spi.ServiceProvider;
+import trip.spi.DefaultServiceProvider;
 
 public class PrePopulatedSecurityContextFactoryTest {
 
@@ -71,7 +71,7 @@ public class PrePopulatedSecurityContextFactoryTest {
 	AuthenticationRuleMatcher mockAuthRuleMatcher() {
 		val defaultConfig = DefaultConfiguration.loadDefaultConfig().getConfig( "server.auth" );
 		val authConfig = new DefaultAuthenticationConfiguration( defaultConfig );
-		val provider = new ServiceProvider();
+		val provider = new DefaultServiceProvider();
 		val authRuleMatcher = spy( new AuthenticationRuleMatcher( provider, authConfig ) );
 		return authRuleMatcher;
 	}

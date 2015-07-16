@@ -4,11 +4,11 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
-import trip.spi.Singleton;
 import kikaha.urouting.api.AbstractConverter;
 import kikaha.urouting.api.ConversionException;
+import trip.spi.Singleton;
 
-@Singleton( exposedAs=AbstractConverter.class, name="zoned-date-time-converter" )
+@Singleton( exposedAs=AbstractConverter.class )
 public class ZonedDateTimeConverter extends AbstractConverter<ZonedDateTime> {
 
 	final DateConverter converter = new DateConverter();

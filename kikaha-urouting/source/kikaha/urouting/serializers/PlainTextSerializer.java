@@ -8,12 +8,14 @@ import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 
 import kikaha.urouting.api.AbstractSerializer;
+import kikaha.urouting.api.ContentType;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Serializer;
 import trip.spi.Singleton;
 
-@Singleton( name = Mimes.PLAIN_TEXT, exposedAs = Serializer.class )
+@ContentType(Mimes.PLAIN_TEXT)
+@Singleton( exposedAs = Serializer.class )
 public class PlainTextSerializer extends AbstractSerializer {
 
 	@Override

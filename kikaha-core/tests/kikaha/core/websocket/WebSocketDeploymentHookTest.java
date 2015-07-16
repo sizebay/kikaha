@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
 
@@ -34,7 +35,7 @@ public class WebSocketDeploymentHookTest {
 	@Before
 	@SneakyThrows
 	public void setup() {
-		final ServiceProvider serviceProvider = new ServiceProvider();
+		final ServiceProvider serviceProvider = new DefaultServiceProvider();
 		serviceProvider.providerFor( WebSocketHandler.class, new MyFirstWebSocket() );
 		serviceProvider.provideOn( this );
 	}

@@ -46,9 +46,6 @@ public class SerializerAndUnserializerProviderLoader
 
 	String extractContentTypeFrom( final Object target ){
 		final Class<?> clazz = target.getClass();
-		final Singleton annotation = clazz.getAnnotation(Singleton.class);
-		if ( annotation!=null )
-			return annotation.name();
 		final ContentType contentType = clazz.getAnnotation(ContentType.class);
 		if ( contentType!=null )
 			return contentType.value();

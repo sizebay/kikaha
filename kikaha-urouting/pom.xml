@@ -35,7 +35,7 @@
 						<configuration>
 							<annotationProcessors>
 								<annotationProcessor>lombok.core.AnnotationProcessor</annotationProcessor>
-								<annotationProcessor>trip.spi.inject.ProvidedClassesProcessor</annotationProcessor>
+								<annotationProcessor>trip.spi.processor.SPIProcessor</annotationProcessor>
 							</annotationProcessors>
 						</configuration>
 					</execution>

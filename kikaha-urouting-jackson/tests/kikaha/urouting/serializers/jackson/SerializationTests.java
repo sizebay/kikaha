@@ -4,7 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 import io.undertow.server.HttpServerExchange;
@@ -17,6 +18,7 @@ import java.io.StringReader;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
+import kikaha.urouting.api.ContentType;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Serializer;
 import kikaha.urouting.api.Unserializer;
@@ -41,20 +43,23 @@ import org.xnio.conduits.ConduitStreamSinkChannel;
 import org.xnio.conduits.ConduitStreamSourceChannel;
 import org.xnio.conduits.StreamSinkConduit;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.ServiceProvider;
+import trip.spi.helpers.filter.Condition;
 
 @RunWith( MockitoJUnitRunner.class )
 public class SerializationTests extends TestCase {
 
-	final ServiceProvider provider = new ServiceProvider();
+	final ServiceProvider provider = new DefaultServiceProvider();
 	final User user = new User( "gerolasdiwn",
 			new Address( "Madison Avenue", 10 ) );
-	
+
 	ServerConnection connection;
-	
+
 	@Mock
 	StreamSinkConduit conduit;
-	
+
+	@Override
 	@Before
 	public void setup(){
 		connection = spy( new StubServerConnection() );
@@ -63,16 +68,16 @@ public class SerializationTests extends TestCase {
 	@Test
 	@SneakyThrows
 	public void grantThatSerializeItAsJSON() {
-		final JSONSerializer serializer = spy((JSONSerializer)provider.load( Serializer.class, Mimes.JSON ));
+		final JSONSerializer serializer = spy((JSONSerializer)provider.load( Serializer.class, new JSONContentTypeCondition<>() ));
 		final HttpServerExchange exchange = new HttpServerExchange(connection);
 		doAnswer( this::ensureThatWasCorrectlySerialized ).when(serializer).send( eq(exchange), any( ByteBuffer.class ));
 		serializer.serialize( user, exchange );
 	}
-	
+
 	Void ensureThatWasCorrectlySerialized(InvocationOnMock invocation) throws Throwable {
 		final ByteBuffer buffer = invocation.getArgumentAt(1, ByteBuffer.class);
 		final String expected = readFile( "serialization.expected-json.json" );
-		byte[] bytes = new byte[buffer.capacity()];
+		final byte[] bytes = new byte[buffer.capacity()];
 		buffer.get(bytes);
 		assertEquals( expected, new String( bytes ) );
 		return null;
@@ -82,7 +87,7 @@ public class SerializationTests extends TestCase {
 	@SneakyThrows
 	public void grantThatUnserializeJSONIntoObjectAsExpected() {
 		final String json = readFile( "serialization.expected-json.json" );
-		final Unserializer unserializer = provider.load( Unserializer.class, Mimes.JSON );
+		final Unserializer unserializer = provider.load( Unserializer.class, new JSONContentTypeCondition<>() );
 		final User user = unserializer.unserialize( new StringReader( json ), User.class );
 		assertIsValidUser( user );
 	}
@@ -97,8 +102,17 @@ public class SerializationTests extends TestCase {
 		assertThat( address.number, is( 10 ) );
 	}
 
+	class JSONContentTypeCondition<T> implements Condition<T> {
+
+		@Override
+		public boolean check(T arg0) {
+			final ContentType contentType = arg0.getClass().getAnnotation( ContentType.class );
+			return contentType != null && Mimes.JSON.equals( contentType.value() );
+		}
+	}
+
 	class StubServerConnection extends ServerConnection {
-		
+
 		@Override
 		protected ConduitStreamSinkChannel getSinkChannel() {
 			return new ConduitStreamSinkChannel( null, conduit);
