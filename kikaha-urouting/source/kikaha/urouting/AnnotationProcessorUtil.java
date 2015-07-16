@@ -1,6 +1,8 @@
 package kikaha.urouting;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
@@ -24,12 +26,19 @@ public class AnnotationProcessorUtil {
 	final static String METHOD_PARAM_EOL = "\n\t\t\t";
 
 	@SuppressWarnings( "unchecked" )
-	public static Iterable<Element> retrieveMethodsAnnotatedWith( final RoundEnvironment roundEnv,
+	public static List<Element> retrieveMethodsAnnotatedWith( final RoundEnvironment roundEnv,
 			final Class<? extends Annotation> annotation )
 	{
-		return (Iterable<Element>)Filter.filter(
+		return asList((Iterable<Element>)Filter.filter(
 				roundEnv.getElementsAnnotatedWith( annotation ),
-				new MethodsOnlyCondition() );
+				new MethodsOnlyCondition() ));
+	}
+
+	private static <T> List<T> asList( Iterable<T> items ){
+		final List<T> list = new ArrayList<>();
+		for ( final T item : items )
+			list.add(item);
+		return list;
 	}
 
 	public static ExecutableElement retrieveFirstMethodAnnotatedWith( final TypeElement typeElement,

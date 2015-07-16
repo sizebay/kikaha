@@ -25,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebSocketData {
 
+	final TypeElement clazz;
+
 	final String packageName;
 	final String canonicalName;
 	final String httpPath;
@@ -42,8 +44,13 @@ public class WebSocketData {
 		return hashCode() & 0xffffffffl;
 	}
 
+	@Override
+	public String toString() {
+		return getHttpPath() + ":" + clazz.asType().toString();
+	}
+
 	public static WebSocketData from( final TypeElement clazz ) {
-		return new WebSocketData(
+		return new WebSocketData( clazz,
 			extractPackageName( clazz ),
 			extractCanonicalName( clazz ),
 			extractEndpointPathFrom( clazz ),

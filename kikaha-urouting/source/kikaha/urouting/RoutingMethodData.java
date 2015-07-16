@@ -55,6 +55,11 @@ public class RoutingMethodData {
 		return hashCode() & 0xffffffffl;
 	}
 
+	@Override
+	public String toString() {
+		return getHttpMethod() + ":" + getHttpPath() + " -> " + getType() + "." + getMethodName();
+	}
+
 	public static RoutingMethodData from(
 		final ExecutableElement method,
 		final Class<? extends Annotation> httpMethodAnnotation )
@@ -200,8 +205,7 @@ public class RoutingMethodData {
 	static String extractServiceInterfaceFrom( final ExecutableElement method ) {
 		val classElement = (TypeElement)method.getEnclosingElement();
 		val canonicalName = getServiceInterfaceProviderClass( classElement ).toString();
-		if ( Singleton.class.getCanonicalName().equals( canonicalName )
-				|| Stateless.class.getCanonicalName().equals( canonicalName ) )
+		if ( canonicalName.isEmpty() )
 			return classElement.asType().toString();
 		return canonicalName;
 	}

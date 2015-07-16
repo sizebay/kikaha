@@ -26,7 +26,7 @@ public class HazelcastDistributedDataStructuresProducer {
 
 	@Provided
 	HazelcastInstance hazelcast;
-	
+
 	@Provided
 	HazelcastProducedDataListenerFactory listenerFactory;
 
@@ -93,7 +93,7 @@ public class HazelcastDistributedDataStructuresProducer {
 		notifyDataWasProduced(executorService, IExecutorService.class);
 		return executorService;
 	}
-	
+
 	@Producer
 	public ReplicatedMap produceReplicatedMap( final ProviderContext context ) {
 		final String name = retrieveSourceNameFrom( context );
@@ -101,7 +101,7 @@ public class HazelcastDistributedDataStructuresProducer {
 		notifyDataWasProduced(data, ReplicatedMap.class);
 		return data;
 	}
-	
+
 	@Producer
 	public IdGenerator produceIdGenerator( final ProviderContext context ) {
 		final String name = retrieveSourceNameFrom( context );
@@ -119,7 +119,7 @@ public class HazelcastDistributedDataStructuresProducer {
 
 	@SuppressWarnings("unchecked")
 	<T extends DistributedObject> void notifyDataWasProduced( T data, Class<?> dataType ){
-		HazelcastProducedDataListener<T> listener = (HazelcastProducedDataListener<T>)
+		final HazelcastProducedDataListener<T> listener = (HazelcastProducedDataListener<T>)
 				listenerFactory.getListenerFor( dataType );
 		if ( listener != null )
 			listener.dataProduced(data);
