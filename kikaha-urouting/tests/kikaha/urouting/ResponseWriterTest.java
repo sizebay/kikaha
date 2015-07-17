@@ -127,7 +127,7 @@ public class ResponseWriterTest extends TestCase {
 			exchange.startBlocking();
 			writer.write(exchange, Mimes.JSON, response );
 		} catch ( final NullPointerException cause ) {
-			log.error( cause.getMessage(), cause );
+			log.error( cause.getMessage() );
 		}
 	}
 }

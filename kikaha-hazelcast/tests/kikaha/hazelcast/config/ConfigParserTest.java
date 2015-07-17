@@ -45,6 +45,7 @@ public class ConfigParserTest extends HazelcastTestCase {
 		counterInvocation.await();
 	}
 
+	@Override
 	protected void provideExtraDependencies( final ServiceProvider provider ) {
 		provider.providerFor( CountDownLatch.class, counterInvocation );
 	}
