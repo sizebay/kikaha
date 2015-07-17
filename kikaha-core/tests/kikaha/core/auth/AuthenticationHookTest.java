@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -33,6 +34,9 @@ public class AuthenticationHookTest {
 	@Mock
 	HttpHandler rootHandler;
 
+	@Mock
+	NotificationReceiver notificationReceiver;
+
 	AuthenticationHttpHandler authenticationHook;
 
 	@Before
@@ -41,7 +45,7 @@ public class AuthenticationHookTest {
 		val config = DefaultConfiguration.loadDefaultConfiguration();
 		val provider = new DefaultServiceProvider();
 		val authenticationRuleMatcher = new AuthenticationRuleMatcher( provider, config.authentication() );
-		authenticationHook = spy( new AuthenticationHttpHandler( authenticationRuleMatcher, config, rootHandler ) );
+		authenticationHook = spy( new AuthenticationHttpHandler( authenticationRuleMatcher, config, rootHandler, notificationReceiver ) );
 	}
 
 	@Test

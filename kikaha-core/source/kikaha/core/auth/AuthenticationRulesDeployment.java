@@ -22,13 +22,16 @@ public class AuthenticationRulesDeployment implements DeploymentListener {
 	@Provided
 	Configuration configuration;
 
+	@Provided
+	SessionCleanerNotificationReceiver sessionCleanerNotificationReceiver;
+
 	@Override
 	public void onDeploy( final DeploymentContext context ) {
 		if ( haveAuthenticationRulesDefinedInConfigurationFile() ) {
 			log.info( "Configuring authentication rules..." );
 			val ruleMatcher = createRuleMatcher();
 			val rootHandler = context.rootHandler();
-			val authenticationHandler = new AuthenticationHttpHandler( ruleMatcher, configuration, rootHandler );
+			val authenticationHandler = new AuthenticationHttpHandler( ruleMatcher, configuration, rootHandler, sessionCleanerNotificationReceiver );
 			context.rootHandler(authenticationHandler);
 		}
 	}

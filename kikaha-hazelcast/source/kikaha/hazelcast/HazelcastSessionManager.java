@@ -18,7 +18,6 @@ import trip.spi.Singleton;
 @Singleton
 public class HazelcastSessionManager implements SessionManager {
 
-	public final static String SESSION_CACHE = HazelcastSessionManager.class.getSimpleName();
 	private final String deploymentName = getClass().getSimpleName();
 
 	@Provided

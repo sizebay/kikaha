@@ -1,5 +1,6 @@
 package kikaha.core.auth;
 
+import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -14,6 +15,7 @@ public class AuthenticationHttpHandler implements HttpHandler {
 	final AuthenticationRuleMatcher authenticationRuleMatcher;
 	final Configuration configuration;
 	final HttpHandler next;
+	final NotificationReceiver sessionCleaner;
 
 	@Override
 	public void handleRequest(HttpServerExchange exchange) throws Exception {
@@ -33,6 +35,7 @@ public class AuthenticationHttpHandler implements HttpHandler {
 			final HttpServerExchange exchange, final AuthenticationRule rule ) throws KikahaException
 	{
 		val context = createSecurityContext( exchange, rule );
+		context.registerNotificationReceiver( sessionCleaner );
 		runAuthenticationInIOThread(exchange, rule, context);
 	}
 
