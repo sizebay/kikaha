@@ -86,7 +86,6 @@ public class AuthenticatedSession implements Serializable, Session {
 
 	@Override
 	public void invalidate( final HttpServerExchange exchange ) {
-		cache.remove(id);
 	}
 
 	@Override
