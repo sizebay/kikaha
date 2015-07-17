@@ -1,4 +1,4 @@
-package kikaha.urouting;
+package kikaha.urouting.jaxb;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -7,7 +7,9 @@ import static org.junit.Assert.assertThat;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 
-import kikaha.urouting.User.Address;
+import kikaha.urouting.SerializerAndUnserializerProvider;
+import kikaha.urouting.jaxb.User;
+import kikaha.urouting.jaxb.User.Address;
 import kikaha.urouting.api.AbstractSerializer;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Unserializer;

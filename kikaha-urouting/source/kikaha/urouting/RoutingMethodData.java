@@ -205,7 +205,9 @@ public class RoutingMethodData {
 	static String extractServiceInterfaceFrom( final ExecutableElement method ) {
 		val classElement = (TypeElement)method.getEnclosingElement();
 		val canonicalName = getServiceInterfaceProviderClass( classElement ).toString();
-		if ( canonicalName.isEmpty() )
+		if ( canonicalName.isEmpty()
+		||   Singleton.class.getCanonicalName().equals( canonicalName )
+		||   Stateless.class.getCanonicalName().equals( canonicalName ) )
 			return classElement.asType().toString();
 		return canonicalName;
 	}
