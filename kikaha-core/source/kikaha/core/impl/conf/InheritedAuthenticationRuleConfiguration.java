@@ -19,7 +19,7 @@ class InheritedAuthenticationRuleConfiguration implements AuthenticationRuleConf
 	private final String pattern = config.getString( "pattern" );
 
 	@Getter( lazy = true )
-	private final String identityManager = config.getString( "identity-manager" );
+	private final List<String> identityManager = config.getStringList( "identity-manager" );
 
 	@Getter( lazy = true )
 	private final String notificationReceiver = config.getString( "notification-receiver" );
@@ -64,7 +64,7 @@ class InheritedAuthenticationRuleConfiguration implements AuthenticationRuleConf
 	}
 
 	@Override
-	public String identityManager() {
+	public List<String> identityManager() {
 		try {
 			return getIdentityManager();
 		} catch ( final Missing cause ) {

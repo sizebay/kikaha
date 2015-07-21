@@ -12,9 +12,10 @@ public class DefaultSecurityContextFactory implements SecurityContextFactory {
 	final io.undertow.security.api.SecurityContextFactory contextFactory = SecurityContextFactoryImpl.INSTANCE;
 
 	@Override
+	@Deprecated
 	public SecurityContext createSecurityContextFor( HttpServerExchange exchange, AuthenticationRule rule ) {
 		return contextFactory.createSecurityContext(
 				exchange, AuthenticationMode.PRO_ACTIVE,
-				rule.identityManager(), null );
+				rule.identityManager().get(0), null );
 	}
 }

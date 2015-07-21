@@ -12,6 +12,7 @@ OUTPUTFILE=server.stdout.log
 PIDFILE=server.pid
 
 start_server(){
+	echo "Starting server in background..."
 	nohup ${JAVA} ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS} > $OUTPUTFILE &
 	echo "$!" > $PIDFILE
 }
@@ -55,6 +56,6 @@ case "$1" in
 	"help" ) show_help ;;
 	"stop" ) stop_server ;;
 	"debug" ) ${JAVA} ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS} ;;
-	"start" | "*" ) start_server ;;
+	"start" | * ) start_server ;;
 esac
 

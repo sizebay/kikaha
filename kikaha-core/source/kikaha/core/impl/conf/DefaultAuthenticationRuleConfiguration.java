@@ -13,7 +13,7 @@ import com.typesafe.config.Config;
 class DefaultAuthenticationRuleConfiguration implements AuthenticationRuleConfiguration {
 
 	final String pattern;
-	final String identityManager;
+	final List<String> identityManager;
 	final String notificationReceiver;
 	final String securityContextFactory;
 	final List<String> mechanisms;
@@ -23,7 +23,7 @@ class DefaultAuthenticationRuleConfiguration implements AuthenticationRuleConfig
 
 	public DefaultAuthenticationRuleConfiguration( final Config config ) {
 		this.pattern = config.getString( "pattern" );
-		this.identityManager = config.getString( "identity-manager" );
+		this.identityManager = config.getStringList( "identity-manager" );
 		this.notificationReceiver = config.getString( "notification-receiver" );
 		this.securityContextFactory = config.getString( "security-context-factory" );
 		this.mechanisms = config.getStringList( "mechanisms" );

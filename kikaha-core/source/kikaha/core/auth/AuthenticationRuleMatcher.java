@@ -19,7 +19,7 @@ import trip.spi.ServiceProviderException;
 
 @Getter
 @Accessors( fluent = true )
-@SuppressWarnings( "rawtypes" )
+//@SuppressWarnings( "rawtypes" )
 public class AuthenticationRuleMatcher {
 
 	final Map<String, AuthenticationMechanismFactory> mechanisms;
@@ -76,12 +76,8 @@ public class AuthenticationRuleMatcher {
 		return securityContextFactories;
 	}
 
-	Object instantiate( final Class clazz ) {
-		try {
-			return clazz.newInstance();
-		} catch ( InstantiationException | IllegalAccessException e ) {
-			throw new IllegalStateException( e );
-		}
+	<T> T instantiate( final Class<T> clazz ) {
+		return provider.load(clazz);
 	}
 
 	List<AuthenticationRule> readRulesFromConfig() {
@@ -103,12 +99,15 @@ public class AuthenticationRuleMatcher {
 			ruleConf.exceptionPatterns() );
 	}
 
-	IdentityManager getIdentityManagerFor( final AuthenticationRuleConfiguration ruleConf ) {
-		val identityManager = identityManagers().get( ruleConf.identityManager() );
-		if ( identityManager == null )
-			throw new IllegalArgumentException("No IdentityManager registered for "
-					+ ruleConf.identityManager() );
-		return identityManager;
+	List<IdentityManager> getIdentityManagerFor( final AuthenticationRuleConfiguration ruleConf ) {
+		final List<IdentityManager> ims = new ArrayList<>();
+		for ( final String name : ruleConf.identityManager() ){
+			final IdentityManager identityManager = identityManagers().get( name );
+			if ( identityManager == null )
+				throw new IllegalArgumentException("No IdentityManager registered for " + name );
+			ims.add( identityManager );
+		}
+		return ims;
 	}
 
 	NotificationReceiver getNotificationReceiverFor( final AuthenticationRuleConfiguration ruleConf) {

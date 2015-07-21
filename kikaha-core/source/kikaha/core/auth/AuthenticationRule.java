@@ -20,7 +20,7 @@ public class AuthenticationRule {
 	final String pattern;
 	final List<URLMatcher> exceptionPatterns;
 	final URLMatcher matcher;
-	final IdentityManager identityManager;
+	final List<IdentityManager> identityManager;
 	final List<AuthenticationMechanism> mechanisms;
 	final List<String> expectedRoles;
 	final NotificationReceiver notificationReceiver;
@@ -29,7 +29,7 @@ public class AuthenticationRule {
 	// UNCHECKED: this constructor should not be checked
 	public AuthenticationRule(
 		@NonNull final String pattern,
-		@NonNull final IdentityManager identityManager,
+		@NonNull final List<IdentityManager> identityManager,
 		@NonNull final List<AuthenticationMechanism> mechanisms,
 		@NonNull final List<String> expectedRoles,
 		final NotificationReceiver notificationReceiver,
