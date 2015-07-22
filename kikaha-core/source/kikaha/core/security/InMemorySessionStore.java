@@ -1,13 +1,14 @@
 package kikaha.core.security;
 
+import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.Cookie;
+import io.undertow.server.handlers.CookieImpl;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.server.handlers.Cookie;
-import io.undertow.server.handlers.CookieImpl;
 
 @RequiredArgsConstructor
 public class InMemorySessionStore implements SessionStore {
@@ -21,7 +22,7 @@ public class InMemorySessionStore implements SessionStore {
 
 	@Override
 	public Session createOrRetrieveSession( HttpServerExchange exchange ) {
-		String sessionId = retrieveSessionIdFrom( exchange );
+		final String sessionId = retrieveSessionIdFrom( exchange );
 		Session session = getSessionFromCache( sessionId );
 		if ( session == null )
 			synchronized ( cache ) {
@@ -46,7 +47,7 @@ public class InMemorySessionStore implements SessionStore {
 
 	protected String retrieveSessionIdFrom( HttpServerExchange exchange ) {
 		final Cookie cookie = exchange.getRequestCookies().get( cookieName );
-		return cookie.getValue();
+		return cookie != null ? cookie.getValue() : null;
 	}
 
 	protected void attachSessionCookie( HttpServerExchange exchange, String sessionId ) {
@@ -57,5 +58,9 @@ public class InMemorySessionStore implements SessionStore {
 	@Override
 	public void invalidateSession( Session session ) {
 		cache.remove( session.getId() );
+	}
+
+	@Override
+	public void flush(Session currentSession) {
 	}
 }

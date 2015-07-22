@@ -6,4 +6,5 @@ public interface SessionStore {
 
 	Session createOrRetrieveSession( HttpServerExchange exchange );
 	void invalidateSession( Session session );
+	void flush(Session currentSession);
 }

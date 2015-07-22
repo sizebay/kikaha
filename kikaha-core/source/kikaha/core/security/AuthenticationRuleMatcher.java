@@ -1,4 +1,4 @@
-package kikaha.core.auth;
+package kikaha.core.security;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,9 +7,6 @@ import java.util.Map;
 
 import kikaha.core.api.conf.AuthenticationConfiguration;
 import kikaha.core.api.conf.AuthenticationRuleConfiguration;
-import kikaha.core.security.AuthenticationMechanism;
-import kikaha.core.security.IdentityManager;
-import kikaha.core.security.SecurityContextFactory;
 import lombok.Getter;
 import lombok.val;
 import lombok.experimental.Accessors;
@@ -80,7 +77,7 @@ public class AuthenticationRuleMatcher {
 
 	private List<IdentityManager> getIdentityManagerFor( final AuthenticationRuleConfiguration ruleConf ) {
 		final List<IdentityManager> ims = new ArrayList<>();
-		for ( final String name : ruleConf.identityManager() ){
+		for ( final String name : ruleConf.identityManagers() ){
 			final IdentityManager identityManager = identityManagers().get( name );
 			if ( identityManager == null )
 				throw new IllegalArgumentException("No IdentityManager registered for " + name );

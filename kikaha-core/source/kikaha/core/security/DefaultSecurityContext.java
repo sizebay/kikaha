@@ -9,8 +9,6 @@ import io.undertow.server.HttpServerExchange;
 import java.util.Iterator;
 import java.util.List;
 
-import kikaha.core.auth.AuthenticationRule;
-import kikaha.core.security.OutcomeResponse.Outcome;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -23,34 +21,43 @@ public class DefaultSecurityContext implements SecurityContext {
 	private static final String MSG_NO_MANUAL_LOGIN = "You can't perform a manual login.";
 	private static final String MSG_NOT_SUPPORTED_BY_DEFAULT = "This operation is not supported by default.";
 
-	final boolean authenticationRequired = true;
+	private final boolean authenticationRequired = true;
 
-	Session currentSession = null;
+	private Session currentSession = null;
+	private boolean authenticated = true;
 
-	@NonNull final AuthenticationRule rule;
-	@NonNull final HttpServerExchange exchange;
-	@NonNull final SessionStore store;
+	@NonNull private final AuthenticationRule rule;
+	@NonNull private final HttpServerExchange exchange;
+	@NonNull private final SessionStore store;
 
 	@Override
 	public boolean authenticate() {
 		currentSession = store.createOrRetrieveSession(exchange);
-		final OutcomeResponse response = performAuthentication();
-		currentSession.setAuthenticatedAccount( response.account );
-		return isAuthenticated();
-	}
-
-	private OutcomeResponse performAuthentication() {
-		final Iterator<AuthenticationMechanism> iterator = rule.mechanisms().iterator();
-		OutcomeResponse response = null;
-		while ( isNotAuthenticated( response ) && iterator.hasNext() ) {
-			final AuthenticationMechanism authMechanism = iterator.next();
-			response = authMechanism.authenticate( exchange, rule.identityManager() );
+		final Account account = performAuthentication();
+		if ( account == null ){
+			authenticated = false;
+			sendAuthenticationChallenge();
 		}
-		return response;
+		currentSession.setAuthenticatedAccount( account );
+		store.flush( currentSession );
+		return authenticated;
 	}
 
-	static private boolean isNotAuthenticated( OutcomeResponse response ) {
-		return response == null || !Outcome.AUTHENTICATED.equals( response.outcome );
+	private Account performAuthentication() {
+		final Iterator<AuthenticationMechanism> iterator = rule.mechanisms().iterator();
+		Account account = currentSession.getAuthenticatedAccount();
+		while ( account == null && iterator.hasNext() ) {
+			final AuthenticationMechanism authMechanism = iterator.next();
+			account = authMechanism.authenticate( exchange, rule.identityManagers(), currentSession );
+		}
+		return account;
+	}
+
+	private void sendAuthenticationChallenge() {
+		final Iterator<AuthenticationMechanism> iterator = rule.mechanisms().iterator();
+		boolean sentChallenge = false;
+		while ( !sentChallenge && iterator.hasNext() )
+			sentChallenge = iterator.next().sendAuthenticationChallenge( exchange, currentSession );
 	}
 
 	@Override
@@ -65,19 +72,16 @@ public class DefaultSecurityContext implements SecurityContext {
 	}
 
 	@Override
-	public boolean isAuthenticated() {
-		return currentSession != null && currentSession.getAuthenticatedAccount() != null;
+	public void setAuthenticationRequired() {}
+
+	@Override
+	public void authenticationComplete( Account account, String mechanismName, boolean cachingRequired ) {
+		throw new UnsupportedOperationException(MSG_NOT_SUPPORTED_BY_DEFAULT);
 	}
 
 	@Override
-	public void authenticationComplete( Account account, String mechanismName, boolean cachingRequired ) {}
-
-	@Override
-	public void authenticationFailed( String message, String mechanismName ) {}
-
-	@Override
-	public void setAuthenticationRequired() {
-		throw new UnsupportedOperationException( MSG_IMMUTABLE );
+	public void authenticationFailed( String message, String mechanismName ) {
+		throw new UnsupportedOperationException(MSG_NOT_SUPPORTED_BY_DEFAULT);
 	}
 
 	@Override

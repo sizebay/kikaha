@@ -1,14 +1,15 @@
-package kikaha.core.auth;
+package kikaha.core.security;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import io.undertow.security.idm.IdentityManager;
-import io.undertow.security.idm.PasswordCredential;
 import io.undertow.security.idm.X509CertificateCredential;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.conf.DefaultConfiguration;
+import kikaha.core.security.FixedUserAndPasswordIdentityManager;
+import kikaha.core.security.IdentityManager;
+import kikaha.core.security.UsernameAndPasswordCredential;
 import lombok.val;
 
 import org.junit.Before;
@@ -33,8 +34,8 @@ public class DefaultAdminOnlyIdentityManagerTest {
 	@Test
 	public void ensureThatCouldValidateTestUserAsDefinedInApplicationConf() {
 		val user = "test";
-		val credential = new PasswordCredential( "t357".toCharArray() );
-		val account = identityManager.verify( user, credential );
+		val credential = new UsernameAndPasswordCredential( user, "t357" );
+		val account = identityManager.verify( credential );
 		assertNotNull( account );
 		assertEquals( user, account.getPrincipal().getName() );
 		assertTrue( account.getRoles().contains( "testable-role" ) );
@@ -43,16 +44,15 @@ public class DefaultAdminOnlyIdentityManagerTest {
 	@Test
 	public void ensureThatCouldNotValidateAdminUser() {
 		val user = "admin";
-		val credential = new PasswordCredential( user.toCharArray() );
-		val account = identityManager.verify( user, credential );
+		val credential = new UsernameAndPasswordCredential( user, user );
+		val account = identityManager.verify( credential );
 		assertNull( account );
 	}
 
 	@Test
 	public void ensureThatInvalidCredentialsAreIgnored() {
-		val admin = "admin";
 		val credential = new X509CertificateCredential( null );
-		val account = identityManager.verify( admin, credential );
+		val account = identityManager.verify( credential );
 		assertNull( account );
 	}
 }

@@ -1,4 +1,4 @@
-package kikaha.core.auth;
+package kikaha.core.security;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
@@ -19,6 +19,10 @@ import java.util.Set;
 import kikaha.core.HttpServerExchangeStub;
 import kikaha.core.impl.conf.DefaultAuthenticationConfiguration;
 import kikaha.core.impl.conf.DefaultConfiguration;
+import kikaha.core.security.AuthenticationRule;
+import kikaha.core.security.AuthenticationRuleMatcher;
+import kikaha.core.security.AuthenticationRunner;
+import kikaha.core.security.FixedUsernameAndRolesAccount;
 import lombok.val;
 
 import org.junit.Before;

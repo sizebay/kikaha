@@ -5,7 +5,6 @@ import javax.annotation.PostConstruct;
 import trip.spi.Singleton;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpServerExchange;
-import kikaha.core.auth.AuthenticationRule;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -1,18 +1,15 @@
-package kikaha.core.auth;
+package kikaha.core.security;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
-import java.util.Map;
-
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.conf.DefaultConfiguration;
+import kikaha.core.security.AuthenticationHttpHandler;
+import kikaha.core.security.AuthenticationRulesDeployment;
 import lombok.val;
 
 import org.junit.Before;
@@ -54,12 +51,5 @@ public class AuthenticationRulesDeploymentTest {
 		doReturn( false ).when( deployment ).haveAuthenticationRulesDefinedInConfigurationFile();
 		deployment.onDeploy( deploymentContext );
 		verify( deploymentContext, never() ).rootHandler( isA( AuthenticationHttpHandler.class ) );
-	}
-
-	@Test
-	@SuppressWarnings( "unchecked" )
-	public void ensureThatHaveProvideOnEveryMapReadFromConfig() {
-		deployment.onDeploy( deploymentContext );
-		verify( deployment, times( 4 ) ).provideOnMapEntries( (Map<String, Object>)any( Map.class ) );
 	}
 }

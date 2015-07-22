@@ -1,4 +1,4 @@
-package kikaha.core.auth;
+package kikaha.core.security;
 
 import io.undertow.security.idm.Account;
 

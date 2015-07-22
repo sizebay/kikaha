@@ -1,4 +1,4 @@
-package kikaha.core.auth;
+package kikaha.core.security;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -13,6 +13,9 @@ import io.undertow.server.HttpServerExchange;
 import kikaha.core.HttpServerExchangeStub;
 import kikaha.core.api.KikahaException;
 import kikaha.core.impl.conf.DefaultConfiguration;
+import kikaha.core.security.AuthenticationHttpHandler;
+import kikaha.core.security.AuthenticationRule;
+import kikaha.core.security.AuthenticationRuleMatcher;
 import kikaha.core.security.SecurityContextFactory;
 import lombok.SneakyThrows;
 import lombok.val;

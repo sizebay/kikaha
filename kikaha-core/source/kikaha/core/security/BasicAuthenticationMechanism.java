@@ -1,20 +1,22 @@
 package kikaha.core.security;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
-import kikaha.core.security.OutcomeResponse.Outcome;
-import kikaha.core.url.StringCursor;
-import lombok.extern.slf4j.Slf4j;
 import io.undertow.security.idm.Account;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.FlexBase64;
 import io.undertow.util.HeaderValues;
 import io.undertow.util.Headers;
+import io.undertow.util.StatusCodes;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+
+import kikaha.core.url.StringCursor;
+import lombok.extern.slf4j.Slf4j;
+import trip.spi.Singleton;
 
 @Slf4j
+@Singleton
 public class BasicAuthenticationMechanism implements AuthenticationMechanism {
 
 	private static final String BASIC_PREFIX = Headers.BASIC + " ";
@@ -31,32 +33,28 @@ public class BasicAuthenticationMechanism implements AuthenticationMechanism {
 	}
 
 	@Override
-	public OutcomeResponse authenticate( HttpServerExchange exchange, Iterable<IdentityManager> identityManagers ) {
+	public Account authenticate( HttpServerExchange exchange, Iterable<IdentityManager> identityManagers, Session session ) {
 		final StringCursor decodedCredentials = getDecodedCredentialsFromHeader( exchange );
 		if ( decodedCredentials == null )
-			return OutcomeResponse.NOT_ATTEMPTED;
+			return null;
 		final UsernameAndPasswordCredential credential = convertToCredential( decodedCredentials );
-		final Account account = verify( identityManagers, credential );
-		final Outcome outcome = account != null ? Outcome.AUTHENTICATED : Outcome.NOT_AUTHENTICATED;
-		return new OutcomeResponse( account, outcome );
+		return verify( identityManagers, credential );
 	}
 
 	private UsernameAndPasswordCredential convertToCredential( StringCursor decodedCredentials ) {
-		if ( decodedCredentials.shiftCursorToNextChar( COLON ) )
-			decodedCredentials.mark();
-		final String username = decodedCredentials.substringFromLastMark();
+		decodedCredentials.shiftCursorToNextChar( COLON );
+		final String username = decodedCredentials.substringFromLastMark(1);
 		decodedCredentials.mark();
 		decodedCredentials.end();
 		final String password = decodedCredentials.substringFromLastMark();
-		UsernameAndPasswordCredential credential = new UsernameAndPasswordCredential( username, password );
-		return credential;
+		return new UsernameAndPasswordCredential( username, password );
 	}
 
 	private StringCursor getDecodedCredentialsFromHeader( HttpServerExchange exchange ) {
 		StringCursor decodedCredentials = null;
 		final StringCursor headerValue = getAuthenticationHeader( exchange );
 		if ( headerValue != null ) {
-			String authString = getAuthString( headerValue );
+			final String authString = getAuthString( headerValue );
 			decodedCredentials = decode( authString );
 		}
 		return decodedCredentials;
@@ -66,16 +64,16 @@ public class BasicAuthenticationMechanism implements AuthenticationMechanism {
 		try {
 			final ByteBuffer decode = FlexBase64.decode( authString );
 			final String string = new String( decode.array(), decode.arrayOffset(), decode.limit(), StandardCharsets.UTF_8 );
-			StringCursor decodedCredentials = new StringCursor( string );
+			final StringCursor decodedCredentials = new StringCursor( string );
 			return decodedCredentials;
-		} catch ( IOException cause ) {
+		} catch ( final IOException cause ) {
 			log.warn( "Ignoring exception during Base64 decoding.", cause );
 			return null;
 		}
 	}
 
 	private String getAuthString( StringCursor headerValue ) {
-		headerValue.shiftCursorToNextChar( ' ' );
+		headerValue.cursorAt( PREFIX_LENGTH );
 		headerValue.mark();
 		headerValue.end();
 		return headerValue.substringFromLastMark();
@@ -84,9 +82,17 @@ public class BasicAuthenticationMechanism implements AuthenticationMechanism {
 	private StringCursor getAuthenticationHeader( HttpServerExchange exchange ) {
 		final HeaderValues authHeaders = exchange.getRequestHeaders().get( Headers.AUTHORIZATION );
 		StringCursor headerValue = null;
-		for ( String value : authHeaders )
-			if ( value.startsWith( BASIC_PREFIX ) )
-				headerValue = new StringCursor( value );
+		if( authHeaders != null )
+			for ( final String value : authHeaders )
+				if ( value.startsWith( BASIC_PREFIX ) )
+					headerValue = new StringCursor( value );
 		return headerValue;
+	}
+
+	@Override
+	public boolean sendAuthenticationChallenge(HttpServerExchange exchange, Session session) {
+		exchange.setResponseCode( StatusCodes.UNAUTHORIZED );
+		exchange.getResponseHeaders().add( Headers.WWW_AUTHENTICATE, challenge );
+		return true;
 	}
 }

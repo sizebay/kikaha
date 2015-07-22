@@ -1,6 +1,5 @@
 package kikaha.core.security;
 
-import kikaha.core.auth.AuthenticationRule;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpServerExchange;
 

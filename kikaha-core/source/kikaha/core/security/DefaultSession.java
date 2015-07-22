@@ -2,6 +2,7 @@ package kikaha.core.security;
 
 import io.undertow.security.idm.Account;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +13,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class DefaultSession implements Session {
+public class DefaultSession implements Session, Serializable {
+
+	private static final long serialVersionUID = -8643108956697914235L;
 
 	private Map<String, Object> attributes = new HashMap<>();
 	private Account authenticatedAccount;

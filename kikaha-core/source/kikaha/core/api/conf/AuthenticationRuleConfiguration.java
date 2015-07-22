@@ -8,7 +8,7 @@ public interface AuthenticationRuleConfiguration {
 
 	List<String> exceptionPatterns();
 
-	List<String> identityManager();
+	List<String> identityManagers();
 
 	List<String> mechanisms();
 

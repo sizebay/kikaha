@@ -1,4 +1,4 @@
-package kikaha.core.auth;
+package kikaha.core.security;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -23,7 +23,7 @@ import trip.spi.ServiceProviderException;
 public class DefaultFormAuthenticationMechanismTest {
 
 	ServiceProvider provider;
-	DefaultFormAuthenticationMechanism wrapper;
+	FormAuthenticationMechanism mechanism;
 
 	@Mock
 	AuthenticationMechanism mockedMechanism;
@@ -40,11 +40,9 @@ public class DefaultFormAuthenticationMechanismTest {
 	@Test
 	public void ensureThatWrappedUpAndFillUpFormAuthenticationMechanismFieldsAsExpected()
 		throws ServiceProviderException {
-		val mechanism = wrapper.create( config );
-		assertThat( getAttributeAsString( mechanism, "name" ), is( "DefaultFormAuth" ) );
-		assertThat( getAttributeAsString( mechanism, "loginPage" ), is( "/auth/" ) );
-		assertThat( getAttributeAsString( mechanism, "errorPage" ), is( "/auth/error/" ) );
-		assertThat( getAttributeAsString( mechanism, "postLocation" ), is( "j_security_check" ) );
+		assertThat( mechanism.getLoginPage(), is( "/auth/" ) );
+		assertThat( mechanism.getErrorPage(), is( "/auth/error/" ) );
+		assertThat( mechanism.getPostLocation(), is( "j_security_check" ) );
 	}
 
 	@SneakyThrows
@@ -71,13 +69,13 @@ public class DefaultFormAuthenticationMechanismTest {
 		MockitoAnnotations.initMocks( this );
 		provider = new DefaultServiceProvider();
 		provider.providerFor( Configuration.class, DefaultConfiguration.loadDefaultConfiguration() );
-		wrapper = createFormMechanismWrapper();
+		mechanism = createFormMechanismWrapper();
 		doReturn( "/auth/*" ).when( config ).pattern();
 	}
 
-	DefaultFormAuthenticationMechanism createFormMechanismWrapper()
+	FormAuthenticationMechanism createFormMechanismWrapper()
 		throws ServiceProviderException {
-		val wrapper = new DefaultFormAuthenticationMechanism();
+		val wrapper = new FormAuthenticationMechanism();
 		provider.provideOn( wrapper );
 		return spy( wrapper );
 	}

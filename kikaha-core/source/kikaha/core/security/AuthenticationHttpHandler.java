@@ -1,11 +1,10 @@
-package kikaha.core.auth;
+package kikaha.core.security;
 
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.api.KikahaException;
 import kikaha.core.api.conf.Configuration;
-import kikaha.core.security.SecurityContextFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -47,7 +46,7 @@ public class AuthenticationHttpHandler implements HttpHandler {
 	{
 		exchange.dispatch(
 			new AuthenticationRunner(
-				exchange, next, context,rule.expectedRoles(),
+				exchange, next, context, rule.expectedRoles(),
 				configuration.authentication().formAuth() ) );
 	}
 }

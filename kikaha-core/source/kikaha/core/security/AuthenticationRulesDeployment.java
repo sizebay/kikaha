@@ -1,4 +1,4 @@
-package kikaha.core.auth;
+package kikaha.core.security;
 
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentListener;

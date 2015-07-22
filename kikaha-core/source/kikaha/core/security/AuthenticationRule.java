@@ -1,10 +1,8 @@
-package kikaha.core.auth;
+package kikaha.core.security;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import kikaha.core.security.AuthenticationMechanism;
-import kikaha.core.security.IdentityManager;
 import kikaha.core.url.URLMatcher;
 import lombok.Getter;
 import lombok.NonNull;
@@ -18,14 +16,14 @@ public class AuthenticationRule {
 	final String pattern;
 	final List<URLMatcher> exceptionPatterns;
 	final URLMatcher matcher;
-	final List<IdentityManager> identityManager;
+	final List<IdentityManager> identityManagers;
 	final List<AuthenticationMechanism> mechanisms;
 	final List<String> expectedRoles;
 
 	// UNCHECKED: this constructor should not be checked
 	public AuthenticationRule(
 		@NonNull final String pattern,
-		@NonNull final List<IdentityManager> identityManager,
+		@NonNull final List<IdentityManager> identityManagers,
 		@NonNull final List<AuthenticationMechanism> mechanisms,
 		@NonNull final List<String> expectedRoles,
 		@NonNull final List<String> exceptionPatterns )
@@ -33,7 +31,7 @@ public class AuthenticationRule {
 	{
 		this.pattern = pattern;
 		this.matcher = URLMatcher.compile( pattern );
-		this.identityManager = identityManager;
+		this.identityManagers = identityManagers;
 		this.mechanisms = mechanisms;
 		this.expectedRoles = expectedRoles;
 		this.exceptionPatterns = convertToURLMatcher( exceptionPatterns );
