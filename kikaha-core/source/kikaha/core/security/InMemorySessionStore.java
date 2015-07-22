@@ -1,9 +1,8 @@
 package kikaha.core.security;
 
 import io.undertow.server.HttpServerExchange;
-import io.undertow.server.handlers.Cookie;
-import io.undertow.server.handlers.CookieImpl;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -11,14 +10,9 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class InMemorySessionStore implements SessionStore {
+public class InMemorySessionStore extends AbstractCookieSessionStore {
 
 	final Map<String, Session> cache = new HashMap<>();
-	final String cookieName;
-
-	public InMemorySessionStore() {
-		cookieName = "JSESSIONID";
-	}
 
 	@Override
 	public Session createOrRetrieveSession( HttpServerExchange exchange ) {
@@ -27,11 +21,16 @@ public class InMemorySessionStore implements SessionStore {
 		if ( session == null )
 			synchronized ( cache ) {
 				if ( ( session = getSessionFromCache( sessionId ) ) == null ) {
-					cache.put( sessionId, session = createNewSession() );
+					session = createNewSession();
+					storeSession( session.getId(), session );
 					attachSessionCookie( exchange, session.getId() );
 				}
 			}
 		return session;
+	}
+
+	protected void storeSession(final String sessionId, Session session) {
+		cache.put( sessionId, session );
 	}
 
 	protected Session getSessionFromCache( String sessionId ) {
@@ -45,16 +44,6 @@ public class InMemorySessionStore implements SessionStore {
 		return new DefaultSession( uuid );
 	}
 
-	protected String retrieveSessionIdFrom( HttpServerExchange exchange ) {
-		final Cookie cookie = exchange.getRequestCookies().get( cookieName );
-		return cookie != null ? cookie.getValue() : null;
-	}
-
-	protected void attachSessionCookie( HttpServerExchange exchange, String sessionId ) {
-		final Cookie cookie = new CookieImpl( this.cookieName, sessionId ).setPath( "/" );
-		exchange.setResponseCookie( cookie );
-	}
-
 	@Override
 	public void invalidateSession( Session session ) {
 		cache.remove( session.getId() );
@@ -62,5 +51,9 @@ public class InMemorySessionStore implements SessionStore {
 
 	@Override
 	public void flush(Session currentSession) {
+	}
+
+	public Collection<Session> retrieveAllSessions() {
+		return cache.values();
 	}
 }

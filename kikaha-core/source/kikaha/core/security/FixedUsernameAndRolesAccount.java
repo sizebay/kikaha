@@ -2,6 +2,7 @@ package kikaha.core.security;
 
 import io.undertow.security.idm.Account;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +15,9 @@ import lombok.val;
 @Getter
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class FixedUsernameAndRolesAccount implements Account {
+public class FixedUsernameAndRolesAccount implements Account, Serializable {
+
+	private static final long serialVersionUID = 4200473829411263593L;
 
 	final Set<String> roles;
 	final Principal principal;
@@ -34,7 +37,9 @@ public class FixedUsernameAndRolesAccount implements Account {
 @Getter
 @EqualsAndHashCode
 @RequiredArgsConstructor
-class FixedUsernamePrincipal implements Principal {
+class FixedUsernamePrincipal implements Principal, Serializable{
+
+	private static final long serialVersionUID = 3304528817919455263L;
 
 	final String name;
 }
