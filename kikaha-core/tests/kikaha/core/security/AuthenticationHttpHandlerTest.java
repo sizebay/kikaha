@@ -27,7 +27,7 @@ import org.mockito.MockitoAnnotations;
 
 import trip.spi.DefaultServiceProvider;
 
-public class AuthenticationHookTest {
+public class AuthenticationHttpHandlerTest {
 
 	final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
 

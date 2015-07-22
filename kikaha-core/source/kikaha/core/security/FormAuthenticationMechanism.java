@@ -47,10 +47,14 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 
     @PostConstruct
     public void readConfiguration(){
-    	final FormAuthConfiguration formAuth = kikahaConf.authentication().formAuth();
-    	this.loginPage = formAuth.loginPage();
-    	this.errorPage = formAuth.errorPage();
-    	this.postLocation = formAuth.postLocation();
+    	try {
+	    	final FormAuthConfiguration formAuth = kikahaConf.authentication().formAuth();
+	    	this.loginPage = formAuth.loginPage();
+	    	this.errorPage = formAuth.errorPage();
+	    	this.postLocation = formAuth.postLocation();
+    	} catch ( final Throwable cause ) {
+    		log.error("Can't read the configuration.", cause);
+    	}
     }
 
 	@Override

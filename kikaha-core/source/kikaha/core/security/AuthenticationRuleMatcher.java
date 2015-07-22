@@ -14,7 +14,6 @@ import trip.spi.ServiceProvider;
 
 @Getter
 @Accessors( fluent = true )
-//@SuppressWarnings( "rawtypes" )
 public class AuthenticationRuleMatcher {
 
 	final Map<String, AuthenticationMechanism> mechanisms;

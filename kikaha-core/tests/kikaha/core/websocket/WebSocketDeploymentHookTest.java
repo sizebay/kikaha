@@ -11,6 +11,8 @@ import java.io.IOException;
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentListener;
 import kikaha.core.api.WebResource;
+import kikaha.core.api.conf.Configuration;
+import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.SneakyThrows;
 
 import org.junit.Before;
@@ -35,9 +37,10 @@ public class WebSocketDeploymentHookTest {
 	@Before
 	@SneakyThrows
 	public void setup() {
-		final ServiceProvider serviceProvider = new DefaultServiceProvider();
-		serviceProvider.providerFor( WebSocketHandler.class, new MyFirstWebSocket() );
-		serviceProvider.provideOn( this );
+		final ServiceProvider provider = new DefaultServiceProvider();
+		provider.providerFor( Configuration.class, DefaultConfiguration.loadDefaultConfiguration() );
+		provider.providerFor( WebSocketHandler.class, new MyFirstWebSocket() );
+		provider.provideOn( this );
 	}
 
 	@Test

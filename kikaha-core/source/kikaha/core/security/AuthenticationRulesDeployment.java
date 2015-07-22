@@ -1,9 +1,12 @@
 package kikaha.core.security;
 
+import io.undertow.server.HttpHandler;
+
+import javax.annotation.PostConstruct;
+
 import kikaha.core.api.DeploymentContext;
 import kikaha.core.api.DeploymentListener;
 import kikaha.core.api.conf.Configuration;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
@@ -19,13 +22,21 @@ public class AuthenticationRulesDeployment implements DeploymentListener {
 	@Provided
 	Configuration configuration;
 
+	SecurityContextFactory factory;
+
+	@PostConstruct
+	public void loadSecurityContextFactory(){
+		final Class<?> clazz = configuration.authentication().securityContextFactory();
+		factory = (SecurityContextFactory) provider.load(clazz);
+	}
+
 	@Override
 	public void onDeploy( final DeploymentContext context ) {
 		if ( haveAuthenticationRulesDefinedInConfigurationFile() ) {
 			log.info( "Configuring authentication rules..." );
-			val ruleMatcher = createRuleMatcher();
-			val rootHandler = context.rootHandler();
-			val authenticationHandler = new AuthenticationHttpHandler( ruleMatcher, configuration, rootHandler, null );
+			final AuthenticationRuleMatcher ruleMatcher = createRuleMatcher();
+			final HttpHandler rootHandler = context.rootHandler();
+			final AuthenticationHttpHandler authenticationHandler = new AuthenticationHttpHandler( ruleMatcher, configuration, rootHandler, factory );
 			context.rootHandler(authenticationHandler);
 		}
 	}
