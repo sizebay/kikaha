@@ -25,8 +25,7 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 
 	final Map<String, Class<?>> mechanisms;
 	final Map<String, Class<?>> identityManagers;
-	final Map<String, Class<?>> notificationReceivers;
-	final Map<String, Class<?>> securityContextFactories;
+	final Class<?> securityContextFactory;
 	final AuthenticationRuleConfiguration defaultRule;
 	final FormAuthConfiguration formAuth;
 	final List<AuthenticationRuleConfiguration> authenticationRules;
@@ -35,11 +34,10 @@ public class DefaultAuthenticationConfiguration implements AuthenticationConfigu
 		this.config = config;
 		mechanisms = retrieveChildElementsAsClassMapFromConfigNode( "mechanisms" );
 		identityManagers = retrieveChildElementsAsClassMapFromConfigNode( "identity-managers" );
-		notificationReceivers = retrieveChildElementsAsClassMapFromConfigNode( "notification-receivers" );
 		defaultRule = new DefaultAuthenticationRuleConfiguration( config.getConfig( "default-rule" ) );
 		formAuth = new DefaultFormAuthConfiguration( config.getConfig( "form-auth" ) );
 		authenticationRules = retrieveAuthenticationRules();
-		securityContextFactories = retrieveChildElementsAsClassMapFromConfigNode( "security-context-factories" );
+		securityContextFactory = classFromCanonicalName( config.getString( "security-context-factory" ) );
 	}
 
 	public Map<String, Class<?>> retrieveChildElementsAsClassMapFromConfigNode( final String rootNode ) {

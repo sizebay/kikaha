@@ -12,6 +12,7 @@ import io.undertow.server.HttpServerExchange;
 import kikaha.core.HttpServerExchangeStub;
 import kikaha.core.impl.conf.DefaultAuthenticationConfiguration;
 import kikaha.core.impl.conf.DefaultConfiguration;
+import kikaha.core.security.SecurityContextFactory;
 import lombok.val;
 
 import org.junit.Before;

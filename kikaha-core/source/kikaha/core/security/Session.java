@@ -16,6 +16,8 @@ public interface Session {
 	 */
 	Account getAuthenticatedAccount();
 
+	void setAuthenticatedAccount( Account account );
+
     /**
      * Returns a string containing the unique identifier assigned to this session.
      *

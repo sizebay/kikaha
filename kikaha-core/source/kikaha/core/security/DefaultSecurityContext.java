@@ -6,9 +6,11 @@ import io.undertow.security.idm.Account;
 import io.undertow.security.idm.IdentityManager;
 import io.undertow.server.HttpServerExchange;
 
+import java.util.Iterator;
 import java.util.List;
 
 import kikaha.core.auth.AuthenticationRule;
+import kikaha.core.security.OutcomeResponse.Outcome;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,8 @@ public class DefaultSecurityContext implements SecurityContext {
 	private static final String MSG_NO_MANUAL_LOGIN = "You can't perform a manual login.";
 	private static final String MSG_NOT_SUPPORTED_BY_DEFAULT = "This operation is not supported by default.";
 
-	boolean authenticationRequired = false;
+	final boolean authenticationRequired = true;
+
 	Session currentSession = null;
 
 	@NonNull final AuthenticationRule rule;
@@ -31,8 +34,23 @@ public class DefaultSecurityContext implements SecurityContext {
 	@Override
 	public boolean authenticate() {
 		currentSession = store.createOrRetrieveSession(exchange);
+		final OutcomeResponse response = performAuthentication();
+		currentSession.setAuthenticatedAccount( response.account );
+		return isAuthenticated();
+	}
 
-		return false;
+	private OutcomeResponse performAuthentication() {
+		final Iterator<AuthenticationMechanism> iterator = rule.mechanisms().iterator();
+		OutcomeResponse response = null;
+		while ( isNotAuthenticated( response ) && iterator.hasNext() ) {
+			final AuthenticationMechanism authMechanism = iterator.next();
+			response = authMechanism.authenticate( exchange, rule.identityManager() );
+		}
+		return response;
+	}
+
+	static private boolean isNotAuthenticated( OutcomeResponse response ) {
+		return response == null || !Outcome.AUTHENTICATED.equals( response.outcome );
 	}
 
 	@Override
@@ -52,15 +70,15 @@ public class DefaultSecurityContext implements SecurityContext {
 	}
 
 	@Override
+	public void authenticationComplete( Account account, String mechanismName, boolean cachingRequired ) {}
+
+	@Override
+	public void authenticationFailed( String message, String mechanismName ) {}
+
+	@Override
 	public void setAuthenticationRequired() {
-		this.authenticationRequired = true;
+		throw new UnsupportedOperationException( MSG_IMMUTABLE );
 	}
-
-	@Override
-	public void authenticationComplete(Account account, String mechanismName, boolean cachingRequired) {}
-
-	@Override
-	public void authenticationFailed(String message, String mechanismName) {}
 
 	@Override
 	public boolean login(String username, String password) {

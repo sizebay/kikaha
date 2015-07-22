@@ -1,12 +1,10 @@
 package kikaha.core.auth;
 
-import io.undertow.security.api.AuthenticationMechanism;
-import io.undertow.security.api.NotificationReceiver;
-import io.undertow.security.idm.IdentityManager;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import kikaha.core.security.AuthenticationMechanism;
+import kikaha.core.security.IdentityManager;
 import kikaha.core.url.URLMatcher;
 import lombok.Getter;
 import lombok.NonNull;
@@ -23,8 +21,6 @@ public class AuthenticationRule {
 	final List<IdentityManager> identityManager;
 	final List<AuthenticationMechanism> mechanisms;
 	final List<String> expectedRoles;
-	final NotificationReceiver notificationReceiver;
-	final SecurityContextFactory securityContextFactory;
 
 	// UNCHECKED: this constructor should not be checked
 	public AuthenticationRule(
@@ -32,8 +28,6 @@ public class AuthenticationRule {
 		@NonNull final List<IdentityManager> identityManager,
 		@NonNull final List<AuthenticationMechanism> mechanisms,
 		@NonNull final List<String> expectedRoles,
-		final NotificationReceiver notificationReceiver,
-		@NonNull final SecurityContextFactory securityContextFactory,
 		@NonNull final List<String> exceptionPatterns )
 	// CHECKED
 	{
@@ -42,10 +36,7 @@ public class AuthenticationRule {
 		this.identityManager = identityManager;
 		this.mechanisms = mechanisms;
 		this.expectedRoles = expectedRoles;
-		this.notificationReceiver = notificationReceiver;
 		this.exceptionPatterns = convertToURLMatcher( exceptionPatterns );
-		this.securityContextFactory = PrePopulatedSecurityContextFactory
-				.wrap( securityContextFactory );
 	}
 
 	public boolean matches( final String url ) {
@@ -58,10 +49,6 @@ public class AuthenticationRule {
 			if ( exceptionPattern.matches( url, null ) )
 				return true;
 		return false;
-	}
-
-	public boolean isThereSomeoneListeningForAuthenticationEvents() {
-		return notificationReceiver != null;
 	}
 
 	public List<URLMatcher> convertToURLMatcher( final List<String> urls ) {

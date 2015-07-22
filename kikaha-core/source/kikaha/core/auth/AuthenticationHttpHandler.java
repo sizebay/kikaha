@@ -1,11 +1,11 @@
 package kikaha.core.auth;
 
-import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.api.KikahaException;
 import kikaha.core.api.conf.Configuration;
+import kikaha.core.security.SecurityContextFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -15,7 +15,7 @@ public class AuthenticationHttpHandler implements HttpHandler {
 	final AuthenticationRuleMatcher authenticationRuleMatcher;
 	final Configuration configuration;
 	final HttpHandler next;
-	final NotificationReceiver sessionCleaner;
+	final SecurityContextFactory securityContextFactory;
 
 	@Override
 	public void handleRequest(HttpServerExchange exchange) throws Exception {
@@ -35,12 +35,11 @@ public class AuthenticationHttpHandler implements HttpHandler {
 			final HttpServerExchange exchange, final AuthenticationRule rule ) throws KikahaException
 	{
 		val context = createSecurityContext( exchange, rule );
-		context.registerNotificationReceiver( sessionCleaner );
 		runAuthenticationInIOThread(exchange, rule, context);
 	}
 
 	SecurityContext createSecurityContext( final HttpServerExchange exchange, final AuthenticationRule rule ) {
-		return rule.securityContextFactory().createSecurityContextFor( exchange, rule );
+		return securityContextFactory.createSecurityContextFor( exchange, rule );
 	}
 
 	void runAuthenticationInIOThread(final HttpServerExchange exchange,

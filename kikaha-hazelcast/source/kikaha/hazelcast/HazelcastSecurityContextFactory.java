@@ -10,7 +10,7 @@ import io.undertow.server.session.SessionManager;
 import io.undertow.util.Headers;
 import kikaha.core.auth.AuthenticationRule;
 import kikaha.core.auth.DefaultSecurityContextFactory;
-import kikaha.core.auth.SecurityContextFactory;
+import kikaha.core.security.SecurityContextFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;

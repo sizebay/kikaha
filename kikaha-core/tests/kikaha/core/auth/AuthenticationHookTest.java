@@ -7,13 +7,13 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.HttpServerExchangeStub;
 import kikaha.core.api.KikahaException;
 import kikaha.core.impl.conf.DefaultConfiguration;
+import kikaha.core.security.SecurityContextFactory;
 import lombok.SneakyThrows;
 import lombok.val;
 
@@ -35,7 +35,7 @@ public class AuthenticationHookTest {
 	HttpHandler rootHandler;
 
 	@Mock
-	NotificationReceiver notificationReceiver;
+	SecurityContextFactory factory;
 
 	AuthenticationHttpHandler authenticationHook;
 
@@ -45,7 +45,7 @@ public class AuthenticationHookTest {
 		val config = DefaultConfiguration.loadDefaultConfiguration();
 		val provider = new DefaultServiceProvider();
 		val authenticationRuleMatcher = new AuthenticationRuleMatcher( provider, config.authentication() );
-		authenticationHook = spy( new AuthenticationHttpHandler( authenticationRuleMatcher, config, rootHandler, notificationReceiver ) );
+		authenticationHook = spy( new AuthenticationHttpHandler( authenticationRuleMatcher, config, rootHandler, factory ) );
 	}
 
 	@Test
@@ -53,7 +53,7 @@ public class AuthenticationHookTest {
 	public void ensureThatCallTheHookInIOThreadWhenHasRuleThatMatchesTheRelativePath() throws KikahaException {
 		doNothing().when(authenticationHook).runAuthenticationInIOThread( any(), any(), any());
 		exchange.setRelativePath( "/valid-authenticated-url/" );
-		doReturn( securityContext ).when( authenticationHook ).createSecurityContext( any( HttpServerExchange.class ),
+		doReturn( securityContext ).when( factory ).createSecurityContextFor( any( HttpServerExchange.class ),
 				any( AuthenticationRule.class ) );
 		authenticationHook.handleRequest(exchange);
 		verify( authenticationHook ).runAuthenticationInIOThread( eq(exchange), any( AuthenticationRule.class ) );

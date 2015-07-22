@@ -14,8 +14,6 @@ class DefaultAuthenticationRuleConfiguration implements AuthenticationRuleConfig
 
 	final String pattern;
 	final List<String> identityManager;
-	final String notificationReceiver;
-	final String securityContextFactory;
 	final List<String> mechanisms;
 	final List<String> expectedRoles;
 	final List<String> exceptionPatterns;
@@ -24,8 +22,6 @@ class DefaultAuthenticationRuleConfiguration implements AuthenticationRuleConfig
 	public DefaultAuthenticationRuleConfiguration( final Config config ) {
 		this.pattern = config.getString( "pattern" );
 		this.identityManager = config.getStringList( "identity-manager" );
-		this.notificationReceiver = config.getString( "notification-receiver" );
-		this.securityContextFactory = config.getString( "security-context-factory" );
 		this.mechanisms = config.getStringList( "mechanisms" );
 		this.expectedRoles = config.getStringList( "expected-roles" );
 		this.exceptionPatterns = config.getStringList( "exclude-patterns" );

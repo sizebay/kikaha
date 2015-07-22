@@ -22,12 +22,6 @@ class InheritedAuthenticationRuleConfiguration implements AuthenticationRuleConf
 	private final List<String> identityManager = config.getStringList( "identity-manager" );
 
 	@Getter( lazy = true )
-	private final String notificationReceiver = config.getString( "notification-receiver" );
-
-	@Getter( lazy = true )
-	private final String securityContextFactory = config.getString( "security-context-factory" );
-
-	@Getter( lazy = true )
 	private final List<String> mechanisms = config.getStringList( "mechanisms" );
 
 	@Getter( lazy = true )
@@ -69,24 +63,6 @@ class InheritedAuthenticationRuleConfiguration implements AuthenticationRuleConf
 			return getIdentityManager();
 		} catch ( final Missing cause ) {
 			return inheritedRule.identityManager();
-		}
-	}
-
-	@Override
-	public String notificationReceiver() {
-		try {
-			return getNotificationReceiver();
-		} catch ( final Missing cause ) {
-			return inheritedRule.notificationReceiver();
-		}
-	}
-
-	@Override
-	public String securityContextFactory() {
-		try {
-			return getSecurityContextFactory();
-		} catch ( final Missing cause ) {
-			return inheritedRule.securityContextFactory();
 		}
 	}
 
