@@ -34,17 +34,17 @@ public class HazelcastSessionStore extends AbstractCookieSessionStore {
 		try {
 			final NetworkInterface networkInterface = getNetworkInterface();
 			return new String( convertMACBytesToString( networkInterface.getHardwareAddress() ) );
-		} catch ( SocketException e ) {
+		} catch ( final SocketException e ) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	private static NetworkInterface getNetworkInterface() throws SocketException {
-		Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+		final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
 		while ( networkInterfaces.hasMoreElements() ) {
-			NetworkInterface networkInterface = networkInterfaces.nextElement();
-			byte[] hardwareAddress = networkInterface.getHardwareAddress();
-			if ( hardwareAddress.length > 4 )
+			final NetworkInterface networkInterface = networkInterfaces.nextElement();
+			final byte[] hardwareAddress = networkInterface.getHardwareAddress();
+			if ( hardwareAddress != null && hardwareAddress.length > 4 )
 				return networkInterface;
 		}
 		return null;
