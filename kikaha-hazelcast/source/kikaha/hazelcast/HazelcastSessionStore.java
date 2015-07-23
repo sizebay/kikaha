@@ -2,12 +2,11 @@ package kikaha.hazelcast;
 
 import io.undertow.server.HttpServerExchange;
 
-import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 
 import kikaha.core.security.AbstractCookieSessionStore;
 import kikaha.core.security.DefaultSession;
@@ -33,12 +32,22 @@ public class HazelcastSessionStore extends AbstractCookieSessionStore {
 
 	private static String retrieveCurrentMacAddress(){
 		try {
-			final InetAddress localHost = InetAddress.getLocalHost();
-			final NetworkInterface networkInterface = NetworkInterface.getByInetAddress(localHost);
+			final NetworkInterface networkInterface = getNetworkInterface();
 			return new String( convertMACBytesToString( networkInterface.getHardwareAddress() ) );
-		} catch (SocketException | UnknownHostException e) {
+		} catch ( SocketException e ) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static NetworkInterface getNetworkInterface() throws SocketException {
+		Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+		while ( networkInterfaces.hasMoreElements() ) {
+			NetworkInterface networkInterface = networkInterfaces.nextElement();
+			byte[] hardwareAddress = networkInterface.getHardwareAddress();
+			if ( hardwareAddress.length > 4 )
+				return networkInterface;
+		}
+		return null;
 	}
 
 	private static String convertMACBytesToString( byte[] mac ){

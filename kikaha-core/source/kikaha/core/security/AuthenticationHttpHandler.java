@@ -34,6 +34,7 @@ public class AuthenticationHttpHandler implements HttpHandler {
 			final HttpServerExchange exchange, final AuthenticationRule rule ) throws KikahaException
 	{
 		val context = createSecurityContext( exchange, rule );
+		exchange.setSecurityContext( context );
 		runAuthenticationInIOThread(exchange, rule, context);
 	}
 

@@ -1,5 +1,6 @@
 package kikaha.core.security;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -11,12 +12,8 @@ import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.HttpServerExchangeStub;
+import kikaha.core.TestCase;
 import kikaha.core.api.KikahaException;
-import kikaha.core.impl.conf.DefaultConfiguration;
-import kikaha.core.security.AuthenticationHttpHandler;
-import kikaha.core.security.AuthenticationRule;
-import kikaha.core.security.AuthenticationRuleMatcher;
-import kikaha.core.security.SecurityContextFactory;
 import lombok.SneakyThrows;
 import lombok.val;
 
@@ -25,9 +22,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import trip.spi.DefaultServiceProvider;
-
-public class AuthenticationHttpHandlerTest {
+public class AuthenticationHttpHandlerTest extends TestCase {
 
 	final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
 
@@ -45,10 +40,8 @@ public class AuthenticationHttpHandlerTest {
 	@Before
 	public void initializeMocks() {
 		MockitoAnnotations.initMocks( this );
-		val config = DefaultConfiguration.loadDefaultConfiguration();
-		val provider = new DefaultServiceProvider();
-		val authenticationRuleMatcher = new AuthenticationRuleMatcher( provider, config.authentication() );
-		authenticationHook = spy( new AuthenticationHttpHandler( authenticationRuleMatcher, config, rootHandler, factory ) );
+		val authenticationRuleMatcher = new AuthenticationRuleMatcher( provider, configuration.authentication() );
+		authenticationHook = spy( new AuthenticationHttpHandler( authenticationRuleMatcher, configuration, rootHandler, factory ) );
 	}
 
 	@Test
@@ -60,6 +53,7 @@ public class AuthenticationHttpHandlerTest {
 				any( AuthenticationRule.class ) );
 		authenticationHook.handleRequest(exchange);
 		verify( authenticationHook ).runAuthenticationInIOThread( eq(exchange), any( AuthenticationRule.class ) );
+		assertNotNull( exchange.getSecurityContext() );
 	}
 
 	@Test

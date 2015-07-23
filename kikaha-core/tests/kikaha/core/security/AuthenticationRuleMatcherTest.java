@@ -2,23 +2,18 @@ package kikaha.core.security;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import kikaha.core.TestCase;
 import kikaha.core.impl.conf.DefaultAuthenticationConfiguration;
 import kikaha.core.impl.conf.DefaultConfiguration;
-import kikaha.core.security.AuthenticationRuleMatcher;
-import kikaha.core.security.BasicAuthenticationMechanism;
-import kikaha.core.security.FixedUserAndPasswordIdentityManager;
 import lombok.val;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import tests.AssertThat;
-import trip.spi.DefaultServiceProvider;
-import trip.spi.ServiceProvider;
 
-public class AuthenticationRuleMatcherTest {
+public class AuthenticationRuleMatcherTest extends TestCase {
 
-	ServiceProvider provider = new DefaultServiceProvider();
 	AuthenticationRuleMatcher matcher;
 
 	@Before

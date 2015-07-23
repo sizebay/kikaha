@@ -30,32 +30,29 @@ import trip.spi.Singleton;
 @RequiredArgsConstructor
 public class FormAuthenticationMechanism implements AuthenticationMechanism {
 
-    public static final String LOCATION_ATTRIBUTE = FormAuthenticationMechanism.class.getName() + ".LOCATION";
-    public static final String DEFAULT_POST_LOCATION = "/j_security_check";
+	public static final String LOCATION_ATTRIBUTE = FormAuthenticationMechanism.class.getName() + ".LOCATION";
+	public static final String DEFAULT_POST_LOCATION = "/j_security_check";
 
-    private final FormParserFactory formParserFactory;
-    @NonNull private String loginPage = "login.html";
-    @NonNull private String errorPage = "login-error.html";
-    @NonNull String postLocation = DEFAULT_POST_LOCATION;
+	@NonNull private String loginPage = "login.html";
+	@NonNull private String errorPage = "login-error.html";
+	@NonNull private String postLocation = DEFAULT_POST_LOCATION;
 
-    public FormAuthenticationMechanism() {
+	private final FormParserFactory formParserFactory;
+
+	@Provided
+	Configuration kikahaConf;
+
+	public FormAuthenticationMechanism() {
 		this.formParserFactory = FormParserFactory.builder().build();
 	}
 
-    @Provided
-    Configuration kikahaConf;
-
-    @PostConstruct
-    public void readConfiguration(){
-    	try {
-	    	final FormAuthConfiguration formAuth = kikahaConf.authentication().formAuth();
-	    	this.loginPage = formAuth.loginPage();
-	    	this.errorPage = formAuth.errorPage();
-	    	this.postLocation = formAuth.postLocation();
-    	} catch ( final Throwable cause ) {
-    		log.error("Can't read the configuration.", cause);
-    	}
-    }
+	@PostConstruct
+	public void readConfiguration() {
+		final FormAuthConfiguration formAuth = kikahaConf.authentication().formAuth();
+		this.loginPage = formAuth.loginPage();
+		this.errorPage = formAuth.errorPage();
+		this.postLocation = formAuth.postLocation();
+	}
 
 	@Override
 	public Account authenticate(HttpServerExchange exchange, Iterable<IdentityManager> identityManagers, Session session) {

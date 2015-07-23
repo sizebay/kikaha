@@ -17,12 +17,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import kikaha.core.HttpServerExchangeStub;
-import kikaha.core.impl.conf.DefaultAuthenticationConfiguration;
+import kikaha.core.TestCase;
 import kikaha.core.impl.conf.DefaultConfiguration;
-import kikaha.core.security.AuthenticationRule;
-import kikaha.core.security.AuthenticationRuleMatcher;
-import kikaha.core.security.AuthenticationRunner;
-import kikaha.core.security.FixedUsernameAndRolesAccount;
 import lombok.val;
 
 import org.junit.Before;
@@ -30,9 +26,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import trip.spi.DefaultServiceProvider;
-
-public class AuthenticationRunnerTest {
+public class AuthenticationRunnerTest extends TestCase {
 
 	@Mock
 	SecurityContext securityContext;
@@ -114,11 +108,7 @@ public class AuthenticationRunnerTest {
 	}
 
 	AuthenticationRuleMatcher mockAuthRuleMatcher() {
-		val defaultConfig = DefaultConfiguration.loadDefaultConfig().getConfig( "server.auth" );
-		val authConfig = new DefaultAuthenticationConfiguration( defaultConfig );
-		val provider = new DefaultServiceProvider();
-		val authRuleMatcher = spy( new AuthenticationRuleMatcher( provider, authConfig ) );
-		return authRuleMatcher;
+		return spy( new AuthenticationRuleMatcher( provider, configuration.authentication() ) );
 	}
 
 	Set<String> createExpectedRoles() {

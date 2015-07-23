@@ -55,7 +55,12 @@ public class AuthenticationRuleMatcher {
 	}
 
 	private <T> T instantiate( final Class<T> clazz ) {
-		return provider.load(clazz);
+		try {
+			return provider.load( clazz );
+		} catch ( Throwable cause ) {
+			System.out.println( "Can't load " + clazz );
+			throw cause;
+		}
 	}
 
 	private List<AuthenticationRule> readRulesFromConfig() {
