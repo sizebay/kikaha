@@ -8,11 +8,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 
 import kikaha.urouting.SerializerAndUnserializerProvider;
-import kikaha.urouting.jaxb.User;
-import kikaha.urouting.jaxb.User.Address;
 import kikaha.urouting.api.AbstractSerializer;
+import kikaha.urouting.api.AbstractUnserializer;
 import kikaha.urouting.api.Mimes;
-import kikaha.urouting.api.Unserializer;
+import kikaha.urouting.jaxb.User.Address;
 import lombok.SneakyThrows;
 
 import org.junit.Test;
@@ -41,7 +40,7 @@ public class SerializationTests extends TestCase {
 	@SneakyThrows
 	public void grantThatUnserializeXMLIntoObjectAsExpected() {
 		final String xml = readFile( "serialization.expected-xml.xml" );
-		final Unserializer unserializer = provider.getUnserializerFor( Mimes.XML, Mimes.XML );
+		final AbstractUnserializer unserializer = (AbstractUnserializer)provider.getUnserializerFor( Mimes.XML, Mimes.XML );
 		final User user = unserializer.unserialize( new StringReader( xml ), User.class );
 		assertIsValidUser( user );
 	}

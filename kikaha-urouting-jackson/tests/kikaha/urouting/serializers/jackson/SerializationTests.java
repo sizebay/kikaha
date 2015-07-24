@@ -7,14 +7,17 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
+import io.undertow.server.BlockingHttpExchange;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.HttpUpgradeListener;
 import io.undertow.server.SSLSessionInfo;
 import io.undertow.server.ServerConnection;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStream;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
@@ -59,6 +62,9 @@ public class SerializationTests extends TestCase {
 	@Mock
 	StreamSinkConduit conduit;
 
+	@Mock
+	BlockingHttpExchange blockingExchange;
+
 	@Override
 	@Before
 	public void setup(){
@@ -87,8 +93,12 @@ public class SerializationTests extends TestCase {
 	@SneakyThrows
 	public void grantThatUnserializeJSONIntoObjectAsExpected() {
 		final String json = readFile( "serialization.expected-json.json" );
+		final InputStream inputStream = new ByteArrayInputStream(json.getBytes());
+		doReturn(inputStream).when(blockingExchange).getInputStream();
 		final Unserializer unserializer = provider.load( Unserializer.class, new JSONContentTypeCondition<>() );
-		final User user = unserializer.unserialize( new StringReader( json ), User.class );
+		final HttpServerExchange exchange = new HttpServerExchange(connection);
+		exchange.startBlocking( blockingExchange );
+		final User user = unserializer.unserialize( exchange, User.class, "UTF-8" );
 		assertIsValidUser( user );
 	}
 

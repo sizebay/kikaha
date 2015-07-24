@@ -1,13 +1,16 @@
 package kikaha.urouting.serializers.jackson;
 
+import io.undertow.server.HttpServerExchange;
+
 import java.io.IOException;
-import java.io.Reader;
 
 import kikaha.urouting.api.ContentType;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Unserializer;
 import trip.spi.Provided;
 import trip.spi.Singleton;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ContentType(Mimes.JSON)
 @Singleton( exposedAs = Unserializer.class )
@@ -17,7 +20,8 @@ public class JSONUnserializer implements Unserializer {
 	Jackson jackson;
 
 	@Override
-	public <T> T unserialize(final Reader input, final Class<T> targetClass) throws IOException {
-		return jackson.objectMapper().readValue(input, targetClass);
+	public <T> T unserialize(HttpServerExchange input, Class<T> targetClass, String encoding) throws IOException {
+		final ObjectMapper mapper = jackson.objectMapper();
+		return mapper.readValue(input.getInputStream(), targetClass);
 	}
 }

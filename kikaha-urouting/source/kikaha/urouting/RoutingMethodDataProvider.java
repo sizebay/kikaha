@@ -8,8 +8,6 @@ import io.undertow.util.Headers;
 import io.undertow.util.PathTemplateMatch;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.nio.channels.Channels;
 import java.util.Queue;
 
 import kikaha.urouting.api.ContextProducer;
@@ -178,8 +176,7 @@ public class RoutingMethodDataProvider {
 		if ( !exchange.isBlocking() )
 			exchange.startBlocking();
 		final Unserializer unserializer = serializerAndUnserializerProvider.getUnserializerFor( contentType, defaulConsumingContentType );
-		final Reader reader = Channels.newReader( exchange.getRequestChannel(), contentEncoding );
-		return unserializer.unserialize( reader, clazz );
+		return unserializer.unserialize( exchange, clazz, contentEncoding );
 	}
 
 	/**
