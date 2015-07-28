@@ -83,8 +83,12 @@ public class HazelcastSessionStore extends AbstractCookieSessionStore {
 	}
 
 	protected Session createNewSession() {
-		final String id = MAC_ADDRESS + idGenerator.newId() + new Date().getTime();
+		final String id = createNewSessionId();
 		return new DefaultSession( id );
+	}
+
+	public String createNewSessionId() {
+		return MAC_ADDRESS + idGenerator.newId() + new Date().getTime();
 	}
 
 	@Override
