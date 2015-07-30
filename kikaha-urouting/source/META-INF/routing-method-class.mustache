@@ -34,14 +34,14 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
-		{{#returnType}}
+		{{#hasIOBound}}
 			if ( exchange.isInIoThread() ) {
 				exchange.dispatch(this);
 				return;
 			}
 			else if ( !exchange.isInIoThread() && !exchange.isBlocking() )
 				exchange.startBlocking();
-		{{/returnType}}
+		{{/hasIOBound}}
 		try {
 		{{^serviceInterface}}
 			final {{{type}}} instance = new {{{type}}}();

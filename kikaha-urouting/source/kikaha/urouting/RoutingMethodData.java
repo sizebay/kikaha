@@ -91,7 +91,11 @@ public class RoutingMethodData {
 	private static boolean hasIOBlockingOperations( final String methodParams )
 	{
 		return methodParams.contains( "methodDataProvider.getBody" )
-			|| methodParams.contains( "methodDataProvider.getFormParam" );
+			|| methodParams.contains( "methodDataProvider.getQueryParam" )
+			|| methodParams.contains( "methodDataProvider.getHeaderParam" )
+			|| methodParams.contains( "methodDataProvider.getCookieParam" )
+			|| methodParams.contains( "methodDataProvider.getFormParam" )
+			|| methodParams.contains( "methodDataProvider.getData" );
 	}
 
 	public static String extractPackageName( final String canonicalName )
