@@ -75,7 +75,7 @@
 		<version.hazelcast>3.5.1</version.hazelcast>
 		<version.slf4j>1.7.12</version.slf4j>
 		<version.junit>4.12</version.junit>
-		<version.lombok>1.14.8</version.lombok>
+		<version.lombok>1.16.4</version.lombok>
 		<version.mockito>1.10.19</version.mockito>
 		<version.jmustache>1.10</version.jmustache>
 		<!-- Plugin's Versions -->

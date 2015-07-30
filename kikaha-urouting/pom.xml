@@ -34,7 +34,8 @@
 						</goals>
 						<configuration>
 							<annotationProcessors>
-								<annotationProcessor>lombok.core.AnnotationProcessor</annotationProcessor>
+								<!--annotationProcessor>lombok.core.AnnotationProcessor</annotationProcessor-->
+								<annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
 								<annotationProcessor>trip.spi.processor.SPIProcessor</annotationProcessor>
 							</annotationProcessors>
 						</configuration>
