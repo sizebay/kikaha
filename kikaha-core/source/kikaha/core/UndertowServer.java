@@ -1,9 +1,9 @@
 package kikaha.core;
 
-import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 
@@ -120,8 +120,7 @@ public class UndertowServer {
 		val location = retrieveWebAppFolder();
 		val resourceManager = new FileResourceManager( location, 100 );
 		log.info("Exposing resource files at " + location);
-		return Handlers.resource(resourceManager)
-				.setResourceManager(resourceManager)
+		return new ResourceHandler( resourceManager, new NotFoundHandler() )
 				.setDirectoryListingEnabled( false )
 				.setWelcomeFiles( configuration.welcomeFile() );
 	}
@@ -198,5 +197,14 @@ public class UndertowServer {
 		public void run() {
 			UndertowServer.this.stop();
 		}
+	}
+}
+
+class NotFoundHandler implements HttpHandler {
+
+	@Override
+	public void handleRequest( HttpServerExchange exchange ) throws Exception {
+		exchange.setResponseCode( 404 );
+		exchange.endExchange();
 	}
 }
