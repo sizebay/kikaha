@@ -6,7 +6,9 @@ import kikaha.urouting.api.ExceptionHandler;
 import kikaha.urouting.api.Response;
 import kikaha.urouting.api.UnhandledException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class RoutingMethodExceptionHandler {
 
@@ -22,6 +24,7 @@ public class RoutingMethodExceptionHandler {
 				return handler.handle( cause );
 			clazz = clazz.getSuperclass();
 		}
+		log.error("Unhandled exception:", cause);
 		return fallbackHandler.handle( new UnhandledException( cause ) );
 	}
 }
