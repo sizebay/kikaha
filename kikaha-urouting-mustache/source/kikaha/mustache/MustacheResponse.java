@@ -1,6 +1,7 @@
 package kikaha.mustache;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 
 import kikaha.urouting.api.Header;
 import kikaha.urouting.api.Mimes;
@@ -19,7 +20,7 @@ public class MustacheResponse implements Response {
 
 	final MustacheTemplate entity = new MustacheTemplate();
 	final String encoding = "UTF-8";
-	final Iterable<Header> headers = new ArrayList<>();
+	final Iterable<Header> headers = EmptyHeaders.INSTANCE;
 
 	@NonNull
 	String contentType = Mimes.HTML;
@@ -35,5 +36,16 @@ public class MustacheResponse implements Response {
 	public MustacheResponse templateName( final String templateName ) {
 		this.entity.templateName( templateName );
 		return this;
+	}
+}
+
+class EmptyHeaders implements Iterable<Header> {
+
+	static EmptyHeaders INSTANCE = new EmptyHeaders();
+	final Iterator<Header> iterator = Collections.emptyIterator();
+
+	@Override
+	public Iterator<Header> iterator() {
+		return iterator;
 	}
 }
