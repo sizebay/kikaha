@@ -26,12 +26,6 @@ public class HazelcastConfiguration {
 	private final Boolean overrideXmlConfig = config().getBoolean( "server.hazelcast.override-xml-config" );
 
 	@Getter( lazy = true )
-	private final Boolean sessionManagementEnabled = config().getBoolean( "server.hazelcast.session-management.enabled" );
-
-	@Getter( lazy = true )
-	private final Integer sessionTimeToLive = config().getInt( "server.hazelcast.session-management.time-to-live" );
-
-	@Getter( lazy = true )
 	private final String mode = config().getString( "server.hazelcast.mode" );
 
 	@Getter( lazy = true )
