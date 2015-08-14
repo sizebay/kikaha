@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import trip.spi.ServiceProvider;
+import trip.spi.DefaultServiceProvider;
 
 @RunWith( MockitoJUnitRunner.class )
 public class WebSocketParameterParserTest {
@@ -99,6 +99,6 @@ public class WebSocketParameterParserTest {
 	@Before
 	@SneakyThrows
 	public void provideDependencies() {
-		new ServiceProvider().provideOn( this );
+		new DefaultServiceProvider().provideOn( this );
 	}
 }

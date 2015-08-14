@@ -12,5 +12,7 @@ public interface SSLConfiguration {
 
 	String keystoreSecurityProvider();
 
+	boolean autoRedirectFromHttpToHttps();
+
 	boolean isEmpty();
 }

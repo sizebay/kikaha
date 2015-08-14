@@ -12,7 +12,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-public class SSLFixSSLHandshakeException {
+public abstract class SSLFixSSLHandshakeException {
 
 	/**
 	 * fix for Exception in thread "main" javax.net.ssl.SSLHandshakeException:

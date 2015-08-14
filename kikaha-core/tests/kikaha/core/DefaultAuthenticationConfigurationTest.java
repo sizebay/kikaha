@@ -4,10 +4,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import kikaha.core.auth.DefaultBasicAuthenticationMechanism;
-import kikaha.core.auth.FixedUserAndPasswordIdentityManager;
 import kikaha.core.impl.conf.DefaultAuthenticationConfiguration;
 import kikaha.core.impl.conf.DefaultConfiguration;
+import kikaha.core.security.BasicAuthenticationMechanism;
+import kikaha.core.security.FixedUserAndPasswordIdentityManager;
 import lombok.val;
 
 import org.junit.Before;
@@ -27,14 +27,14 @@ public class DefaultAuthenticationConfigurationTest {
 	public void ensureThatCouldListMechanismsAsMapOfClasses() {
 		val classMap = authConfig.retrieveChildElementsAsClassMapFromConfigNode( "mechanisms" );
 		assertNotNull( classMap );
-		assertEquals( classMap.get( "basic" ), DefaultBasicAuthenticationMechanism.class );
+		assertEquals( classMap.get( "basic" ), BasicAuthenticationMechanism.class );
 	}
 
 	@Test
 	public void ensureThatCouldListMechanismsAsMapOfClassesFromLazyGetter() {
 		val classMap = authConfig.mechanisms();
 		assertNotNull( classMap );
-		assertEquals( classMap.get( "basic" ), DefaultBasicAuthenticationMechanism.class );
+		assertEquals( classMap.get( "basic" ), BasicAuthenticationMechanism.class );
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class DefaultAuthenticationConfigurationTest {
 		assertThat( defaultRule.pattern(), is( "/*" ) );
 		assertThat( defaultRule.expectedRoles().get( 0 ), is( "minimum-access-role" ) );
 		assertThat( defaultRule.mechanisms().get( 0 ), is( "basic" ) );
-		assertThat( defaultRule.identityManager(), is( "default" ) );
+		assertThat( defaultRule.identityManagers().get(0), is( "default" ) );
 	}
 
 	@Test
@@ -63,7 +63,5 @@ public class DefaultAuthenticationConfigurationTest {
 		assertThat( inheritedRule.expectedRoles().get( 0 ), is( defaultRule.expectedRoles().get( 0 ) ) );
 		assertThat( inheritedRule.mechanisms().get( 0 ), is( defaultRule.mechanisms().get( 0 ) ) );
 		assertThat( inheritedRule.mechanisms().get( 1 ), is( "alternative" ) );
-		assertThat( inheritedRule.securityContextFactory(), is( defaultRule.securityContextFactory() ) );
-		assertThat( inheritedRule.securityContextFactory(), is( "default" ) );
 	}
 }

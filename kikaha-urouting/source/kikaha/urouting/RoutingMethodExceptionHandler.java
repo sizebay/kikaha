@@ -1,63 +1,30 @@
 package kikaha.urouting;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import kikaha.urouting.api.ExceptionHandler;
 import kikaha.urouting.api.Response;
 import kikaha.urouting.api.UnhandledException;
-import trip.spi.Provided;
-import trip.spi.ServiceProvider;
-import trip.spi.ServiceProviderException;
-import trip.spi.Singleton;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-@Singleton
+@Slf4j
+@RequiredArgsConstructor
 public class RoutingMethodExceptionHandler {
 
-	@Provided
-	ServiceProvider provider;
-
-	@Provided
-	UnhandledExceptionHandler fallbackHandler;
-
-	Map<Class<?>, ExceptionHandler<?>> handlers;
+	final Map<Class<?>, ExceptionHandler<?>> handlers;
+	final UnhandledExceptionHandler fallbackHandler;
 
 	@SuppressWarnings( "unchecked" )
-	public <T extends Throwable> Response handle( T cause ) {
-		cause.printStackTrace();
+	public <T extends Throwable> Response handle( final T cause ) {
 		Class<?> clazz = cause.getClass();
 		while ( !Object.class.equals( clazz ) ) {
-			ExceptionHandler<T> handler = (ExceptionHandler<T>)handlers().get( clazz );
+			final ExceptionHandler<T> handler = (ExceptionHandler<T>)handlers.get( clazz );
 			if ( handler != null )
 				return handler.handle( cause );
 			clazz = clazz.getSuperclass();
 		}
+		log.error("Unhandled exception:", cause);
 		return fallbackHandler.handle( new UnhandledException( cause ) );
-	}
-
-	protected Map<Class<?>, ExceptionHandler<?>> handlers() {
-		try {
-			if ( handlers == null )
-				handlers = loadHandlers();
-			return handlers;
-		} catch ( ServiceProviderException cause ) {
-			throw new IllegalStateException( cause );
-		}
-	}
-
-	@SuppressWarnings( { "rawtypes", "unchecked" } )
-	protected HashMap<Class<?>, ExceptionHandler<?>> loadHandlers() throws ServiceProviderException {
-		final HashMap<Class<?>, ExceptionHandler<?>> handlers = new HashMap<Class<?>, ExceptionHandler<?>>();
-		final Iterable<ExceptionHandler> iterableHandlers = provider.loadAll( ExceptionHandler.class );
-		for ( ExceptionHandler handler : iterableHandlers ) {
-			Class<?> throwableClass = getGenericClass( handler );
-			handlers.put( throwableClass, handler );
-		}
-		return handlers;
-	}
-
-	@SuppressWarnings( { "unchecked" } )
-	protected <T extends Throwable> Class<T> getGenericClass( ExceptionHandler<T> handler ) {
-		return (Class<T>)Reflection.getFirstGenericTypeFrom( handler, ExceptionHandler.class );
 	}
 }

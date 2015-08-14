@@ -46,7 +46,7 @@ public class WebSocketSession {
 
 	Map<String, String> extractRequestParameters( final WebSocketChannel channel ) {
 		final String url = channel.getUrl();
-		final HashMap<String, String> foundParameters = new HashMap<>();
+		final Map<String, String> foundParameters = new HashMap<>();
 		if ( !urlMatcher.matches( url, foundParameters ) )
 			throw new UnsupportedOperationException( "There was a huge mistake on implementation: it doesn't matched URL: " + url );
 		return foundParameters;

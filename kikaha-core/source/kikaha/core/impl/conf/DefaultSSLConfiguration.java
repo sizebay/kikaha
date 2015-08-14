@@ -12,22 +12,21 @@ import com.typesafe.config.Config;
 @Accessors( fluent = true )
 public class DefaultSSLConfiguration implements SSLConfiguration {
 
-	final Config config;
+	final String keystore;
+	final String truststore;
+	final String password;
+	final String certSecurityProvider;
+	final String keystoreSecurityProvider;
+	final boolean autoRedirectFromHttpToHttps;
 
-	@Getter( lazy = true )
-	private final String keystore = config().getString( "keystore" );
-
-	@Getter( lazy = true )
-	private final String truststore = config().getString( "truststore" );
-
-	@Getter( lazy = true )
-	private final String password = config().getString( "password" );
-
-	@Getter( lazy = true )
-	private final String certSecurityProvider = config().getString( "cert-security-provider" );
-
-	@Getter( lazy = true )
-	private final String keystoreSecurityProvider = config().getString( "keystore-security-provider" );
+	public DefaultSSLConfiguration( final Config config ) {
+		this.keystore = config.getString( "keystore" );
+		this.truststore = config.getString( "truststore" );
+		this.password = config.getString( "password" );
+		this.certSecurityProvider = config.getString( "cert-security-provider" );
+		this.keystoreSecurityProvider = config.getString( "keystore-security-provider" );
+		this.autoRedirectFromHttpToHttps = config.getBoolean( "auto-redirect-http-to-https" );
+	}
 
 	@Override
 	public boolean isEmpty() {
@@ -35,7 +34,7 @@ public class DefaultSSLConfiguration implements SSLConfiguration {
 			&& isBlank( truststore() );
 	}
 
-	boolean isBlank( String str ) {
+	boolean isBlank( final String str ) {
 		return str == null || str.isEmpty();
 	}
 }

@@ -75,6 +75,15 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	String finalName;
 
 	/**
+	 * JVM args to sent to Kikaha.
+	 *
+	 * @parameter  expression=" -Xms64m -Xmx256m "
+	 * 			   default-value=" -Xms64m -Xmx256m "
+	 * @required
+	 */
+	String jvmArgs;
+
+	/**
 	 * Directory containing the build files.
 	 *
 	 * @parameter expression="${project.build.directory}"
@@ -95,7 +104,8 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
 			val classpath = memorizeClassPathWithRunnableJar();
-			val service = new MainClassService( getWorkdirectory(), Main.class.getCanonicalName(), classpath, asList( webresourcesPath ) );
+			val service = new MainClassService( getWorkdirectory(), Main.class.getCanonicalName(), classpath,
+					asList( absolutePath( webresourcesPath ) ), jvmArgs );
 			val process = service.start();
 			if ( process.waitFor() > 0 )
 				throw new RuntimeException( "Kikaha has unexpectedly finished." );
@@ -103,7 +113,7 @@ public class KikahaRunnerMojo extends AbstractMojo {
 			throw new MojoExecutionException( "Can't initialize Kikaha.", e );
 		}
 	}
-	
+
 	File getWorkdirectory(){
 		if ( !resourceDirectory.exists() ){
 			val file = new File("");
@@ -111,8 +121,12 @@ public class KikahaRunnerMojo extends AbstractMojo {
 		}
 		return resourceDirectory;
 	}
-	
-	List<String> asList( String...strings ){
+
+	String absolutePath( String str ) {
+		return new File( str ).getAbsolutePath();
+	}
+
+	List<String> asList( final String...strings ){
 		val list = new ArrayList<String>();
 		for ( val string : strings )
 			list.add( string );

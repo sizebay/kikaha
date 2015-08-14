@@ -8,10 +8,10 @@ import kikaha.urouting.ResponseWriter;
 import kikaha.urouting.RoutingMethodExceptionHandler;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import trip.spi.ServiceProviderException;
 
-@Log
+@Slf4j
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class AsyncResponse {
@@ -38,12 +38,11 @@ public class AsyncResponse {
 	}
 
 	void handleFailure( Throwable e ) {
-		log.severe( e.getMessage() );
-		e.printStackTrace();
+		log.error( e.getMessage(), e );
 		try {
 			writer.write( exchange, exceptionHandler.handle( e ) );
 		} catch ( Throwable cause ) {
-			cause.printStackTrace();
+			log.error( cause.getMessage(), cause );
 			exchange.endExchange();
 		}
 	}

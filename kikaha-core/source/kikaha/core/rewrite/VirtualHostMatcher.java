@@ -9,9 +9,9 @@ import kikaha.core.url.StringCursor;
 import kikaha.core.url.URLMatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
-@Log
+@Slf4j
 @RequiredArgsConstructor
 public class VirtualHostMatcher implements RequestMatcher {
 
@@ -22,7 +22,7 @@ public class VirtualHostMatcher implements RequestMatcher {
 	{
 		val hostHeader = exchange.getRequestHeaders().getFirst( Headers.HOST );
 		if ( hostHeader == null ) {
-			log.warning( "No HOST header found." );
+			log.warn( "No HOST header found." );
 			return true;
 		}
 		val host = stripHostFromHeader( hostHeader );

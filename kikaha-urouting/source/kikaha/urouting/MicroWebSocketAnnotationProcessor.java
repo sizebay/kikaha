@@ -11,6 +11,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic.Kind;
 
 import kikaha.urouting.api.WebSocket;
 
@@ -37,10 +38,18 @@ public class MicroWebSocketAnnotationProcessor extends AbstractProcessor {
 
 	void processClassesAnnotatedWithWebSocket( final RoundEnvironment round ) throws IOException {
 		final Set<? extends Element> elements = round.getElementsAnnotatedWith( WebSocket.class );
+		if ( !elements.isEmpty() )
+			log( "Creating Undertow routes for WebSocket" );
 		for ( final Element element : elements ) {
 			final WebSocketData data = WebSocketData.from( (TypeElement)element );
+			log( " > websocket " + data );
 			generator.generate( data );
 		}
+	}
+
+	protected void log(final String msg) {
+		System.out.println( "[INFO] " + msg );
+		processingEnv.getMessager().printMessage( Kind.NOTE, msg );
 	}
 
 	Filer filer() {

@@ -1,8 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.skullabs.kikaha</groupId>
-	<version>1.4.2</version>
+	<version>1.5.0-SNAPSHOT</version>
 	<artifactId>kikaha-parent</artifactId>
 	<name>Kikaha</name>
 	<description>An absurdly fast micro container writen over Undertow</description>
@@ -42,6 +43,11 @@
 			<name>Ricardo Mattiazzi Baumgartner</name>
 		</developer>
 		<developer>
+			<id>selonke</id>
+			<email>cesar.selonke@gmail.com</email>
+			<name>Cesar Selonke</name>
+		</developer>
+		<developer>
 			<id>miere</id>
 			<email>miere.teixeira@gmail.com</email>
 			<name>Miere Liniel Teixeira</name>
@@ -50,7 +56,11 @@
 
 	<modules>
 		<module>kikaha-core</module>
+		<module>kikaha-jsr-330</module>
 		<module>kikaha-urouting</module>
+		<module>kikaha-urouting-jackson</module>
+		<module>kikaha-urouting-mustache</module>
+		<module>kikaha-urouting-jaxb</module>
 		<module>kikaha-hazelcast</module>
 		<module>kikaha-maven-plugin</module>
 		<module>kikaha-project</module>
@@ -58,14 +68,16 @@
 
 	<properties>
 		<!-- Dependencies Versions -->
-		<version.undertow>1.2.6.Final</version.undertow>
-		<version.trip>1.2.4</version.trip>
+		<version.undertow>1.2.9.Final</version.undertow>
+		<version.trip>2.0.2</version.trip>
 		<version.config>1.2.0</version.config>
 		<version.jackson>2.5.3</version.jackson>
-		<version.hazelcast>3.4.2</version.hazelcast>
+		<version.hazelcast>3.5.1</version.hazelcast>
+		<version.slf4j>1.7.12</version.slf4j>
 		<version.junit>4.12</version.junit>
-		<version.lombok>1.14.8</version.lombok>
+		<version.lombok>1.16.4</version.lombok>
 		<version.mockito>1.10.19</version.mockito>
+		<version.jmustache>1.10</version.jmustache>
 		<!-- Plugin's Versions -->
 		<version.compiler.plugin>3.3</version.compiler.plugin>
 		<version.resources.plugin>2.6</version.resources.plugin>
@@ -109,7 +121,7 @@
 			<dependency>
 				<groupId>io.skullabs.trip</groupId>
 				<artifactId>trip-processor</artifactId>
-				<version>1.2.4</version>
+				<version>${version.trip}</version>
 				<scope>provided</scope>
 				<exclusions>
 					<exclusion>
@@ -121,19 +133,25 @@
 			<!-- Module dependencies -->
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.4.2</version>
+				<version>1.5.0-SNAPSHOT</version>
 				<artifactId>kikaha-core</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.4.2</version>
+				<version>1.5.0-SNAPSHOT</version>
 				<artifactId>kikaha-urouting</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.4.2</version>
+				<version>1.5.0-SNAPSHOT</version>
+				<artifactId>kikaha-urouting-jackson</artifactId>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.skullabs.kikaha</groupId>
+				<version>1.5.0-SNAPSHOT</version>
 				<artifactId>kikaha-hazelcast</artifactId>
 				<scope>compile</scope>
 			</dependency>
@@ -141,7 +159,12 @@
 			<dependency>
 				<groupId>io.skullabs.trip</groupId>
 				<artifactId>trip-core</artifactId>
-				<version>1.2.4</version>
+				<version>${version.trip}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.skullabs.trip</groupId>
+				<artifactId>trip-jsr-330</artifactId>
+				<version>${version.trip}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.typesafe</groupId>
@@ -173,9 +196,25 @@
 				<artifactId>hazelcast-client</artifactId>
 				<version>${version.hazelcast}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${version.slf4j}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${version.slf4j}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.samskivert</groupId>
+				<artifactId>jmustache</artifactId>
+				<version>${version.jmustache}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -192,6 +231,10 @@
 		<dependency>
 			<groupId>io.skullabs.trip</groupId>
 			<artifactId>trip-processor</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -246,7 +289,7 @@
 				<!-- Preconfiguring kikaha maven plugin -->
 				<plugin>
 					<groupId>io.skullabs.kikaha</groupId>
-					<version>1.4.2</version>
+					<version>1.5.0-SNAPSHOT</version>
 					<artifactId>kikaha-maven-plugin</artifactId>
 					<configuration>
 						<webresourcesPath>${config.webdir}</webresourcesPath>
@@ -254,7 +297,9 @@
 					<executions>
 						<execution>
 							<phase>package</phase>
-							<goals><goal>package</goal></goals>
+							<goals>
+								<goal>package</goal>
+							</goals>
 						</execution>
 					</executions>
 				</plugin>
@@ -283,6 +328,9 @@
 								<goal>verify</goal>
 							</goals>
 							<configuration>
+								<additionalClasspathElements>
+		            				<additionalClasspathElement>${project.basedir}/../resources</additionalClasspathElement>
+								</additionalClasspathElements>
 								<skipTests>${config.skip.tests.integration}</skipTests>
 								<includes>
 									<include>**/IT*.java</include>
@@ -298,6 +346,9 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>${version.surfire.plugin}</version>
 					<configuration>
+						<additionalClasspathElements>
+            				<additionalClasspathElement>${project.basedir}/../resources</additionalClasspathElement>
+						</additionalClasspathElements>
 						<skipTests>${config.skip.tests.unit}</skipTests>
 						<excludes>
 							<exclude>**/*IntegrationTest.java</exclude>
@@ -392,5 +443,5 @@
 			</build>
 		</profile>
 	</profiles>
-	
+
 </project>

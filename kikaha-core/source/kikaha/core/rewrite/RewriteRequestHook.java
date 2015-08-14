@@ -1,36 +1,34 @@
 package kikaha.core.rewrite;
 
+import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 
 import java.util.HashMap;
 
-import kikaha.core.api.RequestHook;
-import kikaha.core.api.RequestHookChain;
-import kikaha.core.api.KikahaException;
 import kikaha.core.api.conf.RewritableRule;
 import kikaha.core.url.URLMatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 @RequiredArgsConstructor
-public class RewriteRequestHook implements RequestHook {
+public class RewriteRequestHook implements HttpHandler {
 
 	final RequestMatcher requestMatcher;
 	final URLMatcher targetPath;
+	final HttpHandler next;
 
 	@Override
-	public void execute( final RequestHookChain chain, final HttpServerExchange exchange ) throws KikahaException
-	{
+	public void handleRequest(HttpServerExchange exchange) throws Exception {
 		val properties = new HashMap<String, String>();
 		if ( requestMatcher.apply( exchange, properties ) )
 			exchange.setRelativePath( targetPath.replace( properties ) );
-		chain.executeNext();
+		next.handleRequest(exchange);
 	}
 
-	public static RequestHook from( final RewritableRule rule )
+	public static HttpHandler from( final RewritableRule rule, final HttpHandler next )
 	{
 		return new RewriteRequestHook(
 			DefaultMatcher.from( rule ),
-			URLMatcher.compile( rule.target() ) );
+			URLMatcher.compile( rule.target() ), next );
 	}
 }

@@ -15,8 +15,8 @@ public class RoutingMethodExceptionHandlerTest extends TestCase {
 
 	@Test
 	public void grantThatHandleNullPointerException() {
-		Throwable nullPointerException = new NullPointerException();
-		Response handledResponse = handler.handle( nullPointerException );
+		final Throwable nullPointerException = new NullPointerException();
+		final Response handledResponse = handler.handle( nullPointerException );
 		assertNotNull( handledResponse );
 	}
 }

@@ -6,10 +6,9 @@ import java.io.IOException;
 
 public interface WebSocketHandler {
 
-	public void onOpen( final WebSocketSession session );
+	void onOpen( final WebSocketSession session );
 
-	public void onText( final WebSocketSession session, final String message )
-		throws IOException;
+	void onText( final WebSocketSession session, final String message ) throws IOException;
 
-	public void onClose( final WebSocketSession session, final CloseMessage cm );
+	void onClose( final WebSocketSession session, final CloseMessage cm );
 }

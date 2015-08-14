@@ -8,7 +8,9 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class MainClassService {
 
@@ -18,13 +20,15 @@ public class MainClassService {
 	final File workingDirectory;
 	final List<String> classpath;
 	final List<String> arguments;
-	
-	public MainClassService( final File workingDirectory, final String mainClass, final List<String> classpath, List<String> arguments ) {
+	final String jvmArgs;
+
+	public MainClassService( final File workingDirectory, final String mainClass, final List<String> classpath, final List<String> arguments, final String jvmArgs ) {
 		this.workingDirectory = workingDirectory;
 		this.mainClass = mainClass;
 		this.classpath = classpath;
 		this.arguments = arguments;
 		this.destroyer = new ProcessDestroyer();
+		this.jvmArgs = jvmArgs;
 		Runtime.getRuntime().addShutdownHook( destroyer );
 	}
 
@@ -32,7 +36,7 @@ public class MainClassService {
 		try {
 			stop();
 			start();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -42,6 +46,7 @@ public class MainClassService {
 	}
 
 	public Process start() throws IOException {
+		logImportantInformation();
 		val commandLine = createCommandLine();
 		val builder = new ProcessBuilder(commandLine);
 		builder.directory( workingDirectory );
@@ -54,9 +59,15 @@ public class MainClassService {
 		return processCurrentlyActive;
 	}
 
+	private void logImportantInformation() {
+		if ( jvmArgs != null && !jvmArgs.isEmpty() )
+			log.info("JVM OPTIONS DEFINED: " + jvmArgs);
+	}
+
 	List<String> createCommandLine() {
 		val commandLine = new ArrayList<String>();
 		commandLine.add(getJavaExecutable());
+		commandLine.addAll(getJvmArgsAsList());
 		commandLine.add("-cp");
 		commandLine.add(joinClassPath(classpath));
 		commandLine.add(mainClass);
@@ -64,17 +75,24 @@ public class MainClassService {
 		return commandLine;
 	}
 
+	List<String> getJvmArgsAsList(){
+		final List<String> list = new ArrayList<String>();
+		for ( final String arg : jvmArgs.split(" ") )
+			list.add(arg);
+		return list;
+	}
+
 	String getJavaExecutable() {
 		val javaHome = System.getProperty("java.home");
 		return javaHome + File.separator + "bin" + File.separator + "java";
 	}
 
-	String joinClassPath(List<String> paths) {
+	String joinClassPath(final List<String> paths) {
 		val pathSeparator = System.getProperty("path.separator");
 		return join( paths, pathSeparator );
 	}
 
-	String join( List<String> strings, final String separator ) {
+	String join( final List<String> strings, final String separator ) {
 		val buffer = new StringBuilder();
 		boolean first = true;
 		for (val path : strings) {
@@ -96,7 +114,7 @@ public class MainClassService {
 		@Override
 		public void run() {
 			processCurrentlyActive.destroy();
-			System.out.println( mainClass + " has shutting down!");
+			log.info( mainClass + " has shutting down!");
 		}
 	}
 }

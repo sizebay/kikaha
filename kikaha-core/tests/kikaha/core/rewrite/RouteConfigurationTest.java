@@ -10,8 +10,8 @@ import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.Provided;
-import trip.spi.ServiceProvider;
 
 public class RouteConfigurationTest {
 
@@ -60,7 +60,7 @@ public class RouteConfigurationTest {
 	@SneakyThrows
 	public void provideDependencies()
 	{
-		val provider = new ServiceProvider();
+		val provider = new DefaultServiceProvider();
 		provider.providerFor( Configuration.class, DefaultConfiguration.loadDefaultConfiguration() );
 		provider.provideOn( this );
 	}

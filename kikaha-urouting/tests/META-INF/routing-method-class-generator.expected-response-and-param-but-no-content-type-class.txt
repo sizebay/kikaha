@@ -17,6 +17,7 @@ public class GeneratedRoutingMethod123 implements HttpHandler {
 	@Provided RoutingMethodDataProvider methodDataProvider;
 	@Provided RoutingMethodExceptionHandler exceptionHandler;
 	
+	@Provided trip.spi.ServiceProvider provider;
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
@@ -28,6 +29,7 @@ public class GeneratedRoutingMethod123 implements HttpHandler {
 				exchange.startBlocking();
 		try {
 			final kikaha.urouting.samples.RetrieveRoutes instance = new kikaha.urouting.samples.RetrieveRoutes();
+			provider.provideOn( instance );
 			final String response = instance.renderRelatoMais( true );
 				responseWriter.write( exchange, response );
 		} catch ( Throwable cause ) {

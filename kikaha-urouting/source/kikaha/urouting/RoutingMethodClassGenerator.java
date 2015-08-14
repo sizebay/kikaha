@@ -1,13 +1,13 @@
 package kikaha.urouting;
 
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-
 import java.io.IOException;
 import java.io.Writer;
 
 import javax.annotation.processing.Filer;
 import javax.tools.JavaFileObject;
+
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
 
 public class RoutingMethodClassGenerator {
 
@@ -21,11 +21,9 @@ public class RoutingMethodClassGenerator {
 	}
 
 	public void generate( RoutingMethodData clazz ) throws IOException {
-		String methodCanonicalName = clazz.getType() + "." + clazz.getMethodName();
-		System.out.println( "Generating class for method " + methodCanonicalName );
-		String name = createClassCanonicalName( clazz );
-		JavaFileObject sourceFile = filer.createSourceFile( name );
-		Writer writer = sourceFile.openWriter();
+		final String name = createClassCanonicalName( clazz );
+		final JavaFileObject sourceFile = filer.createSourceFile( name );
+		final Writer writer = sourceFile.openWriter();
 		this.providedClazzTemplate.execute( writer, clazz );
 		writer.close();
 	}

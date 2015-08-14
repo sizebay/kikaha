@@ -1,5 +1,7 @@
 package kikaha.hazelcast.config;
 
+import java.util.List;
+
 import lombok.val;
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
@@ -30,7 +32,8 @@ public class MapStoreConfigurationListener
 	private void handleEntryListeners( MapConfig mapConfig )
 			throws ClassNotFoundException, ServiceProviderException
 	{
-		for ( val mapEntryListener : mapConfig.getEntryListenerConfigs() )
+		final List<EntryListenerConfig> configs = mapConfig.getEntryListenerConfigs();
+		for ( val mapEntryListener : configs )
 			setImplementation( mapEntryListener );
 	}
 

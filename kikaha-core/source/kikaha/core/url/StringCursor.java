@@ -55,6 +55,10 @@ public class StringCursor {
 		mark = cursor + shiftedCharacters;
 	}
 
+	public void cursorAt( final int newPos ){
+		cursor = newPos;
+	}
+
 	public void reset() {
 		cursor = 0;
 	}

@@ -1,6 +1,6 @@
 package kikaha.core.url;
 
-public class URL {
+public abstract class URL {
 
 	public static String removeTrailingCharacter( final String original ) {
 		final StringBuilder builder = new StringBuilder( original );

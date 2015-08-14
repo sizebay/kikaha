@@ -8,11 +8,7 @@ public interface AuthenticationRuleConfiguration {
 
 	List<String> exceptionPatterns();
 
-	String identityManager();
-
-	String notificationReceiver();
-
-	String securityContextFactory();
+	List<String> identityManagers();
 
 	List<String> mechanisms();
 

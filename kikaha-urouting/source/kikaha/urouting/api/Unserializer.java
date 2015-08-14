@@ -1,8 +1,10 @@
 package kikaha.urouting.api;
 
-import java.io.Reader;
+import io.undertow.server.HttpServerExchange;
+
+import java.io.IOException;
 
 public interface Unserializer {
 
-	<T> T unserialize( final Reader input, final Class<T> targetClass ) throws RoutingException;
+	<T> T unserialize( final HttpServerExchange input, final Class<T> targetClass, String encoding ) throws IOException;
 }

@@ -4,12 +4,10 @@ import kikaha.core.api.conf.Configuration;
 import kikaha.hazelcast.config.HazelcastConfiguration.ClusterClientConfig;
 import lombok.Getter;
 import lombok.val;
-import lombok.extern.java.Log;
 import trip.spi.Producer;
 import trip.spi.Provided;
 import trip.spi.ProvidedServices;
 import trip.spi.ServiceProvider;
-import trip.spi.ServiceProviderException;
 import trip.spi.Singleton;
 
 import com.hazelcast.client.HazelcastClient;
@@ -20,7 +18,6 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
-@Log
 @Singleton
 public class HazelcastInstanceProducer {
 
@@ -48,7 +45,7 @@ public class HazelcastInstanceProducer {
 	 * {@code HazelcastInstanceProducer} and call
 	 * {@code createHazelcastInstance()} method manually to produce more
 	 * Hazelcast instances.
-	 * 
+	 *
 	 * @return a HazelcastInstance
 	 * @see HazelcastInstanceProducer#createHazelcastInstance()
 	 */
@@ -63,10 +60,10 @@ public class HazelcastInstanceProducer {
 	 * that connects to a cluster node, otherwise, it will create an instance
 	 * that behaves like a cluster node.<br>
 	 * <br>
-	 * 
+	 *
 	 * <b>Note:</b> you are always able to provide your own {@link Config} or
 	 * {@link ClientConfig} implementation through tRip producer.
-	 * 
+	 *
 	 * @return a HazelcastInstance
 	 */
 	public HazelcastInstance createHazelcastInstance() {
@@ -77,51 +74,34 @@ public class HazelcastInstanceProducer {
 			}
 			final Config cfg = loadConfig();
 			return Hazelcast.newHazelcastInstance( cfg );
-		} catch ( Exception cause ) {
+		// UNCHECKED: It should handle any exception thrown
+		} catch ( final Exception cause ) {
+		// CHECKED
 			throw new IllegalStateException( cause );
-		}
-	}
-
-	ClientConfig loadClientConfig() {
-		try {
-			ClientConfig clientConfig = provider.load( ClientConfig.class );
-			if ( clientConfig == null )
-				clientConfig = createClientConfiguration();
-			return clientConfig;
-		} catch ( ServiceProviderException cause ) {
-			log.warning( "Could not read Hazelcast Client Configuration: " + cause.getMessage() + ". Creating one manually." );
-			return createClientConfiguration();
 		}
 	}
 
 	/**
 	 * Configure a connection as a client to a remote cluster node.
-	 * 
+	 *
 	 * @return ClientConfig
 	 */
-	ClientConfig createClientConfiguration() {
+	ClientConfig loadClientConfig() {
 		final ClientConfig clientConfig = new ClientConfig();
 		final ClusterClientConfig clusterClient = hazelcastConfig.clusterClient();
 		final GroupConfig groupConfig = clientConfig.getGroupConfig();
 		configureGroupIdentification( clusterClient, groupConfig );
-		for ( String address : clusterClient.addresses() )
+		for ( final String address : clusterClient.addresses() )
 			clientConfig.getNetworkConfig().addAddress( address );
 		return clientConfig;
 	}
 
+	/**
+	 * Configure a connection as a cluster node.
+	 *
+	 * @return ClientConfig
+	 */
 	Config loadConfig() throws Exception {
-		try {
-			Config config = provider.load( Config.class );
-			if ( config == null )
-				config = createConfig();
-			return config;
-		} catch ( ServiceProviderException cause ) {
-			log.warning( "Could not read Hazelcast Programmatically Configuration: " + cause.getMessage() + ". Creating one manually." );
-			return createConfig();
-		}
-	}
-
-	Config createConfig() throws Exception {
 		final Config config = new XmlConfigBuilder().build();
 		config.setManagedContext( managedContext );
 		notifyConfigListeners( config );
@@ -145,7 +125,7 @@ public class HazelcastInstanceProducer {
 	 * the data to connect to the remote cluster node. On cluster node
 	 * configurations, it defines the expected parameters when a client tries to
 	 * connect with it.
-	 * 
+	 *
 	 * @param clusterClient
 	 * @param groupConfig
 	 */

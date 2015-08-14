@@ -4,8 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import kikaha.core.websocket.WebSocketSession;
 import lombok.SneakyThrows;
@@ -16,8 +18,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.Provided;
-import trip.spi.ServiceProvider;
 
 @RunWith( MockitoJUnitRunner.class )
 public class WebSocketDataProviderTest {
@@ -42,10 +44,10 @@ public class WebSocketDataProviderTest {
 	@Test
 	@SneakyThrows
 	public void ensureThatCouldProvideAHeaderParameter() {
-		final HashMap<String, String> params = new HashMap<>();
-		params.put( "Expires", "1234560321" );
-		doReturn( params ).when( session ).requestParameters();
-		final Date pathParam = provider.getPathParam( session, "Expires", Date.class );
+		final HashMap<String, List<String>> params = new HashMap<>();
+		params.put( "Expires", Arrays.asList( "1234560321" ) );
+		doReturn( params ).when( session ).requestHeaders();
+		final Date pathParam = provider.getHeaderParam( session, "Expires", Date.class );
 		assertNotNull( pathParam );
 		assertEquals( pathParam, new Date( 1234560321l ) );
 	}
@@ -53,6 +55,6 @@ public class WebSocketDataProviderTest {
 	@Before
 	@SneakyThrows
 	public void provideDependencies() {
-		new ServiceProvider().provideOn( this );
+		new DefaultServiceProvider().provideOn( this );
 	}
 }

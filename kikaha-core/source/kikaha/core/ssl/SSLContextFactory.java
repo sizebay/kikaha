@@ -18,7 +18,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import kikaha.core.api.conf.Configuration;
-import kikaha.core.api.conf.SSLConfiguration;
 import lombok.val;
 
 import org.xnio.IoUtils;
@@ -39,7 +38,7 @@ public class SSLContextFactory {
 	Configuration configuration;
 
 	/**
-	 * Create a SSLContext based on data defined in {@link SSLConfiguration}.
+	 * Create a SSLContext based on data defined in {@link kikaha.core.api.conf.SSLConfiguration}.
 	 * 
 	 * @return
 	 * @throws IOException

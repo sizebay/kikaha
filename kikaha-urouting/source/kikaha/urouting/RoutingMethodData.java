@@ -55,6 +55,11 @@ public class RoutingMethodData {
 		return hashCode() & 0xffffffffl;
 	}
 
+	@Override
+	public String toString() {
+		return getHttpMethod() + ":" + getHttpPath() + " -> " + getType() + "." + getMethodName();
+	}
+
 	public static RoutingMethodData from(
 		final ExecutableElement method,
 		final Class<? extends Annotation> httpMethodAnnotation )
@@ -86,7 +91,11 @@ public class RoutingMethodData {
 	private static boolean hasIOBlockingOperations( final String methodParams )
 	{
 		return methodParams.contains( "methodDataProvider.getBody" )
-			|| methodParams.contains( "methodDataProvider.getFormParam" );
+			|| methodParams.contains( "methodDataProvider.getQueryParam" )
+			|| methodParams.contains( "methodDataProvider.getHeaderParam" )
+			|| methodParams.contains( "methodDataProvider.getCookieParam" )
+			|| methodParams.contains( "methodDataProvider.getFormParam" )
+			|| methodParams.contains( "methodDataProvider.getData" );
 	}
 
 	public static String extractPackageName( final String canonicalName )
@@ -200,8 +209,9 @@ public class RoutingMethodData {
 	static String extractServiceInterfaceFrom( final ExecutableElement method ) {
 		val classElement = (TypeElement)method.getEnclosingElement();
 		val canonicalName = getServiceInterfaceProviderClass( classElement ).toString();
-		if ( Singleton.class.getCanonicalName().equals( canonicalName )
-				|| Stateless.class.getCanonicalName().equals( canonicalName ) )
+		if ( canonicalName.isEmpty()
+		||   Singleton.class.getCanonicalName().equals( canonicalName )
+		||   Stateless.class.getCanonicalName().equals( canonicalName ) )
 			return classElement.asType().toString();
 		return canonicalName;
 	}

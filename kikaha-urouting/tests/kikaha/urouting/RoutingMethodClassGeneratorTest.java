@@ -63,11 +63,16 @@ public class RoutingMethodClassGeneratorTest extends TestCase {
 	}
 
 	RoutingMethodData createData( final String returnType, final String responseContentType, final String params, final String serviceInterface ) {
+		final boolean hasIO = isNotEmpty(returnType) || isNotEmpty( params );
 		return new RoutingMethodData(
 			RetrieveRoutes.class.getCanonicalName(),
 			RetrieveRoutes.class.getPackage().toString(),
 			"renderRelatoMais", params, returnType, responseContentType,
-			"/hello/world", "GET", serviceInterface, false, false, false );
+			"/hello/world", "GET", serviceInterface, hasIO, false, false );
+	}
+
+	boolean isNotEmpty( String s ){
+		return s != null && !s.isEmpty();
 	}
 
 	@SneakyThrows

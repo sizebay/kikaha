@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.ServiceProvider;
 
 import com.hazelcast.core.Hazelcast;
@@ -22,7 +23,7 @@ public abstract class HazelcastTestCase {
 	@SneakyThrows
 	public void injectDependencies() {
 		val config = DefaultConfiguration.loadDefaultConfiguration();
-		val provider = new ServiceProvider();
+		val provider = new DefaultServiceProvider();
 		provider.providerFor( Config.class, config.config() );
 		provider.providerFor( Configuration.class, config );
 
@@ -35,7 +36,7 @@ public abstract class HazelcastTestCase {
 
 	protected void afterProvideDependencies() {}
 
-	protected void provideExtraDependencies( ServiceProvider provider ) {}
+	protected void provideExtraDependencies( final ServiceProvider provider ) {}
 
 	@After
 	public void shutdownHazelcast() {

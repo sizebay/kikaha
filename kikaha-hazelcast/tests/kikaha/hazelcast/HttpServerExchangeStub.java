@@ -23,7 +23,7 @@ import org.xnio.conduits.ConduitStreamSourceChannel;
 import org.xnio.conduits.StreamSinkConduit;
 import org.xnio.conduits.StreamSourceConduit;
 
-public class HttpServerExchangeStub {
+public abstract class HttpServerExchangeStub {
 
 	public static HttpServerExchange createHttpExchange() {
 		final HeaderMap headerMap = new HeaderMap();

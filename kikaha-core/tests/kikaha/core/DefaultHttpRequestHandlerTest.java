@@ -3,22 +3,16 @@ package kikaha.core;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.session.InMemorySessionManager;
 import io.undertow.server.session.SessionConfig;
 import io.undertow.server.session.SessionCookieConfig;
 import io.undertow.server.session.SessionManager;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import kikaha.core.api.DeploymentContext;
-import kikaha.core.api.RequestHook;
-import kikaha.core.api.RequestHookChain;
 import kikaha.core.api.KikahaException;
 import kikaha.core.impl.DefaultHttpRequestHandler;
 import lombok.SneakyThrows;
@@ -38,7 +32,7 @@ public class DefaultHttpRequestHandlerTest {
 	DeploymentContext context;
 
 	@Mock
-	RequestHook requestHook;
+	HttpHandler rootHandler;
 
 	@Test
 	@SneakyThrows
@@ -56,15 +50,9 @@ public class DefaultHttpRequestHandlerTest {
 
 	@Test
 	public void ensureThatDelegateRequestToMockedRequestHook() throws Exception, KikahaException {
-		doReturn( createHookChain() ).when( context ).requestHooks();
+		doReturn( rootHandler ).when( context ).rootHandler();
 		val handler = new DefaultHttpRequestHandler( context );
 		handler.handleRequest( exchange );
-		verify( requestHook ).execute( any( RequestHookChain.class ), eq( exchange ) );
-	}
-
-	List<RequestHook> createHookChain() {
-		val chain = new ArrayList<RequestHook>();
-		chain.add( requestHook );
-		return chain;
+		verify( rootHandler ).handleRequest(eq( exchange ));
 	}
 }

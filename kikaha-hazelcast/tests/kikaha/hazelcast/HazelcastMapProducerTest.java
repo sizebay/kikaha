@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.junit.Test;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
 
@@ -19,7 +20,7 @@ import com.hazelcast.core.IMap;
 
 public class HazelcastMapProducerTest extends HazelcastTestCase {
 
-	final ServiceProvider provider = new ServiceProvider();
+	final ServiceProvider provider = new DefaultServiceProvider();
 
 	@Provided
 	@Source( "users" )
@@ -38,7 +39,7 @@ public class HazelcastMapProducerTest extends HazelcastTestCase {
 	}
 
 	void persist( User user ) {
-		Long id = user.getId();
+		final Long id = user.getId();
 		users.put( id, user );
 	}
 }

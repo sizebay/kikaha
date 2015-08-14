@@ -7,8 +7,7 @@ import io.undertow.server.handlers.form.FormData.FormValue;
 import io.undertow.util.Headers;
 import io.undertow.util.PathTemplateMatch;
 
-import java.io.Reader;
-import java.nio.channels.Channels;
+import java.io.IOException;
 import java.util.Queue;
 
 import kikaha.urouting.api.ContextProducer;
@@ -18,10 +17,8 @@ import kikaha.urouting.api.ConverterFactory;
 import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Unserializer;
 import trip.spi.Provided;
-import trip.spi.ServiceProvider;
 import trip.spi.ServiceProviderException;
 import trip.spi.Singleton;
-import trip.spi.helpers.KeyValueProviderContext;
 
 /**
  * Provides data to a routing method.
@@ -33,10 +30,10 @@ public class RoutingMethodDataProvider {
 	ConverterFactory converterFactory;
 
 	@Provided
-	ServiceProvider provider;
+	ContextProducerFactory contextProducerFactory;
 
 	@Provided
-	ContextProducerFactory contextProducerFactory;
+	SerializerAndUnserializerProvider serializerAndUnserializerProvider;
 
 	/**
 	 * Get a cookie from request converted to the {@code <T>} type as defined by
@@ -139,10 +136,9 @@ public class RoutingMethodDataProvider {
 	 * @param exchange
 	 * @param clazz
 	 * @return
-	 * @throws ServiceProviderException
-	 * @throws RoutingException
+	 * @throws IOException
 	 */
-	public <T> T getBody( final HttpServerExchange exchange, final Class<T> clazz ) throws ServiceProviderException, RoutingException {
+	public <T> T getBody( final HttpServerExchange exchange, final Class<T> clazz ) throws IOException {
 		return getBody( exchange, clazz, null );
 	}
 
@@ -163,12 +159,10 @@ public class RoutingMethodDataProvider {
 	 * @param clazz
 	 * @param defaulConsumingContentType
 	 * @return
-	 * @throws ServiceProviderException
-	 * @throws RoutingException
-	 *             when no {@link Unserializer} implementation was found
+	 * @throws IOException
 	 */
 	public <T> T getBody( final HttpServerExchange exchange, final Class<T> clazz, final String defaulConsumingContentType )
-			throws ServiceProviderException, RoutingException {
+			throws IOException {
 		String contentEncoding = exchange.getRequestHeaders().getFirst( Headers.CONTENT_ENCODING_STRING );
 		if ( contentEncoding == null )
 			contentEncoding = "UTF-8";
@@ -177,35 +171,12 @@ public class RoutingMethodDataProvider {
 	}
 
 	<T> T unserializeReceivedBodyStream( final HttpServerExchange exchange, final Class<T> clazz, final String defaulConsumingContentType,
-		final String contentEncoding, final String contentType ) throws ServiceProviderException, RoutingException
+		final String contentEncoding, final String contentType ) throws IOException
 	{
 		if ( !exchange.isBlocking() )
 			exchange.startBlocking();
-		final Unserializer unserializer = getUnserializer( contentType, defaulConsumingContentType );
-		final Reader reader = Channels.newReader( exchange.getRequestChannel(), contentEncoding );
-		return unserializer.unserialize( reader, clazz );
-	}
-
-	/**
-	 * Retrieves an {@link Unserializer} for a given {@code contentType}
-	 * argument. When no {@link Unserializer} is found it uses the
-	 * {@code defaulConsumingContentType} argument to seek another one. It
-	 * throws {@link RoutingException} when no decoder was found.
-	 *
-	 * @param contentType
-	 * @param defaulConsumingContentType
-	 * @return
-	 * @throws ServiceProviderException
-	 * @throws RoutingException
-	 */
-	private Unserializer getUnserializer( final String contentType, final String defaulConsumingContentType ) throws ServiceProviderException,
-			RoutingException {
-		Unserializer unserializer = provider.load( Unserializer.class, contentType );
-		if ( unserializer == null && defaulConsumingContentType != null )
-			unserializer = provider.load( Unserializer.class, defaulConsumingContentType );
-		if ( unserializer == null )
-			throw new RoutingException( "BadRequest: No unserializer found this request." );
-		return unserializer;
+		final Unserializer unserializer = serializerAndUnserializerProvider.getUnserializerFor( contentType, defaulConsumingContentType );
+		return unserializer.unserialize( exchange, clazz, contentEncoding );
 	}
 
 	/**
@@ -221,9 +192,6 @@ public class RoutingMethodDataProvider {
 		final ContextProducer<T> producerFor = contextProducerFactory.producerFor( clazz );
 		if ( producerFor != null )
 			return producerFor.produce( exchange );
-
-		final KeyValueProviderContext context = new KeyValueProviderContext();
-		context.attribute( HttpServerExchange.class, exchange );
-		return provider.load( clazz, context );
+		throw new RoutingException("No context provider for " + clazz.getCanonicalName() );
 	}
 }

@@ -9,8 +9,10 @@ import io.undertow.websockets.core.CloseMessage;
 import java.io.IOException;
 
 import kikaha.core.api.DeploymentContext;
-import kikaha.core.api.DeploymentHook;
+import kikaha.core.api.DeploymentListener;
 import kikaha.core.api.WebResource;
+import kikaha.core.api.conf.Configuration;
+import kikaha.core.impl.conf.DefaultConfiguration;
 import lombok.SneakyThrows;
 
 import org.junit.Before;
@@ -19,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import trip.spi.DefaultServiceProvider;
 import trip.spi.Provided;
 import trip.spi.ServiceProvider;
 
@@ -28,15 +31,16 @@ public class WebSocketDeploymentHookTest {
 	@Mock
 	DeploymentContext context;
 
-	@Provided( exposedAs = DeploymentHook.class )
+	@Provided( exposedAs = DeploymentListener.class )
 	WebSocketDeploymentHook deploymentHook;
 
 	@Before
 	@SneakyThrows
 	public void setup() {
-		final ServiceProvider serviceProvider = new ServiceProvider();
-		serviceProvider.providerFor( WebSocketHandler.class, new MyFirstWebSocket() );
-		serviceProvider.provideOn( this );
+		final ServiceProvider provider = new DefaultServiceProvider();
+		provider.providerFor( Configuration.class, DefaultConfiguration.loadDefaultConfiguration() );
+		provider.providerFor( WebSocketHandler.class, new MyFirstWebSocket() );
+		provider.provideOn( this );
 	}
 
 	@Test

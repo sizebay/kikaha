@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith( MockitoJUnitRunner.class )
+// UNCHECKED: too long methods
 public class WebSocketSessionTest {
 
 	static final String URL_1 = "ws://localhost/url/1";

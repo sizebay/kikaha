@@ -28,20 +28,24 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 	{{#serviceInterface}}
 	@Provided {{{serviceInterface}}} instance;
 	{{/serviceInterface}}
+	{{^serviceInterface}}
+	@Provided trip.spi.ServiceProvider provider;
+	{{/serviceInterface}}
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
-		{{#returnType}}
+		{{#hasIOBound}}
 			if ( exchange.isInIoThread() ) {
 				exchange.dispatch(this);
 				return;
 			}
 			else if ( !exchange.isInIoThread() && !exchange.isBlocking() )
 				exchange.startBlocking();
-		{{/returnType}}
+		{{/hasIOBound}}
 		try {
 		{{^serviceInterface}}
 			final {{{type}}} instance = new {{{type}}}();
+			provider.provideOn( instance );
 		{{/serviceInterface}}
 		{{#isMultiPart}}
 			final FormDataParser parser = FormParserFactory.builder().build().createParser(exchange);

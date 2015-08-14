@@ -4,17 +4,17 @@ import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
 import io.undertow.websockets.WebSocketConnectionCallback;
 import kikaha.core.api.DeploymentContext;
-import kikaha.core.api.DeploymentHook;
+import kikaha.core.api.DeploymentListener;
 import kikaha.core.api.WebResource;
 import kikaha.core.url.URL;
 import kikaha.core.url.URLMatcher;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import trip.spi.ProvidedServices;
 import trip.spi.Singleton;
 
-@Log
-@Singleton( exposedAs = DeploymentHook.class )
-public class WebSocketDeploymentHook implements DeploymentHook {
+@Slf4j
+@Singleton( exposedAs = DeploymentListener.class )
+public class WebSocketDeploymentHook implements DeploymentListener {
 
 	@ProvidedServices( exposedAs = WebSocketHandler.class )
 	Iterable<WebSocketHandler> handlers;
@@ -29,7 +29,7 @@ public class WebSocketDeploymentHook implements DeploymentHook {
 	void deploy( final DeploymentContext context, final WebSocketHandler handler ) {
 		final WebResource webResource = handler.getClass().getAnnotation( WebResource.class );
 		if ( webResource == null ) {
-			log.warning( "No WebResource annotation found for " + handler.getClass().getCanonicalName() + ": Skipped!" );
+			log.warn( "No WebResource annotation found for " + handler.getClass().getCanonicalName() + ": Skipped!" );
 			return;
 		}
 		context.register( webResource.value(), "GET", wrappedWebsocketHandlerFrom( handler, webResource ) );

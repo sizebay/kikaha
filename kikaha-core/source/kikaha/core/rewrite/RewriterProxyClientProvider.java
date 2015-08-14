@@ -54,9 +54,11 @@ public class RewriterProxyClientProvider implements ProxyClient {
 	}
 
 	@Override
+	// UNCHECKED: more than 4 parameters because it implements a superinterface
 	public void getConnection( final ProxyTarget target, final HttpServerExchange exchange,
 		final ProxyCallback<ProxyConnection> callback,
 		final long timeout, final TimeUnit timeUnit )
+	// CHECKED
 	{
 		try {
 			getConnection( exchange, callback );
@@ -76,6 +78,13 @@ public class RewriterProxyClientProvider implements ProxyClient {
 				exchange.getConnection().removeAttachment( clientAttachmentKey );
 		client.connect( new ConnectNotifier( callback, exchange ), new URI( targetPath ), exchange.getIoThread(),
 			exchange.getConnection().getBufferPool(), OptionMap.EMPTY );
+	}
+
+	public static ProxyClient from( final RewritableRule rule )
+	{
+		return new RewriterProxyClientProvider(
+			DefaultMatcher.from( rule ),
+			rule.target() );
 	}
 
 	@RequiredArgsConstructor
@@ -99,12 +108,5 @@ public class RewriterProxyClientProvider implements ProxyClient {
 		{
 			callback.failed( exchange );
 		}
-	}
-
-	public static ProxyClient from( final RewritableRule rule )
-	{
-		return new RewriterProxyClientProvider(
-			DefaultMatcher.from( rule ),
-			rule.target() );
 	}
 }

@@ -4,6 +4,7 @@ import static kikaha.urouting.AnnotationProcessorUtil.retrieveMethodsAnnotatedWi
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -15,6 +16,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic.Kind;
 
 import kikaha.urouting.api.DELETE;
 import kikaha.urouting.api.GET;
@@ -50,14 +52,23 @@ public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
 	}
 
 	void generateRoutingMethods( final RoundEnvironment roundEnv, final Class<? extends Annotation> httpMethodAnnotation ) throws IOException {
-		final Iterable<Element> elementsAnnotatedWith = retrieveMethodsAnnotatedWith( roundEnv, httpMethodAnnotation );
+		final List<Element> elementsAnnotatedWith = retrieveMethodsAnnotatedWith( roundEnv, httpMethodAnnotation );
+		if ( !elementsAnnotatedWith.isEmpty() )
+			log( "Creating Undertow routes for HTTP methods" );
 		for ( final Element method : elementsAnnotatedWith )
 			generateRoutingMethods( (ExecutableElement)method, roundEnv, httpMethodAnnotation );
 	}
 
 	void generateRoutingMethods( final ExecutableElement method, final RoundEnvironment roundEnv,
 			final Class<? extends Annotation> httpMethodAnnotation ) throws IOException {
-		generator.generate( RoutingMethodData.from( method, httpMethodAnnotation ) );
+		final RoutingMethodData routingMethodData = RoutingMethodData.from( method, httpMethodAnnotation );
+		log( " > method " + routingMethodData );
+		generator.generate( routingMethodData );
+	}
+
+	protected void log(final String msg) {
+		System.out.println( "[INFO] " + msg );
+		processingEnv.getMessager().printMessage( Kind.NOTE, msg );
 	}
 
 	Filer filer() {

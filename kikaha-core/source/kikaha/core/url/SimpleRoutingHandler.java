@@ -43,8 +43,10 @@ public class SimpleRoutingHandler implements HttpHandler {
 		return null;
 	}
 
+	// UNCHECKED: It throws Exception because it implements a superinterface method
 	@Override
 	public void handleRequest( final HttpServerExchange exchange ) throws Exception {
+	// CHECKED
 		final HttpString method = exchange.getRequestMethod();
 		final List<Entry> list = matchersByMethod.get( method );
 
