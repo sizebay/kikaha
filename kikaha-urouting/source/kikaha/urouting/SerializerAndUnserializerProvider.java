@@ -30,7 +30,7 @@ public class SerializerAndUnserializerProvider {
 	 * throws {@link RoutingException} when no decoder was found.
 	 *
 	 * @param contentType
-	 * @param defaulConsumingContentType
+	 * @param fallbackContentType
 	 * @return
 	 * @throws IOException
 	 */
