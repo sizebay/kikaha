@@ -4,7 +4,7 @@
 
 	<parent>
 		<groupId>io.skullabs.kikaha</groupId>
-		<version>1.5.0</version>
+		<version>1.5.1</version>
 		<artifactId>kikaha-parent</artifactId>
 	</parent>
 
@@ -33,10 +33,10 @@
 			<artifactId>cdi-api</artifactId>
 			<version>1.2</version>
 			<exclusions>
-				<exclusion>
-					<groupId>javax.inject</groupId>
-					<artifactId>javax.inject</artifactId>
-				</exclusion>
+<!-- 				<exclusion> -->
+<!-- 					<groupId>javax.inject</groupId> -->
+<!-- 					<artifactId>javax.inject</artifactId> -->
+<!-- 				</exclusion> -->
 				<exclusion>
 					<groupId>javax.el</groupId>
 					<artifactId>javax.el-api</artifactId>
@@ -66,6 +66,12 @@
 							<filters>
 								<filter>
 									<artifact>io.skullabs.trip:trip-jsr-330</artifact>
+									<includes>
+										<include>**</include>
+									</includes>
+								</filter>
+								<filter>
+									<artifact>javax.inject:javax.inject</artifact>
 									<includes>
 										<include>**</include>
 									</includes>
