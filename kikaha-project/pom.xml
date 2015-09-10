@@ -72,7 +72,7 @@
 		<version.hikaricp>2.3.5</version.hikaricp>
 		<version.pgjdbc-ng>0.5</version.pgjdbc-ng>
 		<version.mysql.connectorj>5.1.30</version.mysql.connectorj>
-		<version.vibur>3.0</version.vibur>
+		<version.vibur>4.0</version.vibur>
 		<version.postgresql>9.4-1201-jdbc41</version.postgresql>
 		<!-- Plugin's Versions -->
 		<version.compiler.plugin>3.3</version.compiler.plugin>
@@ -256,13 +256,11 @@
 				<groupId>org.vibur</groupId>
 				<artifactId>vibur-dbcp</artifactId>
 				<version>${version.vibur}</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
 				<version>${version.postgresql}</version>
-				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
