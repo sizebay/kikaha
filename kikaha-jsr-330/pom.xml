@@ -16,16 +16,10 @@
 		<dependency>
 			<groupId>io.skullabs.trip</groupId>
 			<artifactId>trip-jsr-330</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>io.skullabs.trip</groupId>
-					<artifactId>trip-core</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>io.skullabs.trip</groupId>
-			<artifactId>trip-jsr-330</artifactId>
+			<artifactId>trip-core</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -33,10 +27,6 @@
 			<artifactId>cdi-api</artifactId>
 			<version>1.2</version>
 			<exclusions>
-<!-- 				<exclusion> -->
-<!-- 					<groupId>javax.inject</groupId> -->
-<!-- 					<artifactId>javax.inject</artifactId> -->
-<!-- 				</exclusion> -->
 				<exclusion>
 					<groupId>javax.el</groupId>
 					<artifactId>javax.el-api</artifactId>
