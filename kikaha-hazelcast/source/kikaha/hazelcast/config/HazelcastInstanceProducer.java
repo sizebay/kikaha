@@ -25,9 +25,6 @@ public class HazelcastInstanceProducer {
 	private final HazelcastInstance instance = createHazelcastInstance();
 
 	@Provided
-	ServiceProvider provider;
-
-	@Provided
 	HazelcastConfiguration hazelcastConfig;
 
 	@Provided
@@ -104,6 +101,12 @@ public class HazelcastInstanceProducer {
 	Config loadConfig() throws Exception {
 		final Config config = new XmlConfigBuilder().build();
 		config.setManagedContext( managedContext );
+		applyConfigCustomizations( config );
+
+		return config;
+	}
+
+	private void applyConfigCustomizations( final Config config ) throws Exception {
 		notifyConfigListeners( config );
 
 		final GroupConfig groupConfig = config.getGroupConfig();
@@ -111,8 +114,6 @@ public class HazelcastInstanceProducer {
 
 		if ( hazelcastConfig.overrideXmlConfig() )
 			configureGroupIdentification( clusterClient, groupConfig );
-
-		return config;
 	}
 
 	void notifyConfigListeners( final Config config ) throws Exception {

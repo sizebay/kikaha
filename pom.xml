@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.skullabs.kikaha</groupId>
-	<version>1.5.2</version>
+	<version>1.5.3</version>
 	<artifactId>kikaha-parent</artifactId>
 	<name>Kikaha</name>
 	<description>An absurdly fast micro container writen over Undertow</description>
@@ -69,7 +69,7 @@
 	<properties>
 		<!-- Dependencies Versions -->
 		<version.undertow>1.2.9.Final</version.undertow>
-		<version.trip>2.0.2</version.trip>
+		<version.trip>2.1.0</version.trip>
 		<version.config>1.2.0</version.config>
 		<version.jackson>2.5.3</version.jackson>
 		<version.hazelcast>3.5.1</version.hazelcast>
@@ -133,25 +133,25 @@
 			<!-- Module dependencies -->
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.5.2</version>
+				<version>1.5.3</version>
 				<artifactId>kikaha-core</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.5.2</version>
+				<version>1.5.3</version>
 				<artifactId>kikaha-urouting</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.5.2</version>
+				<version>1.5.3</version>
 				<artifactId>kikaha-urouting-jackson</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.5.2</version>
+				<version>1.5.3</version>
 				<artifactId>kikaha-hazelcast</artifactId>
 				<scope>compile</scope>
 			</dependency>
@@ -289,7 +289,7 @@
 				<!-- Preconfiguring kikaha maven plugin -->
 				<plugin>
 					<groupId>io.skullabs.kikaha</groupId>
-					<version>1.5.2</version>
+					<version>1.5.3</version>
 					<artifactId>kikaha-maven-plugin</artifactId>
 					<configuration>
 						<webresourcesPath>${config.webdir}</webresourcesPath>
