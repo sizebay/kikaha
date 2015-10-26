@@ -1,5 +1,7 @@
 package kikaha.hazelcast;
 
+import java.util.List;
+
 import kikaha.hazelcast.config.HazelcastProducedDataListener;
 import kikaha.hazelcast.config.HazelcastProducedDataListenerFactory;
 import trip.spi.Producer;
@@ -118,10 +120,11 @@ public class HazelcastDistributedDataStructuresProducer {
 	}
 
 	@SuppressWarnings("unchecked")
-	<T extends DistributedObject> void notifyDataWasProduced( T data, Class<?> dataType ){
-		final HazelcastProducedDataListener<T> listener = (HazelcastProducedDataListener<T>)
-				listenerFactory.getListenerFor( dataType );
-		if ( listener != null )
-			listener.dataProduced(data);
+	<T extends DistributedObject> void notifyDataWasProduced( T data, Class<?> dataType ) {
+		final List<HazelcastProducedDataListener<?>> listeners = listenerFactory.getListenerFor( dataType );
+		for ( final HazelcastProducedDataListener listener : listeners ) {
+			if ( listener != null )
+				listener.dataProduced( data );
+		}
 	}
 }

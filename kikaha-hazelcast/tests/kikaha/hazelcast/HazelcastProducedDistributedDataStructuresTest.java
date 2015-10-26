@@ -4,13 +4,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import kikaha.hazelcast.config.HazelcastProducedDataListener;
 import kikaha.hazelcast.config.HazelcastTestCase;
+import kikaha.hazelcast.config.IMapListener;
+import kikaha.hazelcast.config.SecondIMapListener;
 
 import org.junit.Test;
 
 import trip.spi.Provided;
-import trip.spi.ServiceProvider;
 
 import com.hazelcast.core.IExecutorService;
 import com.hazelcast.core.IList;
@@ -64,13 +64,16 @@ public class HazelcastProducedDistributedDataStructuresTest extends HazelcastTes
 	@Provided
 	@Source( "replicated-map" )
 	ReplicatedMap<Long,AtomicBoolean> replicatedMap;
-	
+
 	IMapListener listener = new IMapListener();
+
+	SecondIMapListener secondListener = new SecondIMapListener();
 
 	@Test
 	public void ensureThatEveryParamSupposedToBeProvidedWasCorrectlyProvided() {
 		assertTrue( IMap.class.isInstance( map ) );
-		assertTrue( listener.called );
+		assertTrue( IMapListener.called );
+		assertTrue( SecondIMapListener.called );
 		assertTrue( MultiMap.class.isInstance( multimap ) );
 		assertTrue( IQueue.class.isInstance( queue ) );
 		assertTrue( ISet.class.isInstance( set ) );
@@ -80,21 +83,5 @@ public class HazelcastProducedDistributedDataStructuresTest extends HazelcastTes
 		assertTrue( IExecutorService.class.isInstance( executorService ) );
 		assertTrue( ReplicatedMap.class.isInstance( replicatedMap ) );
 		assertTrue( IdGenerator.class.isInstance( idGenerator ) );
-	}
-
-	@Override
-	protected void provideExtraDependencies(ServiceProvider provider) {
-		provider.providerFor(HazelcastProducedDataListener.class, listener);
-	}
-}
-
-@SuppressWarnings("rawtypes")
-class IMapListener implements HazelcastProducedDataListener<IMap> {
-	
-	volatile boolean called = false;
-
-	@Override
-	public void dataProduced(IMap data) {
-		called = true;
 	}
 }

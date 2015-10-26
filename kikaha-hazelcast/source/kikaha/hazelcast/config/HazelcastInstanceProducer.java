@@ -7,7 +7,6 @@ import lombok.val;
 import trip.spi.Producer;
 import trip.spi.Provided;
 import trip.spi.ProvidedServices;
-import trip.spi.ServiceProvider;
 import trip.spi.Singleton;
 
 import com.hazelcast.client.HazelcastClient;
