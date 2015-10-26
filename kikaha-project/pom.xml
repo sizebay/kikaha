@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.skullabs.kikaha</groupId>
-	<version>1.5.4</version>
+	<version>1.5.5</version>
 	<artifactId>kikaha-project</artifactId>
 
 	<name>Kikaha: simple project (BOM)</name>
@@ -130,37 +130,37 @@
 			<!-- Module dependencies -->
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.5.4</version>
+				<version>1.5.5</version>
 				<artifactId>kikaha-core</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.5.4</version>
+				<version>1.5.5</version>
 				<artifactId>kikaha-jsr-330</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.5.4</version>
+				<version>1.5.5</version>
 				<artifactId>kikaha-urouting</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.5.4</version>
+				<version>1.5.5</version>
 				<artifactId>kikaha-urouting-jackson</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.5.4</version>
+				<version>1.5.5</version>
 				<artifactId>kikaha-urouting-mustache</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.5.4</version>
+				<version>1.5.5</version>
 				<artifactId>kikaha-hazelcast</artifactId>
 				<scope>compile</scope>
 			</dependency>
@@ -376,7 +376,7 @@
 				<!-- Preconfiguring kikaha maven plugin -->
 				<plugin>
 					<groupId>io.skullabs.kikaha</groupId>
-					<version>1.5.4</version>
+					<version>1.5.5</version>
 					<artifactId>kikaha-maven-plugin</artifactId>
 					<configuration>
 						<webresourcesPath>${config.dir.web}</webresourcesPath>
