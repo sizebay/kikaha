@@ -63,4 +63,8 @@ public interface Session {
      * @param name the name of the object to remove from this session
      */
     Object removeAttribute(final String name);
+
+	boolean hasChanged();
+
+	void flush();
 }

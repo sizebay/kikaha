@@ -8,17 +8,16 @@ import java.util.Map;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @RequiredArgsConstructor
 public class DefaultSession implements Session, Serializable {
 
 	private static final long serialVersionUID = -8643108956697914235L;
 
-	private Map<String, Object> attributes = new HashMap<>();
+	private final Map<String, Object> attributes = new HashMap<>();
 	private Account authenticatedAccount;
+	private boolean flushed = true;
 	final String id;
 
 	@Override
@@ -33,11 +32,28 @@ public class DefaultSession implements Session, Serializable {
 
 	@Override
 	public void setAttribute( String name, Object value ) {
+		flushed = true;
 		attributes.put( name, value );
+	}
+
+	@Override
+	public void setAuthenticatedAccount( Account account ) {
+		flushed = true;
+		authenticatedAccount = account;
 	}
 
 	@Override
 	public Object removeAttribute( String name ) {
 		return attributes.remove( name );
+	}
+
+	@Override
+	public boolean hasChanged() {
+		return flushed;
+	}
+
+	@Override
+	public void flush() {
+		flushed = false;
 	}
 }

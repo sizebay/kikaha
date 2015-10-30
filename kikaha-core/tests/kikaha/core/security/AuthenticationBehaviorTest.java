@@ -7,7 +7,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import io.undertow.security.api.SecurityContext;
 import io.undertow.security.idm.Account;
 import io.undertow.security.idm.Credential;
 import io.undertow.server.HttpServerExchange;
@@ -25,7 +24,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultSecurityContextTest {
+public class AuthenticationBehaviorTest {
 
 	static final String USERNAME = "username";
 	static final String PASSWORD = "password";
@@ -77,6 +76,6 @@ class SendDefaultUsernameAndPasswordAsCredential implements Answer<Account> {
 	public Account answer(InvocationOnMock invocation) throws Throwable {
 		final AuthenticationMechanism mechanism = (AuthenticationMechanism)invocation.getMock();
 		final Iterable<IdentityManager> managers = invocation.getArgumentAt(1, Iterable.class);
-		return mechanism.verify(managers, DefaultSecurityContextTest.CREDENTIAL);
+		return mechanism.verify(managers, AuthenticationBehaviorTest.CREDENTIAL);
 	}
 }
