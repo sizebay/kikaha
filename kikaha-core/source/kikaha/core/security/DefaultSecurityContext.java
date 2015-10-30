@@ -1,7 +1,6 @@
 package kikaha.core.security;
 
 import io.undertow.security.api.NotificationReceiver;
-import io.undertow.security.api.SecurityContext;
 import io.undertow.security.idm.Account;
 import io.undertow.security.idm.IdentityManager;
 import io.undertow.server.HttpServerExchange;
@@ -39,7 +38,7 @@ public class DefaultSecurityContext implements SecurityContext {
 			sendAuthenticationChallenge();
 		}
 		currentSession.setAuthenticatedAccount( account );
-		store.flush( currentSession );
+		updateCurrentSession();
 		return authenticated;
 	}
 
@@ -64,6 +63,13 @@ public class DefaultSecurityContext implements SecurityContext {
 	public void logout() {
 		if ( currentSession != null )
 			store.invalidateSession(currentSession);
+	}
+
+	@Override
+	public void updateCurrentSession() {
+		if ( currentSession.hasChanged() )
+			store.flush( currentSession );
+		currentSession.flush();
 	}
 
 	@Override
