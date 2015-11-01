@@ -67,9 +67,10 @@ public class DefaultSecurityContext implements SecurityContext {
 
 	@Override
 	public void updateCurrentSession() {
-		if ( currentSession.hasChanged() )
+		if ( currentSession.hasChanged() ) {
+			currentSession.flush();
 			store.flush( currentSession );
-		currentSession.flush();
+		}
 	}
 
 	@Override
