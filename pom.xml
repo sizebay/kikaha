@@ -57,6 +57,7 @@
 	<modules>
 		<module>kikaha-core</module>
 		<module>kikaha-jsr-330</module>
+		<module>kikaha-db</module>
 		<module>kikaha-urouting</module>
 		<module>kikaha-urouting-jackson</module>
 		<module>kikaha-urouting-mustache</module>
@@ -78,6 +79,7 @@
 		<version.lombok>1.16.4</version.lombok>
 		<version.mockito>1.10.19</version.mockito>
 		<version.jmustache>1.10</version.jmustache>
+		<version.vibur>5.0</version.vibur>
 		<!-- Plugin's Versions -->
 		<version.compiler.plugin>3.3</version.compiler.plugin>
 		<version.resources.plugin>2.6</version.resources.plugin>
@@ -211,6 +213,11 @@
 				<groupId>com.samskivert</groupId>
 				<artifactId>jmustache</artifactId>
 				<version>${version.jmustache}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.vibur</groupId>
+				<artifactId>vibur-dbcp</artifactId>
+				<version>${version.vibur}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
