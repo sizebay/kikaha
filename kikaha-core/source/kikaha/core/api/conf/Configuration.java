@@ -1,5 +1,7 @@
 package kikaha.core.api.conf;
 
+import java.util.Map;
+
 import com.typesafe.config.Config;
 
 public interface Configuration {
@@ -20,6 +22,8 @@ public interface Configuration {
 	SSLConfiguration ssl();
 
 	Routes routes();
+
+	Map<String, DatasourceConfiguration> datasources();
 
 	Config config();
 }

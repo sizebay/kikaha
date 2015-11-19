@@ -1,7 +1,11 @@
 package kikaha.core.impl.conf;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import kikaha.core.api.conf.AuthenticationConfiguration;
 import kikaha.core.api.conf.Configuration;
+import kikaha.core.api.conf.DatasourceConfiguration;
 import kikaha.core.api.conf.Routes;
 import kikaha.core.api.conf.SSLConfiguration;
 import lombok.Getter;
@@ -26,19 +30,34 @@ public class DefaultConfiguration implements Configuration {
 	final AuthenticationConfiguration authentication;
 	final SSLConfiguration ssl;
 	final Routes routes;
+	final Map<String, DatasourceConfiguration> datasources;
 	String resourcesPath;
 	
 	public DefaultConfiguration( final Config config, final String applicationName ) {
 		this.config = config;
 		this.applicationName = applicationName;
-		this.port = config().getInt( "server.port" );
-		this.host = getConfigString( "server.host" );
-		this.securePort = config().getInt( "server.secure-port" );
-		this.secureHost = getConfigString( "server.secure-host" );
-		this.welcomeFile = getConfigString( "server.welcome-file" );
-		this.authentication = createAuthenticationConfig();
-		this.ssl = createSSLConfiguration();
-		this.routes = readRoutes();
+		port = config().getInt( "server.port" );
+		host = getConfigString( "server.host" );
+		securePort = config().getInt( "server.secure-port" );
+		secureHost = getConfigString( "server.secure-host" );
+		welcomeFile = getConfigString( "server.welcome-file" );
+		authentication = createAuthenticationConfig();
+		datasources = createDatasourceConfigurations( config.getConfig( "server.datasources" ) );
+		ssl = createSSLConfiguration();
+		routes = readRoutes();
+	}
+
+	private Map<String, DatasourceConfiguration> createDatasourceConfigurations( Config dsConfig ) {
+		final Map<String, DatasourceConfiguration> confs = new HashMap<>();
+		final Config defaultConfig = dsConfig.getConfig( "default" );
+
+		for ( final String name : dsConfig.root().keySet() ) {
+			final Config foundDsConfig = dsConfig.getConfig( name ).withFallback( defaultConfig );
+			final DatasourceConfiguration datasourceConfig = DefaultDatasourceConfiguration.from( name, foundDsConfig );
+			if ( datasourceConfig != null )
+				confs.put( name, datasourceConfig );
+		}
+		return confs;
 	}
 
 	SSLConfiguration createSSLConfiguration() {

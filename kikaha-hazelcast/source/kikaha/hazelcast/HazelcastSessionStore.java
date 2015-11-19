@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 
+import kikaha.core.api.Source;
 import kikaha.core.security.AbstractCookieSessionStore;
 import kikaha.core.security.DefaultSession;
 import kikaha.core.security.Session;

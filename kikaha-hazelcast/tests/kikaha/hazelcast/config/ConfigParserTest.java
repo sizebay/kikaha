@@ -4,7 +4,7 @@ import static org.junit.Assert.assertNull;
 
 import java.util.concurrent.CountDownLatch;
 
-import kikaha.hazelcast.Source;
+import kikaha.core.api.Source;
 import lombok.SneakyThrows;
 
 import org.junit.Test;

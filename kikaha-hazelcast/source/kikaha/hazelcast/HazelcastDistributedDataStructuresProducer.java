@@ -2,6 +2,7 @@ package kikaha.hazelcast;
 
 import java.util.List;
 
+import kikaha.core.api.Source;
 import kikaha.hazelcast.config.HazelcastProducedDataListener;
 import kikaha.hazelcast.config.HazelcastProducedDataListenerFactory;
 import trip.spi.Producer;

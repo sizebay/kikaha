@@ -11,3 +11,5 @@ faces-config.xml
 .idea
 *.iml
 pom.xml.*
+derby.log
+

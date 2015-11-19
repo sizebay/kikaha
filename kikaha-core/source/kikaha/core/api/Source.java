@@ -1,4 +1,4 @@
-package kikaha.hazelcast;
+package kikaha.core.api;
 
 import java.lang.annotation.*;
 

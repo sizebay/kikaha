@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import kikaha.core.api.Source;
 import kikaha.hazelcast.config.HazelcastTestCase;
 import lombok.SneakyThrows;
 

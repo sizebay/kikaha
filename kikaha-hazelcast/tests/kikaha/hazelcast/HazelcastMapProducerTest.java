@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.Serializable;
 import java.util.Date;
 
+import kikaha.core.api.Source;
 import kikaha.hazelcast.config.HazelcastTestCase;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
