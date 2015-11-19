@@ -8,8 +8,12 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import io.undertow.security.idm.Account;
+import io.undertow.server.HttpServerExchange;
 
 import java.util.Arrays;
+
+import kikaha.core.HttpServerExchangeStub;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,14 +21,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import io.undertow.security.idm.Account;
-import io.undertow.server.HttpServerExchange;
-import kikaha.core.HttpServerExchangeStub;
-import kikaha.core.TestCase;
-
 @RunWith(MockitoJUnitRunner.class)
-public class UpdateCurrentSessionBehaviorTest
-		extends TestCase {
+public class UpdateCurrentSessionBehaviorTest {
 
 	final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
 	final Session session = new DefaultSession("1");

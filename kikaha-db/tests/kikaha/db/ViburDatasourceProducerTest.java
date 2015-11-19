@@ -6,16 +6,15 @@ import static org.junit.Assert.assertSame;
 import javax.sql.DataSource;
 
 import kikaha.core.api.Source;
-import kikaha.core.api.conf.Configuration;
-import kikaha.core.impl.conf.DefaultConfiguration;
+import kikaha.core.test.KikahaRunner;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.vibur.dbcp.ViburDBCPDataSource;
 
-import trip.spi.DefaultServiceProvider;
 import trip.spi.Provided;
 
+@RunWith( KikahaRunner.class )
 public class ViburDatasourceProducerTest {
 
 	@Provided
@@ -56,12 +55,5 @@ public class ViburDatasourceProducerTest {
 	@Test
 	public void ensureThatInjectedDataSourceIsTheSameInjectedViburDataSource() {
 		assertSame( defaultViburDatasource, defaultDatasource );
-	}
-
-	@Before
-	public void startPool() {
-		final DefaultServiceProvider provider = new DefaultServiceProvider();
-		provider.providerFor( Configuration.class, DefaultConfiguration.loadDefaultConfiguration() );
-		provider.provideOn( this );
 	}
 }

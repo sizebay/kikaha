@@ -1,5 +1,6 @@
 package kikaha.core.security;
 
+import static kikaha.core.test.KikahaTestCase.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
@@ -17,16 +18,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 import kikaha.core.HttpServerExchangeStub;
-import kikaha.core.TestCase;
 import kikaha.core.impl.conf.DefaultConfiguration;
+import kikaha.core.test.KikahaRunner;
 import lombok.val;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class AuthenticationRunnerTest extends TestCase {
+@RunWith( KikahaRunner.class )
+public class AuthenticationRunnerTest {
 
 	@Mock
 	SecurityContext securityContext;
@@ -95,15 +98,15 @@ public class AuthenticationRunnerTest extends TestCase {
 	}
 
 	void initializeExchange() {
-		this.exchange = HttpServerExchangeStub.createHttpExchange();
+		exchange = HttpServerExchangeStub.createHttpExchange();
 	}
 
 	void initializeAuthHandler() {
 		val formAuthConfig = DefaultConfiguration
 			.loadDefaultConfiguration().authentication().formAuth();
 		val matcher = mockAuthRuleMatcher();
-		this.matchedRule = spy( matcher.retrieveAuthenticationRuleForUrl( "/user" ) );
-		this.authHandler = spy( new AuthenticationRunner( exchange, rootHandler,
+		matchedRule = spy( matcher.retrieveAuthenticationRuleForUrl( "/user" ) );
+		authHandler = spy( new AuthenticationRunner( exchange, rootHandler,
 			securityContext, createExpectedRoles(), formAuthConfig ) );
 	}
 

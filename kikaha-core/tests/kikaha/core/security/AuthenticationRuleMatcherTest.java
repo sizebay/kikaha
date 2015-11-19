@@ -1,18 +1,21 @@
 package kikaha.core.security;
 
+import static kikaha.core.test.KikahaTestCase.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import kikaha.core.TestCase;
 import kikaha.core.impl.conf.DefaultAuthenticationConfiguration;
 import kikaha.core.impl.conf.DefaultConfiguration;
+import kikaha.core.test.KikahaRunner;
 import lombok.val;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import tests.AssertThat;
 
-public class AuthenticationRuleMatcherTest extends TestCase {
+@RunWith( KikahaRunner.class )
+public class AuthenticationRuleMatcherTest {
 
 	AuthenticationRuleMatcher matcher;
 
@@ -20,7 +23,7 @@ public class AuthenticationRuleMatcherTest extends TestCase {
 	public void initializeConfigurationAndMatcher() {
 		val defaultConfig = DefaultConfiguration.loadDefaultConfig().getConfig( "server.auth" );
 		val authConfig = new DefaultAuthenticationConfiguration( defaultConfig );
-		this.matcher = new AuthenticationRuleMatcher( provider, authConfig );
+		matcher = new AuthenticationRuleMatcher( provider, authConfig );
 	}
 
 	@Test

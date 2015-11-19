@@ -13,15 +13,11 @@ import lombok.RequiredArgsConstructor;
 
 import org.junit.Test;
 
-import trip.spi.DefaultServiceProvider;
 import trip.spi.Provided;
-import trip.spi.ServiceProvider;
 
 import com.hazelcast.core.IMap;
 
 public class HazelcastMapProducerTest extends HazelcastTestCase {
-
-	final ServiceProvider provider = new DefaultServiceProvider();
 
 	@Provided
 	@Source( "users" )

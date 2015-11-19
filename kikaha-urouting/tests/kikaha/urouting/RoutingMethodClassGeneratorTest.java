@@ -19,7 +19,7 @@ import lombok.val;
 
 import org.junit.Test;
 
-public class RoutingMethodClassGeneratorTest extends TestCase {
+public class RoutingMethodClassGeneratorTest {
 
 	final StringWriter outputFile = new StringWriter();
 	final Filer filer = createAnnotationFiler();
@@ -31,7 +31,7 @@ public class RoutingMethodClassGeneratorTest extends TestCase {
 		RoutingMethodData data = createData( null, "application/json", "", "java.lang.String" );
 		data = fixAnIdentier( data, 123 );
 		generator.generate( data );
-		final String expectedGeneratedClass = readFile( "routing-method-class-generator.expected-non-response-class.txt" );
+		final String expectedGeneratedClass = TestCase.readFile( "routing-method-class-generator.expected-non-response-class.txt" );
 		assertEquals( expectedGeneratedClass, outputFile.toString() );
 	}
 
@@ -42,7 +42,8 @@ public class RoutingMethodClassGeneratorTest extends TestCase {
 		RoutingMethodData data = createData( "String", null, "true" );
 		data = fixAnIdentier( data, 123 );
 		generator.generate( data );
-		final String expectedGeneratedClass = readFile( "routing-method-class-generator.expected-response-and-param-but-no-content-type-class.txt" );
+		final String expectedGeneratedClass = TestCase
+				.readFile( "routing-method-class-generator.expected-response-and-param-but-no-content-type-class.txt" );
 		assertEquals( expectedGeneratedClass, outputFile.toString() );
 	}
 

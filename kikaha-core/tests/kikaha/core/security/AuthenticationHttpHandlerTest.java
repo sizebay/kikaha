@@ -1,5 +1,7 @@
 package kikaha.core.security;
 
+import static kikaha.core.test.KikahaTestCase.configuration;
+import static kikaha.core.test.KikahaTestCase.provider;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -11,17 +13,19 @@ import static org.mockito.Mockito.verify;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.HttpServerExchangeStub;
-import kikaha.core.TestCase;
 import kikaha.core.api.KikahaException;
+import kikaha.core.test.KikahaRunner;
 import lombok.SneakyThrows;
 import lombok.val;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class AuthenticationHttpHandlerTest extends TestCase {
+@RunWith( KikahaRunner.class )
+public class AuthenticationHttpHandlerTest {
 
 	final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
 

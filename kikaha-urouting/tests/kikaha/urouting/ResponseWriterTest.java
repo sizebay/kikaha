@@ -17,6 +17,7 @@ import io.undertow.util.Protocols;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import kikaha.core.test.KikahaRunner;
 import kikaha.urouting.api.Header;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Response;
@@ -25,7 +26,9 @@ import kikaha.urouting.samples.TodoResource.Todo;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.xnio.OptionMap;
 import org.xnio.Pool;
 import org.xnio.StreamConnection;
@@ -36,11 +39,11 @@ import org.xnio.conduits.StreamSinkConduit;
 import org.xnio.conduits.StreamSourceConduit;
 
 import trip.spi.Provided;
-import trip.spi.ServiceProviderException;
 
 @Slf4j
 @SuppressWarnings("unchecked")
-public class ResponseWriterTest extends TestCase {
+@RunWith( KikahaRunner.class )
+public class ResponseWriterTest {
 
 	final HeaderMap headerMap = new HeaderMap();
 	final StreamConnection streamConnection = createStreamConnection();
@@ -52,9 +55,8 @@ public class ResponseWriterTest extends TestCase {
 	@Provided ResponseWriter writer;
 	@Provided TodoResource resource;
 
-	@Override
-	public void setup() throws ServiceProviderException {
-		super.setup();
+	@Before
+	public void setup() {
 		writer = spy( writer );
 	}
 

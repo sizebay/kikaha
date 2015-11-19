@@ -1,14 +1,17 @@
 package kikaha.urouting;
 
 import static org.junit.Assert.assertNotNull;
+import kikaha.core.test.KikahaRunner;
 import kikaha.urouting.RoutingMethodExceptionHandler;
 import kikaha.urouting.api.Response;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import trip.spi.Provided;
 
-public class RoutingMethodExceptionHandlerTest extends TestCase {
+@RunWith( KikahaRunner.class )
+public class RoutingMethodExceptionHandlerTest {
 
 	@Provided
 	RoutingMethodExceptionHandler handler;

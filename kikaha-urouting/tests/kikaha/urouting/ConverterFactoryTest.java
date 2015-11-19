@@ -2,14 +2,17 @@ package kikaha.urouting;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import kikaha.core.test.KikahaRunner;
 import kikaha.urouting.api.ConversionException;
 import kikaha.urouting.api.ConverterFactory;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import trip.spi.Provided;
 
-public class ConverterFactoryTest extends TestCase {
+@RunWith( KikahaRunner.class )
+public class ConverterFactoryTest {
 
 	@Provided
 	ConverterFactory factory;
