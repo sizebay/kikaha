@@ -58,6 +58,7 @@
 		<module>kikaha-core</module>
 		<module>kikaha-jsr-330</module>
 		<module>kikaha-db</module>
+		<module>kikaha-java-mail</module>
 		<module>kikaha-urouting</module>
 		<module>kikaha-urouting-jackson</module>
 		<module>kikaha-urouting-mustache</module>
@@ -80,6 +81,7 @@
 		<version.mockito>1.10.19</version.mockito>
 		<version.jmustache>1.10</version.jmustache>
 		<version.vibur>5.0</version.vibur>
+		<version.java.mail>1.4.4</version.java.mail>
 		<!-- Plugin's Versions -->
 		<version.compiler.plugin>3.3</version.compiler.plugin>
 		<version.resources.plugin>2.6</version.resources.plugin>
@@ -218,6 +220,11 @@
 				<groupId>org.vibur</groupId>
 				<artifactId>vibur-dbcp</artifactId>
 				<version>${version.vibur}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.mail</groupId>
+				<artifactId>mail</artifactId>
+				<version>${version.java.mail}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
