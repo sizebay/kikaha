@@ -97,8 +97,8 @@ public class KikahaPackagerMojo extends AbstractMojo {
 	}
 
 	ZipFileWriter createZipFile() throws MojoExecutionException {
-		final String fileName = targetDirectory.getAbsolutePath() + File.separatorChar + this.finalName + ".zip";
-		final ZipFileWriter zipFile = new ZipFileWriter( fileName, this.finalName );
+		final String fileName = targetDirectory.getAbsolutePath() + File.separatorChar + finalName + ".zip";
+		final ZipFileWriter zipFile = new ZipFileWriter( fileName, finalName );
 		zipFile.stripPrefix( DEFAULT_DIR, METAINF_DIR );
 		return zipFile;
 	}
@@ -136,10 +136,10 @@ public class KikahaPackagerMojo extends AbstractMojo {
 
 	@SuppressWarnings( "unchecked" )
 	void copyDependenciesToZip( final ZipFileWriter zip )
-			throws ArtifactResolutionException, ArtifactNotFoundException, FileNotFoundException
+			throws ArtifactResolutionException, ArtifactNotFoundException, MojoExecutionException, IOException
 	{
 		final Set<String> namesAlreadyIncludedToZip = new HashSet<>();
-		for ( final Artifact artifact : (Set<Artifact>)this.project.getArtifacts() ) {
+		for ( final Artifact artifact : (Set<Artifact>)project.getArtifacts() ) {
 			final String artifactAbsolutePath = getArtifactAbsolutePath( artifact );
 			if ( !namesAlreadyIncludedToZip.contains( artifactAbsolutePath ) ) {
 				copyDependencyToZip( zip, artifact, artifactAbsolutePath );
@@ -151,7 +151,7 @@ public class KikahaPackagerMojo extends AbstractMojo {
 	void copyDependencyToZip(
 			final ZipFileWriter zip,
 			final Artifact artifact,
-			final String artifactAbsolutePath ) throws FileNotFoundException
+			final String artifactAbsolutePath ) throws IOException, MojoExecutionException
 	{
 		if ( artifact.getScope().equals( "provided" ) )
 			return;
@@ -159,19 +159,20 @@ public class KikahaPackagerMojo extends AbstractMojo {
 		final String jarName = "lib/" + artifact.getArtifactId() + "." + artifact.getType();
 		final InputStream inputStream = new FileInputStream( artifactAbsolutePath );
 		zip.add( jarName, inputStream );
+		copyFilesFromJarToZip( zip, artifactAbsolutePath );
 	}
 
 	String getArtifactAbsolutePath( final Artifact artifact )
 			throws ArtifactResolutionException, ArtifactNotFoundException
 	{
-		this.resolver.resolve( artifact, Collections.EMPTY_LIST, this.localRepository );
+		resolver.resolve( artifact, Collections.EMPTY_LIST, localRepository );
 		return artifact.getFile().getAbsolutePath();
 	}
 
 	void copyFinalArtifactToZip( final ZipFileWriter zip ) {
 		try {
-			final String fileName = String.format( "%s.%s", this.finalName, this.project.getPackaging() );
-			final InputStream inputStream = new FileInputStream( new File( this.targetDirectory, fileName ) );
+			final String fileName = String.format( "%s.%s", finalName, project.getPackaging() );
+			final InputStream inputStream = new FileInputStream( new File( targetDirectory, fileName ) );
 			zip.add( "lib/" + fileName, inputStream );
 		} catch ( final FileNotFoundException cause ) {
 			System.out.println( cause.getMessage() + ". Ignoring." );
@@ -180,7 +181,7 @@ public class KikahaPackagerMojo extends AbstractMojo {
 
 	void copyWebResourceFolderToZip( final ZipFileWriter zip ) throws IOException
 	{
-		final File directory = new File( this.webresourcesPath );
+		final File directory = new File( webresourcesPath );
 		copyDirectoryFilesToZip( zip, directory, "webapp" );
 	}
 
