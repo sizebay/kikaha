@@ -24,10 +24,12 @@ public class RoutingMethodExceptionHandler {
 	@SuppressWarnings( "unchecked" )
 	private ExceptionHandler<Throwable> retrieveHandlerFor( Class<?> clazz ) {
 		ExceptionHandler<Throwable> handler = null;
-		while ( !Object.class.equals( clazz ) && handler == null ) {
+
+		while ( !Exception.class.equals( clazz ) && handler == null ) {
 			handler = (ExceptionHandler<Throwable>)handlers.get( clazz );
 			clazz = clazz.getSuperclass();
 		}
+
 		return handler;
 	}
 }
