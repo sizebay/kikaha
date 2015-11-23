@@ -1,5 +1,7 @@
 package kikaha.core.test;
 
+import com.typesafe.config.Config;
+
 import kikaha.core.api.conf.Configuration;
 import kikaha.core.impl.conf.DefaultConfiguration;
 import trip.spi.DefaultServiceProvider;
@@ -12,6 +14,7 @@ public abstract class KikahaTestCase {
 
 	static ServiceProvider createServiceProvider() {
 		final ServiceProvider provider = new DefaultServiceProvider();
+		provider.providerFor( Config.class, configuration.config() );
 		provider.providerFor( Configuration.class, configuration );
 		return provider;
 	}
