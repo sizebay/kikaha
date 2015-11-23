@@ -29,7 +29,13 @@ public class ViburDatasourceProducer {
 	Configuration kikahaConf;
 
 	@PostConstruct
-	public void startAndCacheConfiguredDatasources() throws SQLException {
+	public void initializePool() throws SQLException {
+		startAndCacheConfiguredDatasources();
+		Runtime.getRuntime().addShutdownHook( new Thread( this::stopDatasources ) );
+	}
+
+	private void startAndCacheConfiguredDatasources() {
+		log.debug( "Starting datasources... " + kikahaConf.datasources().values() );
 		for ( final DatasourceConfiguration dsConf : kikahaConf.datasources().values() ) {
 			final ViburDBCPDataSource ds = createDatasource( dsConf );
 			ds.start();
@@ -48,7 +54,8 @@ public class ViburDatasourceProducer {
 		ds.setConnectionTimeoutInMs( dsConf.connectionTimeoutInMs() );
 		ds.setDefaultAutoCommit( dsConf.defaultAutoCommit() );
 		ds.setDefaultReadOnly( dsConf.defaultReadOnly() );
-		ds.setDriverClassName( dsConf.driverClassName() );
+		if ( dsConf.driverClassName() != null )
+			ds.setDriverClassName( dsConf.driverClassName() );
 		ds.setInitSQL( dsConf.initSql() );
 		ds.setJdbcUrl( dsConf.jdbcUrl() );
 		ds.setLogConnectionLongerThanMs( dsConf.logConnectionLongerThanMs() );
@@ -57,7 +64,15 @@ public class ViburDatasourceProducer {
 		ds.setLogQueryExecutionLongerThanMs( dsConf.logQueryExecutionLongerThanMs() );
 		ds.setLogStackTraceForLargeResultSet( dsConf.logStacktraceForLargeResultset() );
 		ds.setLogStackTraceForLongQueryExecution( dsConf.logStacktraceForLongQueryExecution() );
+		ds.setUsername( dsConf.username() );
+		ds.setPassword( dsConf.password() );
 		return ds;
+	}
+
+	public void stopDatasources() {
+		for ( final ViburDBCPDataSource db : cachedDatasources.values() ) {
+			db.terminate();
+		}
 	}
 
 	@Producer

@@ -46,6 +46,11 @@ public class DefaultDatasourceConfiguration implements DatasourceConfiguration {
 	final Integer reducerTimeIntervalInSeconds;
 	final Integer reducerSamples;
 
+	@Override
+	public String toString() {
+		return name + "[" + jdbcUrl + ";" + username + ";" + password + ";" + driverClassName + "]";
+	}
+
 	public static DatasourceConfiguration from( String name, Config config ) {
 		try {
 			return new DefaultDatasourceConfiguration( name,
@@ -53,7 +58,7 @@ public class DefaultDatasourceConfiguration implements DatasourceConfiguration {
 					config.getInt( "pool-max-size" ),
 					config.getBoolean( "pool-fair" ),
 					config.getBoolean( "pool-enable-connection-tracking" ),
-					config.getString( "driver-class-name" ),
+					getString( config, "driver-class-name" ),
 					config.getString( "jdbc-url" ),
 					config.getString( "username" ),
 					config.getString( "password" ),
@@ -80,6 +85,14 @@ public class DefaultDatasourceConfiguration implements DatasourceConfiguration {
 					config.getInt( "reducer-samples" ) );
 		} catch ( final Missing cause ) {
 			log.debug( "Can't instantiate '" + name + "' datasource.", cause );
+			return null;
+		}
+	}
+
+	static String getString( Config config, String path ) {
+		try {
+			return config.getString( path );
+		} catch ( final Missing cause ) {
 			return null;
 		}
 	}
