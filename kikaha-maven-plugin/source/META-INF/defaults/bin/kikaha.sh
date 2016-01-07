@@ -1,5 +1,6 @@
 #!/bin/sh
 cd "`dirname $(readlink -f $0)`/.."
+. ./bin/inc.utils.sh
 
 # CONFIGURABLE VARIABLES
 LIBDIR="./lib"
@@ -11,34 +12,6 @@ MAIN_CLASS=kikaha.core.Main
 OUTPUTFILE=server.stdout.log
 PIDFILE=server.pid
 NULL=/dev/null
-
-print_logo(){
-if [ ! "$QUIET" = "true" ]; then
-cat <<EOF
-      $(yellow " __  _  ____  __  _   ____  __ __   ____ ")
-      $(yellow "|  |/ ]|    ||  |/ ] /    ||  |  | /    |")
-      $(yellow "|  ' /  |  | |  ' / |  o  ||  |  ||  o  |")
-      $(yellow "|    \  |  | |    \ |     ||  _  ||     |")
-      $(yellow "|     | |  | |     ||  _  ||  |  ||  _  |")
-      $(yellow "|  .  | |  | |  .  ||  |  ||  |  ||  |  |")
-      $(yellow "|__|\_||____||__|\_||__|__||__|__||__|__|")
- $(grape 'an absurdly fast web server designed for microservices')
-
-EOF
-fi
-}
-
-yellow(){
-        echo -n "\033[1;33m$@\033[m"
-}
-
-red(){
-        echo -n "\033[1;31m$@\033[m"
-}
-
-grape(){
-        echo -n "\033[1;35m$@\033[m"
-}
 
 start_server(){
 	if [ -e $PIDFILE ]; then
