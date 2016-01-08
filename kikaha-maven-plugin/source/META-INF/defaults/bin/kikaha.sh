@@ -15,9 +15,9 @@ NULL=/dev/null
 
 start_server(){
 	if [ -e $PIDFILE ]; then
-		red "[WARN] Server already running"
+		warn "Server already running"
 	else
-		yellow "[INFO] Starting server in background..."
+		info "Starting server in background..."
 		nohup ${JAVA} ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS} > $NULL 2> $NULL &
 		echo "$!" > $PIDFILE
 	fi
@@ -25,13 +25,14 @@ start_server(){
 
 stop_server(){
 	if [ -e $PIDFILE ]; then
+		info "Sending graceful shutdown signal..."
 		PID=`cat $PIDFILE`
 		FOUNDPROCS=`ps aux | grep $PID | head -n 1 | grep java`
 		if [ ! "$FOUNDPROCS" = "" ]; then
-			kill $PID && echo "kill term sent." && rm -f $PIDFILE
+			kill $PID && info "Signal sent." && rm -f $PIDFILE
 		fi
 	else
-		red "[WARN] Server not running"
+		warn "Server not running"
 		exit 1
 	fi
 }

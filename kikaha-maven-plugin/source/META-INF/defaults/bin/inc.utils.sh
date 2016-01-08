@@ -15,15 +15,15 @@ fi
 }
 
 yellow(){
-        echo -n "\033[1;33m$@\033[m"
+        printf "\033[1;33m$@\033[m"
 }
 
 red(){
-        echo -n "\033[1;31m$@\033[m"
+        printf "\033[1;31m$@\033[m"
 }
 
 grape(){
-        echo -n "\033[1;35m$@\033[m"
+        printf "\033[1;35m$@\033[m"
 }
 
 info(){
