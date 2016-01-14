@@ -69,6 +69,7 @@ info "Updating app with package $ZIPFILE..."
 info "========================================================"
 echo
 
+NO_LOGO=true ./bin/kikaha.sh stop
 info "Creating tmp dir: $tmp_dir"
 mkdir -p $tmp_dir
 
@@ -85,5 +86,6 @@ info "Cleaning up..."
 rm -rf tmp 
 chmod +x bin/*.sh
 
+NO_LOGO=true ./bin/kikaha.sh start
 info 'Done!'
 

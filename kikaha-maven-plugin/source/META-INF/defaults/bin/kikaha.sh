@@ -6,31 +6,39 @@ cd "`dirname $(readlink -f $0)`/.."
 LIBDIR="./lib"
 
 # RUNTIME VARIABLES
-JAVA=java
+JAVA="java -Dconfig.app.dir=`pwd`"
 JAVA_OPTS=
 MAIN_CLASS=kikaha.core.Main
 OUTPUTFILE=server.stdout.log
-PIDFILE=server.pid
 NULL=/dev/null
 
+retrieve_server_pid(){
+	ps -o uid,pid,cmd ax | grep "config.app.dir=$(pwd)" | head -n 1 | grep kikaha | tr '\t' '@' | sed 's/  */@/g;s/^@//' | cut -d '@' -f 2
+}
+
 start_server(){
-	if [ -e $PIDFILE ]; then
+	PID=$(retrieve_server_pid)
+	if [ ! "$PID" = "" ]; then
 		warn "Server already running"
+		exit 1
 	else
 		info "Starting server in background..."
 		nohup ${JAVA} ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS} > $NULL 2> $NULL &
-		echo "$!" > $PIDFILE
 	fi
 }
 
 stop_server(){
-	if [ -e $PIDFILE ]; then
+	PID=$(retrieve_server_pid)
+	if [ ! "$PID" = "" ]; then
 		info "Sending graceful shutdown signal..."
-		PID=`cat $PIDFILE`
-		FOUNDPROCS=`ps aux | grep $PID | head -n 1 | grep java`
-		if [ ! "$FOUNDPROCS" = "" ]; then
-			kill $PID && info "Signal sent." && rm -f $PIDFILE
-		fi
+		kill $PID && info "Signal sent." || exit 1
+		retries=1
+		while [ ! "$PID" = "" -a "$retries" -lt 10 ]; do
+			sleep 1
+			PID=$(retrieve_server_pid)
+			retries=`expr $retries + 1`
+		done
+		info "Service was shut down."
 	else
 		warn "Server not running"
 		exit 1
@@ -38,16 +46,17 @@ stop_server(){
 }
 
 show_help(){
-	echo "Usage: $0 <command>"
-	echo
-	echo "Available commands:"
-	echo " - start:	starts the server in background"
-	echo " - stop:	stops the server that is running in background"
-	echo " - restart: restarts the server in background"
-	echo " - debug:	run the server in foreground"
-	echo " - help:	shows this help message"
-	echo
-	echo
+cat<<EOF
+Usage: $0 <command>
+
+$(yellow 'Available commands'):
+ - $(red start):	starts the server in background
+ - $(red stop):	stops the server that is running in background
+ - $(red restart):	restarts the server in background
+ - $(red debug):	run the server in foreground
+ - $(red help):	shows this help message
+
+EOF
 }
 
 # READ CUSTOM CONFIGURATIONS
@@ -58,7 +67,9 @@ fi
 # MAIN
 CLASSPATH=".:${LIBDIR}/*"
 
-print_logo
+if [ ! "$NO_LOGO" = "true" ]; then
+	print_logo
+fi
 case "$1" in
 	"stop" ) stop_server ;;
 	"debug" ) ${JAVA} ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS} ;;
