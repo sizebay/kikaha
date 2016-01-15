@@ -13,7 +13,7 @@ OUTPUTFILE=server.stdout.log
 NULL=/dev/null
 
 retrieve_server_pid(){
-	ps -o uid,pid,cmd ax | grep "config.app.dir=$(pwd)" | head -n 1 | grep kikaha | tr '\t' '@' | sed 's/  */@/g;s/^@//' | cut -d '@' -f 2
+	ps -o uid,pid,cmd ax | grep "config.app.dir=$(pwd)" | grep -v grep| head -n 1 | tr '\t' '@' | sed 's/  */@/g;s/^@//' | cut -d '@' -f 2
 }
 
 start_server(){
