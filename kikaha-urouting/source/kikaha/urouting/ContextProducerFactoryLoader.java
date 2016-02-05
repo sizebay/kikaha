@@ -3,25 +3,32 @@ package kikaha.urouting;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import kikaha.urouting.api.ContextProducer;
 import kikaha.urouting.api.ContextProducerFactory;
+import trip.spi.Producer;
 import trip.spi.ProvidedServices;
-import trip.spi.ServiceProvider;
 import trip.spi.Singleton;
-import trip.spi.StartupListener;
 
+@Singleton
 @SuppressWarnings("rawtypes")
-@Singleton( exposedAs=StartupListener.class )
-public class ContextProducerFactoryLoader implements StartupListener {
+public class ContextProducerFactoryLoader {
 
 	@ProvidedServices(exposedAs=ContextProducer.class)
 	Iterable<ContextProducer> availableProducers;
+	
+	ContextProducerFactory factory;
 
-	@Override
-	public void onStartup(final ServiceProvider provider) {
+	@PostConstruct
+	public void onStartup() {
 		final Map<Class, ContextProducer> producers = loadAllProducers();
-		final ContextProducerFactory factory = new ContextProducerFactory(producers);
-		provider.providerFor(ContextProducerFactory.class, factory);
+		factory = new ContextProducerFactory(producers);
+	}
+	
+	@Producer
+	public ContextProducerFactory produceFactory(){
+		return factory;
 	}
 
 	private Map<Class, ContextProducer> loadAllProducers() {

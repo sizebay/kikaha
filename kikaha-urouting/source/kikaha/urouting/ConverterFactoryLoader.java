@@ -3,24 +3,31 @@ package kikaha.urouting;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import kikaha.urouting.api.AbstractConverter;
 import kikaha.urouting.api.ConverterFactory;
+import trip.spi.Producer;
 import trip.spi.ProvidedServices;
-import trip.spi.ServiceProvider;
 import trip.spi.Singleton;
-import trip.spi.StartupListener;
 
+@Singleton
 @SuppressWarnings("rawtypes")
-@Singleton( exposedAs=StartupListener.class )
-public class ConverterFactoryLoader implements StartupListener {
+public class ConverterFactoryLoader {
 
 	@ProvidedServices( exposedAs=AbstractConverter.class )
 	Iterable<AbstractConverter> availableConverters;
+	
+	ConverterFactory factory;
 
-	@Override
-	public void onStartup(final ServiceProvider provider) {
-		final ConverterFactory factory = new ConverterFactory( loadAllConverters() );
-		provider.providerFor(ConverterFactory.class, factory);
+	@PostConstruct
+	public void onStartup() {
+		factory = new ConverterFactory( loadAllConverters() );
+	}
+	
+	@Producer
+	public ConverterFactory produceFactory(){
+		return factory;
 	}
 
 	public Map<String, AbstractConverter<?>> loadAllConverters() {

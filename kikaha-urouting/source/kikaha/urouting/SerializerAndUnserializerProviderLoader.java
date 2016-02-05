@@ -3,31 +3,37 @@ package kikaha.urouting;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import kikaha.urouting.api.ContentType;
 import kikaha.urouting.api.Serializer;
 import kikaha.urouting.api.Unserializer;
+import trip.spi.Producer;
 import trip.spi.ProvidedServices;
-import trip.spi.ServiceProvider;
 import trip.spi.Singleton;
-import trip.spi.StartupListener;
 
-@Singleton( exposedAs=StartupListener.class )
-public class SerializerAndUnserializerProviderLoader
-	implements StartupListener {
+@Singleton
+public class SerializerAndUnserializerProviderLoader {
 
 	@ProvidedServices(exposedAs=Serializer.class)
 	Iterable<Serializer> availableSerializers;
 
 	@ProvidedServices(exposedAs=Unserializer.class)
 	Iterable<Unserializer> availableUnserializers;
+	
+	SerializerAndUnserializerProvider serializerAndUnserializerProvider;
 
-	@Override
-	public void onStartup( final ServiceProvider provider ) {
+	@PostConstruct
+	public void onStartup() {
 		final Map<String, Serializer> serializers = loadAllSerializers();
 		final Map<String, Unserializer> unserializers = loadAllUnserializers();
-		final SerializerAndUnserializerProvider serializerAndUnserializerProvider
+		serializerAndUnserializerProvider
 			= new SerializerAndUnserializerProvider(serializers, unserializers);
-		provider.providerFor(SerializerAndUnserializerProvider.class, serializerAndUnserializerProvider);
+	}
+	
+	@Producer
+	public SerializerAndUnserializerProvider produceSerializerAndUnserializerProvider(){
+		return serializerAndUnserializerProvider;
 	}
 
 	private Map<String, Serializer> loadAllSerializers() {
