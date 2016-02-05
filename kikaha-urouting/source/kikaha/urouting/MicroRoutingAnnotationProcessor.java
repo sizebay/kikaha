@@ -67,7 +67,6 @@ public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
 	}
 
 	protected void log(final String msg) {
-		System.out.println( "[INFO] " + msg );
 		processingEnv.getMessager().printMessage( Kind.NOTE, msg );
 	}
 
