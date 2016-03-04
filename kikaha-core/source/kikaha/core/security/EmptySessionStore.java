@@ -7,11 +7,11 @@ import io.undertow.server.HttpServerExchange;
 public class EmptySessionStore implements SessionStore {
 
 	private static final String SESSION_ID = UUID.randomUUID().toString();
-	private static final Session SESSION = new DefaultSession( SESSION_ID );
+	private final Session session = new DefaultSession( SESSION_ID );
 
 	@Override
 	public Session createOrRetrieveSession( HttpServerExchange exchange ) {
-		return SESSION;
+		return session;
 	}
 
 	@Override
