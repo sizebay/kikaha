@@ -133,7 +133,7 @@ public class RoutingMethodData {
 	 */
 	// XXX: bad, ugly and huge method
 	static String extractMethodParamFrom( final ExecutableElement method, final VariableElement parameter ) {
-		val targetType = parameter.asType().toString();
+		val targetType = parameter.asType().toString().replaceAll("<[^>]+>","");
 		val pathParam = parameter.getAnnotation( PathParam.class );
 		if ( pathParam != null )
 			return getParam( PathParam.class, pathParam.value(), targetType );
