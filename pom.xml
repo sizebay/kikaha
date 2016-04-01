@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.skullabs.kikaha</groupId>
-	<version>1.7.0-SNAPSHOT</version>
+	<version>2.0.0-SNAPSHOT</version>
 	<artifactId>kikaha-parent</artifactId>
 	<name>Kikaha</name>
 	<description>An absurdly fast micro container writen over Undertow</description>
@@ -138,25 +138,25 @@
 			<!-- Module dependencies -->
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.7.0-SNAPSHOT</version>
+				<version>2.0.0-SNAPSHOT</version>
 				<artifactId>kikaha-core</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.7.0-SNAPSHOT</version>
+				<version>2.0.0-SNAPSHOT</version>
 				<artifactId>kikaha-urouting</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.7.0-SNAPSHOT</version>
+				<version>2.0.0-SNAPSHOT</version>
 				<artifactId>kikaha-urouting-jackson</artifactId>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
-				<version>1.7.0-SNAPSHOT</version>
+				<version>2.0.0-SNAPSHOT</version>
 				<artifactId>kikaha-hazelcast</artifactId>
 				<scope>compile</scope>
 			</dependency>
@@ -304,7 +304,7 @@
 				<!-- Preconfiguring kikaha maven plugin -->
 				<plugin>
 					<groupId>io.skullabs.kikaha</groupId>
-					<version>1.7.0-SNAPSHOT</version>
+					<version>2.0.0-SNAPSHOT</version>
 					<artifactId>kikaha-maven-plugin</artifactId>
 					<configuration>
 						<webresourcesPath>${config.webdir}</webresourcesPath>

@@ -1,9 +1,0 @@
-# kikaha-update.blacklist
-# Bellow a list of files (one per line) that should not be automatically updated
-# Lines that starts with '#' will be ignored
-
-#bin/kikaha-update.sh
-bin/kikaha-update.blacklist
-bin/kikaha.conf
-conf/application.conf
-
