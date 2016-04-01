@@ -1,0 +1,3 @@
+kikaha.core.cdi.ClosureProvider
+kikaha.core.cdi.recursive.UserProducer
+kikaha.core.cdi.recursive.UserServiceProducer
