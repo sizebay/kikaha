@@ -56,16 +56,6 @@
 
 	<modules>
 		<module>kikaha-core</module>
-		<module>kikaha-jsr-330</module>
-		<module>kikaha-db</module>
-		<module>kikaha-java-mail</module>
-		<module>kikaha-urouting</module>
-		<module>kikaha-urouting-jackson</module>
-		<module>kikaha-urouting-mustache</module>
-		<module>kikaha-urouting-jaxb</module>
-		<module>kikaha-hazelcast</module>
-		<module>kikaha-maven-plugin</module>
-		<module>kikaha-project</module>
 	</modules>
 
 	<properties>
@@ -261,7 +251,7 @@
 		<testOutputDirectory>${project.basedir}/output/test-classes</testOutputDirectory>
 		<resources>
 			<resource>
-				<directory>${project.basedir}/source</directory>
+				<directory>${project.basedir}/resources</directory>
 				<includes>
 					<include>**/*.*</include>
 				</includes>
@@ -281,7 +271,7 @@
 		</resources>
 		<testResources>
 			<testResource>
-				<directory>${project.basedir}/tests</directory>
+				<directory>${project.basedir}/tests-resources</directory>
 				<includes>
 					<include>**/*.*</include>
 				</includes>
