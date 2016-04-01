@@ -34,26 +34,12 @@ public class DefaultServiceProvider implements ServiceProvider {
 	public DefaultServiceProvider() {
 		dependencies = new DependencyMap( createDefaultProvidedData() );
 		singletonContext.setQualifierExtractor( createQualifierExtractor() );
-		runHookBeforeProducersAreReady();
 		producers = loadAllProducers();
-		runAllStartupListeners();
 	}
 
 	private QualifierExtractor createQualifierExtractor() {
 		final Iterable<FieldQualifierExtractor> extractors = loadAll(FieldQualifierExtractor.class);
 		return new QualifierExtractor( extractors );
-	}
-
-	private void runHookBeforeProducersAreReady() {
-		final Iterable<StartupListener> startupListeners = loadAll( StartupListener.class );
-		for ( final StartupListener listener : startupListeners )
-			listener.beforeProducersReady( this );
-	}
-
-	private void runAllStartupListeners() {
-		final Iterable<StartupListener> startupListeners = loadAll( StartupListener.class );
-		for ( final StartupListener listener : startupListeners )
-			listener.onStartup( this );
 	}
 
 	protected Map<Class<?>, Iterable<?>> createDefaultProvidedData() {
