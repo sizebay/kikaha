@@ -1,6 +1,6 @@
 target
 output
-faces-config.xml
+faces-defaultConfig.xml
 .classpath
 .project
 .metadata

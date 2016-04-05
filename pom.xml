@@ -57,6 +57,7 @@
 	<modules>
 		<module>kikaha-injection</module>
 		<module>kikaha-injection-processor</module>
+		<module>kikaha-config</module>
 	</modules>
 
 	<properties>
@@ -81,13 +82,13 @@
 		<version.gpg.plugin>1.5</version.gpg.plugin>
 		<version.nexus-staging.plugin>1.6.3</version.nexus-staging.plugin>
 		<!-- Configs -->
-		<config.webdir>${project.basedir}/src/main/webapp</config.webdir>
-		<config.skip.tests>false</config.skip.tests>
-		<config.skip.tests.unit>${config.skip.tests}</config.skip.tests.unit>
-		<config.skip.tests.integration>${config.skip.tests}</config.skip.tests.integration>
-		<config.encoding>UTF-8</config.encoding>
-		<config.encoding.source>${config.encoding}</config.encoding.source>
-		<config.encoding.resources>${config.encoding}</config.encoding.resources>
+		<defaultConfig.webdir>${project.basedir}/src/main/webapp</defaultConfig.webdir>
+		<defaultConfig.skip.tests>false</defaultConfig.skip.tests>
+		<defaultConfig.skip.tests.unit>${defaultConfig.skip.tests}</defaultConfig.skip.tests.unit>
+		<defaultConfig.skip.tests.integration>${defaultConfig.skip.tests}</defaultConfig.skip.tests.integration>
+		<defaultConfig.encoding>UTF-8</defaultConfig.encoding>
+		<defaultConfig.encoding.source>${defaultConfig.encoding}</defaultConfig.encoding.source>
+		<defaultConfig.encoding.resources>${defaultConfig.encoding}</defaultConfig.encoding.resources>
 	</properties>
 
 	<dependencyManagement>
@@ -201,6 +202,12 @@
 				<artifactId>mail</artifactId>
 				<version>${version.java.mail}</version>
 			</dependency>
+      
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.16</version>
+    </dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -277,7 +284,7 @@
 					<version>2.0.0-SNAPSHOT</version>
 					<artifactId>kikaha-maven-plugin</artifactId>
 					<configuration>
-						<webresourcesPath>${config.webdir}</webresourcesPath>
+						<webresourcesPath>${defaultConfig.webdir}</webresourcesPath>
 					</configuration>
 					<executions>
 						<execution>
@@ -298,7 +305,7 @@
 						<target>1.8</target>
 						<optimize>true</optimize>
 						<debug>false</debug>
-						<encoding>${config.encoding.source}</encoding>
+						<encoding>${defaultConfig.encoding.source}</encoding>
 						<generatedSourcesDirectory>${project.build.directory}/generated-sources/annotations</generatedSourcesDirectory>
 						<generatedTestSourcesDirectory>${project.build.directory}/generated-test-sources/test-annotations</generatedTestSourcesDirectory>
 					</configuration>
@@ -318,7 +325,7 @@
 								<additionalClasspathElements>
 		            				<additionalClasspathElement>${project.basedir}/../resources</additionalClasspathElement>
 								</additionalClasspathElements>
-								<skipTests>${config.skip.tests.integration}</skipTests>
+								<skipTests>${defaultConfig.skip.tests.integration}</skipTests>
 								<includes>
 									<include>**/IT*.java</include>
 									<include>**/*IT.java</include>
@@ -336,7 +343,7 @@
 						<additionalClasspathElements>
             				<additionalClasspathElement>${project.basedir}/../resources</additionalClasspathElement>
 						</additionalClasspathElements>
-						<skipTests>${config.skip.tests.unit}</skipTests>
+						<skipTests>${defaultConfig.skip.tests.unit}</skipTests>
 						<excludes>
 							<exclude>**/*IntegrationTest.java</exclude>
 							<exclude>**/*IT.java</exclude>

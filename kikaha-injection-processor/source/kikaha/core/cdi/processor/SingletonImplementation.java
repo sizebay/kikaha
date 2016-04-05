@@ -65,7 +65,6 @@ public class SingletonImplementation {
 	}
 
 	static TypeMirror getProvidedServiceClass( final TypeElement type ) {
-		System.err.println( "Processing: " + type.asType().toString() );
 		try {
 			final Typed singleton = type.getAnnotation( Typed.class );
 			if ( singleton != null ) {

@@ -1,9 +1,9 @@
 package kikaha.core.cdi;
 
-import static org.junit.Assert.assertEquals;
 import lombok.SneakyThrows;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class ApplicationRunnerTest {
 
@@ -19,5 +19,4 @@ public class ApplicationRunnerTest {
 
 		assertEquals( 0, application.number );
 	}
-
 }
