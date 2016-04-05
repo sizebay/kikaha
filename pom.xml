@@ -55,14 +55,13 @@
 	</developers>
 
 	<modules>
-		<module>kikaha-core</module>
+		<module>kikaha-injection</module>
+		<module>kikaha-injection-processor</module>
 	</modules>
 
 	<properties>
 		<!-- Dependencies Versions -->
-		<version.undertow>1.2.12.Final</version.undertow>
-		<version.trip>2.1.0</version.trip>
-		<version.config>1.2.0</version.config>
+		<version.undertow>1.3.20.Final</version.undertow>
 		<version.jackson>2.5.3</version.jackson>
 		<version.hazelcast>3.4.4</version.hazelcast>
 		<version.slf4j>1.7.14</version.slf4j>
@@ -113,19 +112,19 @@
 				<version>${version.lombok}</version>
 				<scope>provided</scope>
 			</dependency>
-			<dependency>
-				<groupId>io.skullabs.trip</groupId>
-				<artifactId>trip-processor</artifactId>
-				<version>${version.trip}</version>
-				<scope>provided</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>io.skullabs.trip</groupId>
-						<artifactId>trip-core</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
 			<!-- Module dependencies -->
+			<dependency>
+				<groupId>io.skullabs.kikaha</groupId>
+				<version>2.0.0-SNAPSHOT</version>
+				<artifactId>kikaha-injection</artifactId>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.skullabs.kikaha</groupId>
+				<version>2.0.0-SNAPSHOT</version>
+				<artifactId>kikaha-injection-processor</artifactId>
+				<scope>provided</scope>
+			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>
 				<version>2.0.0-SNAPSHOT</version>
@@ -151,21 +150,6 @@
 				<scope>compile</scope>
 			</dependency>
 			<!-- Main project dependencies -->
-			<dependency>
-				<groupId>io.skullabs.trip</groupId>
-				<artifactId>trip-core</artifactId>
-				<version>${version.trip}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.skullabs.trip</groupId>
-				<artifactId>trip-jsr-330</artifactId>
-				<version>${version.trip}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.typesafe</groupId>
-				<artifactId>config</artifactId>
-				<version>${version.config}</version>
-			</dependency>
 			<dependency>
 				<groupId>io.undertow</groupId>
 				<artifactId>undertow-core</artifactId>
@@ -234,10 +218,6 @@
 			<artifactId>lombok</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.skullabs.trip</groupId>
-			<artifactId>trip-processor</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
@@ -280,7 +260,7 @@
 				</excludes>
 			</testResource>
 			<testResource>
-				<directory>${project.build.directory}/generated-sources/test-annotations</directory>
+				<directory>${project.build.directory}/generated-test-sources/test-annotations</directory>
 				<includes>
 					<include>**/*.*</include>
 				</includes>
@@ -319,6 +299,8 @@
 						<optimize>true</optimize>
 						<debug>false</debug>
 						<encoding>${config.encoding.source}</encoding>
+						<generatedSourcesDirectory>${project.build.directory}/generated-sources/annotations</generatedSourcesDirectory>
+						<generatedTestSourcesDirectory>${project.build.directory}/generated-test-sources/test-annotations</generatedTestSourcesDirectory>
 					</configuration>
 				</plugin>
 				<plugin>

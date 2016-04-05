@@ -1,0 +1,28 @@
+package kikaha.core.cdi.helpers;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+
+import javax.enterprise.inject.Typed;
+import javax.inject.Inject;
+import javax.inject.Qualifier;
+
+public class DefaultFieldQualifierExtractor implements FieldQualifierExtractor {
+
+	@Override
+	public boolean isAnnotatedWithQualifierAnnotation( Class<? extends Annotation> ann ) {
+		return ann.isAnnotationPresent( Qualifier.class );
+	}
+
+	@Override
+	public boolean isASingleElementProvider( Field field ) {
+		return field.isAnnotationPresent( Inject.class );
+	}
+
+	@Override
+	public boolean isAManyElementsProvider( Field field ) {
+		return isASingleElementProvider( field )
+				&& field.getType().equals( Iterable.class )
+				&& field.isAnnotationPresent( Typed.class );
+	}
+}
