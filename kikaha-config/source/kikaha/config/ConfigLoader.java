@@ -10,12 +10,16 @@ import java.util.Enumeration;
  */
 public abstract class ConfigLoader {
 
-	public static Config loadDefaults() throws IOException {
-		final MergeableConfig config = MergeableConfig.create();
-		loadFiles( config, ClassLoader.getSystemResources("META-INF/defaults.yml") );
-		loadFiles( config, ClassLoader.getSystemResources("conf/application.yml") );
-		loadFiles( config, ClassLoader.getSystemResources("conf/application-test.yml") );
-		return config;
+	public static Config loadDefaults() {
+		try {
+			final MergeableConfig config = MergeableConfig.create();
+			loadFiles(config, ClassLoader.getSystemResources("META-INF/defaults.yml"));
+			loadFiles(config, ClassLoader.getSystemResources("conf/application.yml"));
+			loadFiles(config, ClassLoader.getSystemResources("conf/application-test.yml"));
+			return config;
+		} catch ( IOException cause ) {
+			throw new IllegalStateException(cause);
+		}
 	}
 
 	private static void loadFiles( MergeableConfig config, Enumeration<URL> resources ) throws IOException {

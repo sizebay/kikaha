@@ -53,7 +53,7 @@ public class ConfigLoaderTest {
 		final MergeableConfig defaultConfig = MergeableConfig.create().load(new File("tests-resources/conf/snippet1.yml"));
 		final Set<String> keys = defaultConfig.getKeys();
 		assertNotNull(keys);
-		assertEquals(3, keys.size());
+		assertEquals(4, keys.size());
 	}
 
 	@Test
@@ -68,6 +68,10 @@ public class ConfigLoaderTest {
 		assertTrue(defaultConfig.getBoolean("server.user-ssl") );
 		assertEquals( 9001, defaultConfig.getInteger("server.port").intValue() );
 		assertEquals( "0.0.0.0", defaultConfig.getString("server.host") );
+
+		final List<String> authors = defaultConfig.getStringList("former-authors");
+		assertEquals( 4, authors.size() );
+		assertEquals( "Included at last", authors.get( authors.size() - 1 ) );
 	}
 
 	@Test
@@ -77,5 +81,16 @@ public class ConfigLoaderTest {
 		assertTrue( config.getBoolean( "server.defaults" ) );
 		assertTrue( config.getBoolean( "server.application" ) );
 		assertTrue( config.getBoolean( "server.application-test" ) );
+	}
+
+	@Test
+	public void ensureThatCanReadConfigStructure() throws IOException {
+		final MergeableConfig config = MergeableConfig.create();
+		config.load(new File("tests-resources/conf/snippet1.yml"));
+
+		Config structureConfig = config.getConfig("structure");
+		assertNotNull( structureConfig );
+		assertTrue( structureConfig.getBoolean("enabled") );
+		assertFalse( structureConfig.getBoolean( "disabled" ) );
 	}
 }

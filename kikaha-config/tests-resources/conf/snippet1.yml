@@ -9,8 +9,13 @@ server:
         path: /login-old
         rewrite-to: /login
 
+structure:
+  enabled: true
+  disabled: false
+
 name: "Kikaha"
 former-authors:
   - "Miere"
   - "Ricardo"
   - "Cesar"
+

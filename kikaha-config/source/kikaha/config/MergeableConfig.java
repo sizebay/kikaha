@@ -42,6 +42,14 @@ public class MergeableConfig implements Config {
 	}
 
 	@Override
+	public Config getConfig(String path) {
+		final Map<String, Object> current = read(path, o->(Map<String,Object>)o);
+		if ( current == null )
+			return null;
+		return new MergeableConfig(current);
+	}
+
+	@Override
 	public String getString(String path) {
 		return read( path, o->(String)o );
 	}
@@ -74,9 +82,9 @@ public class MergeableConfig implements Config {
 
 	private <T> T read(String path, Function<Object,T> parser ) {
 		final String[] strings = path.split("\\.");
-		final Map<String, Object> current = readPath(strings);
+		Map<String, Object> current = readPath(strings);
 		if ( current == null )
-			return null;
+			current = conf;
 		final Object last = current.get( strings[strings.length-1] );
 		return parser.apply( last );
 	}
@@ -111,6 +119,7 @@ public class MergeableConfig implements Config {
 				checkArgument(currentValue instanceof Collection,
 						"A non-collection collided with a collection: %s\t%s",currentValue, originalValue);
 				((Collection) originalValue).addAll((Collection) currentValue);
+				return false;
 			}
 
 			if (originalValue instanceof Map) {

@@ -57,4 +57,6 @@ public interface Config {
 	 * @return a key list available on a configuration
 	 */
 	Set<String> getKeys();
+
+	Config getConfig(String path);
 }
