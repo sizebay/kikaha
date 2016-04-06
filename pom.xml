@@ -58,6 +58,7 @@
 		<module>kikaha-injection</module>
 		<module>kikaha-injection-processor</module>
 		<module>kikaha-config</module>
+		<module>kikaha-core</module>
 	</modules>
 
 	<properties>
@@ -125,6 +126,11 @@
 				<version>2.0.0-SNAPSHOT</version>
 				<artifactId>kikaha-injection-processor</artifactId>
 				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>kikaha-config</artifactId>
+				<version>2.0.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.skullabs.kikaha</groupId>

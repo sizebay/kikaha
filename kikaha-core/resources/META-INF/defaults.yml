@@ -1,0 +1,24 @@
+# Default server configuration
+server:
+
+  # The bellow list also represent the order that modules will be loaded
+  enabled-modules:
+    - security
+    - http
+    - https
+    #- rewrite
+    #- reverse
+    #- websocket
+    #- urouting
+    #- database
+
+  # HTTP server mode
+  http:
+    host: '0.0.0.0'
+    port: 9000
+
+  # HTTPS server mode
+  https:
+    host: '0.0.0.0'
+    port: 9001
+
