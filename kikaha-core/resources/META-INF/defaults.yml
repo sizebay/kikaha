@@ -39,7 +39,7 @@ server:
     buffer-size: 1024
 
     server-options:
-      ENABLE_CONNECTOR_STATISTICS: false
+      ENABLE_STATISTICS: false
       RECORD_REQUEST_START_TIME: false
 
     socket-options:

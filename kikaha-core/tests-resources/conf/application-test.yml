@@ -6,7 +6,7 @@ server:
     buffer-size: 16384
 
     server-options:
-      ENABLE_CONNECTOR_STATISTICS: false
+      ENABLE_STATISTICS: false
       RECORD_REQUEST_START_TIME: false
       ALWAYS_SET_KEEP_ALIVE: true
 

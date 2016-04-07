@@ -189,7 +189,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
+				<artifactId>slf4j-simple</artifactId>
 				<version>${version.slf4j}</version>
 				<scope>test</scope>
 			</dependency>
@@ -232,7 +232,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
+			<artifactId>slf4j-simple</artifactId>
 		</dependency>
 	</dependencies>
 

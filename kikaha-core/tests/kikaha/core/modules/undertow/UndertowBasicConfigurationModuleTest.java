@@ -58,7 +58,7 @@ public class UndertowBasicConfigurationModuleTest {
 	private void ensureUndertowHasDefaultSocketOptions(Exposed undertow ) {
 		OptionMap socketOptions = undertow.getFieldValue("socketOptions", OptionMap.class);
 		final int backlog = socketOptions.get(BACKLOG);
-		assertEquals(1000, backlog);
+		assertEquals(10000, backlog);
 	}
 }
 
