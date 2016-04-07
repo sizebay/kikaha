@@ -1,0 +1,14 @@
+server:
+
+  undertow:
+    io-threads: -1
+    worker-threads: -1
+    buffer-size: 16384
+
+    server-options:
+      ENABLE_CONNECTOR_STATISTICS: false
+      RECORD_REQUEST_START_TIME: false
+      ALWAYS_SET_KEEP_ALIVE: true
+
+    socket-options:
+      BACKLOG: 10000

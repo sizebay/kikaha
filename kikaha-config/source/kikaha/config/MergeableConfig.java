@@ -50,6 +50,11 @@ public class MergeableConfig implements Config {
 	}
 
 	@Override
+	public Object getObject(String path) {
+		return read( path, o->o );
+	}
+
+	@Override
 	public String getString(String path) {
 		return read( path, o->(String)o );
 	}

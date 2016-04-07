@@ -1,8 +1,9 @@
 # Default server configuration
 server:
 
-  # The bellow list also represent the order that modules will be loaded
+  # The bellow list also represents the order that modules will be loaded
   enabled-modules:
+    - undertow-basic-configuration
     - security
     - http
     - https
@@ -16,9 +17,29 @@ server:
   http:
     host: '0.0.0.0'
     port: 9000
+    enabled: true
 
   # HTTPS server mode
   https:
     host: '0.0.0.0'
     port: 9001
 
+    keystore: "server.keystore"
+    truststore: "server.truststore"
+    cert-security-provider: "TLS"
+    keystore-security-provider: "JKS"
+    password: "password"
+    enabled: false
+
+    redirect-to-http: true
+
+  undertow:
+    io-threads: -1
+    worker-threads: -1
+    buffer-size: 1024
+
+    server-options:
+      ENABLE_CONNECTOR_STATISTICS: false
+      RECORD_REQUEST_START_TIME: false
+
+    socket-options:

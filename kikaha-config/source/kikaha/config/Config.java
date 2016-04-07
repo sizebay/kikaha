@@ -59,4 +59,6 @@ public interface Config {
 	Set<String> getKeys();
 
 	Config getConfig(String path);
+
+	Object getObject(String path);
 }
