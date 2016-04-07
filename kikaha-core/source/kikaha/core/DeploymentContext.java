@@ -10,6 +10,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +26,14 @@ public class DeploymentContext {
 	@NonNull
 	@Setter
 	HttpHandler rootHandler = routingHandler;
+
+	@Inject
+	NotFoundHandler notFoundHandler;
+
+	@PostConstruct
+	public void ensureThatUseNotFoundHandlerAsDefaultFallbackHandler(){
+		routingHandler.setFallbackHandler( notFoundHandler );
+	}
 
 	public DeploymentContext register(final String uri, final HttpHandler handler ) {
 		register( uri, "PATCH", handler );
@@ -43,5 +53,9 @@ public class DeploymentContext {
 	public DeploymentContext fallbackHandler(final HttpHandler fallbackHandler ) {
 		routingHandler.setFallbackHandler( fallbackHandler );
 		return this;
+	}
+
+	public HttpHandler fallbackHandler(){
+		return routingHandler.getFallbackHandler();
 	}
 }

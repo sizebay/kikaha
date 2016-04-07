@@ -43,3 +43,7 @@ server:
       RECORD_REQUEST_START_TIME: false
 
     socket-options:
+
+  static:
+    enabled: false
+    location: "webapp"

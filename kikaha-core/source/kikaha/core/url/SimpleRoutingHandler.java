@@ -2,24 +2,26 @@ package kikaha.core.url;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.server.handlers.ResponseCodeHandler;
 import io.undertow.util.HttpString;
 import io.undertow.util.PathTemplateMatch;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import lombok.Setter;
-import lombok.Value;
-
-
+@Getter
 @Setter
 public class SimpleRoutingHandler implements HttpHandler {
 
 	final Map<HttpString, List<Entry>> matchersByMethod = new HashMap<>();
-	volatile HttpHandler fallbackHandler = ResponseCodeHandler.HANDLE_404;
+
+	@NonNull
+	volatile HttpHandler fallbackHandler;
 
 	public synchronized void add( final String method, final String url, final HttpHandler handler ) {
 		final HttpString methodAsHttpString = new HttpString( method );

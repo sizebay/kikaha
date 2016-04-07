@@ -12,3 +12,6 @@ server:
 
     socket-options:
       BACKLOG: 10000
+
+  static:
+    enabled: true

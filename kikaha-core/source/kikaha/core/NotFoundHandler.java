@@ -1,4 +1,4 @@
-package kikaha.core.modules;
+package kikaha.core;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;

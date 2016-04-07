@@ -162,12 +162,3 @@ public class KikahaUndertowServer implements Application {
 	}
 	*/
 }
-/*
-class NotFoundHandler implements HttpHandler {
-
-	@Override
-	public void handleRequest( HttpServerExchange exchange ) throws Exception {
-		exchange.setResponseCode( 404 );
-		exchange.endExchange();
-	}
-}*/

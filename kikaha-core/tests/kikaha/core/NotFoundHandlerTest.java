@@ -1,7 +1,6 @@
-package kikaha.core.modules;
+package kikaha.core;
 
 import io.undertow.server.HttpServerExchange;
-import kikaha.core.HttpServerExchangeStub;
 import kikaha.core.test.KikahaRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
