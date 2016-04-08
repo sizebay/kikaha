@@ -1,21 +1,20 @@
 package kikaha.core.modules.undertow;
 
-import static io.undertow.UndertowOptions.*;
-import static org.xnio.Options.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import io.undertow.Undertow;
 import kikaha.core.test.KikahaRunner;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.xnio.OptionMap;
+import tests.Exposed;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.lang.reflect.Field;
+
+import static io.undertow.UndertowOptions.ENABLE_CONNECTOR_STATISTICS;
+import static io.undertow.UndertowOptions.RECORD_REQUEST_START_TIME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.xnio.Options.BACKLOG;
 
 /**
  *
@@ -59,19 +58,5 @@ public class UndertowBasicConfigurationModuleTest {
 		OptionMap socketOptions = undertow.getFieldValue("socketOptions", OptionMap.class);
 		final int backlog = socketOptions.get(BACKLOG);
 		assertEquals(10000, backlog);
-	}
-}
-
-@RequiredArgsConstructor
-class Exposed {
-
-	final Object undertow;
-
-	@SneakyThrows
-	@SuppressWarnings("unchecked")
-	public <T> T getFieldValue( String name, Class<T> target ) {
-		final Field field = undertow.getClass().getDeclaredField(name);
-		field.setAccessible(true);
-		return (T)field.get( undertow );
 	}
 }
