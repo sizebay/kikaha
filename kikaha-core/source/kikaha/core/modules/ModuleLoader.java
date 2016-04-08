@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.reverse;
+
 /**
  *
  */
@@ -37,6 +39,7 @@ public class ModuleLoader {
 	private void loadModulesConfigurations(){
 		modulesIndexedByName = modulesIndexedByName();
 		enabledModules = config.getStringList("server.enabled-modules");
+		reverse(enabledModules);
 	}
 
 	private void loadIndexedModules( Undertow.Builder builder, DeploymentContext context ) throws IOException {

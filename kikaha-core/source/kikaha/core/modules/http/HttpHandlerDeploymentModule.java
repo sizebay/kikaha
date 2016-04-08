@@ -4,7 +4,6 @@ import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
-import kikaha.core.modules.http.WebResource;
 import lombok.Getter;
 
 import javax.enterprise.inject.Typed;

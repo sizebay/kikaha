@@ -9,6 +9,7 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.server.RoutingHandler;
 import io.undertow.util.HttpString;
 import kikaha.core.HttpServerExchangeStub;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 
 import org.junit.Test;
@@ -41,13 +42,7 @@ public class RoutingHandlerTest {
 	 */
 	@Test
 	public void ensureItsPossibleToHandlePostAndGetToSameURLWithRoutingHandler2() {
-		final MyHandler myHandler = new MyHandler();
-		final RoutingHandler router = new RoutingHandler();
-		router.add( "GET", "/sameurl", myHandler );
-		router.add( "POST", "/sameurl", myHandler );
-		router.add( "GET", "/sameurl/{id}/", myHandler );
-
-		doStressedRequestTest( router );
+		ensureItsPossibleToHandlePostAndGetToSameURLWithRoutingHandler();
 	}
 
 	@Test
@@ -68,23 +63,8 @@ public class RoutingHandlerTest {
 		verify( successHandler ).handleRequest( any( HttpServerExchange.class ) );
 	}
 
-	/**
-	 * Repetitive test to ensure that some JIT have been applied to this test
-	 * context and avoid comparing each other with different optimizations.
-	 */
-	@Test
-	public void ensureItsPossibleToHandlePostAndGetToSameURLWithSimpleRoutingHandler2() {
-		final MyHandler myHandler = new MyHandler();
-		final SimpleRoutingHandler router = new SimpleRoutingHandler();
-		router.add( "POST", "/sameurl/", myHandler );
-		router.add( "GET", "/sameurl/{id}/", myHandler );
-		router.add( "GET", "/sameurl/", myHandler );
-
-		doStressedRequestTest( router );
-	}
-
 	@SneakyThrows
-	private void doStressedRequestTest( final HttpHandler router ) {
+	private void doStressedRequestTest( @NonNull final HttpHandler router ) {
 		for ( int i = 0; i < 1000000; i++ )
 			router.handleRequest( exchange );
 	}
