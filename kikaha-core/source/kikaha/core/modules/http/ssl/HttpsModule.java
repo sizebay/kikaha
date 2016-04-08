@@ -1,10 +1,9 @@
-package kikaha.core.modules.ssl;
+package kikaha.core.modules.http.ssl;
 
 import io.undertow.Undertow;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
-import kikaha.core.modules.ssl.SSLContextFactory;
 import lombok.Getter;
 
 import javax.inject.Inject;

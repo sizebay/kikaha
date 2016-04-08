@@ -1,4 +1,4 @@
-package kikaha.core.modules.ssl;
+package kikaha.core.modules.http.ssl;
 
 import kikaha.config.Config;
 import kikaha.config.MergeableConfig;

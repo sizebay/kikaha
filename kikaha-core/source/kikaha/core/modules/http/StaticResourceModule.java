@@ -1,4 +1,4 @@
-package kikaha.core.modules;
+package kikaha.core.modules.http;
 
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
@@ -6,6 +6,7 @@ import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
+import kikaha.core.modules.Module;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

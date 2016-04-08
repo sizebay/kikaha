@@ -1,8 +1,9 @@
-package kikaha.core.modules;
+package kikaha.core.modules.http;
 
 import io.undertow.Undertow;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
+import kikaha.core.modules.Module;
 import lombok.Getter;
 
 import javax.inject.Inject;

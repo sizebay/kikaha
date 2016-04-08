@@ -1,7 +1,8 @@
-package kikaha.core.modules;
+package kikaha.core.modules.http;
 
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
+import kikaha.core.modules.http.StaticResourceModule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

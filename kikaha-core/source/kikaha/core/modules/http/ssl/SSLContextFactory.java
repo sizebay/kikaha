@@ -1,4 +1,4 @@
-package kikaha.core.modules.ssl;
+package kikaha.core.modules.http.ssl;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
