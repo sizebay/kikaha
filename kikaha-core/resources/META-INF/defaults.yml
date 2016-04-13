@@ -47,3 +47,8 @@ server:
   static:
     enabled: false
     location: "webapp"
+
+  routes:
+    rewrite:
+    reverse:
+    auto-redirect-http-to-https: false

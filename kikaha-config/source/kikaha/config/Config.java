@@ -17,6 +17,8 @@ public interface Config {
 	 */
 	String getString(String path);
 
+	String getString(String path, String defaultValue);
+
 	/**
 	 * Retrieve a configuration Integer from a file.
 	 *

@@ -15,3 +15,27 @@ server:
 
   static:
     enabled: true
+
+  routes:
+    auto-redirect-http-to-https: true
+
+    rewrite:
+      -
+        virtual-host: "test.localdomain"
+        path: "/admin/{something}"
+        to: "/test/{something}/admin"
+      -
+        path: "/admin/{something}"
+        to: "/test/{something}/admin"
+      -
+        virtual-host: "test.localdomain"
+        to: "/test/{something}/admin"
+      -
+        to: "/test/{something}/admin"
+      -
+        path: "/{domain}-{action}.jsp?id={id}"
+        to: "/{domain}/{id}/{action}/"
+
+    reverse:
+      - path: "/{domain}-{action}.jsp?id={id}"
+        to: "http://localhost:8765"

@@ -37,6 +37,11 @@ public class MergeableConfig implements Config {
 	}
 
 	@Override
+	public String toString() {
+		return conf.toString();
+	}
+
+	@Override
 	public Set<String> getKeys() {
 		return conf.keySet();
 	}
@@ -52,6 +57,12 @@ public class MergeableConfig implements Config {
 	@Override
 	public Object getObject(String path) {
 		return read( path, o->o );
+	}
+
+	@Override
+	public String getString(String path, String defaultValue) {
+		final String value = getString(path);
+		return value != null ? value : defaultValue;
 	}
 
 	@Override
@@ -97,7 +108,7 @@ public class MergeableConfig implements Config {
 	private Map<String, Object> readPath( String[] strings ){
 		Map<String, Object> current = conf;
 		for ( int i=0; i<strings.length-1 && current != null; i++ )
-			current = (Map<String, Object>) conf.get( strings[i] );
+			current = (Map<String, Object>) current.get( strings[i] );
 		return current;
 	}
 
