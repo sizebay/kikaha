@@ -1,8 +1,11 @@
 server:
 
+  https:
+    redirect-to-http: true
+
   undertow:
     io-threads: -1
-    worker-threads: -1
+    worker-threads: 32
     buffer-size: 16384
 
     server-options:
@@ -17,8 +20,6 @@ server:
     enabled: true
 
   routes:
-    auto-redirect-http-to-https: true
-
     rewrite:
       -
         virtual-host: "test.localdomain"
@@ -39,3 +40,21 @@ server:
     reverse:
       - path: "/{domain}-{action}.jsp?id={id}"
         to: "http://localhost:8765"
+
+  auth:
+
+    fixed-auth:
+      username: "test"
+      password: "t357"
+      role: "testable-role"
+
+    rules:
+      - pattern: "/*"
+        identity-manager:
+          - "default"
+        auth-mechanisms:
+          - "basic"
+          - "basic"
+        expected-roles:
+          - "minimum-access-role"
+        exclude-patterns:

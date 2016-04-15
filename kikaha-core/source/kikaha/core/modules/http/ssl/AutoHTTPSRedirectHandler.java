@@ -1,4 +1,4 @@
-package kikaha.core.modules.rewrite;
+package kikaha.core.modules.http.ssl;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;

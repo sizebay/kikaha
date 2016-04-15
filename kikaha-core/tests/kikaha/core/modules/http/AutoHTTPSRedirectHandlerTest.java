@@ -1,4 +1,4 @@
-package kikaha.core.modules.rewrite;
+package kikaha.core.modules.http;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -9,7 +9,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import kikaha.core.HttpServerExchangeStub;
-import kikaha.core.modules.rewrite.AutoHTTPSRedirectHandler;
+import kikaha.core.modules.http.ssl.AutoHTTPSRedirectHandler;
 import lombok.SneakyThrows;
 
 import org.junit.Test;

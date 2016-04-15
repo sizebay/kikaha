@@ -42,6 +42,11 @@ public class MergeableConfig implements Config {
 	}
 
 	@Override
+	public Map<String, Object> toMap(){
+		return conf;
+	}
+
+	@Override
 	public Set<String> getKeys() {
 		return conf.keySet();
 	}
@@ -57,6 +62,21 @@ public class MergeableConfig implements Config {
 	@Override
 	public Object getObject(String path) {
 		return read( path, o->o );
+	}
+
+	public Class<?> getClass( String path ) {
+		final String clazzName = getString(path);
+		if ( clazzName == null )
+			return null;
+		return instantiate( path );
+	}
+
+	private Class<?> instantiate( String className ) {
+		try {
+			return (Class<?>) Class.forName( className );
+		} catch ( Throwable cause ) {
+			throw new IllegalStateException( "Can't load " + className, cause);
+		}
 	}
 
 	@Override

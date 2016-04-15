@@ -7,11 +7,6 @@ server:
     - security
     - http
     - https
-    #- rewrite
-    #- reverse
-    #- websocket
-    #- urouting
-    #- database
 
   # HTTP server mode
   http:
@@ -51,4 +46,25 @@ server:
   routes:
     rewrite:
     reverse:
-    auto-redirect-http-to-https: false
+
+  auth:
+    fixed-auth:
+      username: "admin"
+      password: "admin"
+      role: "admin"
+
+    form-auth:
+      login-page: "/auth/"
+      error-page: "/auth/error/"
+      permission-denied-page: ""
+
+    security-context-factory: kikaha.core.modules.security.DefaultSecurityContextFactory
+
+    identity-managers:
+      default: kikaha.core.modules.security.FixedUserAndPasswordIdentityManager
+
+    auth-mechanisms:
+      basic: kikaha.core.modules.security.BasicAuthenticationMechanism
+      form: kikaha.core.modules.security.FormAuthenticationMechanism
+
+    rules:

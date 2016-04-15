@@ -1,6 +1,7 @@
 package kikaha.config;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -63,4 +64,8 @@ public interface Config {
 	Config getConfig(String path);
 
 	Object getObject(String path);
+
+	Class<?> getClass( String path );
+
+	Map<String, Object> toMap();
 }

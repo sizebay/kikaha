@@ -1,5 +1,7 @@
 package kikaha.core.test;
 
+import kikaha.config.Config;
+import kikaha.config.ConfigLoader;
 import kikaha.core.cdi.DefaultServiceProvider;
 import kikaha.core.cdi.ServiceProvider;
 import org.junit.runner.Description;
@@ -22,6 +24,7 @@ public class KikahaRunner extends Runner implements Filterable {
 	private final BlockJUnit4ClassRunner runner;
 
 	public KikahaRunner( Class<?> klass ) throws InitializationError {
+		cdi.providerFor( Config.class, ConfigLoader.loadDefaults() );
 		runner = new BlockJUnit4ClassRunner( klass ) {
 			@Override
 			protected Statement withBefores( FrameworkMethod method, Object target, Statement statement ) {

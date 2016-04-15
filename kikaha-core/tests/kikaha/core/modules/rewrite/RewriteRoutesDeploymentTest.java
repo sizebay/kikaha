@@ -29,7 +29,7 @@ public class RewriteRoutesDeploymentTest {
 	public void ensureThatHaveDeployedFiveRewriteRoutesDefinedInConfFile()
 	{
 		deployment.load( null, context );
-		verify( context, times( 7 ) ).rootHandler( any( ProxyHandler.class ) );
+		verify( context, times( 6 ) ).rootHandler( any( ProxyHandler.class ) );
 	}
 
 	@Before
