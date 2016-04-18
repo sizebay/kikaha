@@ -69,7 +69,7 @@ public class MergeableConfig implements Config {
 		final String clazzName = getString(path);
 		if ( clazzName == null )
 			return null;
-		return instantiate( path );
+		return instantiate( clazzName );
 	}
 
 	private Class<?> instantiate( String className ) {

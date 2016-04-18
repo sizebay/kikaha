@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>kikaha-maven-plugin</artifactId>
-	<name>Kikaha: maven plugin</name>
+	<name>Kikaha: Maven Plugin</name>
 	<packaging>maven-plugin</packaging>
 
 	<properties>

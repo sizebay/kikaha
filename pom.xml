@@ -60,6 +60,7 @@
 		<module>kikaha-config</module>
 		<module>kikaha-core</module>
 		<module>kikaha-maven-plugin</module>
+		<module>kikaha-modules</module>
 	</modules>
 
 	<properties>

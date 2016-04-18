@@ -87,18 +87,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<dependencySourceIncludes>
-						<dependencySourceInclude>javax.inject:*</dependencySourceInclude>
-					</dependencySourceIncludes>
-					<show>private</show>
-					<nohelp>true</nohelp>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 </project>
