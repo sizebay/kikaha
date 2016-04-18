@@ -19,9 +19,10 @@ public class MergeableConfig implements Config {
 
 	final Yaml yaml = new Yaml();
 	final Map<String, Object> conf;
+	final String rootPath;
 
 	public static MergeableConfig create(){
-		return new MergeableConfig( new HashMap<>() );
+		return new MergeableConfig( new HashMap<>(), "" );
 	}
 
 	public MergeableConfig load(File file ) throws IOException {
@@ -56,7 +57,7 @@ public class MergeableConfig implements Config {
 		final Map<String, Object> current = read(path, o->(Map<String,Object>)o);
 		if ( current == null )
 			return null;
-		return new MergeableConfig(current);
+		return new MergeableConfig(current, rootPath + path + ".");
 	}
 
 	@Override
@@ -87,16 +88,25 @@ public class MergeableConfig implements Config {
 
 	@Override
 	public String getString(String path) {
+		final String propertyValue = System.getProperty(rootPath + path);
+		if ( propertyValue != null )
+			return propertyValue;
 		return read( path, o->(String)o );
 	}
 
 	@Override
 	public Boolean getBoolean(String path) {
+		final String propertyValue = System.getProperty(rootPath + path);
+		if ( propertyValue != null )
+			return Boolean.valueOf(propertyValue);
 		return read( path, o->(Boolean)o );
 	}
 
 	@Override
 	public Integer getInteger(String path) {
+		final String propertyValue = System.getProperty(rootPath + path);
+		if ( propertyValue != null )
+			return Integer.valueOf( propertyValue );
 		return read( path, o->(Integer)o );
 	}
 
@@ -105,7 +115,7 @@ public class MergeableConfig implements Config {
 		final List<Map<String, Object>> current = read(path, o->(List<Map<String,Object>>)o);
 		if ( current == null )
 			return Collections.emptyList();
-		return current.stream().map( m -> new MergeableConfig(m) ).collect(Collectors.toList());
+		return current.stream().map( m -> new MergeableConfig(m, rootPath + path + ".") ).collect(Collectors.toList());
 	}
 
 	@Override

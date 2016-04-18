@@ -59,6 +59,7 @@
 		<module>kikaha-injection-processor</module>
 		<module>kikaha-config</module>
 		<module>kikaha-core</module>
+		<module>kikaha-maven-plugin</module>
 	</modules>
 
 	<properties>
