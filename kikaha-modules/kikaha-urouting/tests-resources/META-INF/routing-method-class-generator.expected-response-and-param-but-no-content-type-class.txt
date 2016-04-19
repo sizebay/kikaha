@@ -1,0 +1,39 @@
+package package kikaha.urouting.samples;
+
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.enterprise.inject.Typed;
+import kikaha.core.modules.http.WebResource;
+import kikaha.urouting.ResponseWriter;
+import kikaha.urouting.RoutingMethodDataProvider;
+import kikaha.urouting.RoutingMethodExceptionHandler;
+
+@Singleton
+@Typed( HttpHandler.class )
+@WebResource( path="/hello/world", method="GET" )
+public class GeneratedRoutingMethod123 implements HttpHandler {
+
+	@Inject ResponseWriter responseWriter;
+	@Inject RoutingMethodDataProvider methodDataProvider;
+	@Inject RoutingMethodExceptionHandler exceptionHandler;
+	
+	@Inject kikaha.urouting.samples.RetrieveRoutes provider;
+
+	@Override
+	public void handleRequest( HttpServerExchange exchange ) throws Exception {
+			if ( exchange.isInIoThread() ) {
+				exchange.dispatch(this);
+				return;
+			}
+			else if ( !exchange.isInIoThread() && !exchange.isBlocking() )
+				exchange.startBlocking();
+		try {
+			final String response = instance.renderRelatoMais( true );
+				responseWriter.write( exchange, response );
+		} catch ( Throwable cause ) {
+			responseWriter.write( exchange, exceptionHandler.handle( cause ) );
+		}
+	}
+}
