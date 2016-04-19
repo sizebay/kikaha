@@ -17,6 +17,7 @@
     <module>kikaha-urouting</module>
     <module>kikaha-urouting-jackson</module>
     <module>kikaha-urouting-jaxb</module>
+    <module>kikaha-urouting-mustache</module>
   </modules>
 
   <dependencies>

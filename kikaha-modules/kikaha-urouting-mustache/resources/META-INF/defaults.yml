@@ -1,0 +1,3 @@
+server:
+  mustache:
+    cache-templates: false
