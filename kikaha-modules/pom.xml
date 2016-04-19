@@ -15,6 +15,15 @@
 
   <modules>
     <module>kikaha-urouting</module>
-  </modules>  
+    <module>kikaha-urouting-jackson</module>
+  </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>kikaha-injection-processor</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
 </project>

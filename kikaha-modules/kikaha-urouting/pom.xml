@@ -17,11 +17,6 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>kikaha-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>kikaha-injection-processor</artifactId>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
