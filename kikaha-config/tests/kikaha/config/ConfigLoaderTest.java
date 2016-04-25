@@ -60,7 +60,7 @@ public class ConfigLoaderTest {
 	public void ensureThatCanMergeYamlFiles() throws IOException {
 		final MergeableConfig defaultConfig = MergeableConfig.create();
 		defaultConfig.load(new File("tests-resources/conf/snippet1.yml"));
-		assertNull( defaultConfig.getBoolean("server.user-ssl") );
+		assertFalse( defaultConfig.getBoolean("server.user-ssl") );
 		assertEquals( 9000, defaultConfig.getInteger("server.port") );
 		assertEquals( "0.0.0.0", defaultConfig.getString("server.host") );
 
