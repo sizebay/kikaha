@@ -23,12 +23,6 @@ public class GeneratedCodeAndMetaINFTest {
 	final DefaultServiceProvider provider = new DefaultServiceProvider();
 
 	@Test
-	public void grantThatGenerateNewHelloFoo() throws ServiceProviderException {
-		final HelloWorld helloWorld = this.provider.load( HelloWorld.class, qualifier( Foo.class ) );
-		assertEquals( "Fooo!!!", helloWorld.toString() );
-	}
-
-	@Test
 	public void grantThatCouldRetrieveAjaxFromMars() throws ServiceProviderException {
 		final Hero hero = this.provider.load( Hero.class, qualifier( Ajax.class ) );
 		assertNotNull( "No 'Hero' implementations found", hero );

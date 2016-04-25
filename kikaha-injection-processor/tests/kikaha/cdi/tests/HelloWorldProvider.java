@@ -11,9 +11,4 @@ public class HelloWorldProvider {
 		return new HelloWorld();
 	}
 
-	@Produces
-	@Foo
-	public HelloWorld createHelloFooo() {
-		return new HelloFoo();
-	}
 }

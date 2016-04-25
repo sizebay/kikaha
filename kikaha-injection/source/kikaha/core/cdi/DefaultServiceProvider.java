@@ -43,9 +43,9 @@ public class DefaultServiceProvider implements ServiceProvider {
 	}
 
 	protected Map<Class<?>, Iterable<?>> createDefaultProvidedData() {
-		final Map<Class<?>, Iterable<?>> injectables = new HashMap<Class<?>, Iterable<?>>();
-		injectables.put( ServiceProvider.class, new SingleObjectIterable<DefaultServiceProvider>( this ) );
-		return injectables;
+		final Map<Class<?>, Iterable<?>> injectable = new HashMap<>();
+		injectable.put( ServiceProvider.class, new SingleObjectIterable<>( this ) );
+		return injectable;
 	}
 
 	protected ProducerFactoryMap loadAllProducers() {
@@ -79,7 +79,7 @@ public class DefaultServiceProvider implements ServiceProvider {
 
 	@Override
 	public <T> void providerFor( final Class<T> serviceClazz, final T object ) {
-		providerFor( serviceClazz, new SingleObjectIterable<T>( object ) );
+		providerFor( serviceClazz, new SingleObjectIterable<>( object ) );
 	}
 
 	protected <T> void providerFor( final Class<T> serviceClazz, final Iterable<T> iterable ) {
@@ -105,8 +105,8 @@ public class DefaultServiceProvider implements ServiceProvider {
 		injector.flush();
 	}
 
-	public <T> ProducerFactory<T> getProviderFor( final Class<T> serviceClazz, final Condition<T> condition ) {
-		return fromInjector( i -> i.getProviderFor( serviceClazz, condition ) );
+	public <T> ProducerFactory<T> getProducerFor(final Class<T> serviceClazz ) {
+		return fromInjector( i -> i.getProducerFor( serviceClazz ) );
 	}
 
 	private <T> T fromInjector( Function<DependencyInjector, T> callback ) {
@@ -126,24 +126,24 @@ public class DefaultServiceProvider implements ServiceProvider {
 		final Queue<InjectableField> fieldToTryToInjectAgainLater = new ArrayDeque<>();
 
 		public <T> T load( final Class<T> serviceClazz, Condition<T> condition, ProviderContext providerContext ) {
-			final T produced = produceFromFactory( serviceClazz, condition, providerContext );
+			final T produced = produceFromFactory( serviceClazz, providerContext );
 			if ( produced != null )
 				return produced;
 			return Filter.first( loadAll( serviceClazz, condition ), condition );
 		}
 
-		private <T> T produceFromFactory( final Class<T> serviceClazz, final Condition<T> condition, final ProviderContext context )
+		private <T> T produceFromFactory( final Class<T> serviceClazz, final ProviderContext context )
 		{
-			final ProducerFactory<T> provider = getProviderFor( serviceClazz, condition );
+			final ProducerFactory<T> provider = getProducerFor( serviceClazz );
 			if ( provider != null )
 				return provider.provide( context );
 			return null;
 		}
 
-		public <T> ProducerFactory<T> getProviderFor( final Class<T> serviceClazz, final Condition<T> condition ) {
+		public <T> ProducerFactory<T> getProducerFor(final Class<T> serviceClazz ) {
 			if ( producers == null )
 				return null;
-			return (ProducerFactory<T>)producers.get( serviceClazz, this, condition );
+			return (ProducerFactory<T>)producers.get( serviceClazz, this );
 		}
 
 		public <T> Iterable<T> loadAll( final Class<T> serviceClazz, Condition<T> condition ) {
@@ -282,9 +282,4 @@ public class DefaultServiceProvider implements ServiceProvider {
 class InjectableField {
 	final ProvidableField structure;
 	final Object instance;
-}
-
-class TemporarilyUnavailableException extends RuntimeException {
-
-	private static final long serialVersionUID = -1692242949403885175L;
 }

@@ -95,19 +95,29 @@ public class MergeableConfig implements Config {
 	}
 
 	@Override
-	public Boolean getBoolean(String path) {
-		final String propertyValue = System.getProperty(rootPath + path);
-		if ( propertyValue != null )
-			return Boolean.valueOf(propertyValue);
-		return read( path, o->(Boolean)o );
+	public boolean getBoolean(String path) {
+		return getBoolean( path, false );
 	}
 
 	@Override
-	public Integer getInteger(String path) {
+	public boolean getBoolean(String path, boolean defaultValue) {
+		final String propertyValue = System.getProperty(rootPath + path);
+		if ( propertyValue != null )
+			return Boolean.valueOf(propertyValue);
+		return read( path, o->ifNull( (Boolean)o , defaultValue) );
+	}
+
+	@Override
+	public int getInteger(String path) {
+		return getInteger( path, 0 );
+	}
+
+	@Override
+	public int getInteger(String path, int defaultValue) {
 		final String propertyValue = System.getProperty(rootPath + path);
 		if ( propertyValue != null )
 			return Integer.valueOf( propertyValue );
-		return read( path, o->(Integer)o );
+		return read( path, o->ifNull( (Integer)o, defaultValue ) );
 	}
 
 	@Override
@@ -183,5 +193,9 @@ public class MergeableConfig implements Config {
 	private static void checkArgument( boolean isValid, String str, Object...args ){
 		if ( !isValid )
 			throw new IllegalArgumentException( format(str, args) );
+	}
+
+	private static <T> T ifNull( T value, T defaultValue ) {
+		return value != null ? value : defaultValue;
 	}
 }

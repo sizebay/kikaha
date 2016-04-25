@@ -61,12 +61,12 @@ public class ConfigLoaderTest {
 		final MergeableConfig defaultConfig = MergeableConfig.create();
 		defaultConfig.load(new File("tests-resources/conf/snippet1.yml"));
 		assertNull( defaultConfig.getBoolean("server.user-ssl") );
-		assertEquals( 9000, defaultConfig.getInteger("server.port").intValue() );
+		assertEquals( 9000, defaultConfig.getInteger("server.port") );
 		assertEquals( "0.0.0.0", defaultConfig.getString("server.host") );
 
 		defaultConfig.load(new File("tests-resources/conf/snippet2.yml"));
 		assertTrue(defaultConfig.getBoolean("server.user-ssl") );
-		assertEquals( 9001, defaultConfig.getInteger("server.port").intValue() );
+		assertEquals( 9001, defaultConfig.getInteger("server.port") );
 		assertEquals( "0.0.0.0", defaultConfig.getString("server.host") );
 
 		final List<String> authors = defaultConfig.getStringList("former-authors");

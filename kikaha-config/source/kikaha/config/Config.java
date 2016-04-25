@@ -26,8 +26,9 @@ public interface Config {
 	 * @param path which configuration should be read
 	 * @return a configuration Integer
 	 */
-	Integer getInteger(String path);
+	int getInteger(String path);
 
+	int getInteger(String path, int defaultValue);
 
 	/**
 	 * Retrieve a Boolean parameter from configuration.
@@ -35,7 +36,9 @@ public interface Config {
 	 * @param path which configuration should be read
 	 * @return a Boolean parameter from configuration
 	 */
-	Boolean getBoolean(String path);
+	boolean getBoolean(String path);
+
+	boolean getBoolean(String path, boolean defaultValue);
 
 	/**
 	 * Retrieve a list of configurations from a file. It is useful to deal with

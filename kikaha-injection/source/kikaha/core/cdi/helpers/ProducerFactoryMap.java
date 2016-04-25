@@ -1,17 +1,15 @@
 package kikaha.core.cdi.helpers;
 
+import kikaha.core.cdi.DefaultServiceProvider;
+import kikaha.core.cdi.ProducerFactory;
+import kikaha.core.cdi.helpers.filter.AnyObject;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import kikaha.core.cdi.DefaultServiceProvider;
-import kikaha.core.cdi.helpers.filter.AnyObject;
-import kikaha.core.cdi.helpers.filter.Filter;
-import kikaha.core.cdi.ProducerFactory;
-import kikaha.core.cdi.helpers.filter.Condition;
 
 @SuppressWarnings( "rawtypes" )
 public class ProducerFactoryMap {
@@ -45,13 +43,11 @@ public class ProducerFactoryMap {
 		iterable.add( provider );
 	}
 
-	public ProducerFactory<?> get(final Class<?> clazz, DefaultServiceProvider.DependencyInjector injector, final Condition<?> condition ) {
+	public ProducerFactory<?> get( final Class<?> clazz, final DefaultServiceProvider.DependencyInjector injector ) {
 		final List<ProducerFactory<?>> list = getAll( clazz, injector );
-
-		if ( list == null )
+		if ( list == null || list.isEmpty() )
 			return null;
-
-		return Filter.first(list, condition);
+		return list.get(0);
 	}
 
 	private List<ProducerFactory<?>> getAll( final Class<?> clazz, DefaultServiceProvider.DependencyInjector injector ) {
