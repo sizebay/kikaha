@@ -1,0 +1,6 @@
+server:
+  mail:
+    port: 2500
+    use-tls: false
+    use-auth: false
+    protocol: "smtp"

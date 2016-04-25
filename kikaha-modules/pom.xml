@@ -19,6 +19,7 @@
     <module>kikaha-urouting-jaxb</module>
     <module>kikaha-urouting-mustache</module>
     <module>kikaha-db</module>
+    <module>kikaha-java-mail</module>
   </modules>
 
   <dependencies>
