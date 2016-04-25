@@ -1,0 +1,3 @@
+server:
+  hazelcast:
+    config: "tests-resources/hazelcast-test.xml"
