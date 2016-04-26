@@ -1,18 +1,10 @@
 package kikaha.mojo;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import kikaha.core.cdi.ApplicationRunner;
 import kikaha.mojo.runner.MainClassService;
 import lombok.val;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
@@ -20,8 +12,13 @@ import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.project.MavenProject;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @goal run
@@ -45,20 +42,8 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	 */
 	String webresourcesPath;
 
-	/**
-	 * @parameter default-value="${plugin}"
-	 */
-	PluginDescriptor plugin;
-
 	/** @parameter default-value="${localRepository}" */
 	ArtifactRepository localRepository;
-
-	/**
-	 * Used to construct artifacts for deletion/resolution...
-	 *
-	 * @component
-	 */
-	ArtifactFactory factory;
 
 	/**
 	 * @component
@@ -97,14 +82,11 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	 */
 	File resourceDirectory;
 
-	StringBuilder classPath = new StringBuilder();
-	String standaloneJar;
-
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
 			val classpath = memorizeClassPathWithRunnableJar();
-			val service = new MainClassService( getWorkdirectory(), ApplicationRunner.class.getCanonicalName(), classpath,
+			val service = new MainClassService( getWorkDirectory(), ApplicationRunner.class.getCanonicalName(), classpath,
 					asList( "-Dserver.static.location=" + absolutePath( webresourcesPath ) ), jvmArgs );
 			val process = service.start();
 			if ( process.waitFor() > 0 )
@@ -114,16 +96,16 @@ public class KikahaRunnerMojo extends AbstractMojo {
 		}
 	}
 
-	File getWorkdirectory(){
-		if ( !resourceDirectory.exists() ){
-			val file = new File("");
-			return new File( file.getAbsolutePath() );
-		}
-		return resourceDirectory;
+	File getWorkDirectory(){
+		File file = resourceDirectory;
+		if ( !file.exists() )
+			file = new File( new File("").getAbsolutePath() );
+		return file;
 	}
 
 	String absolutePath( String str ) {
-		return new File( str ).getAbsolutePath();
+		final String absolutePath = new File(str).getAbsolutePath();
+		return absolutePath;
 	}
 
 	List<String> asList( final String...strings ){

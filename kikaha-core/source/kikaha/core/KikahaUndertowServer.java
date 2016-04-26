@@ -27,13 +27,13 @@ public class KikahaUndertowServer implements Application {
 
 	@Override
 	public void run() throws Exception {
-		final long start = System.currentTimeMillis();
-
-		configureUndertow();
-		start();
-
-		final long elapsed = System.currentTimeMillis() - start;
-		log.info( "Server started in " + elapsed + "ms.");
+		try {
+			configureUndertow();
+			start();
+		} catch ( Throwable anyProblem ) {
+			log.error( "Could not start server", anyProblem );
+			System.exit( 1 );
+		}
 	}
 
 	void configureUndertow() throws IOException {

@@ -70,8 +70,8 @@ public class MainClassService {
 		commandLine.addAll(getJvmArgsAsList());
 		commandLine.add("-cp");
 		commandLine.add(joinClassPath(classpath));
-		commandLine.add(mainClass);
 		commandLine.addAll(arguments);
+		commandLine.add(mainClass);
 		return commandLine;
 	}
 

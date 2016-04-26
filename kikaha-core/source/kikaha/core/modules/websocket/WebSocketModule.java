@@ -18,7 +18,7 @@ import javax.inject.Singleton;
 
 @Slf4j
 @Singleton
-public class WebSocketDeploymentHook implements Module {
+public class WebSocketModule implements Module {
 
 	@Getter
 	final String name = "websocket";
@@ -29,7 +29,6 @@ public class WebSocketDeploymentHook implements Module {
 
 	@Override
 	public void load( Undertow.Builder server, final DeploymentContext context ) {
-		log.info( "Deploying WebSocket resources..." );
 		for ( final WebSocketHandler handler : handlers )
 			deploy( context, handler );
 	}

@@ -41,7 +41,7 @@ public class StaticResourceModule implements Module {
 	File retrieveWebAppFolder( Config staticConfig ) {
 		final File location = new File( staticConfig.getString("location") );
 		if (!location.exists())
-			location.mkdirs();
+			log.error( "Folder not found: " + location.getAbsolutePath() );
 		return location;
 	}
 

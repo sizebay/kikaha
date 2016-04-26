@@ -38,6 +38,7 @@ server:
       RECORD_REQUEST_START_TIME: false
 
     socket-options:
+      BACKLOG: 20000
 
   static:
     enabled: false

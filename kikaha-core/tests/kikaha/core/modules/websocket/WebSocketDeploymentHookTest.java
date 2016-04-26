@@ -31,7 +31,7 @@ public class WebSocketDeploymentHookTest {
 	DeploymentContext context;
 
 	@Inject
-	WebSocketDeploymentHook deploymentHook;
+	WebSocketModule deploymentHook;
 
 	@Before
 	@SneakyThrows
