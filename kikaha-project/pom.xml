@@ -42,6 +42,15 @@
     </dependencies>
   </dependencyManagement>
 
+  <dependencies>
+    <dependency>
+      <groupId>io.skullabs.kikaha</groupId>
+      <version>2.0.0-SNAPSHOT</version>
+      <artifactId>kikaha-injection-processor</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
 	<build>
 		<sourceDirectory>${config.dir.source}</sourceDirectory>
 		<testSourceDirectory>${config.dir.test.source}</testSourceDirectory>
