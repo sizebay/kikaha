@@ -1,17 +1,17 @@
 package kikaha.core.cdi;
 
+import kikaha.core.cdi.helpers.ProvidableClass;
+import kikaha.core.cdi.helpers.QualifierExtractor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.extern.java.Log;
-import kikaha.core.cdi.helpers.ProvidableClass;
-import kikaha.core.cdi.helpers.QualifierExtractor;
-
-@Log
+@Slf4j
 @RequiredArgsConstructor
 public class SingletonContext {
 
@@ -39,7 +39,7 @@ public class SingletonContext {
 		try {
 			return clazz.newInstance();
 		} catch ( final IllegalAccessException | InstantiationException cause ) {
-			log.finest("Can't instantiate " + clazz + ": " + cause.getMessage());
+			log.debug("Can't instantiate " + clazz + ": " + cause.getMessage());
 			return null;
 		}
 	}

@@ -1,22 +1,21 @@
 package kikaha.core.cdi.helpers;
 
+import kikaha.core.cdi.DefaultServiceProvider.DependencyInjector;
+import kikaha.core.cdi.ProviderContext;
+import kikaha.core.cdi.ServiceProviderException;
+import kikaha.core.cdi.helpers.filter.ChainedCondition;
+import kikaha.core.cdi.helpers.filter.Condition;
+import kikaha.core.cdi.helpers.filter.IsAssignableFrom;
+import kikaha.core.cdi.helpers.filter.QualifierCondition;
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.enterprise.inject.Typed;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
-import kikaha.core.cdi.ServiceProviderException;
-import kikaha.core.cdi.helpers.filter.Condition;
-import lombok.Value;
-import lombok.extern.java.Log;
-import kikaha.core.cdi.DefaultServiceProvider.DependencyInjector;
-import kikaha.core.cdi.ProviderContext;
-import kikaha.core.cdi.helpers.filter.ChainedCondition;
-import kikaha.core.cdi.helpers.filter.IsAssignableFrom;
-import kikaha.core.cdi.helpers.filter.QualifierCondition;
-
-import javax.enterprise.inject.Typed;
-
-@Log
+@Slf4j
 @Value
 @SuppressWarnings( { "unchecked", "rawtypes" } )
 public class SingleElementProvidableField<T> implements ProvidableField {
@@ -32,7 +31,7 @@ public class SingleElementProvidableField<T> implements ProvidableField {
 	{
 		final Object value = provider.load( fieldType, condition, providerContext );
 		if ( value == null )
-			log.warning( "No data found for " + fieldType.getCanonicalName() + ". Condition: " + condition );
+			log.warn( "No data found for " + fieldType.getCanonicalName() + ". Condition: " + condition );
 		set( instance, value );
 	}
 
