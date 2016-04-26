@@ -7,6 +7,7 @@ import com.hazelcast.core.HazelcastInstance;
 import kikaha.config.Config;
 import lombok.Getter;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -14,11 +15,16 @@ import javax.inject.Singleton;
 @Singleton
 public class HazelcastInstanceProducer {
 
-	@Getter( lazy = true )
-	private final HazelcastInstance instance = createHazelcastInstance();
+	@Getter
+	HazelcastInstance instance;
 
 	@Inject
 	Config config;
+
+	@PostConstruct
+	public void preloadInstance(){
+		instance = createHazelcastInstance();
+	}
 
 	/**
 	 * Produce a Hazelcast Instance. It will ensure that has only one instance
@@ -66,10 +72,7 @@ public class HazelcastInstanceProducer {
 	private com.hazelcast.config.Config loadConfig() throws Exception {
 		final String configFile = config.getString("server.hazelcast.config");
 		final com.hazelcast.config.Config config = new XmlConfigBuilder( configFile ).build();
+		config.setProperty( "hazelcast.logging.type", "slf4j" );
 		return config;
-	}
-
-	boolean isBlank( String string ) {
-		return string == null || string.isEmpty();
 	}
 }
