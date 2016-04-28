@@ -8,8 +8,7 @@ LIBDIR="./lib"
 # RUNTIME VARIABLES
 JAVA="java -Dconfig.app.dir=`pwd`"
 JAVA_OPTS=
-MAIN_CLASS=kikaha.core.Main
-OUTPUTFILE=server.stdout.log
+MAIN_CLASS=kikaha.core.cdi.ApplicationRunner
 NULL=/dev/null
 
 retrieve_server_pid(){
@@ -65,7 +64,7 @@ if [ -e bin/kikaha.conf ]; then
 fi
 
 # MAIN
-CLASSPATH=".:${LIBDIR}/*"
+CLASSPATH="${LIBDIR}/*:."
 
 if [ ! "$NO_LOGO" = "true" ]; then
 	print_logo

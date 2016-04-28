@@ -1,14 +1,13 @@
 print_logo(){
 if [ ! "$QUIET" = "true" ]; then
 cat <<EOF
-      $(yellow " __  _  ____  __  _   ____  __ __   ____ ")
-      $(yellow "|  |/ ]|    ||  |/ ] /    ||  |  | /    |")
-      $(yellow "|  ' /  |  | |  ' / |  o  ||  |  ||  o  |")
-      $(yellow "|    \  |  | |    \ |     ||  _  ||     |")
-      $(yellow "|     | |  | |     ||  _  ||  |  ||  _  |")
-      $(yellow "|  .  | |  | |  .  ||  |  ||  |  ||  |  |")
-      $(yellow "|__|\_||____||__|\_||__|__||__|__||__|__|")
- $(grape 'write fast microservices faster')
+
+      $(yellow "    __   _ __         __         ")
+      $(yellow "   / /__(_) /______ _/ /_  ____ _")
+      $(yellow "  / //_/ / //_/ __ \`/ __ \\/ __ \`/")
+      $(yellow " / ,< / / ,< / /_/ / / / / /_/ / ")
+      $(yellow "/_/|_/_/_/|_|\\__,_/_/ /_/\\__,_/  ")
+     $(grape 'write fast microservices faster')
 
 EOF
 fi
@@ -27,9 +26,9 @@ grape(){
 }
 
 info(){
-	echo "$(yellow '[INFO]') $@"
+	echo "$(yellow '::') $@"
 }
 
 warn(){
-	echo "$(red '[WARN]') $@"
+	echo "$(red '::') $@"
 }
