@@ -32,7 +32,7 @@ import org.apache.maven.project.MavenProject;
  */
 public class KikahaPackagerMojo extends AbstractMojo {
 
-	static final String DEFAULT_DIR = "resources/defaults/";
+	static final String DEFAULT_DIR = "META-INF/defaults/";
 	static final String METAINF_DIR = "META-INF";
 
 	/**

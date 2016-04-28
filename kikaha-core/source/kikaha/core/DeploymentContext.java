@@ -12,12 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 @Getter
 @Accessors( fluent = true )
+@Singleton
 public class DeploymentContext {
 
 	final Map<String, Object> attributes = new HashMap<>();

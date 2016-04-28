@@ -21,7 +21,9 @@ import kikaha.core.cdi.helpers.FieldQualifierExtractor;
 import kikaha.core.cdi.helpers.ProvidableClass;
 import kikaha.core.cdi.helpers.QualifierExtractor;
 import kikaha.core.cdi.helpers.SingleObjectIterable;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @SuppressWarnings( { "rawtypes", "unchecked" } )
 public class DefaultServiceProvider implements ServiceProvider {
 
@@ -192,6 +194,7 @@ public class DefaultServiceProvider implements ServiceProvider {
 				try {
 					field.provide( obj, this );
 				} catch ( final Throwable e ) {
+					log.debug( e.getMessage(), e );
 					fieldToTryToInjectAgainLater.add( new InjectableField( field, obj ) );
 				}
 		}

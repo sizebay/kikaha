@@ -34,20 +34,20 @@ public class HttpsModule implements Module {
 		Config httpConfig = config.getConfig("server.https");
 		if ( httpConfig.getBoolean("enabled") )
 			loadHttpsListener( httpConfig, server );
+		deployHttpToHttps( context );
 	}
 
 	void loadHttpsListener( Config httpConfig, Undertow.Builder server ) throws IOException {
 		final SSLContext sslContext = sslContextFactory.createSSLContext();
-		server.addHttpsListener(
-				httpConfig.getInteger("port"),
-				httpConfig.getString("host"),
-				sslContext
-		);
+		final int port = httpConfig.getInteger("port");
+		final String host = httpConfig.getString("host");
+		log.info( "Listening for HTTPS requests at " + host + ":" + port );
+		server.addHttpsListener(port, host, sslContext );
 	}
 
 	private void deployHttpToHttps(DeploymentContext context) {
 		if ( config.getBoolean("server.https.redirect-http-to-https") ) {
-			log.info("Redireting HTTP requests to HTTPS");
+			log.info("Automatically redirecting HTTP requests to HTTPS");
 			context.rootHandler(new AutoHTTPSRedirectHandler(context.rootHandler()));
 		}
 	}

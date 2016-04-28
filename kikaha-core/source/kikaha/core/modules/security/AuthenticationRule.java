@@ -1,17 +1,21 @@
 package kikaha.core.modules.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import kikaha.core.url.URLMatcher;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.val;
+import lombok.ToString;
 import lombok.experimental.Accessors;
+import lombok.val;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Accessors( fluent = true )
+@ToString(of = {"pattern", "identityManagers", "mechanisms"})
 public class AuthenticationRule {
+
+	private final static String MSG_INVALID_RULE = "Invalid rule: ";
 
 	final String pattern;
 	final List<URLMatcher> exceptionPatterns;
@@ -35,6 +39,14 @@ public class AuthenticationRule {
 		this.mechanisms = mechanisms;
 		this.expectedRoles = expectedRoles;
 		this.exceptionPatterns = convertToURLMatcher( exceptionPatterns );
+		if ( isInvalid() )
+			throw new UnsupportedOperationException( MSG_INVALID_RULE + toString() );
+	}
+
+	private boolean isInvalid(){
+		return (identityManagers == null || identityManagers.isEmpty())
+			|| (mechanisms == null || mechanisms.isEmpty())
+			|| (pattern == null || pattern.isEmpty());
 	}
 
 	public boolean matches( final String url ) {

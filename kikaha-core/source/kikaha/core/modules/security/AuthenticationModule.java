@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Singleton
 @Getter
-public class AuthenticationRulesDeployment implements Module {
+public class AuthenticationModule implements Module {
 
 	final String name = "security";
 

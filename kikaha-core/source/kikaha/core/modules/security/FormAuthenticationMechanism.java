@@ -77,7 +77,7 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 
 	private static void sendRedirectBack(HttpServerExchange exchange, Session session) {
 		final String location = (String)session.getAttribute(LOCATION_ATTRIBUTE);
-		sendRedirect(exchange, location);
+		sendRedirect(exchange, location != null && !location.isEmpty() ? location : "/");
 	}
 
 	private static void memorizeCurrentPage( HttpServerExchange exchange, Session session ){
@@ -121,6 +121,7 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	}
 }
 
+@Slf4j
 @RequiredArgsConstructor(staticName="to")
 class RedirectBack implements DefaultResponseListener {
 
@@ -128,9 +129,9 @@ class RedirectBack implements DefaultResponseListener {
 
 	@Override
 	public boolean handleDefaultResponse(HttpServerExchange exchange) {
+		exchange.setStatusCode(StatusCodes.FOUND);
 		exchange.getResponseHeaders().put(Headers.LOCATION, location);
-		exchange.setResponseCode(StatusCodes.FOUND);
-        exchange.endExchange();
+		exchange.endExchange();
         return true;
 	}
 }

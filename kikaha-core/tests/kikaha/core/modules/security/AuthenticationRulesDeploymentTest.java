@@ -22,7 +22,7 @@ import java.util.List;
 public class AuthenticationRulesDeploymentTest {
 
 	@Inject
-	AuthenticationRulesDeployment deployment;
+	AuthenticationModule deployment;
 
 	@Mock
 	DeploymentContext deploymentContext;

@@ -4,24 +4,24 @@ import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.idm.Account;
 import io.undertow.security.idm.IdentityManager;
 import io.undertow.server.HttpServerExchange;
-
-import java.util.Iterator;
-import java.util.List;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Iterator;
+import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
 public class DefaultSecurityContext implements SecurityContext {
 
-	private static final String MSG_IMMUTABLE = "You can't change this immuatable SecurityContext. See SecurityContextFactory for more details.";
+	private static final String MSG_IMMUTABLE = "You can't change this immutable SecurityContext. See SecurityContextFactory for more details.";
 	private static final String MSG_NO_MANUAL_LOGIN = "You can't perform a manual login.";
 	private static final String MSG_NOT_SUPPORTED_BY_DEFAULT = "This operation is not supported by default.";
 
 	private final boolean authenticationRequired = true;
 
+	private AuthenticationMechanism currentAuthMechanism = null;
 	private Session currentSession = null;
 	private boolean authenticated = true;
 
@@ -46,17 +46,15 @@ public class DefaultSecurityContext implements SecurityContext {
 		final Iterator<AuthenticationMechanism> iterator = rule.mechanisms().iterator();
 		Account account = currentSession.getAuthenticatedAccount();
 		while ( account == null && iterator.hasNext() ) {
-			final AuthenticationMechanism authMechanism = iterator.next();
-			account = authMechanism.authenticate( exchange, rule.identityManagers(), currentSession );
+			currentAuthMechanism = iterator.next();
+			account = currentAuthMechanism.authenticate( exchange, rule.identityManagers(), currentSession );
 		}
 		return account;
 	}
 
 	private void sendAuthenticationChallenge() {
-		final Iterator<AuthenticationMechanism> iterator = rule.mechanisms().iterator();
-		boolean sentChallenge = false;
-		while ( !sentChallenge && iterator.hasNext() )
-			sentChallenge = iterator.next().sendAuthenticationChallenge( exchange, currentSession );
+		if ( !currentAuthMechanism.sendAuthenticationChallenge( exchange, currentSession ) )
+			throw new IllegalStateException( "Cannot send authentication challenge" );
 	}
 
 	@Override

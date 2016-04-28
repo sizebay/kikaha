@@ -44,17 +44,23 @@ public class AuthenticationRuleMatcher {
 
 	private SecurityContextFactory instantiateSecurityContextFactory( final Config authConfig ) {
 		final String className = authConfig.getString( "security-context-factory" );
-		return instantiate( className, SecurityContextFactory.class );
+		SecurityContextFactory factory = instantiate( className, SecurityContextFactory.class );
+		log.debug("Found SecurityContextFactory: " + factory);
+		return factory;
 	}
 
 	private Map<String, AuthenticationMechanism> instantiateMechanismsFoundOnConfig() {
 		final Map<String, Object> values = authConfig.getConfig("auth-mechanisms").toMap();
-		return convert( values, o->instantiate( (String)o, AuthenticationMechanism.class ) );
+		Map<String, AuthenticationMechanism> mechanisms = convert( values, o->instantiate( (String)o, AuthenticationMechanism.class ) );
+		log.debug("Found Mechanisms: " + mechanisms);
+		return mechanisms;
 	}
 
 	private Map<String, IdentityManager> instantiateIdentityManagersFoundOnConfig() {
 		final Map<String, Object> values = authConfig.getConfig("identity-managers").toMap();
-		return convert( values, o->instantiate( (String)o, IdentityManager.class ) );
+		Map<String, IdentityManager> identityManagers = convert( values, o->instantiate( (String)o, IdentityManager.class ) );
+		log.debug( "Found Identity Managers: " + identityManagers );
+		return identityManagers;
 	}
 
 	private <V,N> Map<String,N> convert( Map<String, V> original, Function<V,N> converter  ) {

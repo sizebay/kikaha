@@ -46,7 +46,7 @@ public class ViburDatasourceProducer {
 	}
 
 	private ViburDBCPDataSource createDatasource( final DataSourceConfiguration dsConf ) {
-		log.info( "DataSource " + dsConf.name() + " created." );
+		log.info( "Starting DataSource " + dsConf.name() + "...." );
 		final ViburDBCPDataSource ds = new ViburDBCPDataSource();
 		ds.setAcquireRetryAttempts( dsConf.acquireRetryAttempt() );
 		ds.setAcquireRetryDelayInMs( dsConf.acquireRetryDelayInMs() );
@@ -67,6 +67,8 @@ public class ViburDatasourceProducer {
 		ds.setLogStackTraceForLongQueryExecution( dsConf.logStacktraceForLongQueryExecution() );
 		ds.setUsername( dsConf.username() );
 		ds.setPassword( dsConf.password() );
+		log.debug( "Connection: jdbc-url: " + ds.getJdbcUrl() );
+		log.debug( "Connection: username: " + ds.getUsername() );
 		return ds;
 	}
 

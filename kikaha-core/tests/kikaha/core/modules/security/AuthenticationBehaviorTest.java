@@ -63,6 +63,7 @@ public class AuthenticationBehaviorTest {
 	@Test
 	public void ensureThatSendChallengeWhenUserIsntAuthenticated(){
 		doReturn(null).when(mechanism).authenticate(any(), any(), any());
+		doReturn(true).when(mechanism).sendAuthenticationChallenge( any(),any() );
 		final SecurityContext context = new DefaultSecurityContext(rule, exchange, store);
 		assertFalse( context.authenticate() );
 		verify( mechanism ).sendAuthenticationChallenge(any(), any());

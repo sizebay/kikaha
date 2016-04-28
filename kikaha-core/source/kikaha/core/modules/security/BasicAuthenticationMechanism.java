@@ -92,7 +92,7 @@ public class BasicAuthenticationMechanism implements AuthenticationMechanism {
 
 	@Override
 	public boolean sendAuthenticationChallenge(HttpServerExchange exchange, Session session) {
-		exchange.setResponseCode( StatusCodes.UNAUTHORIZED );
+		exchange.setStatusCode( StatusCodes.UNAUTHORIZED );
 		exchange.getResponseHeaders().add( Headers.WWW_AUTHENTICATE, challenge );
 		return true;
 	}

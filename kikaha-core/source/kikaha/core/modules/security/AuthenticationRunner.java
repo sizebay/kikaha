@@ -4,11 +4,9 @@ import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
-
-import kikaha.config.Config;
-import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class AuthenticationRunner implements Runnable {
@@ -37,7 +35,7 @@ public class AuthenticationRunner implements Runnable {
 
 	void tryExecuteChain() throws Exception {
 		if ( matchesExpectedRoles() )
-			next.handleRequest( exchange );
+			next.handleRequest(exchange);
 		else
 			handlePermissionDenied();
 	}
@@ -62,7 +60,7 @@ public class AuthenticationRunner implements Runnable {
 
 	void sendForbiddenError() {
 		exchange.setStatusCode( 403 );
-		exchange.getResponseSender().send( "Permition Denied" );
+		exchange.getResponseSender().send( "Permission Denied" );
 	}
 
 	void redirectToPermissionDeniedPage() {
