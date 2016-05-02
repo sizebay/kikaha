@@ -9,6 +9,7 @@ import lombok.Getter;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -20,6 +21,10 @@ public class HazelcastInstanceProducer {
 
 	@Inject
 	Config config;
+
+	@Inject
+	@Typed( HazelcastConfigurationListener.class )
+	Iterable<HazelcastConfigurationListener> configurationListeners;
 
 	@PostConstruct
 	public void preloadInstance(){
@@ -56,6 +61,8 @@ public class HazelcastInstanceProducer {
 	public HazelcastInstance createHazelcastInstance() {
 		try {
 			final com.hazelcast.config.Config cfg = loadConfig();
+			for ( HazelcastConfigurationListener listener : configurationListeners )
+				listener.onConfigurationLoaded( cfg );
 			return Hazelcast.newHazelcastInstance( cfg );
 		// UNCHECKED: It should handle any exception thrown
 		} catch ( final Exception cause ) {

@@ -20,6 +20,22 @@ public class HazelcastDistributedDataStructuresProducer {
 	HazelcastProducedDataListenerFactory listenerFactory;
 
 	@Produces
+	public IAtomicLong produceIAtomicLongs( final ProviderContext context ) {
+		final String name = retrieveSourceNameFrom( context );
+		final IAtomicLong data = hazelcast.getAtomicLong( name );
+		notifyDataWasProduced( data, IAtomicLong.class );
+		return data;
+	}
+
+	@Produces
+	public IAtomicReference produceIAtomicReferences( final ProviderContext context ) {
+		final String name = retrieveSourceNameFrom( context );
+		final IAtomicReference data = hazelcast.getAtomicReference( name );
+		notifyDataWasProduced( data, IAtomicReference.class );
+		return data;
+	}
+
+	@Produces
 	public IMap produceIMaps( final ProviderContext context ) {
 		final String name = retrieveSourceNameFrom( context );
 		final IMap data = hazelcast.getMap( name );

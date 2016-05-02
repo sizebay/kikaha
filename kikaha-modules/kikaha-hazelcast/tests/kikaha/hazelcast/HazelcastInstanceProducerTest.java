@@ -11,14 +11,16 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.*;
 
 @RunWith(KikahaRunner.class)
 public class HazelcastInstanceProducerTest {
 
 	@Inject
 	HazelcastInstanceProducer producer;
+
+	@Inject
+	HazelcastStubConfigurationListener stubListener;
 
 	@Test
 	public void grantThatProducesTwoMapsWithSameData() {
@@ -33,6 +35,19 @@ public class HazelcastInstanceProducerTest {
 		assertNotSame( firstMap, secondMap );
 		final Hello secondHello = (Hello)firstMap.get( "now" );
 		assertEquals( secondHello.getNow(), hello.getNow() );
+	}
+
+	@Test
+	public void ensureThatGetMapMethodWillProduceTheSameIMap(){
+		final HazelcastInstance firstInstance = producer.createHazelcastInstance();
+		final IMap<String, Object> firstMap = produceMap( firstInstance );
+		final IMap<String, Object> secondMap = produceMap( firstInstance );
+		assertSame( firstMap, secondMap );
+	}
+
+	@Test
+	public void ensureThatHazelcastConfigurationListenersAreCalled(){
+		assertTrue( stubListener.configurationLoaded );
 	}
 
 	IMap<String, Object> produceMap( HazelcastInstance instance ) {

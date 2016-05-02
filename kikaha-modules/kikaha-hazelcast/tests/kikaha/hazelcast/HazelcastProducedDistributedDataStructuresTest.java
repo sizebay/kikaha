@@ -24,6 +24,14 @@ public class HazelcastProducedDistributedDataStructuresTest {
 	MultiMap<Long, AtomicBoolean> multimap;
 
 	@Inject
+	@Named("atomic-longs")
+	IAtomicLong atomicLongs;
+
+	@Inject
+	@Named("atomic-references")
+	IAtomicReference<?> atomicReferences;
+
+	@Inject
 	@Named( "atomic-booleans" )
 	IQueue<AtomicBoolean> queue;
 
@@ -67,6 +75,8 @@ public class HazelcastProducedDistributedDataStructuresTest {
 		assertTrue( IExecutorService.class.isInstance( executorService ) );
 		assertTrue( ReplicatedMap.class.isInstance( replicatedMap ) );
 		assertTrue( IdGenerator.class.isInstance( idGenerator ) );
+		assertTrue( IAtomicLong.class.isInstance( atomicLongs ) );
+		assertTrue( IAtomicReference.class.isInstance( atomicReferences ) );
 	}
 
 	@Test
