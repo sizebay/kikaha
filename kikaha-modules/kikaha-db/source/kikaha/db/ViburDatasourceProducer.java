@@ -65,6 +65,9 @@ public class ViburDatasourceProducer {
 		ds.setLogQueryExecutionLongerThanMs( dsConf.logQueryExecutionLongerThanMs() );
 		ds.setLogStackTraceForLargeResultSet( dsConf.logStacktraceForLargeResultset() );
 		ds.setLogStackTraceForLongQueryExecution( dsConf.logStacktraceForLongQueryExecution() );
+		ds.setPoolFair( dsConf.poolFair() );
+		ds.setPoolInitialSize( dsConf.poolInitialSize() );
+		ds.setPoolMaxSize( dsConf.poolMaxSize() );
 		ds.setUsername( dsConf.username() );
 		ds.setPassword( dsConf.password() );
 		log.debug( "Connection: jdbc-url: " + ds.getJdbcUrl() );
