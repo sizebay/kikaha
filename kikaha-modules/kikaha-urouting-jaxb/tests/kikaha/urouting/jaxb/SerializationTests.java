@@ -32,7 +32,7 @@ public class SerializationTests {
 	@SneakyThrows
 	public void grantThatSerializeItAsXML() {
 		final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		final AbstractSerializer serializer = (AbstractSerializer)provider.getSerializerFor(Mimes.XML, Mimes.XML );
+		final AbstractSerializer serializer = (AbstractSerializer)provider.getSerializerFor(Mimes.XML );
 		serializer.serialize( user, outputStream );
 		final String expected = readFile("serialization.expected-xml.xml");
 		assertThat( outputStream.toString(), is( expected ) );
@@ -42,7 +42,7 @@ public class SerializationTests {
 	@SneakyThrows
 	public void grantThatUnserializeXMLIntoObjectAsExpected() {
 		final String xml = readFile("serialization.expected-xml.xml");
-		final AbstractUnserializer unserializer = (AbstractUnserializer)provider.getUnserializerFor( Mimes.XML, Mimes.XML );
+		final AbstractUnserializer unserializer = (AbstractUnserializer)provider.getUnserializerFor( Mimes.XML );
 		final User user = unserializer.unserialize( new StringReader( xml ), User.class );
 		assertIsValidUser( user );
 	}

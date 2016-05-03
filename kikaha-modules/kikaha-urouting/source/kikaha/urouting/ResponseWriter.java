@@ -86,8 +86,7 @@ public class ResponseWriter {
 	 * @throws RoutingException
 	 * @throws IOException
 	 */
-	public void write( final HttpServerExchange exchange, final String contentType, final Object response )
-			throws RoutingException, IOException {
+	public void write( final HttpServerExchange exchange, final String contentType, final Object response ) throws IOException {
 		sendStatusCode( exchange, 200 );
 		sendContentTypeHeader( exchange, contentType );
 		sendBodyResponse( exchange, contentType, getDefaultEncoding(), response );
@@ -102,8 +101,7 @@ public class ResponseWriter {
 	 * @throws RoutingException
 	 * @throws IOException
 	 */
-	public void write( final HttpServerExchange exchange, final String defaultContentType, final Response response )
-			throws RoutingException, IOException {
+	public void write( final HttpServerExchange exchange, final String defaultContentType, final Response response ) throws IOException {
 		final String contentType = response.contentType() != null
 			? response.contentType() : defaultContentType;
 		sendStatusCode( exchange, response.statusCode() );
@@ -129,7 +127,7 @@ public class ResponseWriter {
 	}
 
 	Serializer getSerializer( final String contentType ) throws IOException {
-		return serializerAndUnserializerProvider.getSerializerFor( contentType, getDefaultContentType() );
+		return serializerAndUnserializerProvider.getSerializerFor( contentType );
 	}
 
 	void sendHeaders( final HttpServerExchange exchange, final Response response ) {

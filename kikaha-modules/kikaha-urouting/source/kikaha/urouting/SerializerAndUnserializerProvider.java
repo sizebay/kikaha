@@ -14,12 +14,10 @@ public class SerializerAndUnserializerProvider {
 	final Map<String, Serializer> serializerByContentType;
 	final Map<String, Unserializer> unserializerByContentType;
 
-	public Serializer getSerializerFor( final String contentType, final String fallbackContentType ) throws IOException{
+	public Serializer getSerializerFor( final String contentType ) throws IOException{
 		Serializer serializer = serializerByContentType.get(contentType);
-		if ( serializer == null && fallbackContentType != null )
-			serializer = serializerByContentType.get(fallbackContentType);
 		if ( serializer == null )
-			throw new RoutingException( "No serializer found for " + contentType );
+			throw new UnsupportedMediaTypeException( contentType );
 		return serializer;
 	}
 
@@ -30,16 +28,13 @@ public class SerializerAndUnserializerProvider {
 	 * throws {@link RoutingException} when no decoder was found.
 	 *
 	 * @param contentType
-	 * @param fallbackContentType
 	 * @return
 	 * @throws IOException
 	 */
-	public Unserializer getUnserializerFor( final String contentType, final String fallbackContentType ) throws IOException{
+	public Unserializer getUnserializerFor( final String contentType ) throws IOException{
 		Unserializer serializer = unserializerByContentType.get(contentType);
-		if ( serializer == null && fallbackContentType != null )
-			serializer = unserializerByContentType.get(fallbackContentType);
 		if ( serializer == null )
-			throw new RoutingException( "No unserializer found for " + contentType );
+			throw new UnsupportedMediaTypeException( contentType );
 		return serializer;
 	}
 }

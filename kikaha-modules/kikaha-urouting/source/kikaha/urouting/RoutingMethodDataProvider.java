@@ -151,31 +151,31 @@ public class RoutingMethodDataProvider {
 	 * from client into the desired object. The "Content-Type" header is the
 	 * information needed to define which {@link Unserializer} should be used to
 	 * decode the sent data into an object. When no {@link Unserializer} is
-	 * found it uses the {@code defaulConsumingContentType} argument to seek
+	 * found it uses the {@code defaultConsumingContentType} argument to seek
 	 * another one. It throws {@link RoutingException} when no decoder was
 	 * found.
 	 *
 	 * @param exchange
 	 * @param clazz
-	 * @param defaulConsumingContentType
+	 * @param defaultConsumingContentType
 	 * @return
 	 * @throws IOException
 	 */
-	public <T> T getBody( final HttpServerExchange exchange, final Class<T> clazz, final String defaulConsumingContentType )
+	public <T> T getBody( final HttpServerExchange exchange, final Class<T> clazz, final String defaultConsumingContentType )
 			throws IOException {
 		String contentEncoding = exchange.getRequestHeaders().getFirst( Headers.CONTENT_ENCODING_STRING );
 		if ( contentEncoding == null )
 			contentEncoding = "UTF-8";
 		final String contentType = exchange.getRequestHeaders().getFirst( Headers.CONTENT_TYPE_STRING );
-		return unserializeReceivedBodyStream( exchange, clazz, defaulConsumingContentType, contentEncoding, contentType );
+		return unserializeReceivedBodyStream( exchange, clazz, contentEncoding, contentType );
 	}
 
-	<T> T unserializeReceivedBodyStream( final HttpServerExchange exchange, final Class<T> clazz, final String defaulConsumingContentType,
+	private <T> T unserializeReceivedBodyStream( final HttpServerExchange exchange, final Class<T> clazz,
 		final String contentEncoding, final String contentType ) throws IOException
 	{
 		if ( !exchange.isBlocking() )
 			exchange.startBlocking();
-		final Unserializer unserializer = serializerAndUnserializerProvider.getUnserializerFor( contentType, defaulConsumingContentType );
+		final Unserializer unserializer = serializerAndUnserializerProvider.getUnserializerFor( contentType );
 		return unserializer.unserialize( exchange, clazz, contentEncoding );
 	}
 
@@ -191,6 +191,6 @@ public class RoutingMethodDataProvider {
 		final ContextProducer<T> producerFor = contextProducerFactory.producerFor( clazz );
 		if ( producerFor != null )
 			return producerFor.produce( exchange );
-		throw new RoutingException("No context provider for " + clazz.getCanonicalName() );
+		throw new RoutingException( "No context provider for " + clazz.getCanonicalName() );
 	}
 }
