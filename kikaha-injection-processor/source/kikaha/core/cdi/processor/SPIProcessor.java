@@ -210,7 +210,7 @@ public class SPIProcessor extends AbstractProcessor {
 	}
 
 	private void info( final String msg ) {
-		processingEnv.getMessager().printMessage( Kind.NOTE, msg );
+		processingEnv.getMessager().printMessage( Kind.OTHER, msg );
 	}
 
 	public void flush() throws IOException {

@@ -26,6 +26,17 @@ start_server(){
 	fi
 }
 
+debug_server(){
+	PID=$(retrieve_server_pid)
+	if [ ! "$PID" = "" ]; then
+		warn "Server already running"
+		exit 1
+	else
+		info "Starting server in debug mode..."
+		nohup ${JAVA} ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS}
+	fi
+}
+
 stop_server(){
 	PID=$(retrieve_server_pid)
 	if [ ! "$PID" = "" ]; then
@@ -66,13 +77,17 @@ fi
 # MAIN
 CLASSPATH="${LIBDIR}/*:."
 
-if [ ! "$NO_LOGO" = "true" ]; then
-	print_logo
-fi
 case "$1" in
 	"stop" ) stop_server ;;
-	"debug" ) ${JAVA} ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS} ;;
+	"debug" ) debug_server ;;
 	"start" ) start_server ;;
 	"restart" ) stop_server && start_server ;;
-	"help" | * ) show_help ;;
+	"version" )
+		print_logo
+		info "Version: ${project.version}"
+	;;
+	"help" | * )
+		print_logo
+		show_help
+	;;
 esac

@@ -1,16 +1,16 @@
 package kikaha.mojo.runner;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.apache.maven.plugin.logging.Log;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
-import lombok.val;
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @RequiredArgsConstructor
 public class MainClassService {
 
@@ -21,14 +21,16 @@ public class MainClassService {
 	final List<String> classpath;
 	final List<String> arguments;
 	final String jvmArgs;
+	final Log log;
 
-	public MainClassService( final File workingDirectory, final String mainClass, final List<String> classpath, final List<String> arguments, final String jvmArgs ) {
+	public MainClassService( final File workingDirectory, final String mainClass, final List<String> classpath, final List<String> arguments, final String jvmArgs, final Log log ) {
 		this.workingDirectory = workingDirectory;
 		this.mainClass = mainClass;
 		this.classpath = classpath;
 		this.arguments = arguments;
 		this.destroyer = new ProcessDestroyer();
 		this.jvmArgs = jvmArgs;
+		this.log = log;
 		Runtime.getRuntime().addShutdownHook( destroyer );
 	}
 

@@ -57,7 +57,6 @@ public class ZipFileWriter {
 	public void close() throws MojoExecutionException {
 		try {
 			output.close();
-			System.out.println( "Success: Zip file generated at " + this.fileName );
 		} catch ( final IOException e ) {
 			throw new MojoExecutionException( MESSAGE_CANT_CREATE_ZIP, e );
 		}

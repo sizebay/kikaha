@@ -88,6 +88,7 @@ public class KikahaPackagerMojo extends AbstractMojo {
 		final ZipFileWriter zip = createZipFile();
 		populateZip( zip );
 		zip.close();
+		getLog().info( "Success: Zip file generated at " + zip.fileName );
 	}
 
 	void ensureTargetDirectoryExists() throws MojoFailureException {

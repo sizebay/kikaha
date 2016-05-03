@@ -12,6 +12,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
@@ -86,8 +87,9 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
 			val classpath = memorizeClassPathWithRunnableJar();
+			val log = getLog();
 			val service = new MainClassService( getWorkDirectory(), ApplicationRunner.class.getCanonicalName(), classpath,
-					asList( "-Dserver.static.location=" + absolutePath( webresourcesPath ) ), jvmArgs );
+					asList( "-Dserver.static.location=" + absolutePath( webresourcesPath ) ), jvmArgs, log );
 			val process = service.start();
 			if ( process.waitFor() > 0 )
 				throw new RuntimeException( "Kikaha has unexpectedly finished." );

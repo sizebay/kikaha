@@ -1,15 +1,7 @@
+#!/usr/bin/env bash
 print_logo(){
 if [ ! "$QUIET" = "true" ]; then
-cat <<EOF
-
-      $(yellow "    __   _ __         __         ")
-      $(yellow "   / /__(_) /______ _/ /_  ____ _")
-      $(yellow "  / //_/ / //_/ __ \`/ __ \\/ __ \`/")
-      $(yellow " / ,< / / ,< / /_/ / / / / /_/ / ")
-      $(yellow "/_/|_/_/_/|_|\\__,_/_/ /_/\\__,_/  ")
-     $(grape 'write fast microservices faster')
-
-EOF
+	info $(grape 'Kikaha: write fast microservices faster')
 fi
 }
 
