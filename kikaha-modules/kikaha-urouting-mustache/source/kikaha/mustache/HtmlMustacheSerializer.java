@@ -1,12 +1,16 @@
 package kikaha.mustache;
 
+import com.github.mustachejava.MustacheNotFoundException;
 import io.undertow.server.HttpServerExchange;
 
 import java.io.IOException;
 
+import kikaha.core.NotFoundHandler;
 import kikaha.urouting.api.ContentType;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Serializer;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
+import org.omg.CosNaming.NamingContextPackage.NotFoundHelper;
 
 import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
@@ -20,10 +24,25 @@ public class HtmlMustacheSerializer implements Serializer {
 	@Inject
 	MustacheSerializerFactory factory;
 
+	@Inject
+	NotFoundHandler notFoundHandler;
+
 	@Override
 	public <T> void serialize( final T object, final HttpServerExchange exchange ) throws IOException {
-		final MustacheTemplate template = (MustacheTemplate)object;
-		String serialized = factory.serializer().serialize( template );
-		exchange.getResponseSender().send( serialized );
+		try {
+			final MustacheTemplate template = (MustacheTemplate) object;
+			String serialized = factory.serializer().serialize(template);
+			exchange.getResponseSender().send(serialized);
+		} catch ( MustacheNotFoundException cause ) {
+			handleNotFound( exchange );
+		}
+	}
+
+	private void handleNotFound( final HttpServerExchange exchange ) throws IOException {
+		try {
+			notFoundHandler.handleRequest( exchange );
+		} catch (Exception e) {
+			throw new IOException( e );
+		}
 	}
 }

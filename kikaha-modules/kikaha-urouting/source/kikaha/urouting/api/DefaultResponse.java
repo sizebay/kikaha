@@ -1,24 +1,22 @@
 package kikaha.urouting.api;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 
 @Getter
 @Setter
 @Accessors( fluent=true )
 @NoArgsConstructor
-@RequiredArgsConstructor
 public class DefaultResponse implements Response {
 
-	@NonNull Object entity;
+	@NonNull Object entity = "";
 	@NonNull Integer statusCode = 200;
 	@NonNull String encoding = "UTF-8";
 	@NonNull String contentType = Mimes.PLAIN_TEXT;
