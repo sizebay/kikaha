@@ -39,17 +39,20 @@ public class MicroWebSocketAnnotationProcessor extends AbstractProcessor {
 	void processClassesAnnotatedWithWebSocket( final RoundEnvironment round ) throws IOException {
 		final Set<? extends Element> elements = round.getElementsAnnotatedWith( WebSocket.class );
 		if ( !elements.isEmpty() )
-			log( "Creating Undertow routes for WebSocket" );
+			info( "Generating Undertow routes for WebSocket" );
 		for ( final Element element : elements ) {
 			final WebSocketData data = WebSocketData.from( (TypeElement)element );
-			log( " > websocket " + data );
+			debug( " > websocket " + data );
 			generator.generate( data );
 		}
 	}
 
-	protected void log(final String msg) {
-		System.out.println( "[INFO] " + msg );
+	private void info( final String msg ) {
 		processingEnv.getMessager().printMessage( Kind.NOTE, msg );
+	}
+
+	private void debug( final String msg ) {
+		processingEnv.getMessager().printMessage( Kind.OTHER, msg );
 	}
 
 	Filer filer() {

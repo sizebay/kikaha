@@ -82,7 +82,6 @@ public class SPIProcessor extends AbstractProcessor {
 	void createAStatelessClassFrom( final StatelessClass clazz ) throws IOException {
 		final String name = clazz.getGeneratedClassCanonicalName();
 		if ( !classExists( name ) ) {
-			info( "Generating " + name );
 			final JavaFileObject sourceFile = filer().createSourceFile( name );
 			final Writer writer = sourceFile.openWriter();
 			this.statelessClassGenerator.write( clazz, writer );
@@ -145,7 +144,6 @@ public class SPIProcessor extends AbstractProcessor {
 	void createAProducerFrom( final GenerableClass clazz ) throws IOException {
 		final String name = clazz.getGeneratedClassCanonicalName();
 		if ( !classExists( name ) ) {
-			info( "Generating " + name );
 			final JavaFileObject sourceFile = filer().createSourceFile( name );
 			final Writer writer = sourceFile.openWriter();
 			this.factoryProviderClazzTemplate.execute( writer, clazz );
@@ -172,9 +170,8 @@ public class SPIProcessor extends AbstractProcessor {
 	void createSingletonMetaInf() throws IOException {
 		for ( final String interfaceClass : this.singletons.keySet() ) {
 			final Writer resource = createResource( SERVICES + interfaceClass );
-			info( "Exposing implementations of " + interfaceClass + ":" );
+			info( "Exposing implementations of " + interfaceClass );
 			for ( final String implementation : this.singletons.get( interfaceClass ) ) {
-				info( " " + implementation );
 				resource.write( implementation + EOL );
 			}
 			resource.close();
@@ -210,7 +207,7 @@ public class SPIProcessor extends AbstractProcessor {
 	}
 
 	private void info( final String msg ) {
-		processingEnv.getMessager().printMessage( Kind.OTHER, msg );
+		processingEnv.getMessager().printMessage( Kind.NOTE, msg );
 	}
 
 	public void flush() throws IOException {

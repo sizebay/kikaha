@@ -59,7 +59,8 @@ public class RoutingMethodData {
 
 	@Override
 	public String toString() {
-		return getHttpMethod() + ":" + getHttpPath() + " -> " + getType() + "." + getMethodName();
+		return format( "%-55s -> %s:%s ",
+			getType() + "." + getMethodName(), getHttpMethod(), getHttpPath() );
 	}
 
 	public static RoutingMethodData from(

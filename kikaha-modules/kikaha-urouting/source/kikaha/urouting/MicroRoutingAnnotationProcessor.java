@@ -54,7 +54,7 @@ public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
 	void generateRoutingMethods( final RoundEnvironment roundEnv, final Class<? extends Annotation> httpMethodAnnotation ) throws IOException {
 		final List<Element> elementsAnnotatedWith = retrieveMethodsAnnotatedWith( roundEnv, httpMethodAnnotation );
 		if ( !elementsAnnotatedWith.isEmpty() )
-			log( "Creating Undertow routes for HTTP methods" );
+			info( "Found HTTP methods to generate Undertow Routes" );
 		for ( final Element method : elementsAnnotatedWith )
 			generateRoutingMethods( (ExecutableElement)method, roundEnv, httpMethodAnnotation );
 	}
@@ -62,11 +62,11 @@ public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
 	void generateRoutingMethods( final ExecutableElement method, final RoundEnvironment roundEnv,
 			final Class<? extends Annotation> httpMethodAnnotation ) throws IOException {
 		final RoutingMethodData routingMethodData = RoutingMethodData.from( method, httpMethodAnnotation );
-		log( " > method " + routingMethodData );
+		info( " " + routingMethodData );
 		generator.generate( routingMethodData );
 	}
 
-	protected void log(final String msg) {
+	private void info( final String msg ) {
 		processingEnv.getMessager().printMessage( Kind.NOTE, msg );
 	}
 
