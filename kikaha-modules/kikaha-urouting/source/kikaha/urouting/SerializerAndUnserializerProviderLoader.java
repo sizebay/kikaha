@@ -12,7 +12,9 @@ import javax.inject.Singleton;
 import kikaha.urouting.api.ContentType;
 import kikaha.urouting.api.Serializer;
 import kikaha.urouting.api.Unserializer;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Singleton
 public class SerializerAndUnserializerProviderLoader {
 
@@ -29,7 +31,9 @@ public class SerializerAndUnserializerProviderLoader {
 	@PostConstruct
 	public void onStartup() {
 		final Map<String, Serializer> serializers = loadAllSerializers();
+		log.trace( "Found Content Type serializers: " + serializers );
 		final Map<String, Unserializer> unserializers = loadAllUnserializers();
+		log.trace( "Found Content Type unserializers: " + unserializers );
 		serializerAndUnserializerProvider
 			= new SerializerAndUnserializerProvider(serializers, unserializers);
 	}

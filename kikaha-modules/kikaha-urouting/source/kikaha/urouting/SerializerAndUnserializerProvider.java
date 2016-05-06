@@ -7,7 +7,9 @@ import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Serializer;
 import kikaha.urouting.api.Unserializer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class SerializerAndUnserializerProvider {
 
@@ -16,8 +18,11 @@ public class SerializerAndUnserializerProvider {
 
 	public Serializer getSerializerFor( final String contentType ) throws IOException{
 		Serializer serializer = serializerByContentType.get(contentType);
-		if ( serializer == null )
-			throw new UnsupportedMediaTypeException( contentType );
+		if ( serializer == null ) {
+			final UnsupportedMediaTypeException exception = new UnsupportedMediaTypeException(contentType);
+			log.error("Could not found a serializer for " + contentType, exception);
+			throw exception;
+		}
 		return serializer;
 	}
 
@@ -33,8 +38,11 @@ public class SerializerAndUnserializerProvider {
 	 */
 	public Unserializer getUnserializerFor( final String contentType ) throws IOException{
 		Unserializer serializer = unserializerByContentType.get(contentType);
-		if ( serializer == null )
-			throw new UnsupportedMediaTypeException( contentType );
+		if ( serializer == null ) {
+			final UnsupportedMediaTypeException exception = new UnsupportedMediaTypeException(contentType);
+			log.error("Could not found an unserializer for " + contentType, exception);
+			throw exception;
+		}
 		return serializer;
 	}
 }
