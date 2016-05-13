@@ -1,12 +1,7 @@
 package kikaha.core.modules.security;
 
+import java.util.*;
 import io.undertow.server.HttpServerExchange;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -20,11 +15,7 @@ public class InMemorySessionStore extends AbstractCookieSessionStore {
 		Session session = getSessionFromCache( sessionId );
 		if ( session == null )
 			synchronized ( cache ) {
-				if ( ( session = getSessionFromCache( sessionId ) ) == null ) {
-					session = createNewSession();
-					storeSession( session.getId(), session );
-					attachSessionCookie( exchange, session.getId() );
-				}
+				session = createAndStoreNewSession(sessionId, exchange);
 			}
 		return session;
 	}
@@ -39,9 +30,9 @@ public class InMemorySessionStore extends AbstractCookieSessionStore {
 		return cache.get( sessionId );
 	}
 
-	protected Session createNewSession() {
-		final String uuid = UUID.randomUUID().toString();
-		return new DefaultSession( uuid );
+	@Override
+	protected String createNewSessionId() {
+		return UUID.randomUUID().toString();
 	}
 
 	@Override
