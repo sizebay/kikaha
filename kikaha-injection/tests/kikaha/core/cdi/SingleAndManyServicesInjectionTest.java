@@ -18,7 +18,7 @@ public class SingleAndManyServicesInjectionTest {
 
 	final ServiceProvider provider = new DefaultServiceProvider();
 
-	@Test( timeout = 3000 )
+	@Test( timeout = 6000 )
 	public void applyStressTestOnMyAssertion() throws ServiceProviderException {
 		for ( int i = 0; i < 1000000; i++ )
 			ensureThatHaveInjectedBothSingleAndManyElementsIntoInjectedClass();
