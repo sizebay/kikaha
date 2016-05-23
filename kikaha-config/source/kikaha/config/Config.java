@@ -20,6 +20,10 @@ public interface Config {
 
 	String getString(String path, String defaultValue);
 
+	byte[] getBytes(String path);
+
+	byte[] getBytes(String path, String defaultValue);
+
 	/**
 	 * Retrieve a configuration Integer from a file.
 	 *

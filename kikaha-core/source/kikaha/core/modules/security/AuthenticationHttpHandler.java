@@ -6,7 +6,7 @@ import io.undertow.server.HttpServerExchange;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class AuthenticationHttpHandler implements HttpHandler {
+class AuthenticationHttpHandler implements HttpHandler {
 
 	final AuthenticationRuleMatcher authenticationRuleMatcher;
 	final String permissionDeniedPage;
@@ -14,15 +14,20 @@ public class AuthenticationHttpHandler implements HttpHandler {
 	final SecurityContextFactory securityContextFactory;
 
 	@Override
-	public void handleRequest(HttpServerExchange exchange) throws Exception {
+	public void handleRequest(final HttpServerExchange exchange) throws Exception {
 		AuthenticationRule rule = retrieveRuleThatEnsureRequestShouldBeAuthenticated( exchange );
-		if ( rule == null )
+		if ( rule == null || isAuthenticated( exchange ) )
 			next.handleRequest(exchange);
 		else
 			runAuthenticationInIOThread( exchange, rule );
 	}
 
-	AuthenticationRule retrieveRuleThatEnsureRequestShouldBeAuthenticated( final HttpServerExchange exchange ) {
+	private boolean isAuthenticated( final HttpServerExchange exchange ) {
+		final SecurityContext securityContext = exchange.getSecurityContext();
+		return securityContext != null && securityContext.isAuthenticated();
+	}
+
+	private AuthenticationRule retrieveRuleThatEnsureRequestShouldBeAuthenticated( final HttpServerExchange exchange ) {
 		String relativePath = exchange.getRelativePath();
 		return authenticationRuleMatcher.retrieveAuthenticationRuleForUrl( relativePath );
 	}
@@ -30,12 +35,12 @@ public class AuthenticationHttpHandler implements HttpHandler {
 	void runAuthenticationInIOThread(
 			final HttpServerExchange exchange, final AuthenticationRule rule )
 	{
-		SecurityContext context = createSecurityContext( exchange, rule );
+		final SecurityContext context = createSecurityContext( exchange, rule );
 		exchange.setSecurityContext( context );
 		runAuthenticationInIOThread(exchange, rule, context);
 	}
 
-	SecurityContext createSecurityContext( final HttpServerExchange exchange, final AuthenticationRule rule ) {
+	private SecurityContext createSecurityContext( final HttpServerExchange exchange, final AuthenticationRule rule ) {
 		return securityContextFactory.createSecurityContextFor( exchange, rule );
 	}
 

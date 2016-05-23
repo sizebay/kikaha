@@ -31,7 +31,7 @@ public class FieldProviderContext implements ProviderContext {
 	}
 
 	@Override
-	public Object attribute( String key ) {
+	public Object attribute( Object key ) {
 		return null;
 	}
 

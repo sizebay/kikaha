@@ -40,7 +40,7 @@ public interface ProviderContext {
 	 * @param key
 	 * @return
 	 */
-	Object attribute( String key );
+	Object attribute( Object key );
 
 	/**
 	 * Retrieve an attribute ( identified by {@code key} ), from current

@@ -18,12 +18,12 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor
 public class KeyValueProviderContext implements ProviderContext {
 
-	final Map<Class<?>, Annotation> annotationMap = new HashMap<Class<?>, Annotation>();
-	final Map<String, Object> attributes;
+	final Map<Class<?>, Annotation> annotationMap = new HashMap<>();
+	final Map<Object, Object> attributes;
 	Class<?> targetType;
 
 	public KeyValueProviderContext() {
-		attributes = new HashMap<String, Object>();
+		attributes = new HashMap<>();
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class KeyValueProviderContext implements ProviderContext {
 		annotationMap.put( anntationClass, annotation );
 	}
 
-	public void attribute( String key, Object value ) {
+	public void attribute( Object key, Object value ) {
 		attributes.put( key, value );
 	}
 
@@ -45,7 +45,7 @@ public class KeyValueProviderContext implements ProviderContext {
 	}
 
 	@Override
-	public Object attribute( String key ) {
+	public Object attribute( Object key ) {
 		return attributes.get( key );
 	}
 

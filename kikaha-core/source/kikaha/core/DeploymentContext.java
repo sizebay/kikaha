@@ -1,20 +1,13 @@
 package kikaha.core;
 
+import javax.annotation.PostConstruct;
+import javax.inject.*;
 import io.undertow.server.HttpHandler;
 import io.undertow.util.Methods;
-import kikaha.core.url.SimpleRoutingHandler;
-import kikaha.core.url.URL;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import kikaha.core.url.*;
+import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @Getter
@@ -22,7 +15,6 @@ import java.util.Map;
 @Singleton
 public class DeploymentContext {
 
-	final Map<String, Object> attributes = new HashMap<>();
 	final SimpleRoutingHandler routingHandler = new SimpleRoutingHandler();
 
 	@NonNull

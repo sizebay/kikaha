@@ -17,4 +17,9 @@ public class RoutingException extends IOException {
 	public RoutingException( final Throwable cause ) {
 		super( cause );
 	}
+
+	@Override
+	public synchronized Throwable fillInStackTrace() {
+		return super.fillInStackTrace();
+	}
 }

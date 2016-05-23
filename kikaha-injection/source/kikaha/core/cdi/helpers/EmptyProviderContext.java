@@ -11,7 +11,7 @@ public class EmptyProviderContext implements ProviderContext {
 	public final static ProviderContext INSTANCE = new EmptyProviderContext();
 
 	@Override
-	public <A extends Annotation> A getAnnotation( Class<A> anntationClass ) {
+	public <A extends Annotation> A getAnnotation( Class<A> annotationClass ) {
 		return null;
 	}
 
@@ -21,7 +21,7 @@ public class EmptyProviderContext implements ProviderContext {
 	}
 
 	@Override
-	public Object attribute( String key ) {
+	public Object attribute( Object key ) {
 		return null;
 	}
 

@@ -1,15 +1,14 @@
 package kikaha.config;
 
-import lombok.RequiredArgsConstructor;
-import org.yaml.snakeyaml.Yaml;
-
+import static java.lang.String.format;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static java.lang.String.format;
+import lombok.RequiredArgsConstructor;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  *
@@ -17,7 +16,11 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 public class MergeableConfig implements Config {
 
+	static final byte[] EMPTY_BYTES = new byte[]{};
+
 	final Yaml yaml = new Yaml();
+	Charset encoding = Charset.defaultCharset();
+
 	final Map<String, Object> conf;
 	final String rootPath;
 
@@ -74,10 +77,25 @@ public class MergeableConfig implements Config {
 
 	private Class<?> instantiate( String className ) {
 		try {
-			return (Class<?>) Class.forName( className );
+			return Class.forName( className );
 		} catch ( Throwable cause ) {
 			throw new IllegalStateException( "Can't load " + className, cause);
 		}
+	}
+
+	@Override
+	public byte[] getBytes(String path) {
+		return getBytes( path, null );
+	}
+
+	@Override
+	public byte[] getBytes(String path, String defaultValue ){
+		String value = getString(path);
+		if ( value == null )
+			value = defaultValue;
+		if ( value == null )
+			return EMPTY_BYTES;
+		return value.getBytes( encoding );
 	}
 
 	@Override
