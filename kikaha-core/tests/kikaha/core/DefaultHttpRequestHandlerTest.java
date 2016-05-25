@@ -1,17 +1,13 @@
 package kikaha.core;
 
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
+import io.undertow.server.*;
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.*;
+import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  *
@@ -48,6 +44,13 @@ public class DefaultHttpRequestHandlerTest {
 		exchange.setRelativePath( "/url/that/does/not/ends/with/slash" );
 		handler.handleRequest( exchange );
 		assertEquals( "/url/that/does/not/ends/with/slash", exchange.getRelativePath() );
+	}
+
+	@Test
+	public void ensureThatKeepIntactUrlThatRepresentsTheRootURL() throws Exception {
+		exchange.setRelativePath( "/" );
+		handler.handleRequest( exchange );
+		assertEquals( "/", exchange.getRelativePath() );
 	}
 
 	@Test
