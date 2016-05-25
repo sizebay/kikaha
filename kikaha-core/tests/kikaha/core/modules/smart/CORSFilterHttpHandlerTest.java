@@ -3,7 +3,7 @@ package kikaha.core.modules.smart;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
-import static sizebay.plugin.plugin.CORSFilterHttpHandler.*;
+import static kikaha.core.modules.smart.CORSFilterHttpHandler.*;
 import java.net.URL;
 import javax.inject.Inject;
 import io.undertow.server.*;

@@ -19,7 +19,17 @@ server:
   static:
     enabled: true
 
-  routes:
+  smart-routes:
+
+    cors:
+      enabled: true
+      always-allow-origin: false
+      allowed-origins:
+        - "http://localhost"
+        - "http://localhost:9000"
+      allowed-methods:
+        - "GET"
+
     rewrite:
       -
         virtual-host: "test.localdomain"

@@ -28,6 +28,7 @@ server:
 
     redirect-to-http: true
 
+  # Undertow internals
   undertow:
     io-threads: -1
     worker-threads: -1
@@ -40,13 +41,20 @@ server:
     socket-options:
       BACKLOG: 20000
 
+  # Static asset routing
   static:
     enabled: false
     location: "webapp"
 
+  # Smart routes
   routes:
     rewrite:
     reverse:
+    cors:
+      enabled: false
+      always-allow-origin: false
+      allowed-methods:
+      allowed-hosts:
 
   auth:
     fixed-auth:

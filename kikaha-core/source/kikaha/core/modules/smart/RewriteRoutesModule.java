@@ -1,20 +1,17 @@
 package kikaha.core.modules.smart;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import javax.inject.*;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.proxy.ProxyClient;
-import io.undertow.server.handlers.proxy.ProxyHandler;
+import io.undertow.server.handlers.proxy.*;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Getter
@@ -32,9 +29,9 @@ public class RewriteRoutesModule implements Module {
 
 	@PostConstruct
 	public void loadConfig(){
-		List<Config> configs = config.getConfigList("server.routes.rewrite");
+		List<Config> configs = config.getConfigList("server.smart-routes.rewrite");
 		rewriteRoutes = configs.stream().map( c->RewritableRule.from(c) ).collect(Collectors.toList());
-		configs = config.getConfigList("server.routes.reverse");
+		configs = config.getConfigList("server.smart-routes.reverse");
 		reverseRoutes = configs.stream().map( c->RewritableRule.from(c) ).collect(Collectors.toList());
 	}
 

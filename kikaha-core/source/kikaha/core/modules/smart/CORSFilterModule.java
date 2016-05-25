@@ -31,7 +31,7 @@ public class CORSFilterModule implements Module {
 
 	@Override
 	public void load(Undertow.Builder server, DeploymentContext context) throws IOException {
-		if ( !config.getBoolean("server.cors.enabled") )
+		if ( !config.getBoolean("server.smart-routes.cors.enabled") )
 			return;
 
 		final CORSConfig corsConfig = loadCorsConfig();
@@ -44,9 +44,9 @@ public class CORSFilterModule implements Module {
 
 	CORSConfig loadCorsConfig(){
 		return new CORSConfig(
-			config.getBoolean("server.cors.always-allow-origin"),
-			asSet(config.getStringList("server.cors.allowed-methods")),
-			asMatcherSet(config.getStringList("server.cors.allowed-origins")));
+			config.getBoolean("server.smart-routes.cors.always-allow-origin"),
+			asSet(config.getStringList("server.smart-routes.cors.allowed-methods")),
+			asMatcherSet(config.getStringList("server.smart-routes.cors.allowed-origins")));
 	}
 
 	private static <T> Set<T> asSet( List<T> list ) {
