@@ -1,10 +1,9 @@
-package kikaha.core.modules.rewrite;
+package kikaha.core.modules.smart;
 
 import io.undertow.server.HttpServerExchange;
 
 import java.util.Map;
 
-import kikaha.core.modules.rewrite.RequestMatcher;
 import kikaha.core.url.URLMatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.val;

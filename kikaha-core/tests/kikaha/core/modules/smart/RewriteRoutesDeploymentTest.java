@@ -1,4 +1,4 @@
-package kikaha.core.modules.rewrite;
+package kikaha.core.modules.smart;
 
 import io.undertow.server.handlers.proxy.ProxyHandler;
 import kikaha.core.DeploymentContext;

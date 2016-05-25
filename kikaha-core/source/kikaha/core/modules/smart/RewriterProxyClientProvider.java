@@ -1,4 +1,4 @@
-package kikaha.core.modules.rewrite;
+package kikaha.core.modules.smart;
 
 import io.undertow.client.ClientCallback;
 import io.undertow.client.ClientConnection;

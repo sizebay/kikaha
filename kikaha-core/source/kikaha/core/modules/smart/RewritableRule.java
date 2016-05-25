@@ -1,4 +1,4 @@
-package kikaha.core.modules.rewrite;
+package kikaha.core.modules.smart;
 
 import kikaha.config.Config;
 import lombok.Getter;
