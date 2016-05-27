@@ -17,7 +17,7 @@ import java.io.IOException;
  * A helper class to write responses to the HTTP Client.
  */
 @Singleton
-public class ResponseWriter {
+public class RoutingMethodResponseWriter {
 
 	@Inject
 	Config kikahaConf;

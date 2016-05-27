@@ -6,8 +6,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.enterprise.inject.Typed;
 import kikaha.core.modules.http.WebResource;
-import kikaha.urouting.ResponseWriter;
-import kikaha.urouting.RoutingMethodDataProvider;
+import kikaha.urouting.RoutingMethodResponseWriter;
+import kikaha.urouting.RoutingMethodParameterReader;
 import kikaha.urouting.RoutingMethodExceptionHandler;
 
 @Singleton
@@ -15,8 +15,8 @@ import kikaha.urouting.RoutingMethodExceptionHandler;
 @WebResource( path="/hello/world", method="GET" )
 public class GeneratedRoutingMethod123 implements HttpHandler {
 
-	@Inject ResponseWriter responseWriter;
-	@Inject RoutingMethodDataProvider methodDataProvider;
+	@Inject RoutingMethodResponseWriter responseWriter;
+	@Inject RoutingMethodParameterReader methodDataProvider;
 	@Inject RoutingMethodExceptionHandler exceptionHandler;
 	
 	@Inject kikaha.urouting.samples.RetrieveRoutes provider;

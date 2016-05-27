@@ -10,7 +10,6 @@ import kikaha.core.test.KikahaRunner;
 import kikaha.urouting.api.DefaultResponse;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Response;
-import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.samples.TodoResource;
 import kikaha.urouting.samples.TodoResource.Todo;
 import lombok.SneakyThrows;
@@ -35,7 +34,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
- * {@link ResponseWriter} should respect the content type defined by
+ * {@link RoutingMethodResponseWriter} should respect the content type defined by
  * {@link Response#contentType}.
  *
  * @issue #34
@@ -43,7 +42,7 @@ import static org.mockito.Mockito.*;
  */
 @SuppressWarnings( "unchecked" )
 @RunWith( KikahaRunner.class )
-public class ResponseWriterShouldRespectResponseContentTypeBehaviorTest {
+public class ResponseWriterShouldRespectRoutingMethodResponseContentTypeBehaviorTest {
 
 	final HeaderMap headerMap = new HeaderMap();
 	final StreamConnection streamConnection = createStreamConnection();
@@ -53,7 +52,7 @@ public class ResponseWriterShouldRespectResponseContentTypeBehaviorTest {
 	final HttpServerExchange exchange = createHttpExchange();
 
 	@Inject
-	ResponseWriter writer;
+	RoutingMethodResponseWriter writer;
 
 	@Inject
 	TodoResource resource;

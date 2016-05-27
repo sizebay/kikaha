@@ -1,7 +1,7 @@
 package kikaha.urouting.api;
 
 import io.undertow.server.HttpServerExchange;
-import kikaha.urouting.ResponseWriter;
+import kikaha.urouting.RoutingMethodResponseWriter;
 import kikaha.urouting.RoutingMethodExceptionHandler;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.io.IOException;
 public class AsyncResponse {
 
 	final HttpServerExchange exchange;
-	final ResponseWriter writer;
+	final RoutingMethodResponseWriter writer;
 	final RoutingMethodExceptionHandler exceptionHandler;
 	String contentType;
 

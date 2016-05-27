@@ -17,7 +17,7 @@ import lombok.Getter;
  * Provides data to a routing method.
  */
 @Singleton
-public class RoutingMethodDataProvider {
+public class RoutingMethodParameterReader {
 
 	@Inject
 	Config kikahaConf;

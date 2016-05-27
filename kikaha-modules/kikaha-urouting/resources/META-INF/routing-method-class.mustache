@@ -11,8 +11,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.enterprise.inject.Typed;
 import kikaha.core.modules.http.WebResource;
-import kikaha.urouting.ResponseWriter;
-import kikaha.urouting.RoutingMethodDataProvider;
+import kikaha.urouting.RoutingMethodResponseWriter;
+import kikaha.urouting.RoutingMethodParameterReader;
 import kikaha.urouting.RoutingMethodExceptionHandler;
 {{#asyncMode}}
 import kikaha.urouting.api.AsyncResponse;
@@ -23,8 +23,8 @@ import kikaha.urouting.api.AsyncResponse;
 @WebResource( path="{{httpPath}}", method="{{httpMethod}}" )
 public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 
-	@Inject ResponseWriter responseWriter;
-	@Inject RoutingMethodDataProvider methodDataProvider;
+	@Inject RoutingMethodResponseWriter responseWriter;
+	@Inject RoutingMethodParameterReader methodDataProvider;
 	@Inject RoutingMethodExceptionHandler exceptionHandler;
 	
 	{{#serviceInterface}}

@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
 @Slf4j
 @SuppressWarnings("unchecked")
 @RunWith( KikahaRunner.class )
-public class ResponseWriterTest {
+public class RoutingMethodResponseWriterTest {
 
 	final HeaderMap headerMap = new HeaderMap();
 	final StreamConnection streamConnection = createStreamConnection();
@@ -46,7 +46,8 @@ public class ResponseWriterTest {
 	final ServerConnection connection = new HttpServerConnection(streamConnection, null, null, options , 0);
 	final HttpServerExchange exchange = createHttpExchange();
 
-	@Inject ResponseWriter writer;
+	@Inject
+	RoutingMethodResponseWriter writer;
 	@Inject TodoResource resource;
 
 	@Before
