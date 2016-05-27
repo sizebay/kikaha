@@ -2,10 +2,8 @@ package kikaha.urouting;
 
 import java.io.IOException;
 import java.util.Map;
-
-import kikaha.urouting.api.RoutingException;
-import kikaha.urouting.api.Serializer;
-import kikaha.urouting.api.Unserializer;
+import kikaha.core.url.StringCursor;
+import kikaha.urouting.api.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,13 +34,21 @@ public class SerializerAndUnserializerProvider {
 	 * @return
 	 * @throws IOException
 	 */
-	public Unserializer getUnserializerFor( final String contentType ) throws IOException{
-		Unserializer serializer = unserializerByContentType.get(contentType);
+	public Unserializer getUnserializerFor( String contentType ) throws IOException{
+		contentType = fixContentType(contentType);
+
+		final Unserializer serializer = unserializerByContentType.get( contentType );
 		if ( serializer == null ) {
 			final UnsupportedMediaTypeException exception = new UnsupportedMediaTypeException(contentType);
 			log.error("Could not found an unserializer for " + contentType, exception);
 			throw exception;
 		}
 		return serializer;
+	}
+
+	private String fixContentType( String contentType ){
+		final StringCursor cursor = new StringCursor(contentType);
+		return cursor.shiftCursorToNextChar( ';' )
+			? cursor.substringFromLastMark( 1 ) : contentType;
 	}
 }
