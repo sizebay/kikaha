@@ -24,7 +24,7 @@ public class ConverterFactory {
 	}
 
 	@SuppressWarnings( "unchecked" )
-	public <T> AbstractConverter<T> getConverterFor( final Class<T> clazz )
+	public <T> AbstractConverter<T> getConverterFor(final Class<T> clazz )
 			throws InstantiationException, IllegalAccessException, ConversionException {
 		final String canonicalName = clazz.getCanonicalName();
 		final AbstractConverter converter = converters.get(canonicalName);
