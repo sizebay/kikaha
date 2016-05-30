@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.*;
 import io.undertow.util.*;
-import kikaha.core.test.KikahaRunner;
+import kikaha.core.test.*;
 import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -143,8 +143,7 @@ public class SimpleExchangeReadingDataBehaviorTest {
 		exchange.setRequestScheme( url.getProtocol() );
 		exchange.setRelativePath( url.getPath() );
 
-		exchange.getRequestCookies().put( "JSESSIONID", new CookieImpl( "JSESSIONID", "1324" ));
-
+		populateWithCookies( exchange );
 		populateWithQueryString( exchange, url.toURI().getQuery() );
 
 		return exchange;
@@ -157,5 +156,11 @@ public class SimpleExchangeReadingDataBehaviorTest {
 				exchange.addQueryParam( params[0], params[1] );
 			}
 		}
+	}
+
+	private void populateWithCookies( HttpServerExchange exchange ){
+		final Map<String, Cookie> cookies = new HashMap<>();
+		cookies.put( "JSESSIONID", new CookieImpl( "JSESSIONID", "1324" ));
+		new Exposed( exchange ).setFieldValue( "requestCookies", cookies );
 	}
 }

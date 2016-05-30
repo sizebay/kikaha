@@ -2,56 +2,29 @@ package kikaha.urouting.serializers.jackson;
 
 import static kikaha.urouting.serializers.jackson.TestCase.readFile;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-
-import io.undertow.connector.ByteBufferPool;
-import io.undertow.server.BlockingHttpExchange;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.server.HttpUpgradeListener;
-import io.undertow.server.SSLSessionInfo;
-import io.undertow.server.ServerConnection;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import static org.mockito.Mockito.*;
+import java.io.*;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-
-import kikaha.core.cdi.DefaultServiceProvider;
-import kikaha.core.cdi.ServiceProvider;
+import io.undertow.connector.ByteBufferPool;
+import io.undertow.server.*;
+import kikaha.core.cdi.*;
 import kikaha.core.cdi.helpers.filter.Condition;
 import kikaha.core.test.KikahaRunner;
-import kikaha.urouting.api.ContentType;
-import kikaha.urouting.api.Mimes;
-import kikaha.urouting.api.Serializer;
-import kikaha.urouting.api.Unserializer;
+import kikaha.urouting.api.*;
 import kikaha.urouting.serializers.jackson.User.Address;
 import lombok.SneakyThrows;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.xnio.ChannelListener.Setter;
-import org.xnio.Option;
-import org.xnio.OptionMap;
-import org.xnio.Pool;
-import org.xnio.StreamConnection;
-import org.xnio.XnioIoThread;
-import org.xnio.XnioWorker;
+import org.xnio.*;
 import org.xnio.channels.ConnectedChannel;
-import org.xnio.conduits.ConduitStreamSinkChannel;
-import org.xnio.conduits.ConduitStreamSourceChannel;
-import org.xnio.conduits.StreamSinkConduit;
+import org.xnio.conduits.*;
 
 @RunWith( KikahaRunner.class )
 public class SerializationTests {
@@ -80,7 +53,7 @@ public class SerializationTests {
 		final JSONSerializer serializer = spy((JSONSerializer)provider.load( Serializer.class, new JSONContentTypeCondition<>() ));
 		final HttpServerExchange exchange = new HttpServerExchange(connection);
 		doAnswer( this::ensureThatWasCorrectlySerialized ).when(serializer).send( eq(exchange), any( ByteBuffer.class ));
-		serializer.serialize( user, exchange, );
+		serializer.serialize( user, exchange, "UTF-8" );
 	}
 
 	Void ensureThatWasCorrectlySerialized(InvocationOnMock invocation) throws Throwable {
