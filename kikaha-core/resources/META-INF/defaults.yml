@@ -47,7 +47,7 @@ server:
     location: "webapp"
 
   # Smart routes
-  routes:
+  smart-routes:
     rewrite:
     reverse:
     cors:
