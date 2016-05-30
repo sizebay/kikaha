@@ -74,6 +74,32 @@ public class SimpleExchangeTest {
 		assertEquals( 1l, exchange.getQueryParameter( "q", Long.TYPE ), 0 );
 	}
 
+	@Test
+	public void ensureThatIsPossibleToRetrieveTheCurrentPathParameters(){
+		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
+		simulatePathParameterRequest( request );
+
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final Map<String, String> queryParameters = exchange.getPathParameters();
+		assertEquals( "123", queryParameters.get("id") );
+	}
+
+	@Test
+	public void ensureThatIsPossibleToRetrieveASinglePathParameters() throws IOException {
+		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
+		simulatePathParameterRequest( request );
+
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		assertEquals( 123l, exchange.getPathParameter( "id", Long.TYPE ), 0 );
+	}
+
+	private static void simulatePathParameterRequest( HttpServerExchange request ) {
+		final HashMap<String, String> parameters = new HashMap<>();
+		parameters.put("id", "123");
+		final PathTemplateMatch templateMatch = new PathTemplateMatch("/hello/{id}", parameters);
+		request.putAttachment( PathTemplateMatch.ATTACHMENT_KEY, templateMatch );
+	}
+
 	@SneakyThrows
 	private HttpServerExchange createExchange( String expectedMethod, String urlAsString ) {
 		final URL url = new URL( urlAsString );

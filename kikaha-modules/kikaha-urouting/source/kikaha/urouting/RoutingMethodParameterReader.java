@@ -1,7 +1,7 @@
 package kikaha.urouting;
 
 import java.io.IOException;
-import java.util.Queue;
+import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.inject.*;
 import io.undertow.server.HttpServerExchange;
@@ -132,9 +132,19 @@ public class RoutingMethodParameterReader {
 	 */
 	public <T> T getPathParam(final HttpServerExchange exchange, final String pathParam, final Class<T> clazz)
 			throws ConversionException, InstantiationException, IllegalAccessException {
-		final PathTemplateMatch pathTemplate = exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY);
-		final String value = pathTemplate.getParameters().get(pathParam);
+		final String value = getPathParams(exchange).get(pathParam);
 		return converterFactory.getConverterFor(clazz).convert(value);
+	}
+
+	/**
+	 * Retrieve all path parameters related to this request.
+	 *
+	 * @param exchange
+	 * @return
+	 */
+	public Map<String, String> getPathParams(final HttpServerExchange exchange ){
+		final PathTemplateMatch pathTemplate = exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY);
+		return pathTemplate.getParameters();
 	}
 
 	/**
