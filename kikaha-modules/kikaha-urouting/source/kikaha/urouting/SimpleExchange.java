@@ -4,7 +4,8 @@ import io.undertow.server.HttpServerExchange;
 import lombok.RequiredArgsConstructor;
 
 /**
- *
+ * Represents an incoming request. Most of time, is just a very tiny layer above
+ * Undertow's API providing to developers an easy to use API for their daily routines.
  */
 @RequiredArgsConstructor(staticName = "wrap")
 public class SimpleExchange {
@@ -24,5 +25,14 @@ public class SimpleExchange {
 	 */
 	public String getHostAndPort(){
 		return exchange.getHostAndPort();
+	}
+
+	/**
+	 * Get the request URI scheme.  Normally this is one of {@code http} or {@code https}.
+	 *
+	 * @return the request URI scheme
+	 */
+	public String getRequestScheme() {
+		return exchange.getRequestScheme();
 	}
 }

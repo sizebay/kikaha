@@ -36,6 +36,13 @@ public class SimpleExchangeTest {
 		assertEquals( "server", exchange.getHostAndPort() );
 	}
 
+	@Test
+	public void ensureThatIsPossibleToRetrieveTheCurrentProtocol(){
+		final HttpServerExchange request = createExchange("POST", "http://server/hello");
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		assertEquals( "http", exchange.getRequestScheme() );
+	}
+
 	@SneakyThrows
 	private HttpServerExchange createExchange( String expectedMethod, String urlAsString ) {
 		final URL url = new URL( urlAsString );
