@@ -43,6 +43,13 @@ public class SimpleExchangeTest {
 		assertEquals( "http", exchange.getRequestScheme() );
 	}
 
+	@Test
+	public void ensureThatIsPossibleToRetrieveTheCurrentHttpMethod(){
+		final HttpServerExchange request = createExchange("POST", "http://server/hello");
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		assertEquals( "POST", exchange.getHttpMethod().toString() );
+	}
+
 	@SneakyThrows
 	private HttpServerExchange createExchange( String expectedMethod, String urlAsString ) {
 		final URL url = new URL( urlAsString );

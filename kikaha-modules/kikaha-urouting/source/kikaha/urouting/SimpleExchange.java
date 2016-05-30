@@ -1,6 +1,7 @@
 package kikaha.urouting;
 
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.HttpString;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -34,5 +35,14 @@ public class SimpleExchange {
 	 */
 	public String getRequestScheme() {
 		return exchange.getRequestScheme();
+	}
+
+	/**
+	 * Get the HTTP request method.  Normally this is one of the strings listed in {@link io.undertow.util.Methods}.
+	 *
+	 * @return the HTTP request method
+	 */
+	public HttpString getHttpMethod() {
+		return exchange.getRequestMethod();
 	}
 }
