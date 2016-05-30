@@ -1,37 +1,23 @@
 package kikaha.urouting;
 
-import io.undertow.server.HttpServerExchange;
-import io.undertow.server.ServerConnection;
-import io.undertow.server.protocol.http.HttpServerConnection;
-import io.undertow.util.HeaderMap;
-import io.undertow.util.HttpString;
-import io.undertow.util.Protocols;
-import kikaha.core.test.KikahaRunner;
-import kikaha.urouting.api.DefaultResponse;
-import kikaha.urouting.api.Mimes;
-import kikaha.urouting.api.Response;
-import kikaha.urouting.samples.TodoResource;
-import kikaha.urouting.samples.TodoResource.Todo;
-import lombok.SneakyThrows;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.xnio.OptionMap;
-import org.xnio.Pool;
-import org.xnio.StreamConnection;
-import org.xnio.XnioIoThread;
-import org.xnio.conduits.ConduitStreamSinkChannel;
-import org.xnio.conduits.ConduitStreamSourceChannel;
-import org.xnio.conduits.StreamSinkConduit;
-import org.xnio.conduits.StreamSourceConduit;
-
-import javax.inject.Inject;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import javax.inject.Inject;
+import io.undertow.server.*;
+import io.undertow.server.protocol.http.HttpServerConnection;
+import io.undertow.util.*;
+import kikaha.core.test.KikahaRunner;
+import kikaha.urouting.api.*;
+import kikaha.urouting.samples.TodoResource;
+import kikaha.urouting.samples.TodoResource.Todo;
+import lombok.SneakyThrows;
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.xnio.*;
+import org.xnio.conduits.*;
 
 /**
  * {@link RoutingMethodResponseWriter} should respect the content type defined by
@@ -47,7 +33,6 @@ public class ResponseWriterShouldRespectRoutingMethodResponseContentTypeBehavior
 	final HeaderMap headerMap = new HeaderMap();
 	final StreamConnection streamConnection = createStreamConnection();
 	final OptionMap options = OptionMap.EMPTY;
-	final Pool<ByteBuffer> pool = mock( Pool.class );
 	final ServerConnection connection = new HttpServerConnection( streamConnection, null, null, options, 0 );
 	final HttpServerExchange exchange = createHttpExchange();
 

@@ -170,7 +170,7 @@ public class RoutingMethodParameterReader {
 	 * information needed to define which {@link Unserializer} should be used to
 	 * decode the sent data into an object. When no {@link Unserializer} is
 	 * found it uses the {@code defaultConsumingContentType} argument to seek
-	 * another one. It throws {@link RoutingException} when no decoder was
+	 * another one. It throws {@link IOException} when no decoder was
 	 * found.
 	 *
 	 * @param exchange

@@ -41,7 +41,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.xnio.ChannelListener.Setter;
 import org.xnio.Option;
 import org.xnio.OptionMap;
@@ -81,7 +80,7 @@ public class SerializationTests {
 		final JSONSerializer serializer = spy((JSONSerializer)provider.load( Serializer.class, new JSONContentTypeCondition<>() ));
 		final HttpServerExchange exchange = new HttpServerExchange(connection);
 		doAnswer( this::ensureThatWasCorrectlySerialized ).when(serializer).send( eq(exchange), any( ByteBuffer.class ));
-		serializer.serialize( user, exchange );
+		serializer.serialize( user, exchange, );
 	}
 
 	Void ensureThatWasCorrectlySerialized(InvocationOnMock invocation) throws Throwable {

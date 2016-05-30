@@ -9,8 +9,6 @@ import kikaha.core.NotFoundHandler;
 import kikaha.urouting.api.ContentType;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Serializer;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
-import org.omg.CosNaming.NamingContextPackage.NotFoundHelper;
 
 import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
@@ -28,7 +26,7 @@ public class HtmlMustacheSerializer implements Serializer {
 	NotFoundHandler notFoundHandler;
 
 	@Override
-	public <T> void serialize( final T object, final HttpServerExchange exchange ) throws IOException {
+	public <T> void serialize(final T object, final HttpServerExchange exchange, String encoding) throws IOException {
 		try {
 			final MustacheTemplate template = (MustacheTemplate) object;
 			String serialized = factory.serializer().serialize(template);

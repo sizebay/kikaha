@@ -22,14 +22,14 @@ import javax.inject.Singleton;
 public class PlainTextSerializer extends AbstractSerializer {
 
 	@Override
-	public <T> void serialize(T object, HttpServerExchange exchange)
+	public <T> void serialize(T object, HttpServerExchange exchange, String encoding)
 			throws IOException {
 		if ( ByteBuffer.class.isInstance(object) )
 			send( exchange, (ByteBuffer)object );
 		else if ( String.class.isInstance(object) )
 			send( exchange, (String)object );
 		else
-			super.serialize(object, exchange);
+			super.serialize(object, exchange, encoding);
 	}
 
 	void send( HttpServerExchange exchange, ByteBuffer buffer ){

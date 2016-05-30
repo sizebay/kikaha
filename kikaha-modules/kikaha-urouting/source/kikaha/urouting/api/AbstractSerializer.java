@@ -13,7 +13,7 @@ import kikaha.urouting.UncloseableWriterWrapper;
 public abstract class AbstractSerializer implements Serializer {
 
 	@Override
-	public <T> void serialize( final T object, final HttpServerExchange exchange ) throws IOException {
+	public <T> void serialize(final T object, final HttpServerExchange exchange, String encoding) throws IOException {
 		if ( !exchange.isBlocking() )
 			exchange.startBlocking();
 		final OutputStream outputStream = exchange.getOutputStream();

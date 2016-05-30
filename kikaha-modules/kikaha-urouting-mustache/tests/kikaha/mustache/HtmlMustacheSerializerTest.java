@@ -37,7 +37,7 @@ public class HtmlMustacheSerializerTest {
 	public void ensureThatHandleNotFoundException() {
 		doReturn( serializer ).when( factory ).serializer();
 		doThrow(MustacheNotFoundException.class).when(serializer).serialize( any() );
-		htmlSerializer.serialize( new MustacheTemplate().templateName("any.mustache"), null );
+		htmlSerializer.serialize( new MustacheTemplate().templateName("any.mustache"), null, );
 		verify( notFoundHandler ).handleRequest( any() );
 	}
 }

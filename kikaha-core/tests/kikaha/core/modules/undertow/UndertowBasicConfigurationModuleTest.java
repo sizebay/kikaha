@@ -5,7 +5,7 @@ import kikaha.core.test.KikahaRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.xnio.OptionMap;
-import tests.Exposed;
+import kikaha.core.test.Exposed;
 
 import javax.inject.Inject;
 import java.io.IOException;

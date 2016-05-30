@@ -1,17 +1,13 @@
 package kikaha.urouting;
 
+import java.io.IOException;
+import javax.annotation.PostConstruct;
+import javax.inject.*;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HeaderMap;
-import io.undertow.util.Headers;
-import io.undertow.util.HttpString;
+import io.undertow.util.*;
 import kikaha.config.Config;
 import kikaha.urouting.api.*;
 import lombok.Getter;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.io.IOException;
 
 /**
  * A helper class to write responses to the HTTP Client.
@@ -52,12 +48,10 @@ public class RoutingMethodResponseWriter {
 	 *
 	 * @param exchange
 	 * @param response
-	 * @throws RoutingException
 	 * @throws IOException
 	 * @see Response
 	 */
-	public void write( final HttpServerExchange exchange, final Response response )
-			throws RoutingException, IOException {
+	public void write( final HttpServerExchange exchange, final Response response ) throws IOException {
 		write( exchange, getDefaultContentType(), response );
 	}
 
@@ -66,12 +60,11 @@ public class RoutingMethodResponseWriter {
 	 *
 	 * @param exchange
 	 * @param response
-	 * @throws RoutingException
 	 * @throws IOException
 	 * @see Response
 	 */
 	public void write( final HttpServerExchange exchange, final Object response )
-			throws RoutingException, IOException {
+			throws IOException {
 		write( exchange, getDefaultContentType(), response );
 	}
 
@@ -83,7 +76,6 @@ public class RoutingMethodResponseWriter {
 	 * @param exchange
 	 * @param contentType
 	 * @param response
-	 * @throws RoutingException
 	 * @throws IOException
 	 */
 	public void write( final HttpServerExchange exchange, final String contentType, final Object response ) throws IOException {
@@ -102,35 +94,32 @@ public class RoutingMethodResponseWriter {
 	 * @throws IOException
 	 */
 	public void write( final HttpServerExchange exchange, final String defaultContentType, final Response response ) throws IOException {
-		final String contentType = response.contentType() != null
-			? response.contentType() : defaultContentType;
+		final String contentType = response.contentType() != null ? response.contentType() : defaultContentType;
 		sendStatusCode( exchange, response.statusCode() );
 		sendHeaders( exchange, response );
 		sendContentTypeHeader( exchange, contentType );
-		sendBodyResponse( exchange, response );
+		sendBodyResponse( exchange, response.contentType(), response.encoding(), response.entity() );
 	}
 
-	void sendBodyResponse( final HttpServerExchange exchange, final Response response )
-			throws RoutingException, IOException {
-		sendBodyResponse( exchange,
-				response.contentType(), response.encoding(), response.entity() );
+	HttpServerExchange sendStatusCode( final HttpServerExchange exchange, final Integer statusCode ) {
+		exchange.setStatusCode( statusCode );
+		return exchange;
 	}
 
 	void sendBodyResponse(
 			final HttpServerExchange exchange, final String contentType,
-			final String encoding, final Object serializable )
-		throws RoutingException, IOException
+			final String encoding, final Object serializable ) throws IOException
 	{
 		final Serializer serializer = getSerializer( contentType );
-		serializer.serialize( serializable, exchange );
+		serializer.serialize( serializable, exchange, encoding );
 		exchange.endExchange();
 	}
 
-	Serializer getSerializer( final String contentType ) throws IOException {
+	private Serializer getSerializer( final String contentType ) throws IOException {
 		return serializerAndUnserializerProvider.getSerializerFor( contentType );
 	}
 
-	void sendHeaders( final HttpServerExchange exchange, final Response response ) {
+	private void sendHeaders( final HttpServerExchange exchange, final Response response ) {
 		final HeaderMap responseHeaders = exchange.getResponseHeaders();
 		for ( final Header header : response.headers() )
 			for ( final String value : header.values() )
@@ -140,11 +129,6 @@ public class RoutingMethodResponseWriter {
 	void sendHeader(final HeaderMap responseHeaders, final Header header, final String value) {
 		final HttpString headerName = new HttpString( header.name() );
 		responseHeaders.add( headerName, value );
-	}
-
-	HttpServerExchange sendStatusCode( final HttpServerExchange exchange, final Integer statusCode ) {
-		exchange.setStatusCode( statusCode );
-		return exchange;
 	}
 
 	void sendContentTypeHeader( final HttpServerExchange exchange, final String contentType ) {

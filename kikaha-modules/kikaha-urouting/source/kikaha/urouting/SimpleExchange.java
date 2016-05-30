@@ -5,7 +5,7 @@ import java.util.*;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
 import io.undertow.util.*;
-import kikaha.urouting.api.ConversionException;
+import kikaha.urouting.api.*;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -162,5 +162,48 @@ public class SimpleExchange {
 		} catch (ConversionException | InstantiationException | IllegalAccessException e) {
 			throw new IOException(e);
 		}
+	}
+
+	/**
+	 * Get the body of current request and convert to {@code <T>} type as
+	 * defined by {@code clazz} argument.<br>
+	 * <br>
+	 * <p>
+	 * It searches for {@link Unserializer} implementations to convert sent data
+	 * from client into the desired object. The "Content-Type" header is the
+	 * information needed to define which {@link Unserializer} should be used to
+	 * decode the sent data into an object. When no {@link Unserializer} is
+	 * found it uses the {@code defaultConsumingContentType} argument to seek
+	 * another one.
+	 *
+	 * @param type
+	 * @param contentType
+	 * @param <T>
+	 * @return
+	 * @throws IOException if no decoder/unserializer was found.
+	 */
+	public <T> T getRequestBody(Class<T> type, String contentType) throws IOException {
+		return parameterReader.getBody(exchange, type, contentType);
+	}
+
+	/**
+	 * Serialize and send the {@code response} object to the HTTP Client.
+	 *
+	 * @param response
+	 * @throws IOException
+	 */
+	public void sendResponse(Response response) throws IOException {
+		responseWriter.write( exchange, response );
+	}
+
+	/**
+	 * Serialize and send the {@code response} object to the HTTP Client.
+	 *
+	 * @param response
+	 * @param contentType
+	 * @throws IOException
+	 */
+	public void sendResponse(Object response, String contentType) throws IOException {
+		responseWriter.write( exchange, contentType, response );
 	}
 }

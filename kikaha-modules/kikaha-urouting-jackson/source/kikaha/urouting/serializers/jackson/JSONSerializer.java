@@ -23,7 +23,7 @@ public class JSONSerializer implements Serializer {
 	Jackson jackson;
 
 	@Override
-	public <T> void serialize(T object, HttpServerExchange exchange) throws IOException {
+	public <T> void serialize(T object, HttpServerExchange exchange, String encoding) throws IOException {
 		val buffer = ByteBuffer.wrap( jackson.objectMapper().writeValueAsBytes(object) );
 		send(exchange, buffer);
 		exchange.dispatch();

@@ -5,7 +5,7 @@ import kikaha.core.test.KikahaRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import tests.Exposed;
+import kikaha.core.test.Exposed;
 
 import javax.inject.Inject;
 
