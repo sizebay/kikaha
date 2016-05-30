@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
  *
  */
 @RunWith(KikahaRunner.class)
-public class SimpleExchangeTest {
+public class SimpleExchangeReadingDataBehaviorTest {
 
 	@Inject
 	RoutingMethodParameterReader parameterReader;
