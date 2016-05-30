@@ -3,6 +3,7 @@ package kikaha.urouting;
 import java.io.IOException;
 import java.util.*;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.Cookie;
 import io.undertow.util.*;
 import kikaha.urouting.api.ConversionException;
 import lombok.RequiredArgsConstructor;
@@ -133,6 +134,31 @@ public class SimpleExchange {
 	public <T> T getHeaderParameter(String name, Class<T> type) throws IOException {
 		try {
 			return parameterReader.getHeaderParam( exchange, name, type );
+		} catch (ConversionException | InstantiationException | IllegalAccessException e) {
+			throw new IOException(e);
+		}
+	}
+
+	/**
+	 * @return A mutable map of request cookies
+	 */
+	public Map<String, Cookie> getCookieParameters() {
+		 return exchange.getRequestCookies();
+	}
+
+	/**
+	 * Get a cookie from request converted to the {@code <T>} type as defined by
+	 * {@code clazz} argument.
+	 *
+	 * @param name
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws IOException
+	 */
+	public <T> T getCookieParameter(String name, Class<T> type) throws IOException {
+		try {
+			return parameterReader.getCookieParam( exchange, name, type );
 		} catch (ConversionException | InstantiationException | IllegalAccessException e) {
 			throw new IOException(e);
 		}

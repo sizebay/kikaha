@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.*;
 import javax.inject.Inject;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.*;
 import io.undertow.util.*;
 import kikaha.core.test.KikahaRunner;
 import lombok.SneakyThrows;
@@ -103,7 +104,6 @@ public class SimpleExchangeTest {
 	@Test
 	public void ensureThatIsPossibleToRetrieveTheCurrentHeaderParameters(){
 		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
-
 		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
 		final HeaderMap queryParameters = exchange.getHeaderParameters();
 		assertEquals( "server", queryParameters.get("HOST").getFirst() );
@@ -112,10 +112,23 @@ public class SimpleExchangeTest {
 	@Test
 	public void ensureThatIsPossibleToRetrieveASingleHeaderParameter() throws IOException {
 		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
-		simulatePathParameterRequest( request );
-
 		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
 		assertEquals( "server", exchange.getHeaderParameter( "HOST", String.class ) );
+	}
+
+	@Test
+	public void ensureThatIsPossibleToRetrieveTheCurrentCookieParameters(){
+		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final Map<String, Cookie> cookies = exchange.getCookieParameters();
+		assertEquals( "1324", cookies.get("JSESSIONID").getValue() );
+	}
+
+	@Test
+	public void ensureThatIsPossibleToRetrieveASingleCookieParameter() throws IOException {
+		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		assertEquals( "1324", exchange.getCookieParameter( "JSESSIONID", String.class ) );
 	}
 
 	@SneakyThrows
@@ -129,6 +142,8 @@ public class SimpleExchangeTest {
 		exchange.setRequestMethod( new HttpString( expectedMethod ) );
 		exchange.setRequestScheme( url.getProtocol() );
 		exchange.setRelativePath( url.getPath() );
+
+		exchange.getRequestCookies().put( "JSESSIONID", new CookieImpl( "JSESSIONID", "1324" ));
 
 		populateWithQueryString( exchange, url.toURI().getQuery() );
 
