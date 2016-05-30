@@ -50,6 +50,13 @@ public class SimpleExchangeTest {
 		assertEquals( "POST", exchange.getHttpMethod().toString() );
 	}
 
+	@Test
+	public void ensureThatIsPossibleToRetrieveTheCurrentRelativePath(){
+		final HttpServerExchange request = createExchange("POST", "http://server/hello");
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		assertEquals( "/hello", exchange.getRelativePath() );
+	}
+
 	@SneakyThrows
 	private HttpServerExchange createExchange( String expectedMethod, String urlAsString ) {
 		final URL url = new URL( urlAsString );

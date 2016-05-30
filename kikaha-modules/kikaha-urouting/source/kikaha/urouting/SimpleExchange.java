@@ -45,4 +45,13 @@ public class SimpleExchange {
 	public HttpString getHttpMethod() {
 		return exchange.getRequestMethod();
 	}
+
+	/**
+	 * Get the request relative path.  This is the path which should be evaluated by the current handler.
+	 *
+	 * @return the request relative path
+	 */
+	public String getRelativePath() {
+		return exchange.getRelativePath();
+	}
 }
