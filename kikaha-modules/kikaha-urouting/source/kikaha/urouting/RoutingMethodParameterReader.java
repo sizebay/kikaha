@@ -93,7 +93,7 @@ public class RoutingMethodParameterReader {
 		if (formValue == null)
 			return null;
 		if (formValue.isFile())
-			return (T) formValue.getFile();
+			return (T) formValue.getPath().toFile();
 		final String value = formValue.getValue();
 		return converterFactory.getConverterFor(clazz).convert(value);
 	}
