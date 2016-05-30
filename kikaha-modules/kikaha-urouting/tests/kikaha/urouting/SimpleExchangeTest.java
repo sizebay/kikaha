@@ -85,7 +85,7 @@ public class SimpleExchangeTest {
 	}
 
 	@Test
-	public void ensureThatIsPossibleToRetrieveASinglePathParameters() throws IOException {
+	public void ensureThatIsPossibleToRetrieveASinglePathParameter() throws IOException {
 		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
 		simulatePathParameterRequest( request );
 
@@ -98,6 +98,24 @@ public class SimpleExchangeTest {
 		parameters.put("id", "123");
 		final PathTemplateMatch templateMatch = new PathTemplateMatch("/hello/{id}", parameters);
 		request.putAttachment( PathTemplateMatch.ATTACHMENT_KEY, templateMatch );
+	}
+
+	@Test
+	public void ensureThatIsPossibleToRetrieveTheCurrentHeaderParameters(){
+		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
+
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final HeaderMap queryParameters = exchange.getHeaderParameters();
+		assertEquals( "server", queryParameters.get("HOST").getFirst() );
+	}
+
+	@Test
+	public void ensureThatIsPossibleToRetrieveASingleHeaderParameter() throws IOException {
+		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
+		simulatePathParameterRequest( request );
+
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		assertEquals( "server", exchange.getHeaderParameter( "HOST", String.class ) );
 	}
 
 	@SneakyThrows

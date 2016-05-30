@@ -3,7 +3,7 @@ package kikaha.urouting;
 import java.io.IOException;
 import java.util.*;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HttpString;
+import io.undertow.util.*;
 import kikaha.urouting.api.ConversionException;
 import lombok.RequiredArgsConstructor;
 
@@ -106,6 +106,33 @@ public class SimpleExchange {
 	public <T> T getPathParameter(String name, Class<T> type) throws IOException {
 		try {
 			return parameterReader.getPathParam( exchange, name, type );
+		} catch (ConversionException | InstantiationException | IllegalAccessException e) {
+			throw new IOException(e);
+		}
+	}
+
+	/**
+	 * Get the response headers.
+	 *
+	 * @return the response headers
+	 */
+	public HeaderMap getHeaderParameters() {
+		return exchange.getRequestHeaders();
+	}
+
+	/**
+	 * Get a header parameter from request converted to the {@code <T>} type as
+	 * defined by {@code clazz} argument.
+	 *
+	 * @param name
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws IOException
+	 */
+	public <T> T getHeaderParameter(String name, Class<T> type) throws IOException {
+		try {
+			return parameterReader.getHeaderParam( exchange, name, type );
 		} catch (ConversionException | InstantiationException | IllegalAccessException e) {
 			throw new IOException(e);
 		}
