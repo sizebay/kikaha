@@ -1,5 +1,7 @@
 package kikaha.urouting;
 
+import java.io.IOException;
+import java.util.*;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 import lombok.RequiredArgsConstructor;
@@ -53,5 +55,31 @@ public class SimpleExchange {
 	 */
 	public String getRelativePath() {
 		return exchange.getRelativePath();
+	}
+
+	/**
+	 * Returns a mutable map of query parameters.
+	 *
+	 * @return The query parameters
+	 */
+	public Map<String, Deque<String>> getQueryParameters() {
+		return exchange.getQueryParameters();
+	}
+
+	/**
+	 * Get a simple query parameter, named {@code name}, converted to the type {@code type}.
+	 *
+	 * @param name
+	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws IOException if anything goes wrong during the convertion process
+	 */
+	public <T> T getQueryParameter(String name, Class<T> type) throws IOException  {
+		try {
+			return parameterReader.getQueryParam(exchange, name, type);
+		} catch ( IllegalAccessException | InstantiationException e) {
+			throw new IOException(e);
+		}
 	}
 }

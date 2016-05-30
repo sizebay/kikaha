@@ -1,25 +1,27 @@
 package kikaha.urouting;
 
 import static org.junit.Assert.assertEquals;
+import java.io.IOException;
 import java.net.URL;
+import java.util.*;
+import javax.inject.Inject;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.*;
+import kikaha.core.test.KikahaRunner;
 import lombok.SneakyThrows;
-import org.junit.*;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
-import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  *
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(KikahaRunner.class)
 public class SimpleExchangeTest {
 
-	@Mock
+	@Inject
 	RoutingMethodParameterReader parameterReader;
 
-	@Mock
+	@Inject
 	RoutingMethodResponseWriter responseWriter;
 
 	@Test
@@ -57,6 +59,21 @@ public class SimpleExchangeTest {
 		assertEquals( "/hello", exchange.getRelativePath() );
 	}
 
+	@Test
+	public void ensureThatIsPossibleToRetrieveTheCurrentQueryParameters(){
+		final HttpServerExchange request = createExchange("POST", "http://server/hello?q=1");
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final Map<String, Deque<String>> queryParameters = exchange.getQueryParameters();
+		assertEquals( "1", queryParameters.get("q").getFirst() );
+	}
+
+	@Test
+	public void ensureThatIsPossibleToRetrieveASingleQueryParameter() throws IOException {
+		final HttpServerExchange request = createExchange("POST", "http://server/hello?q=1");
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		assertEquals( 1l, exchange.getQueryParameter( "q", Long.TYPE ), 0 );
+	}
+
 	@SneakyThrows
 	private HttpServerExchange createExchange( String expectedMethod, String urlAsString ) {
 		final URL url = new URL( urlAsString );
@@ -68,6 +85,18 @@ public class SimpleExchangeTest {
 		exchange.setRequestMethod( new HttpString( expectedMethod ) );
 		exchange.setRequestScheme( url.getProtocol() );
 		exchange.setRelativePath( url.getPath() );
+
+		populateWithQueryString( exchange, url.toURI().getQuery() );
+
 		return exchange;
+	}
+
+	private void populateWithQueryString( HttpServerExchange exchange, String queryString ){
+		if ( queryString != null ) {
+			for ( String query : queryString.split("&") ) {
+				final String[] params = query.split("=");
+				exchange.addQueryParam( params[0], params[1] );
+			}
+		}
 	}
 }
