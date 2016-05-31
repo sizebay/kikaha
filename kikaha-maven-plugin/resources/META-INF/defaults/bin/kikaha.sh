@@ -33,7 +33,7 @@ debug_server(){
 		exit 1
 	else
 		info "Starting server in debug mode..."
-		nohup ${JAVA} ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS}
+		${JAVA} ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS}
 	fi
 }
 
