@@ -32,17 +32,18 @@ public class ManyElementsProvidableField<T> implements ProvidableField {
 	public static <T> ProvidableField from( Collection<Class<? extends Annotation>> qualifiers, final Field field ) {
 		assertFieldTypeIsIterable( field );
 		field.setAccessible( true );
-		final Typed Inject = field.getAnnotation( Typed.class );
-		if ( Inject == null )
-			throw new IllegalStateException( "Field " + field.getName()
-					+ " (annotated with @Any) also expects to be annotated with @Typed." );
-		return new ManyElementsProvidableField<T>(
-				field, (Class<T>)Inject.value()[0],
-				(Condition<T>)new QualifierCondition<>( qualifiers ) );
+		final Class collectionType = identifyWhichTypeThisCollectionHas(field);
+		return new ManyElementsProvidableField<>(
+				field, (Class<T>)collectionType, new QualifierCondition<>( qualifiers ) );
 	}
 
 	private static void assertFieldTypeIsIterable( final Field field ) {
-		if ( !Iterable.class.equals( field.getType() ) )
+		if ( !DefaultFieldQualifierExtractor.fieldRepresentsACollection( field ) )
 			throw new IllegalStateException( "Field " + field.getName() + " expects to have Iterable type." );
+	}
+
+	private static Class identifyWhichTypeThisCollectionHas( final Field field ){
+		final Typed annotation = field.getAnnotation( Typed.class );
+		return annotation.value()[0];
 	}
 }

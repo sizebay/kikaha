@@ -2,6 +2,7 @@ package kikaha.core.cdi.helpers;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Collection;
 
 import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
@@ -22,7 +23,12 @@ public class DefaultFieldQualifierExtractor implements FieldQualifierExtractor {
 	@Override
 	public boolean isAManyElementsProvider( Field field ) {
 		return isASingleElementProvider( field )
-				&& field.getType().equals( Iterable.class )
+				&& fieldRepresentsACollection( field )
 				&& field.isAnnotationPresent( Typed.class );
+	}
+
+	public static boolean fieldRepresentsACollection( final Field field ) {
+		final Class<?> type = field.getType();
+		return Iterable.class.equals( type ) || Collection.class.equals( type );
 	}
 }
