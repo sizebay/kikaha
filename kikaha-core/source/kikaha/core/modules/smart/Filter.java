@@ -1,6 +1,7 @@
 package kikaha.core.modules.smart;
 
 import io.undertow.server.HttpServerExchange;
+import kikaha.core.modules.smart.FilterChainFactory.FilterChain;
 
 /**
  * A filter is an object that performs filtering tasks on either the request to a resource,
@@ -14,5 +15,5 @@ public interface Filter {
 	 * @param exchange object that represents the current request/response
 	 * @param chain a chained list with all filters that wasn't executed.
 	 */
-	void doFilter(HttpServerExchange exchange, FilterChainFactory.FilterChain chain) throws Exception;
+	void doFilter(HttpServerExchange exchange, FilterChain chain) throws Exception;
 }

@@ -13,7 +13,7 @@ public class FilterChainFactory {
 	final Iterable<Filter> chainData;
 
 	public FilterChain createFrom(HttpServerExchange exchange) {
-		return new FilterChain( exchange );
+		return new FilterChain( chainData.iterator(), exchange );
 	}
 
 	/**
@@ -23,9 +23,9 @@ public class FilterChainFactory {
 	 * the resource at the end of the chain.
 	 */
 	@RequiredArgsConstructor
-	public class FilterChain {
+	public static class FilterChain {
 
-		final Iterator<Filter> iterator = chainData.iterator();
+		final Iterator<Filter> iterator;
 		final HttpServerExchange exchange;
 
 		public void runNext() throws Exception {
