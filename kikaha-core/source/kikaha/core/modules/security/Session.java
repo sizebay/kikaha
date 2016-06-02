@@ -4,7 +4,8 @@ import io.undertow.security.idm.Account;
 
 
 /**
- * Session interface based on {@code io.undertow.server.session.Session}.
+ * Stores information related to the current user. This session interface
+ * is strongly inspired on {@code io.undertow.server.session.Session}.
  *
  * @author miere.teixeira
  */
@@ -16,6 +17,9 @@ public interface Session {
 	 */
 	Account getAuthenticatedAccount();
 
+	/**
+	 * Defines a new {@link Account} as the current logged in user account.
+	 */
 	void setAuthenticatedAccount( Account account );
 
     /**
@@ -64,7 +68,13 @@ public interface Session {
      */
     Object removeAttribute(final String name);
 
+	/**
+	 * @return true when this {@link Session} had one of its attributes changed.
+	 */
 	boolean hasChanged();
 
+	/**
+	 * Flushes the content of this {@link Session} and stores it again at the {@link SessionStore}.
+	 */
 	void flush();
 }

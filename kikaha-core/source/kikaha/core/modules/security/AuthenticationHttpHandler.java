@@ -1,6 +1,5 @@
 package kikaha.core.modules.security;
 
-import io.undertow.security.api.SecurityContext;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ class AuthenticationHttpHandler implements HttpHandler {
 	}
 
 	private boolean isAuthenticated( final HttpServerExchange exchange ) {
-		final SecurityContext securityContext = exchange.getSecurityContext();
+		final SecurityContext securityContext = (SecurityContext)exchange.getSecurityContext();
 		return securityContext != null && securityContext.isAuthenticated();
 	}
 
@@ -41,7 +40,9 @@ class AuthenticationHttpHandler implements HttpHandler {
 	}
 
 	private SecurityContext createSecurityContext( final HttpServerExchange exchange, final AuthenticationRule rule ) {
-		return securityContextFactory.createSecurityContextFor( exchange, rule );
+		final SecurityContext securityContext = securityContextFactory.createSecurityContextFor(exchange, rule);
+		exchange.addExchangeCompleteListener( new SecurityContextAutoUpdater( securityContext ) );
+		return securityContext;
 	}
 
 	void runAuthenticationInIOThread(final HttpServerExchange exchange,

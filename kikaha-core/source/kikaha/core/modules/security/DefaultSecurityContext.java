@@ -1,16 +1,15 @@
 package kikaha.core.modules.security;
 
+import java.util.*;
 import io.undertow.security.api.NotificationReceiver;
-import io.undertow.security.idm.Account;
+import io.undertow.security.idm.*;
 import io.undertow.security.idm.IdentityManager;
 import io.undertow.server.HttpServerExchange;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
-import java.util.Iterator;
-import java.util.List;
-
+/**
+ * A per-request object that groups security-related information.
+ */
 @Getter
 @RequiredArgsConstructor
 public class DefaultSecurityContext implements SecurityContext {
@@ -66,14 +65,24 @@ public class DefaultSecurityContext implements SecurityContext {
 	@Override
 	public void updateCurrentSession() {
 		if ( currentSession.hasChanged() ) {
-			currentSession.flush();
-			store.flush( currentSession );
+			try { store.flush( currentSession ); }
+			finally { currentSession.flush(); }
 		}
+	}
+
+	public void setCurrentSession( Session session ){
+		this.currentSession = session;
 	}
 
 	@Override
 	public Account getAuthenticatedAccount() {
 		return currentSession != null ? currentSession.getAuthenticatedAccount() : null;
+	}
+
+	@Override
+	public void setAuthenticatedAccount(Account account){
+		if ( currentSession != null )
+			currentSession.setAuthenticatedAccount(account);
 	}
 
 	@Override

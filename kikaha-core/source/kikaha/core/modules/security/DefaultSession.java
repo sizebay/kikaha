@@ -1,13 +1,9 @@
 package kikaha.core.modules.security;
 
-import io.undertow.security.idm.Account;
-
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.util.*;
+import io.undertow.security.idm.Account;
+import lombok.*;
 
 @Getter
 @RequiredArgsConstructor
@@ -17,7 +13,7 @@ public class DefaultSession implements Session, Serializable {
 
 	private final Map<String, Object> attributes = new HashMap<>();
 	private Account authenticatedAccount;
-	private boolean flushed = true;
+	private boolean changed = true;
 	final String id;
 
 	@Override
@@ -32,28 +28,29 @@ public class DefaultSession implements Session, Serializable {
 
 	@Override
 	public void setAttribute( String name, Object value ) {
-		flushed = true;
+		changed = true;
 		attributes.put( name, value );
 	}
 
 	@Override
 	public void setAuthenticatedAccount( Account account ) {
-		flushed = true;
+		changed = true;
 		authenticatedAccount = account;
 	}
 
 	@Override
 	public Object removeAttribute( String name ) {
+		changed = true;
 		return attributes.remove( name );
 	}
 
 	@Override
 	public boolean hasChanged() {
-		return flushed;
+		return changed;
 	}
 
 	@Override
 	public void flush() {
-		flushed = false;
+		changed = false;
 	}
 }
