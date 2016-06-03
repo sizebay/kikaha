@@ -1,14 +1,12 @@
 package kikaha.urouting.api;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
+import static io.undertow.util.Headers.LOCATION;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import io.undertow.util.*;
+import kikaha.core.TinyList;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 @Getter
 @Setter
@@ -20,19 +18,29 @@ public class DefaultResponse implements Response {
 	@NonNull Integer statusCode = 200;
 	@NonNull String encoding = "UTF-8";
 	@NonNull String contentType = Mimes.PLAIN_TEXT;
-	@NonNull List<Header> headers = new ArrayList<>();
+	@NonNull List<Header> headers = new TinyList<>();
 
 	public DefaultResponse header( final String name, final String value ) {
+		return header( new HttpString(name), value );
+	}
+
+	public DefaultResponse header(final HttpString name, final String value ) {
 		Header header = getHeader( name );
 		if ( header == null ) {
-			header = new DefaultHeader( name );
+			header = DefaultHeader.createHeader( name, value );
 			headers.add(header);
-		}
-		header.add(value);
+		} else
+			header.add(value);
 		return this;
 	}
 
-	protected Header getHeader( final String name ) {
+	/**
+	 * Good-enough method to retrieve headers.
+	 *
+	 * @param name
+	 * @return
+	 */
+	protected Header getHeader( final HttpString name ) {
 		for ( final Header header : headers )
 			if ( header.name().equals(name) )
 				return header;
@@ -65,7 +73,7 @@ public class DefaultResponse implements Response {
 
 	public static DefaultResponse created( final String location ) {
 		return response().statusCode(201)
-				.header("Location", location);
+				.header(LOCATION, location);
 	}
 
 	public static DefaultResponse accepted() {
@@ -86,12 +94,12 @@ public class DefaultResponse implements Response {
 
 	public static DefaultResponse seeOther( final String location ) {
 		return response().statusCode(303)
-				.header("Location", location);
+				.header(LOCATION, location);
 	}
 
 	public static DefaultResponse temporaryRedirect( final String location ) {
 		return response().statusCode(307)
-				.header("Location", location);
+				.header(LOCATION, location);
 	}
 
 	public static DefaultResponse temporaryRedirect( final URI location ) {
@@ -100,7 +108,7 @@ public class DefaultResponse implements Response {
 
 	public static DefaultResponse permanentRedirect( final String location ) {
 		return response().statusCode(308)
-				.header("Location", location);
+				.header(LOCATION, location);
 	}
 
 	public static DefaultResponse permanentRedirect( final URI location ) {

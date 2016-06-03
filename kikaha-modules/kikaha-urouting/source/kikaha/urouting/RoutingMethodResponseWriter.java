@@ -127,8 +127,7 @@ public class RoutingMethodResponseWriter {
 	}
 
 	void sendHeader(final HeaderMap responseHeaders, final Header header, final String value) {
-		final HttpString headerName = new HttpString( header.name() );
-		responseHeaders.add( headerName, value );
+		responseHeaders.add( header.name(), value );
 	}
 
 	void sendContentTypeHeader( final HttpServerExchange exchange, final String contentType ) {

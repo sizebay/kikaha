@@ -1,7 +1,9 @@
 package kikaha.urouting.api;
 
+import io.undertow.util.HttpString;
+
 public interface Header {
-	String name();
+	HttpString name();
 	Iterable<String> values();
 	void add( String value );
 }
