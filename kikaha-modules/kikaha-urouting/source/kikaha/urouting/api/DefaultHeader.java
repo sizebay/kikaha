@@ -2,7 +2,7 @@ package kikaha.urouting.api;
 
 import java.util.List;
 import io.undertow.util.HttpString;
-import kikaha.core.TinyList;
+import kikaha.core.cdi.helpers.TinyList;
 import lombok.*;
 import lombok.experimental.Accessors;
 

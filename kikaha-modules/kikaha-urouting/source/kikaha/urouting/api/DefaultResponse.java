@@ -4,7 +4,7 @@ import static io.undertow.util.Headers.LOCATION;
 import java.net.URI;
 import java.util.*;
 import io.undertow.util.*;
-import kikaha.core.TinyList;
+import kikaha.core.cdi.helpers.TinyList;
 import lombok.*;
 import lombok.experimental.Accessors;
 

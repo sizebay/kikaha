@@ -1,12 +1,11 @@
 package kikaha.hazelcast;
 
-import kikaha.urouting.Reflection;
-
+import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.*;
+import javax.inject.*;
+import kikaha.core.cdi.helpers.TinyList;
+import kikaha.urouting.Reflection;
 
 @Singleton
 @SuppressWarnings( { "rawtypes" } )
@@ -37,7 +36,7 @@ public class HazelcastProducedDataListenerFactory {
 	private List<HazelcastProducedDataListener<?>> getCacheFor( final Class key ) {
 		List<HazelcastProducedDataListener<?>> list = cache.get( key );
 		if ( list == null ) {
-			list = new ArrayList<>();
+			list = new TinyList<>();
 			cache.put( key, list );
 		}
 		return list;

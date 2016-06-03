@@ -6,9 +6,10 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Typed;
 import javax.inject.*;
 import io.undertow.Undertow;
-import io.undertow.server.*;
+import io.undertow.server.HttpHandler;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
+import kikaha.core.cdi.helpers.TinyList;
 import kikaha.core.modules.Module;
 import lombok.Getter;
 
@@ -38,7 +39,9 @@ public class FilterModule implements Module {
 
 	@Override
 	public void load( Undertow.Builder server, DeploymentContext context ) throws IOException {
-		final List<Filter> filterList = new ArrayList<>(foundFilters);
+		final List<Filter> filterList = new TinyList<>();
+		filterList.addAll(foundFilters);
+
 		if ( filterList.isEmpty() )
 			return;
 

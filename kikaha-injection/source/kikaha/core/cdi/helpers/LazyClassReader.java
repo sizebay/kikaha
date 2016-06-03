@@ -1,19 +1,9 @@
 package kikaha.core.cdi.helpers;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ServiceConfigurationError;
-
-import lombok.Cleanup;
-import lombok.Getter;
+import java.util.*;
+import lombok.*;
 
 @Getter
 public class LazyClassReader<S> implements Iterator<Class<S>> {
@@ -21,7 +11,7 @@ public class LazyClassReader<S> implements Iterator<Class<S>> {
 	private static final String PREFIX = "META-INF/services/";
 	private static final int NOT_FOUND = -1;
 
-	final List<Class<S>> cache = new ArrayList<Class<S>>();
+	final List<Class<S>> cache = new TinyList<>();
 	final String serviceClassCanonicalName;
 	final ClassLoader loader;
 	final Enumeration<URL> resources;

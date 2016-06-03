@@ -1,21 +1,13 @@
 package kikaha.core.cdi.processor;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import java.util.*;
 import javax.enterprise.inject.Typed;
-import javax.inject.Qualifier;
-import javax.inject.Singleton;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.MirroredTypesException;
-import javax.lang.model.type.TypeMirror;
-
+import javax.inject.*;
+import javax.lang.model.element.*;
+import javax.lang.model.type.*;
 import kikaha.core.cdi.Stateless;
+import kikaha.core.cdi.helpers.TinyList;
 
 public class SingletonImplementation {
 
@@ -82,7 +74,7 @@ public class SingletonImplementation {
 	}
 
 	public static List<String> getQualifierAnnotation( final Element type ) {
-		final List<String> qualifierAnn = new ArrayList<>();
+		final List<String> qualifierAnn = new TinyList<>();
 		for ( final AnnotationMirror annotationMirror : type.getAnnotationMirrors() )
 			for ( final Class<? extends Annotation> annClass : QUALIFIERS )
 				if ( isAnnotationPresent( annotationMirror.getAnnotationType().asElement(), annClass.getCanonicalName() ) )

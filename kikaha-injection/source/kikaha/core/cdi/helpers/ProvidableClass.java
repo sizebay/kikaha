@@ -1,21 +1,12 @@
 package kikaha.core.cdi.helpers;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.function.Consumer;
-
 import javax.annotation.PostConstruct;
-
-import kikaha.core.cdi.GeneratedFromStatelessService;
-import kikaha.core.cdi.ServiceProviderException;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import kikaha.core.cdi.*;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 @Getter
@@ -47,7 +38,7 @@ public class ProvidableClass<T> {
 	}
 
 	static Iterable<ProvidableField> readClassProvidableFields( QualifierExtractor extractor, Class<?> targetClazz ) {
-		final List<ProvidableField> providableFields = new ArrayList<ProvidableField>();
+		final List<ProvidableField> providableFields = new TinyList<>();
 		Class<? extends Object> clazz = targetClazz;
 		while ( !Object.class.equals( clazz ) ) {
 			populateWithProvidableFields( extractor, clazz, providableFields );

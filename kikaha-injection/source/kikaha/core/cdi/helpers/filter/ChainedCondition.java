@@ -1,15 +1,13 @@
 package kikaha.core.cdi.helpers.filter;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import lombok.RequiredArgsConstructor;
-import lombok.val;
+import kikaha.core.cdi.helpers.TinyList;
+import lombok.*;
 
 @RequiredArgsConstructor
 public class ChainedCondition<T> implements Condition<T> {
 
-	final List<Condition<T>> conditions = new ArrayList<Condition<T>>();
+	final List<Condition<T>> conditions = new TinyList<>();
 
 	@Override
 	public boolean check( final T object ) {

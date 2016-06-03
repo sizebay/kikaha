@@ -1,15 +1,13 @@
 package kikaha.urouting;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import kikaha.urouting.EventDispatcher.Listener;
-import kikaha.urouting.EventDispatcher.Matcher;
+import kikaha.core.cdi.helpers.TinyList;
+import kikaha.urouting.EventDispatcher.*;
 import lombok.RequiredArgsConstructor;
 
 public class EventDispatcher<T> {
 
-	final List<Entry<T>> listeners = new ArrayList<>();
+	final List<Entry<T>> listeners = new TinyList<>();
 
 	public EventDispatcher<T> when(
 		final Matcher<T> matcher, final Listener<T> listener ) {

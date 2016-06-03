@@ -1,14 +1,11 @@
 package kikaha.core.modules.security;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import kikaha.config.Config;
 import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.helpers.TinyList;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -97,7 +94,7 @@ public class AuthenticationRuleMatcher {
 	}
 
 	private List<IdentityManager> getIdentityManagerFor( final List<String> identityManagers ) {
-		final List<IdentityManager> ims = new ArrayList<>();
+		final List<IdentityManager> ims = new TinyList<>();
 		for ( final String name : identityManagers ){
 			final IdentityManager identityManager = identityManagers().get( name );
 			if ( identityManager == null )

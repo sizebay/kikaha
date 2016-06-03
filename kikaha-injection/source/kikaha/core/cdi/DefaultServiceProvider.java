@@ -1,26 +1,11 @@
 package kikaha.core.cdi;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.locks.LockSupport;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import kikaha.core.cdi.helpers.DependencyMap;
-import kikaha.core.cdi.helpers.filter.Filter;
-import kikaha.core.cdi.helpers.EmptyIterable;
-import kikaha.core.cdi.helpers.ProducerFactoryMap;
-import kikaha.core.cdi.helpers.ProvidableField;
-import kikaha.core.cdi.helpers.filter.Condition;
+import java.util.function.*;
+import kikaha.core.cdi.helpers.*;
+import kikaha.core.cdi.helpers.filter.*;
 import lombok.RequiredArgsConstructor;
-import kikaha.core.cdi.helpers.FieldQualifierExtractor;
-import kikaha.core.cdi.helpers.ProvidableClass;
-import kikaha.core.cdi.helpers.QualifierExtractor;
-import kikaha.core.cdi.helpers.SingleObjectIterable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -225,7 +210,7 @@ public class DefaultServiceProvider implements ServiceProvider {
 		}
 
 		private void tryPostConstructClasses() {
-			final List<Injectable> failed = new ArrayList<>();
+			final List<Injectable> failed = new TinyList<>();
 
 			while ( !classesToBeConstructed.isEmpty() ) {
 				final Injectable injectable = classesToBeConstructed.poll();
@@ -245,7 +230,7 @@ public class DefaultServiceProvider implements ServiceProvider {
 		}
 
 		private void tryInjectFailedFields() {
-			final List<InjectableField> failed = new ArrayList<>();
+			final List<InjectableField> failed = new TinyList<>();
 			while ( !fieldToTryToInjectAgainLater.isEmpty() ) {
 				final InjectableField field = fieldToTryToInjectAgainLater.poll();
 				try { field.structure.provide( field.instance, this ); }

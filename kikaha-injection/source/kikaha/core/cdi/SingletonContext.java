@@ -1,15 +1,9 @@
 package kikaha.core.cdi;
 
-import kikaha.core.cdi.helpers.ProvidableClass;
-import kikaha.core.cdi.helpers.QualifierExtractor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import java.util.*;
+import kikaha.core.cdi.helpers.*;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,7 +17,7 @@ public class SingletonContext {
 
 	@SuppressWarnings("unchecked")
 	public <T> Iterable<T> instantiate( Iterable<Class<T>> classes ){
-		final List<T> list = new ArrayList<>();
+		final List<T> list = new TinyList<>();
 		synchronized ( cache ) {
 			for ( final Class<T> clazz : classes ) {
 				T object = (T)cache.get( clazz );

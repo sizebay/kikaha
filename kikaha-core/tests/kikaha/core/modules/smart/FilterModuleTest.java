@@ -5,10 +5,11 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import javax.inject.Inject;
 import io.undertow.server.HttpHandler;
 import kikaha.core.DeploymentContext;
+import kikaha.core.cdi.helpers.TinyList;
 import kikaha.core.test.KikahaRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -36,14 +37,14 @@ public class FilterModuleTest {
 	@Test
 	public void ensureThatInjectedModuleCouldFoundTheEmptyFilterInTheClassPath(){
 		assertEquals( 2, injectedFilterModule.foundFilters.size() );
-		final Filter filter = new ArrayList<>(injectedFilterModule.foundFilters).get(0);
+		final Filter filter = asList(injectedFilterModule.foundFilters).get(0);
 		assertEquals( emptyFilter, filter );
 	}
 
 	@Test
 	public void ensureThatInjectedModuleCouldFoundTheRedirectionFilterDefinedAtTheConfigurationFile(){
 		assertEquals( 2, injectedFilterModule.foundFilters.size() );
-		final Filter filter = new ArrayList<>(injectedFilterModule.foundFilters).get(1);
+		final Filter filter = asList(injectedFilterModule.foundFilters).get(1);
 		assertEquals( RedirectionFilter.class, filter.getClass() );
 	}
 
@@ -61,5 +62,11 @@ public class FilterModuleTest {
 		filterModule.foundFilters = emptyList();
 		filterModule.load( null, deploymentContext );
 		verify( deploymentContext, never() ).rootHandler( any( FilterHttpHandler.class ) );
+	}
+
+	private static <T> List<T> asList( Collection<T> c ){
+		final TinyList<T> newList = new TinyList<>();
+		newList.addAll( c );
+		return newList;
 	}
 }

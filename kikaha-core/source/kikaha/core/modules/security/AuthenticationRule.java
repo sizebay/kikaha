@@ -1,14 +1,10 @@
 package kikaha.core.modules.security;
 
-import kikaha.core.url.URLMatcher;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
-import lombok.experimental.Accessors;
-import lombok.val;
-
-import java.util.ArrayList;
 import java.util.List;
+import kikaha.core.cdi.helpers.TinyList;
+import kikaha.core.url.URLMatcher;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 @Getter
 @Accessors( fluent = true )
@@ -55,15 +51,15 @@ public class AuthenticationRule {
 	}
 
 	boolean matchesIgnoredUrls( final String url ) {
-		for ( val exceptionPattern : exceptionPatterns )
+		for ( final URLMatcher exceptionPattern : exceptionPatterns )
 			if ( exceptionPattern.matches( url, null ) )
 				return true;
 		return false;
 	}
 
 	public List<URLMatcher> convertToURLMatcher( final List<String> urls ) {
-		val matchers = new ArrayList<URLMatcher>();
-		for ( val url : urls )
+		final List<URLMatcher> matchers = new TinyList<>();
+		for ( final String url : urls )
 			matchers.add( URLMatcher.compile( url ) );
 		return matchers;
 	}

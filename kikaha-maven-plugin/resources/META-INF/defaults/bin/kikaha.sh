@@ -57,7 +57,7 @@ stop_server(){
 
 show_help(){
 cat<<EOF
-Usage: $0 <command>
+Usage: $0 <command>CLASSPATH="${LIBDIR}/*:."
 
 $(yellow 'Available commands'):
  - $(red start):	starts the server in background

@@ -1,6 +1,7 @@
-package kikaha.core;
+package kikaha.core.cdi.helpers;
 
 import static org.junit.Assert.*;
+import java.util.*;
 import org.junit.Test;
 
 /**
@@ -54,5 +55,19 @@ public class TinyListTest {
 		int counter = 0;
 		for ( Integer i : new TinyList<Integer>() )
 			assertEquals( counter++, i, 0 );
+	}
+
+	@Test
+	public void addAllValuesFromCollection(){
+		final TinyList<String> data = new TinyList<>();
+		data.add( "First" );
+
+		final List<String> extraStrings = Arrays.asList("Second", "Third");
+		data.addAll( extraStrings );
+
+		assertEquals( 3, data.size() );
+		assertEquals( "First", data.get(0) );
+		assertEquals( "Second", data.get(1) );
+		assertEquals( "Third", data.get(2) );
 	}
 }

@@ -1,15 +1,9 @@
 package kikaha.core.cdi.helpers;
 
-import kikaha.core.cdi.DefaultServiceProvider;
-import kikaha.core.cdi.ProducerFactory;
+import java.lang.reflect.*;
+import java.util.*;
+import kikaha.core.cdi.*;
 import kikaha.core.cdi.helpers.filter.AnyObject;
-
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings( "rawtypes" )
 public class ProducerFactoryMap {
@@ -37,7 +31,7 @@ public class ProducerFactoryMap {
 	private void memorizeProviderForClazz( final Class<ProducerFactory> provider, final Class<?> clazz ) {
 		List<Class<ProducerFactory>> iterable = producerImplementationClasses.get( clazz );
 		if ( iterable == null ) {
-			iterable = new ArrayList<>();
+			iterable = new TinyList<>();
 			producerImplementationClasses.put( clazz, iterable );
 		}
 		iterable.add( provider );
@@ -64,7 +58,7 @@ public class ProducerFactoryMap {
 	}
 
 	private List<ProducerFactory<?>> loadAll( Class<?> clazz, DefaultServiceProvider.DependencyInjector injector ) {
-		final List<ProducerFactory<?>> list = new ArrayList<>();
+		final List<ProducerFactory<?>> list = new TinyList<>();
 		final List<Class<ProducerFactory>> factories = producerImplementationClasses.get( clazz );
 		if ( factories != null )
 			for ( final Class<ProducerFactory> factoryClass : factories )
@@ -76,7 +70,7 @@ public class ProducerFactoryMap {
 		synchronized ( map ) {
 			List<ProducerFactory<?>> list = map.get( clazz );
 			if ( list == null ) {
-				list = new ArrayList<>();
+				list = new TinyList<>();
 				map.put( clazz, list );
 			}
 			list.add( provider );

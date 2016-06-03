@@ -1,19 +1,11 @@
 package kikaha.core.cdi.processor.stateless;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
-
-import kikaha.core.cdi.processor.SingletonImplementation;
-import kikaha.core.cdi.processor.GenerableClass;
+import javax.lang.model.element.*;
+import javax.lang.model.type.*;
+import kikaha.core.cdi.helpers.TinyList;
+import kikaha.core.cdi.processor.*;
 
 public class StatelessClass implements GenerableClass {
 
@@ -171,7 +163,7 @@ public class StatelessClass implements GenerableClass {
 	}
 
 	static List<ExposedMethod> retrieveExposedMethods( final TypeElement type ) {
-		final List<ExposedMethod> list = new ArrayList<ExposedMethod>();
+		final List<ExposedMethod> list = new TinyList<>();
 		for ( final Element method : type.getEnclosedElements() )
 			if ( isExposedMethod( method ) )
 				list.add( ExposedMethod.from( (ExecutableElement)method ) );
@@ -181,7 +173,7 @@ public class StatelessClass implements GenerableClass {
 	@SafeVarargs
 	static List<ExposedMethod> retrieveMethodsAnnotatedWith( final TypeElement type,
 		final Class<? extends Annotation>... annotations ) {
-		final List<ExposedMethod> list = new ArrayList<ExposedMethod>();
+		final List<ExposedMethod> list = new TinyList<>();
 		for ( final Class<? extends Annotation> annotation : annotations )
 			for ( final Element method : type.getEnclosedElements() )
 				if ( isExposedMethod( method )

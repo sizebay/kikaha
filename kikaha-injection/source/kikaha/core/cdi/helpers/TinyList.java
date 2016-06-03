@@ -1,11 +1,15 @@
-package kikaha.core;
+package kikaha.core.cdi.helpers;
 
 import java.util.*;
 import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
- *
+ * Quite simple, but with low memory overhead, {@link List} implementation.
+ * It provides only a few methods from {@link List} api, such as inclusion of
+ * new elements, include data from other collections and iterate over stored
+ * elements. Note that it isn't thread-safe and most of its methods isn't implemented.
+ * Take a closer look at the source code before use it.
  */
 @Getter
 @Accessors(fluent = true)
@@ -32,6 +36,19 @@ public class TinyList<T> implements List<T> {
 	@Override
 	public T get(int index) {
 		return (T)data[index];
+	}
+
+	@Override
+	public boolean addAll(Collection<? extends T> c) {
+		int total = size+c.size();
+		data = Arrays.copyOf( data, total );
+
+		final Iterator<? extends T> iterator = c.iterator();
+		for ( int i=size; i<total && iterator.hasNext(); i++ )
+			data[i] = iterator.next();
+
+		size = total;
+		return size != 0;
 	}
 
 	@Override
@@ -80,11 +97,6 @@ public class TinyList<T> implements List<T> {
 	@Override
 	public boolean containsAll(Collection<?> c) {
 		throw new UnsupportedOperationException("method 'containsAll' is unavailable");
-	}
-
-	@Override
-	public boolean addAll(Collection<? extends T> c) {
-		throw new UnsupportedOperationException("method 'addAll' is unavailable");
 	}
 
 	@Override

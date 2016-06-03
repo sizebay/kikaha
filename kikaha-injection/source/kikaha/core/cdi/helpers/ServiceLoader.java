@@ -1,8 +1,6 @@
 package kikaha.core.cdi.helpers;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public abstract class ServiceLoader {
 
@@ -19,7 +17,7 @@ public abstract class ServiceLoader {
 	}
 
 	private static <T> List<Class<T>> readAndConvertToList( final Iterator<Class<T>> reader ) {
-		final List<Class<T>> list = new ArrayList<>();
+		final List<Class<T>> list = new TinyList<>();
 		while ( reader.hasNext() )
 			try {
 				list.add( reader.next() );

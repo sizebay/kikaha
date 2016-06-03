@@ -1,18 +1,10 @@
 package kikaha.core.url;
 
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HttpString;
-import io.undertow.util.PathTemplateMatch;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.Value;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import io.undertow.server.*;
+import io.undertow.util.*;
+import kikaha.core.cdi.helpers.TinyList;
+import lombok.*;
 
 @Getter
 @Setter
@@ -31,7 +23,7 @@ public class SimpleRoutingHandler implements HttpHandler {
 	public void add( final HttpString method, final String url, final HttpHandler handler ) {
 		List<Entry> list = matchersByMethod.get( method );
 		if ( list == null )
-			matchersByMethod.put( method, list = new ArrayList<>() );
+			matchersByMethod.put( method, list = new TinyList<>() );
 		if ( retrieveEntryThatMatchesUrlFromList( list, url ) != null )
 			throw new UnsupportedOperationException( "Already exists a route defined for " + url );
 		list.add( new Entry( url, handler ) );

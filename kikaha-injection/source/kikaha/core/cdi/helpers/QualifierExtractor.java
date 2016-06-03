@@ -2,9 +2,7 @@ package kikaha.core.cdi.helpers;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
-
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -13,7 +11,7 @@ public class QualifierExtractor {
 	final Iterable<FieldQualifierExtractor> extractors;
 
 	public Collection<Class<? extends Annotation>> extractQualifiersFrom( Field field ){
-		final Collection<Class<? extends Annotation>> anns = new ArrayList<>();
+		final Collection<Class<? extends Annotation>> anns = new TinyList<>();
 		for ( final FieldQualifierExtractor extractor : extractors )
 			anns.addAll( extractor.extractQualifiersFrom(field) );
 		return anns;

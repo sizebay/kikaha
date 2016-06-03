@@ -1,14 +1,13 @@
 package kikaha.core.cdi.helpers.filter;
 
-import java.util.ArrayList;
-
+import kikaha.core.cdi.helpers.TinyList;
 import lombok.val;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class Filter {
 
 	public static <T> Iterable<T> filter( Iterable<T> self, Condition condition ) {
-		val list = new ArrayList<T>();
+		val list = new TinyList<T>();
 		for ( T object : self )
 			if ( condition.check(object) )
 				list.add(object);

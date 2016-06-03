@@ -1,19 +1,12 @@
 package kikaha.core.modules.websocket;
 
-import io.undertow.websockets.core.WebSocketChannel;
-import io.undertow.websockets.core.WebSockets;
-import io.undertow.websockets.spi.WebSocketHttpExchange;
-
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
+import io.undertow.websockets.core.*;
+import io.undertow.websockets.spi.WebSocketHttpExchange;
+import kikaha.core.cdi.helpers.TinyList;
 import kikaha.core.url.URLMatcher;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 @Getter
@@ -66,7 +59,7 @@ public class WebSocketSession {
 	}
 
 	List<WebSocketChannel> retrievePeerConnectionsForCurrentURLRequest( final WebSocketChannel channel ) {
-		final List<WebSocketChannel> hashSet = new ArrayList<>();
+		final List<WebSocketChannel> hashSet = new TinyList<>();
 		for ( final WebSocketChannel peer : channel.getPeerConnections() )
 			if ( channel.getUrl().equals( peer.getUrl() ) )
 				hashSet.add( peer );

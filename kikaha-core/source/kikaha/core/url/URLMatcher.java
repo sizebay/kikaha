@@ -1,11 +1,8 @@
 package kikaha.core.url;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import lombok.RequiredArgsConstructor;
-import lombok.val;
+import java.util.*;
+import kikaha.core.cdi.helpers.TinyList;
+import lombok.*;
 
 @RequiredArgsConstructor
 public class URLMatcher implements Matcher {
@@ -46,7 +43,7 @@ public class URLMatcher implements Matcher {
 
 class URLPatternCompiler {
 
-	final List<Matcher> patternMatchers = new ArrayList<>();
+	final List<Matcher> patternMatchers = new TinyList<>();
 	boolean remainsUnparsedDataInCursor = false;
 
 	public void compile( final String string ) {

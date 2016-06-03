@@ -2,6 +2,7 @@ package kikaha.core.modules.smart;
 
 import java.util.*;
 import io.undertow.server.HttpServerExchange;
+import kikaha.core.cdi.helpers.TinyList;
 import lombok.*;
 
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class DefaultMatcher implements RequestMatcher {
 
 	public static RequestMatcher from( final SmartRouteRule rule )
 	{
-		val list = new ArrayList<RequestMatcher>();
+		final TinyList<RequestMatcher> list = new TinyList<>();
 		list.add( VirtualHostMatcher.from( rule.virtualHost() ) );
 		list.add( PathMatcher.from( rule.path() ) );
 		return new DefaultMatcher( list );

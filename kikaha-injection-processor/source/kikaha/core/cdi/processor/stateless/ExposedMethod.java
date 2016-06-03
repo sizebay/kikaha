@@ -1,10 +1,8 @@
 package kikaha.core.cdi.processor.stateless;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
+import kikaha.core.cdi.helpers.TinyList;
 
 public class ExposedMethod {
 
@@ -65,7 +63,7 @@ public class ExposedMethod {
 	}
 
 	static List<String> extractParameters( ExecutableElement method ) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new TinyList<>();
 		for ( VariableElement parameter : method.getParameters() )
 			list.add( parameter.asType().toString() );
 		return list;
