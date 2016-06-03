@@ -51,6 +51,10 @@ server:
       - path: "/{domain}-{action}.jsp?id={id}"
         to: "http://localhost:8765"
 
+    filter:
+      - path: "/{action}/{id}"
+        to: "http://localhost/do/{{action}}?id={{id}}"
+
   auth:
 
     fixed-auth:

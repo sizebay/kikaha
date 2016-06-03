@@ -7,6 +7,7 @@ import javax.enterprise.inject.Typed;
 import javax.inject.*;
 import io.undertow.Undertow;
 import io.undertow.server.*;
+import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
 import lombok.Getter;
@@ -21,12 +22,18 @@ public class FilterModule implements Module {
 	final String name = "filter";
 
 	@Inject
+	Config config;
+
+	@Inject
 	@Typed( Filter.class )
 	Collection<Filter> foundFilters;
 
 	@PostConstruct
-	public void printFoundFilters(){
-		System.err.println( foundFilters );
+	public void loadConfiguredFilters(){
+		for ( Config filterConf : config.getConfigList( "server.smart-routes.filter" ) ) {
+			final Filter filter = RedirectionFilter.from( SmartRouteRule.from(filterConf) );
+			foundFilters.add( filter );
+		}
 	}
 
 	@Override

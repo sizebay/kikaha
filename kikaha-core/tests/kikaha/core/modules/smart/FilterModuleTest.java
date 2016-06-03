@@ -35,9 +35,16 @@ public class FilterModuleTest {
 
 	@Test
 	public void ensureThatInjectedModuleCouldFoundTheEmptyFilterInTheClassPath(){
-		assertEquals( 1, injectedFilterModule.foundFilters.size() );
+		assertEquals( 2, injectedFilterModule.foundFilters.size() );
 		final Filter filter = new ArrayList<>(injectedFilterModule.foundFilters).get(0);
 		assertEquals( emptyFilter, filter );
+	}
+
+	@Test
+	public void ensureThatInjectedModuleCouldFoundTheRedirectionFilterDefinedAtTheConfigurationFile(){
+		assertEquals( 2, injectedFilterModule.foundFilters.size() );
+		final Filter filter = new ArrayList<>(injectedFilterModule.foundFilters).get(1);
+		assertEquals( RedirectionFilter.class, filter.getClass() );
 	}
 
 	@Test
