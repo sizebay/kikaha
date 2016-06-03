@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import kikaha.config.Config;
-import kikaha.core.HttpServerExchangeStub;
+import kikaha.core.test.HttpServerExchangeStub;
 import kikaha.core.cdi.ServiceProvider;
 import kikaha.core.test.KikahaRunner;
 

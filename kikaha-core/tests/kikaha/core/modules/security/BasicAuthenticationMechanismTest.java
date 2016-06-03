@@ -15,7 +15,7 @@ import io.undertow.util.Headers;
 
 import java.util.Arrays;
 
-import kikaha.core.HttpServerExchangeStub;
+import kikaha.core.test.HttpServerExchangeStub;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

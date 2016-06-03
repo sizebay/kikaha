@@ -80,7 +80,7 @@ public class RewriterProxyClientProvider implements ProxyClient {
 			exchange.getIoThread(), exchange.getConnection().getByteBufferPool(), OptionMap.EMPTY );
 	}
 
-	public static ProxyClient from( final RewritableRule rule )
+	public static ProxyClient from( final SmartRouteRule rule )
 	{
 		return new RewriterProxyClientProvider(
 			DefaultMatcher.from( rule ),

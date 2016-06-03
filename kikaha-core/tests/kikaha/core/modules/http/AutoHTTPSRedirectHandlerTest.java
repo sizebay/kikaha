@@ -8,7 +8,7 @@ import static org.mockito.Mockito.verify;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
-import kikaha.core.HttpServerExchangeStub;
+import kikaha.core.test.HttpServerExchangeStub;
 import kikaha.core.modules.http.ssl.AutoHTTPSRedirectHandler;
 import lombok.SneakyThrows;
 

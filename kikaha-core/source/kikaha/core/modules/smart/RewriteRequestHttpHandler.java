@@ -1,12 +1,9 @@
 package kikaha.core.modules.smart;
 
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
+import java.util.*;
+import io.undertow.server.*;
 import kikaha.core.url.URLMatcher;
 import lombok.RequiredArgsConstructor;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RequiredArgsConstructor
 public class RewriteRequestHttpHandler implements HttpHandler {
@@ -23,7 +20,7 @@ public class RewriteRequestHttpHandler implements HttpHandler {
 		next.handleRequest(exchange);
 	}
 
-	public static HttpHandler from( final RewritableRule rule, final HttpHandler next )
+	public static HttpHandler from(final SmartRouteRule rule, final HttpHandler next )
 	{
 		return new RewriteRequestHttpHandler(
 			DefaultMatcher.from( rule ),

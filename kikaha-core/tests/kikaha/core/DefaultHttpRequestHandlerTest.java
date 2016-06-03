@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
 import io.undertow.server.*;
+import kikaha.core.test.HttpServerExchangeStub;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;

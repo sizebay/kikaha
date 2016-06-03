@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
-import kikaha.core.HttpServerExchangeStub;
+import kikaha.core.test.HttpServerExchangeStub;
 
 import kikaha.core.test.KikahaRunner;
 import org.junit.Test;

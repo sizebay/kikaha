@@ -50,6 +50,7 @@ server:
   smart-routes:
     rewrite:
     reverse:
+    filter:
     cors:
       enabled: false
       always-allow-origin: false

@@ -8,14 +8,14 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors( fluent = true )
 @RequiredArgsConstructor
-public class RewritableRule {
+public class SmartRouteRule {
 
 	final String virtualHost;
 	final String path;
 	final String target;
 
-	public static RewritableRule from( Config config ) {
-		return new RewritableRule(
+	public static SmartRouteRule from(Config config ) {
+		return new SmartRouteRule(
 			config.getString("virtual-host", "{virtualHost}"),
 			config.getString("path", "/{path}"),
 			config.getString("to")

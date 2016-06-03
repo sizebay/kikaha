@@ -1,7 +1,7 @@
 package kikaha.core.modules.security;
 
 import io.undertow.server.HttpServerExchange;
-import kikaha.core.HttpServerExchangeStub;
+import kikaha.core.test.HttpServerExchangeStub;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

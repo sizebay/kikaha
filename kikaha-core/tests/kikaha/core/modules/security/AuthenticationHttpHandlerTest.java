@@ -3,9 +3,7 @@ package kikaha.core.modules.security;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import kikaha.config.Config;
-import kikaha.config.ConfigLoader;
-import kikaha.core.HttpServerExchangeStub;
-import kikaha.core.cdi.DefaultServiceProvider;
+import kikaha.core.test.HttpServerExchangeStub;
 import kikaha.core.cdi.ServiceProvider;
 import kikaha.core.test.KikahaRunner;
 import lombok.SneakyThrows;
@@ -14,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.inject.Inject;
 

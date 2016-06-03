@@ -1,17 +1,13 @@
 package kikaha.hazelcast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
+import javax.inject.Inject;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
 import kikaha.core.modules.security.Session;
-import kikaha.core.test.KikahaRunner;
-
+import kikaha.core.test.*;
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
-
-import javax.inject.Inject;
 
 @RunWith(KikahaRunner.class)
 public class HazelcastSessionStoreTest {

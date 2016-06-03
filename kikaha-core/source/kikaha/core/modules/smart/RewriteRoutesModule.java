@@ -23,16 +23,16 @@ public class RewriteRoutesModule implements Module {
 	@Inject
 	Config config;
 
-	List<RewritableRule> rewriteRoutes;
+	List<SmartRouteRule> rewriteRoutes;
 
-	List<RewritableRule> reverseRoutes;
+	List<SmartRouteRule> reverseRoutes;
 
 	@PostConstruct
 	public void loadConfig(){
 		List<Config> configs = config.getConfigList("server.smart-routes.rewrite");
-		rewriteRoutes = configs.stream().map( c->RewritableRule.from(c) ).collect(Collectors.toList());
+		rewriteRoutes = configs.stream().map( c-> SmartRouteRule.from(c) ).collect(Collectors.toList());
 		configs = config.getConfigList("server.smart-routes.reverse");
-		reverseRoutes = configs.stream().map( c->RewritableRule.from(c) ).collect(Collectors.toList());
+		reverseRoutes = configs.stream().map( c-> SmartRouteRule.from(c) ).collect(Collectors.toList());
 	}
 
 	public void load(final Undertow.Builder server, final DeploymentContext context )
@@ -43,7 +43,7 @@ public class RewriteRoutesModule implements Module {
 
 	private void deployRewriteRoutes( final DeploymentContext context )
 	{
-		for ( RewritableRule route : rewriteRoutes ) {
+		for ( SmartRouteRule route : rewriteRoutes ) {
 			log.info( "Rewrite rule: " + route );
 			final HttpHandler rewriteHandler = RewriteRequestHttpHandler.from( route, context.rootHandler() );
 			context.rootHandler( rewriteHandler );
@@ -53,7 +53,7 @@ public class RewriteRoutesModule implements Module {
 	private void deployReverseProxyRoutes( final DeploymentContext context )
 	{
 		HttpHandler lastHandler = context.rootHandler();
-		for ( RewritableRule route : reverseRoutes ) {
+		for ( SmartRouteRule route : reverseRoutes ) {
 			log.info( "Reverse proxy rule: " + route );
 			final ProxyClient proxyClient = RewriterProxyClientProvider.from( route );
 			lastHandler = new ProxyHandler( proxyClient, lastHandler );

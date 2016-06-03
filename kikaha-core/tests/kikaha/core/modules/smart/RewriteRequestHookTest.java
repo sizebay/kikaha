@@ -1,22 +1,16 @@
 package kikaha.core.modules.smart;
 
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HeaderMap;
-import io.undertow.util.Headers;
-import kikaha.config.Config;
-import kikaha.config.ConfigLoader;
-import lombok.SneakyThrows;
-import lombok.val;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
+import io.undertow.server.*;
+import io.undertow.util.*;
+import kikaha.config.*;
+import lombok.*;
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith( MockitoJUnitRunner.class )
 public class RewriteRequestHookTest {
@@ -38,7 +32,7 @@ public class RewriteRequestHookTest {
 	public void ensureThatCouldRewriteVirtualHost()
 	{
 		HttpServerExchange exchange = createVirtualHostExchange( "customer.localdomain" );
-		RewritableRule rule = new RewritableRule( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
+		SmartRouteRule rule = new SmartRouteRule( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
 		HttpHandler hook = RewriteRequestHttpHandler.from( rule, chain );
 		hook.handleRequest(exchange);
 		assertEquals( "/customer/documents", exchange.getRelativePath() );
@@ -49,7 +43,7 @@ public class RewriteRequestHookTest {
 	public void ensureThatCouldRewriteVirtualHostAtPort8080()
 	{
 		HttpServerExchange exchange = createVirtualHostExchange( "customer.localdomain:8080" );
-		RewritableRule rule = new RewritableRule( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
+		SmartRouteRule rule = new SmartRouteRule( "{subdomain}.localdomain", "/{path}", "/{subdomain}/{path}" );
 		HttpHandler hook = RewriteRequestHttpHandler.from( rule, chain );
 		hook.handleRequest(exchange);
 		assertEquals( "/customer/documents", exchange.getRelativePath() );
@@ -70,7 +64,7 @@ public class RewriteRequestHookTest {
 	{
 		HttpServerExchange exchange = createPathDefinedExchange();
 		String path = "/{domain}-{action}.jsp?id={id}";
-		RewritableRule rule = new RewritableRule( "{virtualHost}", path, "/{domain}/{id}/{action}/" );
+		SmartRouteRule rule = new SmartRouteRule( "{virtualHost}", path, "/{domain}/{id}/{action}/" );
 		HttpHandler hook = RewriteRequestHttpHandler.from( rule, chain );
 		hook.handleRequest(exchange);
 		assertEquals( "/user/1234/edit/", exchange.getRelativePath() );

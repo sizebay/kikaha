@@ -5,7 +5,8 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import java.io.IOException;
-import io.undertow.server.*;
+import io.undertow.server.HttpServerExchange;
+import kikaha.core.test.HttpServerExchangeStub;
 import kikaha.urouting.api.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -55,10 +56,7 @@ public class SimpleExchangeReadingAndWritingBodyDataBehaviorTest {
 	public void ensureThatIsAbleToSendResponse() throws IOException {
 		final HttpServerExchange request = createExchange();
 		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
-
-		try { exchange.sendResponse( DefaultResponse.ok( "Hello World" ).contentType( CONTENT_TYPE ) ); }
-		catch ( NullPointerException cause ) { ensureNullPointerExceptionHappenedAtExpectedLocation(cause); }
-
+		exchange.sendResponse( DefaultResponse.ok( "Hello World" ).contentType( CONTENT_TYPE ) );
 		verify( serializer ).serialize( eq("Hello World"), eq(request), anyString() );
 	}
 
@@ -66,20 +64,11 @@ public class SimpleExchangeReadingAndWritingBodyDataBehaviorTest {
 	public void ensureThatIsAbleToSendResponseWithRawObject() throws IOException {
 		final HttpServerExchange request = createExchange();
 		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
-
-		try { exchange.sendResponse("Hello World", CONTENT_TYPE); }
-		catch ( NullPointerException cause ) { ensureNullPointerExceptionHappenedAtExpectedLocation(cause); }
-
+		exchange.sendResponse("Hello World", CONTENT_TYPE);
 		verify( serializer ).serialize( eq("Hello World"), eq(request), anyString() );
 	}
 
-	private void ensureNullPointerExceptionHappenedAtExpectedLocation( NullPointerException cause ){
-		final StackTraceElement stackTraceElement = cause.getStackTrace()[0];
-		assertEquals( HttpServerExchange.class.getCanonicalName(), stackTraceElement.getClassName() );
-		assertEquals( "endExchange", stackTraceElement.getMethodName() );
-	}
-
 	private HttpServerExchange createExchange() {
-		return new HttpServerExchange(null, 1000);
+		return HttpServerExchangeStub.createHttpExchange();
 	}
 }

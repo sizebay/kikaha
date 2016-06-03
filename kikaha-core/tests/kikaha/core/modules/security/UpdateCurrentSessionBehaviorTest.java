@@ -13,7 +13,7 @@ import io.undertow.server.HttpServerExchange;
 
 import java.util.Arrays;
 
-import kikaha.core.HttpServerExchangeStub;
+import kikaha.core.test.HttpServerExchangeStub;
 
 import org.junit.Before;
 import org.junit.Test;

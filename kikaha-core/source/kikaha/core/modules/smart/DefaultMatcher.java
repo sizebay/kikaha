@@ -1,13 +1,8 @@
 package kikaha.core.modules.smart;
 
+import java.util.*;
 import io.undertow.server.HttpServerExchange;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import lombok.RequiredArgsConstructor;
-import lombok.val;
+import lombok.*;
 
 @RequiredArgsConstructor
 public class DefaultMatcher implements RequestMatcher {
@@ -23,7 +18,7 @@ public class DefaultMatcher implements RequestMatcher {
 		return true;
 	}
 
-	public static RequestMatcher from( final RewritableRule rule )
+	public static RequestMatcher from( final SmartRouteRule rule )
 	{
 		val list = new ArrayList<RequestMatcher>();
 		list.add( VirtualHostMatcher.from( rule.virtualHost() ) );
