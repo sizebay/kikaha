@@ -57,7 +57,7 @@ public class AuthenticationRule {
 		return false;
 	}
 
-	public List<URLMatcher> convertToURLMatcher( final List<String> urls ) {
+	private List<URLMatcher> convertToURLMatcher( final List<String> urls ) {
 		final List<URLMatcher> matchers = new TinyList<>();
 		for ( final String url : urls )
 			matchers.add( URLMatcher.compile( url ) );

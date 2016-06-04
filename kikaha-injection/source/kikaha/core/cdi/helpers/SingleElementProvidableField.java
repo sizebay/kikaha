@@ -1,19 +1,14 @@
 package kikaha.core.cdi.helpers;
 
-import kikaha.core.cdi.DefaultServiceProvider.DependencyInjector;
-import kikaha.core.cdi.ProviderContext;
-import kikaha.core.cdi.ServiceProviderException;
-import kikaha.core.cdi.helpers.filter.ChainedCondition;
-import kikaha.core.cdi.helpers.filter.Condition;
-import kikaha.core.cdi.helpers.filter.IsAssignableFrom;
-import kikaha.core.cdi.helpers.filter.QualifierCondition;
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
-
-import javax.enterprise.inject.Typed;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import javax.enterprise.inject.Typed;
+import kikaha.core.cdi.DefaultServiceProvider.DependencyInjector;
+import kikaha.core.cdi.*;
+import kikaha.core.cdi.helpers.filter.*;
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Value
@@ -50,7 +45,7 @@ public class SingleElementProvidableField<T> implements ProvidableField {
 		final Class expectedClass = Inject != null
 				? Inject.value()[0]
 				: field.getType();
-		return new SingleElementProvidableField<T>(
+		return new SingleElementProvidableField<>(
 				field, (Class<T>)expectedClass,
 				createInjectionCondition( qualifiers, field ),
 				new FieldProviderContext( qualifiers, field ) );

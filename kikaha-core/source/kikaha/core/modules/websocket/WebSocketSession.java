@@ -4,7 +4,6 @@ import java.security.Principal;
 import java.util.*;
 import io.undertow.websockets.core.*;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
-import kikaha.core.cdi.helpers.TinyList;
 import kikaha.core.url.URLMatcher;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -59,7 +58,7 @@ public class WebSocketSession {
 	}
 
 	List<WebSocketChannel> retrievePeerConnectionsForCurrentURLRequest( final WebSocketChannel channel ) {
-		final List<WebSocketChannel> hashSet = new TinyList<>();
+		final List<WebSocketChannel> hashSet = new ArrayList<>();
 		for ( final WebSocketChannel peer : channel.getPeerConnections() )
 			if ( channel.getUrl().equals( peer.getUrl() ) )
 				hashSet.add( peer );

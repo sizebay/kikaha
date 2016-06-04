@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 @NoArgsConstructor
-public class TinyList<T> implements List<T> {
+public class TinyList<T> implements List<T>, RandomAccess {
 
 	private static final Object[] EMPTY_ELEMENT_DATA = {};
 

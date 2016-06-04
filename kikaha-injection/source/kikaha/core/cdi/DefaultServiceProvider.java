@@ -210,7 +210,7 @@ public class DefaultServiceProvider implements ServiceProvider {
 		}
 
 		private void tryPostConstructClasses() {
-			final List<Injectable> failed = new TinyList<>();
+			final List<Injectable> failed = new ArrayList<>();
 
 			while ( !classesToBeConstructed.isEmpty() ) {
 				final Injectable injectable = classesToBeConstructed.poll();
@@ -230,7 +230,8 @@ public class DefaultServiceProvider implements ServiceProvider {
 		}
 
 		private void tryInjectFailedFields() {
-			final List<InjectableField> failed = new TinyList<>();
+			final List<InjectableField> failed = new ArrayList<>();
+
 			while ( !fieldToTryToInjectAgainLater.isEmpty() ) {
 				final InjectableField field = fieldToTryToInjectAgainLater.poll();
 				try { field.structure.provide( field.instance, this ); }
