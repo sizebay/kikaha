@@ -11,53 +11,9 @@ JAVA_OPTS=
 MAIN_CLASS=kikaha.core.cdi.ApplicationRunner
 NULL=/dev/null
 
-retrieve_server_pid(){
-	ps -o uid,pid,cmd ax | grep "config.app.dir=$(pwd)" | grep -v grep| head -n 1 | tr '\t' '@' | sed 's/  */@/g;s/^@//' | cut -d '@' -f 2
-}
-
-start_server(){
-	PID=$(retrieve_server_pid)
-	if [ ! "$PID" = "" ]; then
-		warn "Server already running"
-		exit 1
-	else
-		info "Starting server in background..."
-		nohup ${JAVA} ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS} > $NULL 2> $NULL &
-	fi
-}
-
-debug_server(){
-	PID=$(retrieve_server_pid)
-	if [ ! "$PID" = "" ]; then
-		warn "Server already running"
-		exit 1
-	else
-		info "Starting server in debug mode..."
-		${JAVA} ${JAVA_OPTS} -classpath "${CLASSPATH}" ${MAIN_CLASS}
-	fi
-}
-
-stop_server(){
-	PID=$(retrieve_server_pid)
-	if [ ! "$PID" = "" ]; then
-		info "Sending graceful shutdown signal..."
-		kill $PID && info "Signal sent." || exit 1
-		retries=1
-		while [ ! "$PID" = "" -a "$retries" -lt 10 ]; do
-			sleep 1
-			PID=$(retrieve_server_pid)
-			retries=`expr $retries + 1`
-		done
-		info "Service was shut down."
-	else
-		warn "Server not running"
-		exit 1
-	fi
-}
-
 show_help(){
 cat<<EOF
-Usage: $0 <command>CLASSPATH="${LIBDIR}/*:."
+Usage: $0 <command>"
 
 $(yellow 'Available commands'):
  - $(red start):	starts the server in background
@@ -75,7 +31,10 @@ if [ -e bin/kikaha.conf ]; then
 fi
 
 # MAIN
-CLASSPATH="${LIBDIR}/*:."
+case "`uname`" in
+CYGWIN*) . ./bin/inc.cmds-cygwin.sh;;
+*) . ./bin/inc.cmds-unix.sh;;
+esac
 
 case "$1" in
 	"stop" ) stop_server ;;
