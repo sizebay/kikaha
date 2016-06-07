@@ -1,4 +1,4 @@
-package kikaha.urouting.api;
+package kikaha.core.modules.http;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,8 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines which content type a {@link Serializer}
- * or an {@link Unserializer} will handle.
+ * Defines which content type Serializers and Unserializer will handle.
  */
 @Documented
 @Target( ElementType.TYPE )

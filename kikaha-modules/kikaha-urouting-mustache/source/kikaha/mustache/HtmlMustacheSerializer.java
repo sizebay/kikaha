@@ -6,7 +6,7 @@ import io.undertow.server.HttpServerExchange;
 import java.io.IOException;
 
 import kikaha.core.NotFoundHandler;
-import kikaha.urouting.api.ContentType;
+import kikaha.core.modules.http.ContentType;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Serializer;
 

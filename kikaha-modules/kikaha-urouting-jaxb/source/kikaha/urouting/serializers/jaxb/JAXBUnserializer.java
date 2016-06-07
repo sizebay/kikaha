@@ -1,5 +1,6 @@
 package kikaha.urouting.serializers.jaxb;
 
+import kikaha.core.modules.http.ContentType;
 import kikaha.urouting.api.*;
 
 import javax.enterprise.inject.Typed;

@@ -1,20 +1,21 @@
 package kikaha.core.modules.websocket;
 
-import io.undertow.Handlers;
-import io.undertow.Undertow;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+import java.util.*;
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Typed;
+import javax.inject.*;
+import io.undertow.*;
 import io.undertow.server.HttpHandler;
 import io.undertow.websockets.WebSocketConnectionCallback;
+import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
-import kikaha.core.modules.http.WebResource;
-import kikaha.core.url.URL;
-import kikaha.core.url.URLMatcher;
-import lombok.Getter;
+import kikaha.core.modules.http.*;
+import kikaha.core.url.*;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 @Slf4j
 @Singleton
@@ -26,6 +27,42 @@ public class WebSocketModule implements Module {
 	@Inject
 	@Typed( WebSocketHandler.class )
 	Iterable<WebSocketHandler> handlers;
+
+	@Inject
+	@Typed( WebSocketSession.Serializer.class )
+	Collection<WebSocketSession.Serializer> webSocketSerializers;
+
+	@Inject
+	@Typed( WebSocketSession.Unserializer.class )
+	Collection<WebSocketSession.Unserializer> webSocketUnserializers;
+
+	@Inject
+	Config config;
+
+	@NonNull @Getter
+	WebSocketSession.Serializer serializer;
+
+	@NonNull @Getter
+	WebSocketSession.Unserializer unserializer;
+
+	@PostConstruct
+	public void loadSerializersAndUnserializers(){
+		final Config webSocketConfig = config.getConfig( "server.websocket" );
+		final Map<String, WebSocketSession.Serializer> serializers = webSocketSerializers.stream().collect(toMap(this::extractContentType, identity()));
+		serializer = serializers.get( webSocketConfig.getString("default-serializer") );
+		final Map<String, WebSocketSession.Unserializer> unserializers = webSocketUnserializers.stream().collect(toMap(this::extractContentType, identity()));
+		unserializer = unserializers.get( webSocketConfig.getString("default-unserializer") );
+	}
+
+	String extractContentType( Object object ) {
+		final Class<?> clazz = object.getClass();
+		final ContentType annotation = clazz.getAnnotation(ContentType.class);
+		if ( annotation == null ){
+			final String msg = clazz + " should be annotated with @" + ContentType.class;
+			throw new UnsupportedOperationException( msg );
+		}
+		return annotation.value();
+	}
 
 	@Override
 	public void load( Undertow.Builder server, final DeploymentContext context ) {
@@ -45,8 +82,7 @@ public class WebSocketModule implements Module {
 	HttpHandler wrappedWebsocketHandlerFrom( final WebSocketHandler handler, final WebResource webResource ) {
 		final String url = URL.removeTrailingCharacter( webResource.path() );
 		final URLMatcher urlMatcher = URLMatcher.compile( "{protocol}://{host}" + url );
-		final WebSocketConnectionCallback callbackHandler = new WebSocketConnectionCallbackHandler( handler, urlMatcher );
+		final WebSocketConnectionCallback callbackHandler = new WebSocketConnectionCallbackHandler( handler, urlMatcher ,serializer, unserializer );
 		return Handlers.websocket( callbackHandler );
 	}
-
 }

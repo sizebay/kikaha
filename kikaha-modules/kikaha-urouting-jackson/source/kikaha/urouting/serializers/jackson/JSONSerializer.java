@@ -5,7 +5,7 @@ import io.undertow.server.HttpServerExchange;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import kikaha.urouting.api.ContentType;
+import kikaha.core.modules.http.ContentType;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Serializer;
 import lombok.val;

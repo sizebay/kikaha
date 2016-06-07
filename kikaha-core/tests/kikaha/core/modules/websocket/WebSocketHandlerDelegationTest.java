@@ -46,13 +46,20 @@ public class WebSocketHandlerDelegationTest {
 	@Mock
 	WebSocketSession session;
 
+	@Mock
+	WebSocketSession.Serializer serializer;
+
+	@Mock
+	WebSocketSession.Unserializer unserializer;
+
 	WebSocketConnectionCallbackHandler callbackHandler;
 
 	@Before
 	public void setup() {
 		doReturn( "/websocket" ).when( exchange ).getRequestURI();
 		doReturn( setter ).when( channel ).getReceiveSetter();
-		callbackHandler = spy( new WebSocketConnectionCallbackHandler( delegated, URLMatcher.compile( "" ) ) );
+		callbackHandler = spy( new WebSocketConnectionCallbackHandler(
+				delegated, URLMatcher.compile( "" ), serializer, unserializer ) );
 	}
 
 	@Test

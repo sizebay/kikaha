@@ -1,6 +1,11 @@
 # Default server configuration
 server:
 
+  # miscellaneous configuration
+  websocket:
+    default-serializer: "text/plain"
+    default-unserializer: "text/plain"
+
   # The bellow list also represents the order that modules will be loaded
   enabled-modules:
     - undertow-basic-configuration

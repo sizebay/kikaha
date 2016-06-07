@@ -23,8 +23,10 @@ public class WebSocketSession {
 	final Principal userPrincipal;
 	final WebSocketChannel channel;
 	final Iterable<WebSocketChannel> peerConnections;
+	final Serializer serializer;
+	final Unserializer unserializer;
 
-	public WebSocketSession( final WebSocketHttpExchange originalExchange, final WebSocketChannel channel, final URLMatcher urlMatcher ) {
+	public WebSocketSession(final WebSocketHttpExchange originalExchange, final WebSocketChannel channel, final URLMatcher urlMatcher, Serializer serializer, Unserializer unserializer) {
 		this.originalExchange = originalExchange;
 		this.urlMatcher = urlMatcher;
 		this.channel = channel;
@@ -34,6 +36,8 @@ public class WebSocketSession {
 		this.requestURI = channel.getUrl();
 		this.peerConnections = retrievePeerConnectionsForCurrentURLRequest( channel );
 		this.requestParameters = extractRequestParameters( channel );
+		this.serializer = serializer;
+		this.unserializer = unserializer;
 	}
 
 	Map<String, String> extractRequestParameters( final WebSocketChannel channel ) {
@@ -69,7 +73,7 @@ public class WebSocketSession {
 		final Map<String, String> requestParameters = extractRequestParameters( channel );
 		return new WebSocketSession(
 			null, requestHeaders, null, requestParameters, urlMatcher, requestURI,
-			userPrincipal, channel, peerConnections );
+			userPrincipal, channel, peerConnections, serializer, unserializer );
 	}
 
 	/**
@@ -83,8 +87,18 @@ public class WebSocketSession {
 	}
 
 	/**
-	 * Send a message to all Peer Connections related to current
-	 * {@code requestURI}.
+	 * Prepare to send an object as message to someone. The {@code object} will
+	 * be serialized before send to the listening Peers.
+	 *
+	 * @param message
+	 * @return
+	 */
+	public Sender send( final Object message ) {
+		return send( serializer.serialize( message ) );
+	}
+
+	/**
+	 * Send a message to all Peer Connections to current {@code requestURI}.
 	 *
 	 * @param message
 	 */
@@ -93,8 +107,13 @@ public class WebSocketSession {
 			WebSockets.sendText( message, peer, null );
 	}
 
+	/**
+	 * A message holder object that allows developers to send message to one
+	 * or more Peer.
+	 */
 	@RequiredArgsConstructor
 	public class Sender {
+
 		final String message;
 
 		/**
@@ -106,5 +125,20 @@ public class WebSocketSession {
 			for ( final WebSocketChannel peer : peers )
 				WebSockets.sendText( message, peer, null );
 		}
+	}
+
+	/**
+	 * Unserializers allows module developers to provide a simple way to
+	 * unserialize the incoming request data into a more convenient object.
+	 */
+	public interface Unserializer {
+		<T> T unserialize( String data, Class<T> expectedClass );
+	}
+
+	/**
+	 * Serializers convert
+	 */
+	public interface Serializer {
+		String serialize( Object object );
 	}
 }

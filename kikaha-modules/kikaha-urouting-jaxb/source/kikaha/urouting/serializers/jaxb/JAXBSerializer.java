@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 
 import kikaha.urouting.api.AbstractSerializer;
-import kikaha.urouting.api.ContentType;
+import kikaha.core.modules.http.ContentType;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.RoutingException;
 import kikaha.urouting.api.Serializer;

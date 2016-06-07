@@ -13,6 +13,7 @@ import io.undertow.connector.ByteBufferPool;
 import io.undertow.server.*;
 import kikaha.core.cdi.*;
 import kikaha.core.cdi.helpers.filter.Condition;
+import kikaha.core.modules.http.ContentType;
 import kikaha.core.test.KikahaRunner;
 import kikaha.urouting.api.*;
 import kikaha.urouting.serializers.jackson.User.Address;

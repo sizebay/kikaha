@@ -1,37 +1,33 @@
 package kikaha.core.modules.websocket;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
+import java.io.IOException;
+import javax.inject.Inject;
 import io.undertow.server.HttpHandler;
 import io.undertow.websockets.core.CloseMessage;
-
-import java.io.IOException;
-
-import kikaha.config.Config;
-import kikaha.config.ConfigLoader;
+import kikaha.config.*;
 import kikaha.core.DeploymentContext;
-import kikaha.core.cdi.DefaultServiceProvider;
-import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.*;
 import kikaha.core.modules.http.WebResource;
 import lombok.SneakyThrows;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.inject.Inject;
-
 @RunWith( MockitoJUnitRunner.class )
-public class WebSocketDeploymentHookTest {
+public class WebSocketModuleTest {
 
 	@Mock
 	DeploymentContext context;
 
 	@Inject
-	WebSocketModule deploymentHook;
+	WebSocketModule module;
+
+	@Inject
+	WebSocketPlainTextSerializers plainTextSerializers;
 
 	@Before
 	@SneakyThrows
@@ -43,8 +39,14 @@ public class WebSocketDeploymentHookTest {
 	}
 
 	@Test
+	public void shouldInjectTheDefaultSerializer(){
+		assertEquals( plainTextSerializers, module.serializer );
+		assertEquals( plainTextSerializers, module.unserializer );
+	}
+
+	@Test
 	public void ensureThatDeployedMyFirstWebSocket() {
-		deploymentHook.load( null, context );
+		module.load( null, context );
 		verify( context ).register(
 			eq( "/my-first-websocket" ), eq( "GET" ), any( HttpHandler.class ) );
 	}

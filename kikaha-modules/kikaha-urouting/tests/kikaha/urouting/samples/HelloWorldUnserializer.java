@@ -3,6 +3,7 @@ package kikaha.urouting.samples;
 import java.io.IOException;
 import javax.inject.Singleton;
 import io.undertow.server.HttpServerExchange;
+import kikaha.core.modules.http.ContentType;
 import kikaha.urouting.api.*;
 import lombok.Getter;
 

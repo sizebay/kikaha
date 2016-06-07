@@ -1,7 +1,7 @@
 package kikaha.urouting.serializers;
 
 import kikaha.urouting.api.AbstractUnserializer;
-import kikaha.urouting.api.ContentType;
+import kikaha.core.modules.http.ContentType;
 import kikaha.urouting.api.Mimes;
 import kikaha.urouting.api.Unserializer;
 

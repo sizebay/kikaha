@@ -1,28 +1,14 @@
 package kikaha.core.modules.websocket;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import java.security.Principal;
+import java.util.*;
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
-
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import kikaha.core.url.URLMatcher;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -47,10 +33,16 @@ public class WebSocketSessionTest {
 	WebSocketChannel channelUrl2;
 
 	@Mock
+	WebSocketSession.Serializer serializer;
+
+	@Mock
+	WebSocketSession.Unserializer unserializer;
+
+	@Mock
 	Map<String, List<String>> requestHeaders;
 
 	@Mock
-	Map<String, List<String>> responseHeadears;
+	Map<String, List<String>> responseHeaders;
 
 	@Mock
 	Principal userPrincipal;
@@ -69,7 +61,7 @@ public class WebSocketSessionTest {
 	public void populateExchange() {
 		doReturn( requestHeaders ).when( exchange ).getRequestHeaders();
 		doReturn( requestParameters ).when( exchange ).getRequestParameters();
-		doReturn( responseHeadears ).when( exchange ).getResponseHeaders();
+		doReturn(responseHeaders).when( exchange ).getResponseHeaders();
 		doReturn( userPrincipal ).when( exchange ).getUserPrincipal();
 	}
 
@@ -79,7 +71,7 @@ public class WebSocketSessionTest {
 		final WebSocketSession session = createSession();
 		assertThat( session.originalExchange(), is( exchange ) );
 		assertThat( session.requestHeaders(), is( requestHeaders ) );
-		assertThat( session.responseHeaders(), is( responseHeadears ) );
+		assertThat( session.responseHeaders(), is(responseHeaders) );
 		assertThat( session.userPrincipal(), is( userPrincipal ) );
 		assertThatHasSameElements( session.requestParameters(), requestParameters );
 
@@ -118,7 +110,7 @@ public class WebSocketSessionTest {
 
 	WebSocketSession createSession() {
 		final URLMatcher matcher = URLMatcher.compile( "{protocol}://{host}/url/{id}" );
-		return new WebSocketSession( exchange, channel, matcher );
+		return new WebSocketSession( exchange, channel, matcher, serializer, unserializer );
 	}
 
 	void populatePeerConnections( final WebSocketChannel webSocketChannel ) {

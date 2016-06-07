@@ -1,14 +1,9 @@
 package kikaha.core.modules.websocket;
 
-import io.undertow.websockets.WebSocketConnectionCallback;
-import io.undertow.websockets.core.AbstractReceiveListener;
-import io.undertow.websockets.core.BufferedTextMessage;
-import io.undertow.websockets.core.CloseMessage;
-import io.undertow.websockets.core.WebSocketChannel;
-import io.undertow.websockets.spi.WebSocketHttpExchange;
-
 import java.io.IOException;
-
+import io.undertow.websockets.WebSocketConnectionCallback;
+import io.undertow.websockets.core.*;
+import io.undertow.websockets.spi.WebSocketHttpExchange;
 import kikaha.core.url.URLMatcher;
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +13,8 @@ public class WebSocketConnectionCallbackHandler
 
 	final WebSocketHandler handler;
 	final URLMatcher urlMatcher;
+	final WebSocketSession.Serializer serializer;
+	final WebSocketSession.Unserializer unserializer;
 
 	@Override
 	public void onConnect( final WebSocketHttpExchange exchange, final WebSocketChannel channel ) {
@@ -27,11 +24,11 @@ public class WebSocketConnectionCallbackHandler
 		channel.resumeReceives();
 	}
 
-	public WebSocketSession createSession( final WebSocketHttpExchange exchange, final WebSocketChannel channel ) {
-		return new WebSocketSession( exchange, channel, urlMatcher );
+	WebSocketSession createSession( final WebSocketHttpExchange exchange, final WebSocketChannel channel ) {
+		return new WebSocketSession( exchange, channel, urlMatcher, serializer, unserializer );
 	}
 
-	public DelegatedReceiveListener createListener( final WebSocketSession session ) {
+	DelegatedReceiveListener createListener( final WebSocketSession session ) {
 		return new DelegatedReceiveListener( handler, session );
 	}
 }
