@@ -9,7 +9,7 @@ import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import kikaha.urouting.api.ContentType;
+import kikaha.core.modules.http.ContentType;
 import kikaha.urouting.api.Serializer;
 import kikaha.urouting.api.Unserializer;
 import lombok.extern.slf4j.Slf4j;

@@ -1,19 +1,14 @@
 package kikaha.urouting;
 
 import static java.lang.String.format;
-import io.undertow.websockets.core.CloseMessage;
-
 import java.lang.annotation.Annotation;
-
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
-
+import javax.lang.model.element.*;
+import io.undertow.websockets.core.CloseMessage;
 import kikaha.core.modules.websocket.WebSocketSession;
 import kikaha.urouting.AnnotationProcessorUtil.MethodParameterParser;
 import kikaha.urouting.EventDispatcher.Matcher;
-import kikaha.urouting.api.HeaderParam;
-import kikaha.urouting.api.PathParam;
-import lombok.RequiredArgsConstructor;
+import kikaha.urouting.api.*;
+import lombok.*;
 
 class WebSocketParameterParser implements MethodParameterParser {
 
@@ -24,10 +19,11 @@ class WebSocketParameterParser implements MethodParameterParser {
 		return new EventDispatcher<VariableElement>()
 			.when( new ContainsAnnotation( PathParam.class ), this::handlePathParam )
 			.when( new ContainsAnnotation( HeaderParam.class ), this::handleHeaderParam )
-			.when( ReturnType.is( String.class ), this::handleStringBody )
-			.when( ReturnType.is( CloseMessage.class ), this::handleCloseMessageBody )
-			.when( ReturnType.is( Throwable.class ), this::handleThrowableBody )
-			.when( ReturnType.is( WebSocketSession.class ), this::handleWebSocketSessionBody );
+			.when( ParamType.is( String.class ), this::handleStringBody )
+			.when( ParamType.is( CloseMessage.class ), this::handleCloseMessageBody )
+			.when( ParamType.is( Throwable.class ), this::handleThrowableBody )
+			.when( ParamType.is( WebSocketSession.class ), this::handleWebSocketSessionBody )
+			.when( UnknownParam.any(), this::trySerializeAnyOtherBodyContent );
 	}
 
 	void handlePathParam( final VariableElement parameter ) {
@@ -62,6 +58,11 @@ class WebSocketParameterParser implements MethodParameterParser {
 		parsedData.append( "session" );
 	}
 
+	void trySerializeAnyOtherBodyContent( final VariableElement parameter ) {
+		final String typeAsString = parameter.asType().toString();
+		parsedData.append( "dataProvider.getBody( session, message, " + typeAsString + ".class )" );
+	}
+
 	/**
 	 * Extract method parameter for a given {@link VariableElement} argument.
 	 * The returned method parameter will be passed as argument to a routing
@@ -70,9 +71,6 @@ class WebSocketParameterParser implements MethodParameterParser {
 	 * @param method
 	 * @param parameter
 	 * @return
-	 */
-	/**
-	 *
 	 */
 	@Override
 	public String parse( final ExecutableElement method, final VariableElement parameter ) {
@@ -94,12 +92,21 @@ class ContainsAnnotation implements Matcher<VariableElement> {
 }
 
 @RequiredArgsConstructor( staticName = "is" )
-class ReturnType implements Matcher<VariableElement> {
+class ParamType implements Matcher<VariableElement> {
 
 	final Class<?> clazz;
 
 	@Override
 	public boolean matches( final VariableElement object ) {
 		return object.asType().toString().equals( clazz.getCanonicalName() );
+	}
+}
+
+@NoArgsConstructor(staticName= "any" )
+class UnknownParam implements Matcher<VariableElement> {
+
+	@Override
+	public boolean matches( final VariableElement object ) {
+		return true;
 	}
 }

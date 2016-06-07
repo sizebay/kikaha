@@ -73,7 +73,12 @@ public class WebSocketData {
 			return null;
 		return new WebSocketMethodData(
 			method.getSimpleName().toString(),
-			extractMethodParamsFrom( method, new WebSocketParameterParser() ) );
+			extractMethodParamsFrom( method, new WebSocketParameterParser() ),
+			extractReturnType( method ) );
+	}
+
+	private static String extractReturnType(ExecutableElement method) {
+		return method.getReturnType().toString();
 	}
 }
 
@@ -82,4 +87,5 @@ class WebSocketMethodData {
 
 	final String name;
 	final String parameters;
+	final String returnType;
 }

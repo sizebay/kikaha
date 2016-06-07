@@ -1,15 +1,12 @@
 package kikaha.urouting;
 
-import kikaha.core.modules.websocket.WebSocketSession;
-import kikaha.urouting.api.ConversionException;
-import kikaha.urouting.api.ConverterFactory;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
+import javax.inject.*;
+import kikaha.core.modules.websocket.WebSocketSession;
+import kikaha.urouting.api.*;
 
 /**
- * Provides data to a routing method.
+ * Provides data to a Websocket routing method.
  */
 @Singleton
 public class WebSocketDataProvider {
@@ -44,7 +41,7 @@ public class WebSocketDataProvider {
 	 * @param session
 	 * @param pathParam
 	 * @param clazz
-	 * @return
+	 * @return the path parameter
 	 * @throws ConversionException
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
@@ -55,6 +52,19 @@ public class WebSocketDataProvider {
 		if ( value == null )
 			return null;
 		return converterFactory.getConverterFor( clazz ).convert( value );
+	}
+
+	/**
+	 * Extract the body message and convert it into the expected value.
+	 *
+	 * @param session
+	 * @param message
+	 * @param expectedType
+	 * @param <T>
+	 * @return the unserialized object.
+	 */
+	public <T> T getBody( final WebSocketSession session, final String message, final Class<T> expectedType ) {
+		return session.unserializer().unserialize( message, expectedType );
 	}
 
 	<T> T first( final List<T> values ) {

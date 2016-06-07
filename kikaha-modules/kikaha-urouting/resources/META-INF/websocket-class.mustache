@@ -37,9 +37,7 @@ public class GeneratedWebSocket{{identifier}} implements WebSocketHandler {
 		throws IOException {
 		{{#onTextMethod}}
 		try {
-			instance().{{name}}(
-				{{{parameters}}}
-			);
+			instance().{{name}}( {{{parameters}}} );
 		} catch ( final Throwable cause ) {
 			onError( session, cause );
 		}
