@@ -2,6 +2,7 @@ package kikaha.core.modules.websocket;
 
 import java.security.Principal;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import io.undertow.websockets.core.*;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
 import kikaha.core.url.URLMatcher;
@@ -9,7 +10,6 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 @Getter
-@Setter
 @Accessors( fluent = true )
 @RequiredArgsConstructor
 public class WebSocketSession {
@@ -25,8 +25,9 @@ public class WebSocketSession {
 	final Iterable<WebSocketChannel> peerConnections;
 	final Serializer serializer;
 	final Unserializer unserializer;
+	final ExecutorService executorService;
 
-	public WebSocketSession(final WebSocketHttpExchange originalExchange, final WebSocketChannel channel, final URLMatcher urlMatcher, Serializer serializer, Unserializer unserializer) {
+	public WebSocketSession(final WebSocketHttpExchange originalExchange, final WebSocketChannel channel, final URLMatcher urlMatcher, Serializer serializer, Unserializer unserializer, ExecutorService executorService) {
 		this.originalExchange = originalExchange;
 		this.urlMatcher = urlMatcher;
 		this.channel = channel;
@@ -38,6 +39,7 @@ public class WebSocketSession {
 		this.requestParameters = extractRequestParameters( channel );
 		this.serializer = serializer;
 		this.unserializer = unserializer;
+		this.executorService = executorService;
 	}
 
 	Map<String, String> extractRequestParameters( final WebSocketChannel channel ) {
@@ -73,7 +75,7 @@ public class WebSocketSession {
 		final Map<String, String> requestParameters = extractRequestParameters( channel );
 		return new WebSocketSession(
 			null, requestHeaders, null, requestParameters, urlMatcher, requestURI,
-			userPrincipal, channel, peerConnections, serializer, unserializer );
+			userPrincipal, channel, peerConnections, serializer, unserializer, executorService );
 	}
 
 	/**

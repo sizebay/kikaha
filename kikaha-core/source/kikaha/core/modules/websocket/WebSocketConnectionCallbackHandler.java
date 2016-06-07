@@ -1,6 +1,7 @@
 package kikaha.core.modules.websocket;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 import io.undertow.websockets.WebSocketConnectionCallback;
 import io.undertow.websockets.core.*;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
@@ -15,6 +16,7 @@ public class WebSocketConnectionCallbackHandler
 	final URLMatcher urlMatcher;
 	final WebSocketSession.Serializer serializer;
 	final WebSocketSession.Unserializer unserializer;
+	final ExecutorService executorService;
 
 	@Override
 	public void onConnect( final WebSocketHttpExchange exchange, final WebSocketChannel channel ) {
@@ -25,7 +27,7 @@ public class WebSocketConnectionCallbackHandler
 	}
 
 	WebSocketSession createSession( final WebSocketHttpExchange exchange, final WebSocketChannel channel ) {
-		return new WebSocketSession( exchange, channel, urlMatcher, serializer, unserializer );
+		return new WebSocketSession( exchange, channel, urlMatcher, serializer, unserializer, executorService );
 	}
 
 	DelegatedReceiveListener createListener( final WebSocketSession session ) {

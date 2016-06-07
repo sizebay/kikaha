@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.security.Principal;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
 import kikaha.core.url.URLMatcher;
@@ -46,6 +47,9 @@ public class WebSocketSessionTest {
 
 	@Mock
 	Principal userPrincipal;
+
+	@Mock
+	ExecutorService executorService;
 
 	final Map<String, String> requestParameters = new HashMap<>();
 
@@ -110,7 +114,7 @@ public class WebSocketSessionTest {
 
 	WebSocketSession createSession() {
 		final URLMatcher matcher = URLMatcher.compile( "{protocol}://{host}/url/{id}" );
-		return new WebSocketSession( exchange, channel, matcher, serializer, unserializer );
+		return new WebSocketSession( exchange, channel, matcher, serializer, unserializer, executorService );
 	}
 
 	void populatePeerConnections( final WebSocketChannel webSocketChannel ) {

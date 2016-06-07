@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import java.util.concurrent.ExecutorService;
 import io.undertow.websockets.core.BufferedTextMessage;
 import io.undertow.websockets.core.CloseMessage;
 import io.undertow.websockets.core.WebSocketChannel;
@@ -52,6 +53,9 @@ public class WebSocketHandlerDelegationTest {
 	@Mock
 	WebSocketSession.Unserializer unserializer;
 
+	@Mock
+	ExecutorService executorService;
+
 	WebSocketConnectionCallbackHandler callbackHandler;
 
 	@Before
@@ -59,7 +63,7 @@ public class WebSocketHandlerDelegationTest {
 		doReturn( "/websocket" ).when( exchange ).getRequestURI();
 		doReturn( setter ).when( channel ).getReceiveSetter();
 		callbackHandler = spy( new WebSocketConnectionCallbackHandler(
-				delegated, URLMatcher.compile( "" ), serializer, unserializer ) );
+				delegated, URLMatcher.compile( "" ), serializer, unserializer, executorService ) );
 	}
 
 	@Test
