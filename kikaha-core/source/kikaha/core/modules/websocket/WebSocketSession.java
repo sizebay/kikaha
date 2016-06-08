@@ -2,7 +2,7 @@ package kikaha.core.modules.websocket;
 
 import java.security.Principal;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
 import io.undertow.websockets.core.*;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
 import kikaha.core.url.URLMatcher;
@@ -76,6 +76,15 @@ public class WebSocketSession {
 		return new WebSocketSession(
 			null, requestHeaders, null, requestParameters, urlMatcher, requestURI,
 			userPrincipal, channel, peerConnections, serializer, unserializer, executorService );
+	}
+
+	/**
+	 * Runs the {@code runnable} parameter in a worker thread. Useful to avoid
+	 * IO bound to block the execution at the Undertow's IO threads.
+	 * @param runnable
+	 */
+	public Future<?> runInWorkerThreads(Runnable runnable ){
+		return executorService.submit( runnable );
 	}
 
 	/**

@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.security.Principal;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
 import kikaha.core.url.URLMatcher;
@@ -67,6 +67,24 @@ public class WebSocketSessionTest {
 		doReturn( requestParameters ).when( exchange ).getRequestParameters();
 		doReturn(responseHeaders).when( exchange ).getResponseHeaders();
 		doReturn( userPrincipal ).when( exchange ).getUserPrincipal();
+	}
+
+	@Test
+	public void shouldSubmitTaskThroughTheExecutorService() throws ExecutionException, InterruptedException {
+		final Runnable runnable = mock(Runnable.class);
+
+		final Future mockedFuture = mock(Future.class);
+		doReturn( null ).when( mockedFuture ).get();
+		doAnswer( a -> {
+			runnable.run();
+			return mockedFuture;
+		}).when( executorService ).submit( eq(runnable) );
+
+		final WebSocketSession session = createSession();
+		final Future<?> future = session.runInWorkerThreads(runnable);
+		future.get();
+
+		verify( runnable ).run();
 	}
 
 	@Test
