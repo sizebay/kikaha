@@ -60,6 +60,7 @@ server:
     cors:
       enabled: false
       always-allow-origin: false
+      always-allow-credentials: false
       allowed-methods:
       allowed-hosts:
 

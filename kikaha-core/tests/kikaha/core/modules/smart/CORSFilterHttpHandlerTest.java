@@ -133,12 +133,40 @@ public class CORSFilterHttpHandlerTest {
 	public void ensureThatRequestsWithoutOptionMethodIsHandleAsNormalRequest() throws Exception {
 		final String expectedMethod = "GET";
 		final HttpServerExchange exchange = createExchange(expectedMethod, LOCALHOST);
+		corsConfig.allowCredentials = true;
 
 		corsFilter.handleRequest( exchange );
 
 		verify( nextHandler ).handleRequest( eq( exchange ) );
 		verify( notFoundHandler, never() ).handleRequest( eq( exchange ) );
 		assertEquals( LOCALHOST, exchange.getResponseHeaders().get( ALLOWED_ORIGIN ).getFirst() );
+		assertEquals( "true", exchange.getResponseHeaders().get( ALLOWED_CREDENTIALS ).getFirst() );
+	}
+
+	@Test
+	public void ensureThatCORSResponsesAllowCredentialsIfConfiguredForThis() throws Exception {
+		final String expectedMethod = "GET";
+		final HttpServerExchange exchange = createExchange(expectedMethod, UNKNOWN);
+		exchange.setRequestMethod( Methods.OPTIONS );
+		corsConfig.alwaysAllowOrigin = true;
+		corsConfig.allowCredentials = true;
+
+		corsFilter.handleRequest( exchange );
+
+		assertEquals( "true", exchange.getResponseHeaders().get( ALLOWED_CREDENTIALS ).getFirst() );
+	}
+
+	@Test
+	public void ensureThatCORSResponsesDoesNotAllowCredentialsIfNotConfiguredForThis() throws Exception {
+		final String expectedMethod = "GET";
+		final HttpServerExchange exchange = createExchange(expectedMethod, UNKNOWN);
+		exchange.setRequestMethod( Methods.OPTIONS );
+		corsConfig.alwaysAllowOrigin = true;
+		corsConfig.allowCredentials = false;
+
+		corsFilter.handleRequest( exchange );
+
+		assertNull( exchange.getResponseHeaders().get( ALLOWED_CREDENTIALS ) );
 	}
 
 	@SneakyThrows

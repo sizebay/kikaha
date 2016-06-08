@@ -17,7 +17,9 @@ public class CORSFilterHttpHandler implements HttpHandler {
 	static final HttpString ACCESS_HEADERS = new HttpString( "Access-Control-Request-Headers" );
 	static final HttpString ALLOWED_ORIGIN = new HttpString( "Access-Control-Allow-Origin" );
 	static final HttpString ALLOWED_HEADERS = new HttpString( "Access-Control-Allow-Headers" );
+	static final HttpString ALLOWED_CREDENTIALS = new HttpString( "Access-Control-Allow-Credentials" );
 	static final Map<String, String> EMPTY_URL_PARAMS = new HashMap<>();
+	static final String TRUE = "true";
 
 	final CORSConfig config;
 	final HttpHandler next;
@@ -39,7 +41,7 @@ public class CORSFilterHttpHandler implements HttpHandler {
 	private void allowOrigin( HttpServerExchange exchange, String originHost ) throws Exception {
 		if ( originHost != null ) {
 			final HeaderMap responseHeaders = exchange.getResponseHeaders();
-			responseHeaders.put(ALLOWED_ORIGIN, originHost);
+			sendBasicNeededHeadersToAllowRequest( responseHeaders, originHost );
 		}
 		next.handleRequest(exchange);
 	}
@@ -74,9 +76,15 @@ public class CORSFilterHttpHandler implements HttpHandler {
 
 	private void sendRequiredHeaders( HttpServerExchange exchange, String originHost ) {
 		final HeaderMap responseHeaders = exchange.getResponseHeaders();
-		responseHeaders.put(ALLOWED_ORIGIN, originHost);
+		sendBasicNeededHeadersToAllowRequest( responseHeaders, originHost );
 		final HeaderValues allowedHeaders = exchange.getRequestHeaders().get( ACCESS_HEADERS );
 		if ( allowedHeaders != null )
-			exchange.getResponseHeaders().put( ALLOWED_HEADERS, String.join( ",", (CharSequence[]) allowedHeaders.toArray()) );
+			responseHeaders.put( ALLOWED_HEADERS, String.join( ",", (CharSequence[]) allowedHeaders.toArray()) );
+	}
+
+	private void sendBasicNeededHeadersToAllowRequest(final HeaderMap responseHeaders, String originHost ){
+		responseHeaders.put(ALLOWED_ORIGIN, originHost);
+		if ( config.allowCredentials )
+			responseHeaders.put( ALLOWED_CREDENTIALS, TRUE );
 	}
 }
