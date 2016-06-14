@@ -1,5 +1,6 @@
 package kikaha.core.modules.websocket;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.*;
@@ -104,7 +105,7 @@ public class WebSocketSession {
 	 * @param message
 	 * @return
 	 */
-	public Sender send( final Object message ) {
+	public Sender send( final Object message ) throws IOException {
 		return send( serializer.serialize( message ) );
 	}
 
@@ -143,13 +144,13 @@ public class WebSocketSession {
 	 * unserialize the incoming request data into a more convenient object.
 	 */
 	public interface Unserializer {
-		<T> T unserialize( String data, Class<T> expectedClass );
+		<T> T unserialize( String data, Class<T> expectedClass ) throws IOException;
 	}
 
 	/**
 	 * Serializers convert
 	 */
 	public interface Serializer {
-		String serialize( Object object );
+		String serialize( Object object ) throws IOException;
 	}
 }

@@ -1,5 +1,6 @@
 package kikaha.urouting;
 
+import java.io.IOException;
 import java.util.List;
 import javax.inject.*;
 import kikaha.core.modules.websocket.WebSocketSession;
@@ -63,7 +64,7 @@ public class WebSocketDataProvider {
 	 * @param <T>
 	 * @return the unserialized object.
 	 */
-	public <T> T getBody( final WebSocketSession session, final String message, final Class<T> expectedType ) {
+	public <T> T getBody( final WebSocketSession session, final String message, final Class<T> expectedType ) throws IOException {
 		return session.unserializer().unserialize( message, expectedType );
 	}
 

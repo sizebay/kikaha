@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 @RunWith(KikahaRunner.class)
-public class SerializationTests {
+public class SerializationTest {
 
 	final User user = new User( "gerolasdiwn",
 			new Address( "Madison Avenue", 10 ) );
