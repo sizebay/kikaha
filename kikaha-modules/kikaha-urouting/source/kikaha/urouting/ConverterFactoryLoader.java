@@ -39,15 +39,16 @@ public class ConverterFactoryLoader {
 
 	static private Map<String, AbstractConverter<?>> loadPrimitiveConverters(){
 		final Map<String, AbstractConverter<?>> primitiveConverters = new HashMap<>();
-		converterFrom( primitiveConverters, Integer.TYPE, Integer::parseInt );
-		converterFrom( primitiveConverters, Float.TYPE, Float::parseFloat );
-		converterFrom( primitiveConverters, Double.TYPE, Double::parseDouble );
-		converterFrom( primitiveConverters, Long.TYPE, Long::parseLong );
-		converterFrom( primitiveConverters, Short.TYPE, Short::parseShort );
-		converterFrom( primitiveConverters, Boolean.TYPE, Boolean::parseBoolean );
+		converterFrom( primitiveConverters, int.class, Integer::parseInt );
+		converterFrom( primitiveConverters, byte.class, Byte::parseByte );
+		converterFrom( primitiveConverters, float.class, Float::parseFloat );
+		converterFrom( primitiveConverters, double.class, Double::parseDouble );
+		converterFrom( primitiveConverters, long.class, Long::parseLong );
+		converterFrom( primitiveConverters, short.class, Short::parseShort );
+		converterFrom( primitiveConverters, boolean.class, Boolean::parseBoolean );
 		return primitiveConverters;
 	}
-	
+
 	static private <T> void converterFrom(
 			Map<String, AbstractConverter<?>> primitiveConverters,
 			Class<T> primitiveType, Function<String, T> converter)
