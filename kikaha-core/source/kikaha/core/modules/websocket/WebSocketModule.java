@@ -107,11 +107,13 @@ public class WebSocketModule implements Module {
 
 	@Override
 	public void unload() {
-		executorService.shutdown();
-		try {
-			executorService.awaitTermination( 30, TimeUnit.SECONDS );
-		} catch (InterruptedException e) {}
-		if ( !executorService.isTerminated() )
-			executorService.shutdownNow();
+		if ( executorService != null ) {
+			executorService.shutdown();
+			try {
+				executorService.awaitTermination(30, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {}
+			if (!executorService.isTerminated())
+				executorService.shutdownNow();
+		}
 	}
 }
