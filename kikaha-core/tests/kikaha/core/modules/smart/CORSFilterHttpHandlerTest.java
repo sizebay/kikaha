@@ -141,6 +141,7 @@ public class CORSFilterHttpHandlerTest {
 		verify( notFoundHandler, never() ).handleRequest( eq( exchange ) );
 		assertEquals( LOCALHOST, exchange.getResponseHeaders().get( ALLOWED_ORIGIN ).getFirst() );
 		assertEquals( "true", exchange.getResponseHeaders().get( ALLOWED_CREDENTIALS ).getFirst() );
+		assertEquals( "GET", exchange.getResponseHeaders().get( ALLOWED_METHOD ).getFirst() );
 	}
 
 	@Test

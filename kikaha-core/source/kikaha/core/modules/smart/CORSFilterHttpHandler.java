@@ -17,6 +17,7 @@ public class CORSFilterHttpHandler implements HttpHandler {
 	static final HttpString ACCESS_HEADERS = new HttpString( "Access-Control-Request-Headers" );
 	static final HttpString ALLOWED_ORIGIN = new HttpString( "Access-Control-Allow-Origin" );
 	static final HttpString ALLOWED_HEADERS = new HttpString( "Access-Control-Allow-Headers" );
+	static final HttpString ALLOWED_METHOD = new HttpString( "Access-Control-Allow-Methods" );
 	static final HttpString ALLOWED_CREDENTIALS = new HttpString( "Access-Control-Allow-Credentials" );
 	static final Map<String, String> EMPTY_URL_PARAMS = new HashMap<>();
 	static final String TRUE = "true";
@@ -29,19 +30,20 @@ public class CORSFilterHttpHandler implements HttpHandler {
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
 		final boolean isOption = isOption( exchange );
 		final String originHost = retrieveOriginHost( exchange );
+		final String method = getHttpMethod( exchange );
 
 		if ( !isOption )
-			allowOrigin( exchange, originHost );
-		else if ( !isAllowedHttpMethod( exchange ) || !isHostAllowed( originHost ) )
+			allowOrigin( exchange, originHost, method );
+		else if ( !isAllowedHttpMethod( method ) || !isHostAllowed( originHost ) )
 			notFound.handleRequest(exchange);
 		else
-			sendRequiredHeaders( exchange, originHost );
+			sendRequiredHeaders( exchange, originHost, method );
 	}
 
-	private void allowOrigin( HttpServerExchange exchange, String originHost ) throws Exception {
+	private void allowOrigin( HttpServerExchange exchange, String originHost, String method ) throws Exception {
 		if ( originHost != null ) {
 			final HeaderMap responseHeaders = exchange.getResponseHeaders();
-			sendBasicNeededHeadersToAllowRequest( responseHeaders, originHost );
+			sendBasicNeededHeadersToAllowRequest( responseHeaders, originHost, method );
 		}
 		next.handleRequest(exchange);
 	}
@@ -68,22 +70,27 @@ public class CORSFilterHttpHandler implements HttpHandler {
 		return Methods.OPTIONS.equals( exchange.getRequestMethod() );
 	}
 
-	private boolean isAllowedHttpMethod(HttpServerExchange exchange ){
-		final HeaderValues strings = exchange.getRequestHeaders().get(ACCESS_METHOD);
-		final String expectedString = strings != null ? strings.getFirst() : "";
-		return config.allowedMethods.contains( expectedString );
+	private boolean isAllowedHttpMethod( String method ){
+		return config.allowedMethods.contains( method );
 	}
 
-	private void sendRequiredHeaders( HttpServerExchange exchange, String originHost ) {
+	private String getHttpMethod( HttpServerExchange exchange ) {
+		final HeaderValues strings = exchange.getRequestHeaders().get(ACCESS_METHOD);
+		return strings != null ? strings.getFirst() : "";
+
+	}
+
+	private void sendRequiredHeaders(HttpServerExchange exchange, String originHost, String method) {
 		final HeaderMap responseHeaders = exchange.getResponseHeaders();
-		sendBasicNeededHeadersToAllowRequest( responseHeaders, originHost );
+		sendBasicNeededHeadersToAllowRequest( responseHeaders, originHost, method );
 		final HeaderValues allowedHeaders = exchange.getRequestHeaders().get( ACCESS_HEADERS );
 		if ( allowedHeaders != null )
 			responseHeaders.put( ALLOWED_HEADERS, String.join( ",", (CharSequence[]) allowedHeaders.toArray()) );
 	}
 
-	private void sendBasicNeededHeadersToAllowRequest(final HeaderMap responseHeaders, String originHost ){
-		responseHeaders.put(ALLOWED_ORIGIN, originHost);
+	private void sendBasicNeededHeadersToAllowRequest(final HeaderMap responseHeaders, String originHost, String method ){
+		responseHeaders.put( ALLOWED_ORIGIN, originHost );
+		responseHeaders.put( ALLOWED_METHOD, method );
 		if ( config.allowCredentials )
 			responseHeaders.put( ALLOWED_CREDENTIALS, TRUE );
 	}
