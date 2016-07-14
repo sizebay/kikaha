@@ -23,7 +23,11 @@ public class URLMatcher implements Matcher {
 	}
 
 	public static URLMatcher compile( final String string ) {
-		val compiler = new URLPatternCompiler();
+		return compile( string, false );
+	}
+
+	public static URLMatcher compile( final String string, final boolean doNotIgnoreSlashes ) {
+		val compiler = new URLPatternCompiler( doNotIgnoreSlashes );
 		compiler.compile( string );
 		return new URLMatcher( compiler.patternMatchers );
 	}
@@ -39,11 +43,22 @@ public class URLMatcher implements Matcher {
 		for ( final Matcher matcher : patternMatchers )
 			matcher.replace( buffer, foundParameters );
 	}
+
+	@Override
+	public String toString() {
+		val buffer = new StringBuilder();
+		for ( final Matcher matcher : patternMatchers )
+			buffer.append( matcher.toString() ).append(',');
+		return buffer.toString();
+	}
 }
 
+@RequiredArgsConstructor
 class URLPatternCompiler {
 
 	final List<Matcher> patternMatchers = new TinyList<>();
+	final boolean doNotIgnoreSlashes;
+
 	boolean remainsUnparsedDataInCursor = false;
 
 	public void compile( final String string ) {
@@ -99,6 +114,6 @@ class URLPatternCompiler {
 			final char nextChar = cursor.next();
 			patternMatchers.add( new PlaceHolderMatcher( placeholder, nextChar ) );
 		} else
-			patternMatchers.add( new PlaceHolderForAnyStringUntilEndMatcher( placeholder ) );
+			patternMatchers.add( new PlaceHolderForAnyStringUntilEndMatcher( placeholder, doNotIgnoreSlashes ) );
 	}
 }

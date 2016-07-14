@@ -92,4 +92,14 @@ public class URLMatcherTest {
 		val replacer = URLMatcher.compile( "/new/{string}" );
 		assertEquals( "/new/users/123/*", replacer.replace( params ) );
 	}
+
+	@Test
+	public void ensureThatCanMatchUrlsWithPlaceHoldersAndDoNotIgnoreSubPaths() {
+		val params = new HashMap<String, String>();
+		val matcher = URLMatcher.compile( "users/{id}", true );
+		System.out.println( matcher );
+		assertTrue( "Did not match regular path", matcher.matches( "users/123", params ) );
+		assertFalse( "Did match path ending with slash", matcher.matches( "users/123/", params ) );
+		assertFalse(  "Did match path that contains slash", matcher.matches( "users/{id}/bulk", params ) );
+	}
 }

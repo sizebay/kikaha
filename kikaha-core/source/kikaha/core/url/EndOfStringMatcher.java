@@ -12,4 +12,9 @@ public class EndOfStringMatcher implements Matcher {
 	@Override
 	public void replace( final StringBuilder buffer , final Map<String, String> foundParameters  ) {
 	}
+
+	@Override
+	public String toString() {
+		return "End";
+	}
 }

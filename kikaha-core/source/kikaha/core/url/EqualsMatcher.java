@@ -24,4 +24,9 @@ public class EqualsMatcher implements Matcher {
 	public void replace( final StringBuilder buffer , final Map<String, String> foundParameters  ) {
 		buffer.append( patternChars );
 	}
+
+	@Override
+	public String toString() {
+		return "Equals(" + new String(patternChars) + ")";
+	}
 }

@@ -1,7 +1,6 @@
 package kikaha.core.url;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 
 @RequiredArgsConstructor
 public class StringCursor {
@@ -133,9 +132,12 @@ public class StringCursor {
 		final StringBuilder buffer = new StringBuilder();
 		for ( int i = 0; i < cursor; i++ )
 			buffer.append( chars[i] );
-		buffer.append( '[' ).append( chars[cursor] ).append( ']' );
-		for ( int i = cursor + 1; i < chars.length; i++ )
-			buffer.append( chars[i] );
+		if ( cursor < chars.length ) {
+			buffer.append('[').append(chars[cursor]).append(']');
+			for (int i = cursor + 1; i < chars.length; i++)
+				buffer.append(chars[i]);
+		} else
+			buffer.append("[]");
 		return buffer.toString();
 	}
 }

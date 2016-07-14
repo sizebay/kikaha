@@ -68,7 +68,7 @@ class Entry {
 
 	public Entry( final String url, final HttpHandler handler ) {
 		this.handler = handler;
-		this.matcher = URLMatcher.compile( url );
+		this.matcher = URLMatcher.compile( url, true );
 	}
 
 	final URLMatcher matcher;

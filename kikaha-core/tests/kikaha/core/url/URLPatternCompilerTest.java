@@ -15,28 +15,28 @@ public class URLPatternCompilerTest {
 
 	@Test
 	public void ensureThatCanCompileASimpleURLPatternIntoOneMatcherRule() {
-		val compiler = new URLPatternCompiler();
+		val compiler = new URLPatternCompiler( false );
 		compiler.compile( "/panel/admin/" );
 		assertThatFitsACompiledPatterForExpectedNumberOfWildcards( compiler, 0 );
 	}
 
 	@Test
 	public void ensureThatCanCompileTheUserEndpointWithAsteriskURLPatternIntoTwoMatcherRules() {
-		val compiler = new URLPatternCompiler();
+		val compiler = new URLPatternCompiler( false );
 		compiler.compile( "/user/*/" );
 		assertThatFitsACompiledPatterForExpectedNumberOfWildcards( compiler, 1 );
 	}
 
 	@Test
 	public void ensureThatCanCompileTheUserCredentialEndpointURLPatternIntoTwoMatcherRules() {
-		val compiler = new URLPatternCompiler();
+		val compiler = new URLPatternCompiler( false );
 		compiler.compile( "/user/*/credential/" );
 		assertThatFitsACompiledPatterForExpectedNumberOfWildcards( compiler, 2 );
 	}
 
 	@Test
 	public void ensureThatCanCompileTheURLPatternThatMatchesAnyUserRequestIntoTwoMatcherRules() {
-		val compiler = new URLPatternCompiler();
+		val compiler = new URLPatternCompiler( false );
 		compiler.compile( "/user/*" );
 		assertThatHasExpectedSize( compiler, 3 );
 		assertFirstMatcherIsEqualsAndLastIsEndOfString( compiler );
@@ -45,7 +45,7 @@ public class URLPatternCompilerTest {
 
 	@Test
 	public void ensureThatCanCompileTheURLPatternWithTwoPlaceHoldersIntoThreeMatcherRules() {
-		val compiler = new URLPatternCompiler();
+		val compiler = new URLPatternCompiler( false );
 		compiler.compile( "/user/*/page/*/" );
 		assertThatFitsACompiledPatterForExpectedNumberOfWildcards( compiler, 3 );
 	}
