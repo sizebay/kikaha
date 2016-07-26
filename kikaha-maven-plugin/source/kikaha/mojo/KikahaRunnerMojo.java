@@ -1,25 +1,15 @@
 package kikaha.mojo;
 
+import java.io.File;
+import java.util.*;
 import kikaha.core.cdi.ApplicationRunner;
 import kikaha.mojo.runner.MainClassService;
 import lombok.val;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.artifact.*;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.artifact.resolver.*;
+import org.apache.maven.plugin.*;
 import org.apache.maven.project.MavenProject;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @goal run
@@ -70,25 +60,19 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	String jvmArgs;
 
 	/**
-	 * Directory containing the build files.
+	 * Compiled classes directory.
 	 *
-	 * @parameter expression="${project.build.directory}"
+	 * @parameter expression="${project.build.directory}/classes"
+	 * @required
 	 */
-	File buildDirectory;
-
-	/**
-	 * Directory containing the build files.
-	 *
-	 * @parameter expression="${project.build.resources[0].directory}"
-	 */
-	File resourceDirectory;
+	File compiledClassesDir;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
 			val classpath = memorizeClassPathWithRunnableJar();
 			val log = getLog();
-			val service = new MainClassService( getWorkDirectory(), ApplicationRunner.class.getCanonicalName(), classpath,
+			val service = new MainClassService( compiledClassesDir, ApplicationRunner.class.getCanonicalName(), classpath,
 					asList( "-Dserver.static.location=" + absolutePath( webresourcesPath ) ), jvmArgs, log );
 			val process = service.start();
 			if ( process.waitFor() > 0 )
@@ -96,13 +80,6 @@ public class KikahaRunnerMojo extends AbstractMojo {
 		} catch ( final Exception e ) {
 			throw new MojoExecutionException( "Can't initialize Kikaha.", e );
 		}
-	}
-
-	File getWorkDirectory(){
-		File file = resourceDirectory;
-		if ( !file.exists() )
-			file = new File( new File("").getAbsolutePath() );
-		return file;
 	}
 
 	String absolutePath( String str ) {
@@ -126,8 +103,7 @@ public class KikahaRunnerMojo extends AbstractMojo {
 			if ( !artifactsInClassPath.contains( artifactAbsolutePath ) )
 				artifactsInClassPath.add( artifactAbsolutePath );
 		}
-		artifactsInClassPath.add( getFinalArtifactName() );
-		artifactsInClassPath.add( resourceDirectory.getAbsolutePath() );
+		artifactsInClassPath.add( compiledClassesDir.getAbsolutePath() );
 		return artifactsInClassPath;
 	}
 
@@ -135,10 +111,5 @@ public class KikahaRunnerMojo extends AbstractMojo {
 			throws ArtifactResolutionException, ArtifactNotFoundException {
 		this.resolver.resolve( artifact, Collections.EMPTY_LIST, this.localRepository );
 		return artifact.getFile().getAbsolutePath();
-	}
-
-	String getFinalArtifactName() {
-		final String fileName = String.format( "%s.%s", this.finalName, this.project.getPackaging() );
-		return new File( this.buildDirectory, fileName ).getAbsolutePath();
 	}
 }

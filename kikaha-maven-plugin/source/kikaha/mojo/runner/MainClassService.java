@@ -1,15 +1,9 @@
 package kikaha.mojo.runner;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
+import java.io.*;
+import java.util.*;
+import lombok.*;
 import org.apache.maven.plugin.logging.Log;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 @RequiredArgsConstructor
 public class MainClassService {
@@ -63,7 +57,7 @@ public class MainClassService {
 
 	private void logImportantInformation() {
 		if ( jvmArgs != null && !jvmArgs.isEmpty() )
-			log.info("JVM OPTIONS DEFINED: " + jvmArgs);
+			log.debug("JVM OPTIONS DEFINED: " + jvmArgs);
 	}
 
 	List<String> createCommandLine() {
