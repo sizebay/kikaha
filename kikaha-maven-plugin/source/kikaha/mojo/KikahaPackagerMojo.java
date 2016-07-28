@@ -86,9 +86,9 @@ public class KikahaPackagerMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		ensureTargetDirectoryExists();
 		final ZipFileWriter zip = createZipFile();
+		getLog().info( "Building application package: " + zip.fileName );
 		populateZip( zip );
 		zip.close();
-		getLog().info( "Success: Zip file generated at " + zip.fileName );
 	}
 
 	void ensureTargetDirectoryExists() throws MojoFailureException {
@@ -192,9 +192,7 @@ public class KikahaPackagerMojo extends AbstractMojo {
 				copyToZip( zip, rootDirectory, file );
 	}
 
-	void copyToZip( final ZipFileWriter zip, final String rootDirectory, final File file )
-			throws IOException, FileNotFoundException
-	{
+	void copyToZip( final ZipFileWriter zip, final String rootDirectory, final File file ) throws IOException {
 		final String fileName = ( rootDirectory + "/" + file.getName() ).replaceFirst( "^/", "" );
 		if ( file.isDirectory() )
 			copyDirectoryFilesToZip( zip, file, fileName );
@@ -202,9 +200,7 @@ public class KikahaPackagerMojo extends AbstractMojo {
 			copyFileToZip( zip, file, fileName );
 	}
 
-	void copyFileToZip( final ZipFileWriter zip, final File file, final String fileName )
-			throws FileNotFoundException, IOException
-	{
+	void copyFileToZip( final ZipFileWriter zip, final File file, final String fileName ) throws IOException {
 		@Cleanup final InputStream content = new FileInputStream( file );
 		zip.add( fileName, content );
 	}

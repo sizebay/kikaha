@@ -1,5 +1,6 @@
 package kikaha.core.cdi;
 
+import static java.lang.reflect.Modifier.*;
 import java.util.*;
 import kikaha.core.cdi.helpers.*;
 import lombok.*;
@@ -33,7 +34,8 @@ public class SingletonContext {
 		try {
 			return clazz.newInstance();
 		} catch ( final IllegalAccessException | InstantiationException cause ) {
-			log.debug("Can't instantiate " + clazz + ": " + cause.getMessage());
+			if ( !isAbstract( clazz.getModifiers() ) && !isInterface( clazz.getModifiers() ))
+				log.debug("Can't instantiate " + clazz + ": " + cause.getMessage());
 			return null;
 		}
 	}

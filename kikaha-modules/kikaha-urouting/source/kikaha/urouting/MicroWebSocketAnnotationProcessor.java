@@ -23,7 +23,7 @@ public class MicroWebSocketAnnotationProcessor extends AbstractProcessor {
 	@Override
 	public synchronized void init( final ProcessingEnvironment processingEnv ) {
 		super.init( processingEnv );
-		generator = new WebSocketClassGenerator( filer() );
+		generator = new WebSocketClassGenerator( filer(), processingEnv );
 	}
 
 	@Override
