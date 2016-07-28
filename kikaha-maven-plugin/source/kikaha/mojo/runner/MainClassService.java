@@ -43,6 +43,7 @@ public class MainClassService {
 
 	public Process start() throws IOException {
 		logImportantInformation();
+
 		val commandLine = createCommandLine();
 		val builder = new ProcessBuilder(commandLine);
 		builder.directory( workingDirectory );
@@ -57,7 +58,10 @@ public class MainClassService {
 
 	private void logImportantInformation() {
 		if ( jvmArgs != null && !jvmArgs.isEmpty() )
-			log.debug("JVM OPTIONS DEFINED: " + jvmArgs);
+			log.info("JVM options defined on pom: " + jvmArgs);
+		val runtimeJvmOpts = System.getenv( "KIKAHA_JVM_OPTS" );
+		if ( runtimeJvmOpts != null )
+			log.debug("Runtime JVM options: " + runtimeJvmOpts);
 	}
 
 	List<String> createCommandLine() {
@@ -72,8 +76,13 @@ public class MainClassService {
 	}
 
 	List<String> getJvmArgsAsList(){
+		String jvmOpts = jvmArgs;
+		val runtimeJvmOpts = System.getenv( "KIKAHA_JVM_OPTS" );
+		if ( runtimeJvmOpts != null )
+			jvmOpts+= " " + runtimeJvmOpts;
+
 		final List<String> list = new ArrayList<String>();
-		for ( final String arg : jvmArgs.split(" ") )
+		for ( final String arg : jvmOpts.split(" ") )
 			list.add(arg);
 		return list;
 	}
