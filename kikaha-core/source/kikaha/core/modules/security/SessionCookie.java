@@ -1,0 +1,37 @@
+package kikaha.core.modules.security;
+
+import java.util.function.Supplier;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.*;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * A helper class to retrieve and store cookies into the {@link HttpServerExchange}.
+ */
+@RequiredArgsConstructor
+public class SessionCookie {
+
+	final String cookieName;
+
+	/**
+	 * Attach a session cookie, identified by {@code sessionId}, into the current request.
+	 *
+	 * @param exchange
+	 * @param sessionId
+	 */
+	public void attachSessionCookie(HttpServerExchange exchange, String sessionId ) {
+		final Cookie cookie = new CookieImpl( this.cookieName, sessionId ).setPath( "/" );
+		exchange.setResponseCookie( cookie );
+	}
+
+	/**
+	 * Extract the session id from the current request.
+	 * @param exchange
+	 * @param sessionIdCreator
+	 * @return
+	 */
+	public String retrieveSessionIdFrom(HttpServerExchange exchange, Supplier<String> sessionIdCreator ) {
+		final Cookie cookie = exchange.getRequestCookies().get( cookieName );
+		return cookie != null ? cookie.getValue() : sessionIdCreator.get();
+	}
+}

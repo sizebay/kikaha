@@ -6,6 +6,7 @@ import io.undertow.security.idm.Account;
 import lombok.*;
 
 @Getter
+@EqualsAndHashCode
 @RequiredArgsConstructor
 public class DefaultSession implements Session, Serializable {
 

@@ -1,6 +1,6 @@
 package kikaha.hazelcast;
 
-import java.util.*;
+import java.util.Collection;
 import javax.inject.*;
 import com.hazelcast.core.*;
 import io.undertow.server.HttpServerExchange;
@@ -13,17 +13,13 @@ public class HazelcastSessionStore extends AbstractCookieSessionStore {
 	@Named( "session-cache" )
 	IMap<String, Session> sessionCache;
 
-	@Inject
-	@Named( "session-cache" )
-	IdGenerator idGenerator;
-
 	@Override
 	public Session createOrRetrieveSession( HttpServerExchange exchange ) {
 		final String sessionId = retrieveSessionIdFrom( exchange );
 		Session session = getSessionFromCache( sessionId );
 		if ( session == null ) {
 			sessionCache.lock(sessionId);
-			try { session = createAndStoreNewSession(sessionId, exchange); }
+			try { session = tryToCreateAndStoreNewSession(sessionId, exchange); }
 			finally { sessionCache.unlock(sessionId); }
 		}
 		return session;
@@ -39,10 +35,6 @@ public class HazelcastSessionStore extends AbstractCookieSessionStore {
 		if ( sessionId == null )
 			return null;
 		return sessionCache.get( sessionId );
-	}
-
-	public String createNewSessionId() {
-		return MAC_ADDRESS + idGenerator.newId() + new Date().getTime();
 	}
 
 	@Override

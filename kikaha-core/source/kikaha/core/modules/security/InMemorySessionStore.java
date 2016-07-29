@@ -15,7 +15,7 @@ public class InMemorySessionStore extends AbstractCookieSessionStore {
 		Session session = getSessionFromCache( sessionId );
 		if ( session == null )
 			synchronized ( cache ) {
-				session = createAndStoreNewSession(sessionId, exchange);
+				session = tryToCreateAndStoreNewSession(sessionId, exchange);
 			}
 		return session;
 	}
@@ -28,11 +28,6 @@ public class InMemorySessionStore extends AbstractCookieSessionStore {
 		if ( sessionId == null )
 			return null;
 		return cache.get( sessionId );
-	}
-
-	@Override
-	protected String createNewSessionId() {
-		return UUID.randomUUID().toString();
 	}
 
 	@Override
