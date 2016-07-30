@@ -1,85 +1,44 @@
 package kikaha.mojo;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.security.CodeSource;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.*;
 import lombok.Cleanup;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.artifact.resolver.*;
+import org.apache.maven.plugin.*;
+import org.apache.maven.plugins.annotations.*;
+import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.project.MavenProject;
 
-/**
- * The Packager Mojo.
- *
- * @goal package
- * @requiresDependencyResolution compile+runtime
- * @author Miere Teixeira
- */
+@Mojo( name = "package",
+		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME )
 public class KikahaPackagerMojo extends AbstractMojo {
 
 	static final String DEFAULT_DIR = "META-INF/defaults/";
 	static final String METAINF_DIR = "META-INF";
 
-	/**
-	 * @parameter default-value="${project}"
-	 * @required
-	 * @readonly
-	 */
+	@Parameter( defaultValue = "${project}", required = true )
 	MavenProject project;
 
-	/**
-	 * The profile configuration to load when running the server.
-	 *
-	 * @parameter default-value="${project.basedir}/src/main/webapp"
-	 */
+	@Parameter( defaultValue = "${project.basedir}/src/main/webapp", required = true )
 	String webresourcesPath;
 
-	/**
-	 * Directory containing the build files.
-	 *
-	 * @parameter expression="${project.build.directory}"
-	 */
+	@Parameter( defaultValue = "${project.build.directory}", required = true )
 	File targetDirectory;
 
-	/**
-	 * Directory containing the build files.
-	 *
-	 * @parameter expression="${project.build.resources[0].directory}"
-	 */
+	@Parameter( defaultValue = "${project.build.resources[0].directory}", required = true )
 	File resourceDirectory;
 
-	/**
-	 * Name of the generated JAR.
-	 *
-	 * @parameter alias="jarName" expression="${jar.finalName}"
-	 *            default-value="${project.build.finalName}"
-	 * @required
-	 */
+	@Parameter( defaultValue = "${project.build.finalName}", required = true )
 	String finalName;
 
-	/**
-	 * @component
-	 */
+	@Component
 	ArtifactResolver resolver;
 
-	/**
-	 * @parameter default-value="${localRepository}"
-	 */
+	@Parameter( defaultValue = "${localRepository}", required = true )
 	ArtifactRepository localRepository;
 
 	@Override

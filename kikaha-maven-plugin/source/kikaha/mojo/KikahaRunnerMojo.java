@@ -9,62 +9,35 @@ import org.apache.maven.artifact.*;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.*;
 import org.apache.maven.plugin.*;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
 
-/**
- * @goal run
- * @requiresDependencyResolution compile+runtime
- */
+@Mojo( name = "run",
+	requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME )
 public class KikahaRunnerMojo extends AbstractMojo {
 
 	final static String SEPARATOR = System.getProperty( "path.separator" );
 
-	/**
-	 * @parameter default-value="${project}"
-	 * @required
-	 * @readonly
-	 */
+	@Parameter( defaultValue = "${project}", required = true)
 	MavenProject project;
 
-	/**
-	 * The profile configuration to load when running the server.
-	 *
-	 * @parameter default-value="${project.basedir}/src/main/webapp"
-	 */
-	String webresourcesPath;
+	@Parameter( defaultValue = "${project.basedir}/src/main/webapp", alias = "webResourcesPath", required = true)
+	String webResourcesPath;
 
-	/** @parameter default-value="${localRepository}" */
+	@Parameter( defaultValue = "${localRepository}", required = true)
 	ArtifactRepository localRepository;
 
-	/**
-	 * @component
-	 */
+	@Component
 	ArtifactResolver resolver;
 
-	/**
-	 * Name of the generated JAR.
-	 *
-	 * @parameter alias="jarName" expression="${jar.finalName}"
-	 *            default-value="${project.build.finalName}"
-	 * @required
-	 */
+	@Parameter( defaultValue = "${project.build.finalName}", required = true)
 	String finalName;
 
-	/**
-	 * JVM args to sent to Kikaha.
-	 *
-	 * @parameter  expression=" -Xms64m -Xmx256m "
-	 * 			   default-value=" -Xms64m -Xmx256m "
-	 * @required
-	 */
+	@Parameter( defaultValue = "-Xmx256m", required = true)
 	String jvmArgs;
 
-	/**
-	 * Compiled classes directory.
-	 *
-	 * @parameter expression="${project.build.directory}/classes"
-	 * @required
-	 */
+	@Parameter( defaultValue = "${project.build.outputDirectory}", required = true)
 	File compiledClassesDir;
 
 	@Override
@@ -73,7 +46,7 @@ public class KikahaRunnerMojo extends AbstractMojo {
 			val classpath = memorizeClassPathWithRunnableJar();
 			val log = getLog();
 			val service = new MainClassService( compiledClassesDir, ApplicationRunner.class.getCanonicalName(), classpath,
-					asList( "-Dserver.static.location=" + absolutePath( webresourcesPath ) ), jvmArgs, log );
+					asList( "-Dserver.static.location=" + absolutePath(webResourcesPath) ), jvmArgs, log );
 			val process = service.start();
 			if ( process.waitFor() > 0 )
 				throw new RuntimeException( "Kikaha has unexpectedly finished." );
