@@ -1,5 +1,9 @@
 package kikaha.core.modules.undertow;
 
+import static kikaha.core.modules.undertow.UndertowServerOptionsConfiguration.getConfigOption;
+import java.io.IOException;
+import javax.annotation.PostConstruct;
+import javax.inject.*;
 import io.undertow.Undertow.Builder;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
@@ -7,13 +11,6 @@ import kikaha.core.modules.Module;
 import kikaha.core.modules.undertow.UndertowServerOptionsConfiguration.ConfigurableOption;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.io.IOException;
-
-import static kikaha.core.modules.undertow.UndertowServerOptionsConfiguration.getConfigOption;
 
 /**
  *
@@ -51,8 +48,10 @@ public class UndertowBasicConfigurationModule implements Module {
 
 	private void setIOThreads(final Builder builder) {
 		final int ioThreads = undertowConfig.getInteger("io-threads");
-		if ( ioThreads > 0 )
+		if ( ioThreads > 0 ) {
+			log.info("  io-threads: " + ioThreads );
 			builder.setIoThreads(ioThreads);
+		}
 	}
 
 	private void setWorkerThreads(final Builder builder) {
@@ -73,8 +72,10 @@ public class UndertowBasicConfigurationModule implements Module {
 		Config serverOptions = undertowConfig.getConfig( "server-options" );
 		for ( String key : serverOptions.getKeys() ) {
 			ConfigurableOption option = getConfigOption( key, serverOptions.getObject(key) );
-			if ( option != null )
+			if ( option != null ) {
+				log.info( "  " + option.getOption() + ": " + option.getValue() );
 				builder.setServerOption(option.getOption(), option.getValue());
+			}
 		}
 	}
 
@@ -82,8 +83,10 @@ public class UndertowBasicConfigurationModule implements Module {
 		Config socketOptions = undertowConfig.getConfig( "server.undertow.socket-options" );
 		for ( String key : socketOptions.getKeys() ) {
 			ConfigurableOption option = getConfigOption( key, socketOptions.getObject(key) );
-			if ( option != null )
+			if ( option != null ) {
+				log.info( "  " + option.getOption() + ": " + option.getValue() );
 				builder.setSocketOption(option.getOption(), option.getValue());
+			}
 		}
 	}
 }
