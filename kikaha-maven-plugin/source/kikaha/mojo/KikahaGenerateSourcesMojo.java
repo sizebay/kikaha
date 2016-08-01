@@ -83,12 +83,21 @@ public class KikahaGenerateSourcesMojo extends AbstractMojo {
 		for ( final Diagnostic<? extends JavaFileObject> d : result.diagnostics )
 			if ( result.success )
 				getLog().info( d.getMessage( Locale.ENGLISH ) );
-			else {
-				String s = format("%s: %s (%s:%d)", d.getKind().toString(), d.getMessage(Locale.ENGLISH), d.getSource().getName(), d.getLineNumber());
-				getLog().error(s);
-			}
+			else showErrorMessage( d );
 		if ( !result.success )
-			throw new MojoFailureException( "Could not generate sources." );
+			throw new MojoFailureException( "Could not analyse the source code" );
+	}
+
+	private void showErrorMessage( final Diagnostic<? extends JavaFileObject> d ){
+		String message = d.getMessage(Locale.ENGLISH);
+		if ( d.getSource() != null )
+			message+= format(" (%s:%d)", d.getSource().getName(), d.getLineNumber());
+		if ( Diagnostic.Kind.ERROR.equals( d.getKind() ) )
+			getLog().error( message );
+		else if ( Diagnostic.Kind.MANDATORY_WARNING.equals( d.getKind() ) )
+			getLog().warn( message );
+		else
+			getLog().info( message );
 	}
 
 	private List<File> readJavaClassFiles() throws MojoExecutionException {
