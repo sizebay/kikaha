@@ -59,10 +59,16 @@ public class WebSocketModule implements Module {
 
 	private void loadSerializersAndUnserializers(){
 		final Config webSocketConfig = config.getConfig( "server.websocket" );
+
 		final Map<String, WebSocketSession.Serializer> serializers = webSocketSerializers.stream().collect(toMap(this::extractContentType, identity()));
 		serializer = serializers.get( webSocketConfig.getString("default-serializer") );
+		if ( serializer != null )
+			log.debug( "Default WebSocket serializer: " + serializer.getClass().getCanonicalName() );
+
 		final Map<String, WebSocketSession.Unserializer> unserializers = webSocketUnserializers.stream().collect(toMap(this::extractContentType, identity()));
 		unserializer = unserializers.get( webSocketConfig.getString("default-unserializer") );
+		if ( unserializer != null )
+			log.debug( "Default WebSocket unserializer: " + unserializer.getClass().getCanonicalName() );
 	}
 
 	public void loadWorkersThreadPool(){

@@ -105,8 +105,12 @@ public class WebSocketSession {
 	 * @param message
 	 * @return
 	 */
-	public Sender send( final Object message ) throws IOException {
-		return send( serializer.serialize( message ) );
+	public Sender send( final Object message ) {
+		try {
+			return send( serializer.serialize( message ) );
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	/**
@@ -117,6 +121,16 @@ public class WebSocketSession {
 	public void broadcast( final String message ) {
 		for ( final WebSocketChannel peer : peerConnections() )
 			WebSockets.sendText( message, peer, null );
+	}
+
+	/**
+	 * Send a message to all Peer Connections to current {@code requestURI}.
+	 *
+	 * @param message
+	 */
+	public void broadcast( final Object message ) {
+		for ( final WebSocketChannel peer : peerConnections() )
+			send( message ).to( peer );
 	}
 
 	/**
