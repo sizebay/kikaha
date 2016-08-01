@@ -43,6 +43,7 @@ server:
     server-options:
       ENABLE_STATISTICS: false
       RECORD_REQUEST_START_TIME: false
+      ALWAYS_SET_KEEP_ALIVE: true
 
     socket-options:
       BACKLOG: 20000
