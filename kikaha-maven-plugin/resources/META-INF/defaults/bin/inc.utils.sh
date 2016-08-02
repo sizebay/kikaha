@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 print_logo(){
 if [ ! "$QUIET" = "true" ]; then
-	info $(grape 'Kikaha: write fast microservices faster')
+	info $(grape 'Kikaha ${project.version}')
 fi
 }
 
