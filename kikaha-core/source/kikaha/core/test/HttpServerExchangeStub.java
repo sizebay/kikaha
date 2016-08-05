@@ -15,7 +15,7 @@ public abstract class HttpServerExchangeStub {
 	public static HttpServerExchange createHttpExchange() {
 		final StreamConnection streamConnection = createStreamConnection();
 		final OptionMap options = OptionMap.EMPTY;
-		final ServerConnection connection = new HttpServerConnection( streamConnection, null, null, options, 0 );
+		final ServerConnection connection = new HttpServerConnection( streamConnection, null, null, options, 0, null );
 		return createHttpExchange( connection );
 	}
 
