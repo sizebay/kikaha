@@ -24,7 +24,7 @@ public class KikahaPackagerMojo extends AbstractMojo {
 	MavenProject project;
 
 	@Parameter( defaultValue = "${project.basedir}/src/main/webapp", required = true )
-	String webresourcesPath;
+	String webResourcesPath;
 
 	@Parameter( defaultValue = "${project.build.directory}", required = true )
 	File targetDirectory;
@@ -141,7 +141,7 @@ public class KikahaPackagerMojo extends AbstractMojo {
 
 	void copyWebResourceFolderToZip( final ZipFileWriter zip ) throws IOException
 	{
-		final File directory = new File( webresourcesPath );
+		final File directory = new File(webResourcesPath);
 		copyDirectoryFilesToZip( zip, directory, "webapp" );
 	}
 
