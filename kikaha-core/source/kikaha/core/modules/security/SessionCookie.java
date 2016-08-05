@@ -14,6 +14,13 @@ public class SessionCookie {
 	final String cookieName;
 
 	/**
+	 * Constructs a SessionCookie named "JSESSIONID".
+	 */
+	public SessionCookie(){
+		cookieName = "JSESSIONID";
+	}
+
+	/**
 	 * Attach a session cookie, identified by {@code sessionId}, into the current request.
 	 *
 	 * @param exchange
