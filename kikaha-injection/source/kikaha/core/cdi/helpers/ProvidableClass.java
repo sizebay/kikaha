@@ -9,6 +9,9 @@ import kikaha.core.cdi.*;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+/**
+ * Stores all meta data extracted from an injectable class.
+ */
 @Getter
 @Accessors( fluent = true )
 @RequiredArgsConstructor
@@ -18,14 +21,16 @@ public class ProvidableClass<T> {
 	final Iterable<ProvidableField> fields;
 	final Consumer<Object> postConstructor;
 
-	public static <T> ProvidableClass<T> wrap( QualifierExtractor extractor, Class<T> targetClazz ) {
+	public static <T> ProvidableClass<T> wrap(InjectableDataExtractor extractor, Class<T> targetClazz )
+	{
 		return new ProvidableClass<T>(
 				targetClazz,
 				readClassProvidableFields( extractor, targetClazz ),
 				readPostConstructor( targetClazz ) );
 	}
 
-	static Consumer<Object> readPostConstructor( Class<?> targetClazz ) {
+	static Consumer<Object> readPostConstructor( Class<?> targetClazz )
+	{
 		Method postConstructor = null;
 		for ( final Method method : targetClazz.getMethods() )
 			if ( method.isAnnotationPresent( PostConstruct.class ) ) {
@@ -37,7 +42,8 @@ public class ProvidableClass<T> {
 				: EmptyMethod.INSTANCE;
 	}
 
-	static Iterable<ProvidableField> readClassProvidableFields( QualifierExtractor extractor, Class<?> targetClazz ) {
+	static Iterable<ProvidableField> readClassProvidableFields(InjectableDataExtractor extractor, Class<?> targetClazz )
+	{
 		final List<ProvidableField> providableFields = new TinyList<>();
 		Class<? extends Object> clazz = targetClazz;
 		while ( !Object.class.equals( clazz ) ) {
@@ -49,7 +55,7 @@ public class ProvidableClass<T> {
 		return providableFields;
 	}
 
-	static void populateWithProvidableFields( QualifierExtractor extractor, Class<?> targetClazz, List<ProvidableField> providableFields ) {
+	static void populateWithProvidableFields(InjectableDataExtractor extractor, Class<?> targetClazz, List<ProvidableField> providableFields ) {
 		for ( final Field field : targetClazz.getDeclaredFields() ) {
 			final Collection<Class<? extends Annotation>> qualifiers = extractQualifiersFromAvoidingNPEWhenCreatingQualifierExtractor( extractor, field );
 			if ( extractor.isAManyElementsProvider( field ) )
@@ -59,8 +65,9 @@ public class ProvidableClass<T> {
 		}
 	}
 
-	private static Collection<Class<? extends Annotation>> extractQualifiersFromAvoidingNPEWhenCreatingQualifierExtractor(
-			final QualifierExtractor extractor, final Field field )
+	private static Collection<Class<? extends Annotation>>
+		extractQualifiersFromAvoidingNPEWhenCreatingQualifierExtractor(
+			final InjectableDataExtractor extractor, final Field field )
 	{
 		if ( null == extractor )
 			return Collections.emptyList();

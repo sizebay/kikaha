@@ -12,21 +12,35 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings( { "rawtypes", "unchecked" } )
 public class DefaultServiceProvider implements ServiceProvider {
 
-	final ImplementedClassesContext implementedClasses = new ImplementedClassesContext();
-	final SingletonContext singletonContext = new SingletonContext();
-
+	final InjectionContext injectionContext = new InjectionContext();
 	final DependencyMap dependencies;
 	final ProducerFactoryMap producers;
 
 	public DefaultServiceProvider() {
 		dependencies = new DependencyMap( createDefaultProvidedData() );
-		singletonContext.setQualifierExtractor( createQualifierExtractor() );
+		injectionContext.setCustomClassConstructors( loadAllCustomClassConstructors() );
+		injectionContext.setQualifierExtractor( loadInjectableDataExtractor() );
 		producers = loadAllProducers();
 	}
 
-	private QualifierExtractor createQualifierExtractor() {
+	private InjectableDataExtractor loadInjectableDataExtractor() {
 		final Iterable<FieldQualifierExtractor> extractors = loadAll(FieldQualifierExtractor.class);
-		return new QualifierExtractor( extractors );
+		return new InjectableDataExtractor( extractors );
+	}
+
+	private  Iterable<CustomClassConstructor> loadAllCustomClassConstructors(){
+		try {
+			final List<CustomClassConstructor> customClassConstructors = new ArrayList<>();
+			final DefaultClassConstructor defaultClassConstructor = new DefaultClassConstructor();
+
+			for ( Class<CustomClassConstructor> foundClazz : loadClassesImplementing( CustomClassConstructor.class ))
+				customClassConstructors.add( defaultClassConstructor.instantiate( foundClazz ) );
+			customClassConstructors.add(defaultClassConstructor);
+
+			return customClassConstructors;
+		} catch ( Throwable cause ) {
+			throw new ServiceProviderException( cause );
+		}
 	}
 
 	protected Map<Class<?>, Iterable<?>> createDefaultProvidedData() {
@@ -41,7 +55,7 @@ public class DefaultServiceProvider implements ServiceProvider {
 	}
 
 	public <T> Iterable<Class<T>> loadClassesImplementing( Class<T> targetClass ) {
-		return implementedClasses.loadClassesImplementing( targetClass );
+		return injectionContext.loadClassesImplementing( targetClass );
 	}
 
 	@Override
@@ -149,13 +163,13 @@ public class DefaultServiceProvider implements ServiceProvider {
 		}
 
 		private <T> Iterable<T> loadServicesFor( final Class<T> serviceClazz ) {
-			final List<Class<T>> iterableInterfaces = implementedClasses.loadClassesImplementing( serviceClazz );
+			final List<Class<T>> iterableInterfaces = injectionContext.loadClassesImplementing( serviceClazz );
 			Iterable<T> instances = null;
 			if ( !iterableInterfaces.isEmpty() ) {
-				instances = singletonContext.instantiate( iterableInterfaces );
+				instances = injectionContext.instantiate( iterableInterfaces );
 				dependencies.put( serviceClazz, instances );
 			} else {
-				final T instance = singletonContext.instantiate( serviceClazz );
+				final T instance = injectionContext.instantiate( serviceClazz );
 				instances = instance == null ? EmptyIterable.instance() : new SingleObjectIterable<>( instance );
 			}
 			loadDependenciesAndInjectInto( instances );
@@ -169,7 +183,7 @@ public class DefaultServiceProvider implements ServiceProvider {
 		}
 
 		public void loadDependenciesAndInjectInto( Object obj ) {
-			final ProvidableClass<?> providableClass = singletonContext.retrieveProvidableClass( obj.getClass() );
+			final ProvidableClass<?> providableClass = injectionContext.retrieveProvidableClass( obj.getClass() );
 			tryInjectFields( obj, providableClass );
 			tryPostConstructClass( obj, providableClass );
 		}

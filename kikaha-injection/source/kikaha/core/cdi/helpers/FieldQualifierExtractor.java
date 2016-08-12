@@ -4,6 +4,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
 
+/**
+ * This interface represents an extension point which developers could define other
+ * annotations as valid substitute for {@code @Inject} and {@code @Qualifier} anntations.
+ */
 public interface FieldQualifierExtractor {
 
 	default List<Class<? extends Annotation>> extractQualifiersFrom(Field field) {

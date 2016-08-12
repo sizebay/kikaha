@@ -1,20 +1,24 @@
 package kikaha.core.cdi;
 
 import static java.lang.reflect.Modifier.*;
+import static java.util.Arrays.asList;
 import java.util.*;
 import kikaha.core.cdi.helpers.*;
+import kikaha.core.cdi.helpers.ServiceLoader;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Setter
 @RequiredArgsConstructor
-public class SingletonContext {
+public class InjectionContext {
 
 	final Map<Class<?>, Object> cache = new HashMap<>();
 	final Map<Class<?>, ProvidableClass<?>> providableClassCache = new HashMap<>();
+	final Map<Class<?>, Iterable<Class<?>>> implementedClasses = new HashMap<>();
 
-	@Setter
-	QualifierExtractor qualifierExtractor;
+	Iterable<CustomClassConstructor> customClassConstructors = asList( new DefaultClassConstructor() );
+	InjectableDataExtractor qualifierExtractor;
 
 	@SuppressWarnings("unchecked")
 	public <T> Iterable<T> instantiate( Iterable<Class<T>> classes ){
@@ -32,12 +36,14 @@ public class SingletonContext {
 
 	public <T> T instantiate( Class<T> clazz ) {
 		try {
-			return clazz.newInstance();
+			for ( CustomClassConstructor constructor : customClassConstructors )
+				if ( constructor.isAbleToInstantiate( clazz ) )
+					return constructor.instantiate( clazz );
 		} catch ( final IllegalAccessException | InstantiationException cause ) {
 			if ( !isAbstract( clazz.getModifiers() ) && !isInterface( clazz.getModifiers() ))
 				log.debug("Can't instantiate " + clazz + ": " + cause.getMessage());
-			return null;
 		}
+		return null;
 	}
 
 	public ProvidableClass<?> retrieveProvidableClass( final Class<?> targetClazz ) {
@@ -51,5 +57,18 @@ public class SingletonContext {
 				}
 			}
 		return providableClass;
+	}
+
+	public <T> List<Class<T>> loadClassesImplementing( final Class<T> interfaceClazz ) {
+		List<Class<T>> implementations = (List)implementedClasses.get( interfaceClazz );
+		if ( implementations == null )
+			synchronized ( implementedClasses ) {
+				implementations = (List)implementedClasses.get( interfaceClazz );
+				if ( implementations == null ) {
+					implementations = ServiceLoader.loadImplementationsFor( interfaceClazz );
+					implementedClasses.put( (Class)interfaceClazz, (Iterable)implementations );
+				}
+			}
+		return implementations;
 	}
 }

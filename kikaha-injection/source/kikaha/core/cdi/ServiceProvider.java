@@ -6,9 +6,8 @@ import kikaha.core.cdi.helpers.filter.Condition;
 import kikaha.core.cdi.helpers.filter.Filter;
 
 /**
- * The main tRip Context. It manages singleton and stateless instances,
- * inject data into beans and create new instance of classes that could
- * benefits with the tRip's injection mechanism.
+ * It manages singleton and stateless instances, inject data into beans
+ * and create new instance of classes that could benefits with the injection mechanism.
  */
 public interface ServiceProvider {
 
