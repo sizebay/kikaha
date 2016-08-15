@@ -18,7 +18,6 @@ public class DefaultServiceProvider implements ServiceProvider {
 
 	public DefaultServiceProvider() {
 		dependencies = new DependencyMap( createDefaultProvidedData() );
-		injectionContext.setCustomClassConstructors( loadAllCustomClassConstructors() );
 		injectionContext.setQualifierExtractor( loadInjectableDataExtractor() );
 		producers = loadAllProducers();
 	}
@@ -28,16 +27,15 @@ public class DefaultServiceProvider implements ServiceProvider {
 		return new InjectableDataExtractor( extractors );
 	}
 
-	private  Iterable<CustomClassConstructor> loadAllCustomClassConstructors(){
+	public void loadAllCustomClassConstructors(){
 		try {
 			final List<CustomClassConstructor> customClassConstructors = new ArrayList<>();
-			final DefaultClassConstructor defaultClassConstructor = new DefaultClassConstructor();
 
-			for ( Class<CustomClassConstructor> foundClazz : loadClassesImplementing( CustomClassConstructor.class ))
-				customClassConstructors.add( defaultClassConstructor.instantiate( foundClazz ) );
-			customClassConstructors.add(defaultClassConstructor);
+			for ( CustomClassConstructor constructor : loadAll(CustomClassConstructor.class) )
+				customClassConstructors.add( constructor );
+			customClassConstructors.add( new DefaultClassConstructor() );
 
-			return customClassConstructors;
+			injectionContext.setCustomClassConstructors( customClassConstructors );
 		} catch ( Throwable cause ) {
 			throw new ServiceProviderException( cause );
 		}
@@ -54,7 +52,7 @@ public class DefaultServiceProvider implements ServiceProvider {
 		return ProducerFactoryMap.from( loadClassesImplementing );
 	}
 
-	public <T> Iterable<Class<T>> loadClassesImplementing( Class<T> targetClass ) {
+	public <T> Iterable<Class<T>> loadClassesImplementing( final Class<T> targetClass ) {
 		return injectionContext.loadClassesImplementing( targetClass );
 	}
 
@@ -67,9 +65,9 @@ public class DefaultServiceProvider implements ServiceProvider {
 	}
 
 	@Override
-	public <T> Iterable<T> loadAll( final Class<T> serviceClazz ) {
+	public <T> Iterable<T> loadAll( final Class<T> serviceClazz, final ProviderContext context ) {
 		while ( true )
-			try { return fromInjector( i -> i.loadAll( serviceClazz ) ); }
+			try { return fromInjector( i -> i.loadAll( serviceClazz, context ) ); }
 			catch ( final DependencyMap.TemporarilyLockedException cause ) { LockSupport.parkNanos( 2l ); }
 	}
 
@@ -130,7 +128,7 @@ public class DefaultServiceProvider implements ServiceProvider {
 			final T produced = produceFromFactory( serviceClazz, providerContext );
 			if ( produced != null )
 				return produced;
-			return Filter.first( loadAll( serviceClazz, condition ), condition );
+			return Filter.first( loadAll( serviceClazz, condition, providerContext ), condition );
 		}
 
 		private <T> T produceFromFactory( final Class<T> serviceClazz, final ProviderContext context )
@@ -147,29 +145,29 @@ public class DefaultServiceProvider implements ServiceProvider {
 			return (ProducerFactory<T>)producers.get( serviceClazz, this );
 		}
 
-		public <T> Iterable<T> loadAll( final Class<T> serviceClazz, Condition<T> condition ) {
-			return Filter.filter( loadAll( serviceClazz ), condition );
+		public <T> Iterable<T> loadAll( final Class<T> serviceClazz, Condition<T> condition, ProviderContext providerContext ) {
+			return Filter.filter( loadAll( serviceClazz, providerContext ), condition );
 		}
 
-		public <T> Iterable<T> loadAll( final Class<T> serviceClazz ) {
+		public <T> Iterable<T> loadAll( final Class<T> serviceClazz, final ProviderContext providerContext ) {
 			Iterable<?> instances = dependencies.get( serviceClazz );
 			if ( instances == null )
 				synchronized ( dependencies ) {
 					instances = dependencies.get( serviceClazz );
 					if ( instances == null )
-						instances = loadServicesFor( serviceClazz );
+						instances = loadServicesFor( serviceClazz, providerContext );
 				}
 			return (Iterable<T>)instances;
 		}
 
-		private <T> Iterable<T> loadServicesFor( final Class<T> serviceClazz ) {
+		private <T> Iterable<T> loadServicesFor( final Class<T> serviceClazz, final ProviderContext providerContext ) {
 			final List<Class<T>> iterableInterfaces = injectionContext.loadClassesImplementing( serviceClazz );
 			Iterable<T> instances = null;
 			if ( !iterableInterfaces.isEmpty() ) {
-				instances = injectionContext.instantiate( iterableInterfaces );
+				instances = injectionContext.instantiate( iterableInterfaces, providerContext );
 				dependencies.put( serviceClazz, instances );
 			} else {
-				final T instance = injectionContext.instantiate( serviceClazz );
+				final T instance = injectionContext.instantiate( serviceClazz, providerContext );
 				instances = instance == null ? EmptyIterable.instance() : new SingleObjectIterable<>( instance );
 			}
 			loadDependenciesAndInjectInto( instances );

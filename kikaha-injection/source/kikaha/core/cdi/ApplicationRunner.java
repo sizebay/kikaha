@@ -5,11 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ApplicationRunner {
 
-	final ServiceProvider provider = new DefaultServiceProvider();
-	Application application = provider.load( Application.class );
+	final DefaultServiceProvider provider = new DefaultServiceProvider();
 
 	public void run() throws Exception {
-		application.run();
+		provider.loadAllCustomClassConstructors();
+		loadApplication().run();
+	}
+
+	Application loadApplication(){
+		return provider.load( Application.class );
 	}
 
 	public static void main( String[] args ) throws Exception {

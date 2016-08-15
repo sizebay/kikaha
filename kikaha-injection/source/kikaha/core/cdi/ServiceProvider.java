@@ -1,9 +1,7 @@
 package kikaha.core.cdi;
 
 import kikaha.core.cdi.helpers.EmptyProviderContext;
-import kikaha.core.cdi.helpers.filter.AnyObject;
-import kikaha.core.cdi.helpers.filter.Condition;
-import kikaha.core.cdi.helpers.filter.Filter;
+import kikaha.core.cdi.helpers.filter.*;
 
 /**
  * It manages singleton and stateless instances, inject data into beans
@@ -63,7 +61,20 @@ public interface ServiceProvider {
 	 * @param serviceClazz - the service interface(or class) representation
 	 * @return - all loaded or created services.
 	 */
-	<T> Iterable<T> loadAll(Class<T> serviceClazz);
+	default <T> Iterable<T> loadAll(Class<T> serviceClazz) {
+		return loadAll( serviceClazz, EmptyProviderContext.INSTANCE );
+	}
+
+	/**
+	 * Load all services represented by the argument {@code serviceClazz}.
+	 * If no service was found, it will try to instantiate the class,
+	 * inject data and return an {@link Iterable} with this instance.
+	 *
+	 * @param serviceClazz - the service interface(or class) representation
+     * @param context - a contextual data found during the injection process
+	 * @return - all loaded or created services.
+	 */
+	<T> Iterable<T> loadAll(Class<T> serviceClazz, ProviderContext context);
 
 	/**
 	 * Defines a factory to be invoked every time a service represented with

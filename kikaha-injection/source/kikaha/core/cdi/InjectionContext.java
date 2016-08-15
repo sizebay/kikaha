@@ -21,24 +21,24 @@ public class InjectionContext {
 	InjectableDataExtractor qualifierExtractor;
 
 	@SuppressWarnings("unchecked")
-	public <T> Iterable<T> instantiate( Iterable<Class<T>> classes ){
+	public <T> Iterable<T> instantiate(final Iterable<Class<T>> classes, final ProviderContext providerContext){
 		final List<T> list = new TinyList<>();
 		synchronized ( cache ) {
 			for ( final Class<T> clazz : classes ) {
 				T object = (T)cache.get( clazz );
 				if ( object == null )
-					cache.put( clazz, object = instantiate( clazz ) );
+					cache.put( clazz, object = instantiate( clazz, providerContext ) );
 				list.add( object );
 			}
 		}
 		return list;
 	}
 
-	public <T> T instantiate( Class<T> clazz ) {
+	public <T> T instantiate(final Class<T> clazz, final ProviderContext providerContext) {
 		try {
-			for ( CustomClassConstructor constructor : customClassConstructors )
-				if ( constructor.isAbleToInstantiate( clazz ) )
-					return constructor.instantiate( clazz );
+			for ( final CustomClassConstructor constructor : customClassConstructors )
+				if ( constructor.isAbleToInstantiate( clazz, providerContext ) )
+					return constructor.instantiate( clazz, providerContext );
 		} catch ( final IllegalAccessException | InstantiationException cause ) {
 			if ( !isAbstract( clazz.getModifiers() ) && !isInterface( clazz.getModifiers() ))
 				log.debug("Can't instantiate " + clazz + ": " + cause.getMessage());

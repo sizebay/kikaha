@@ -75,6 +75,19 @@ public class TinyList<T> implements List<T>, RandomAccess {
 	}
 
 	@Override
+	public String toString() {
+		StringBuilder buffer = new StringBuilder('[');
+
+		boolean first = false;
+		for ( int i=0; i<data.length; i++, first = false ){
+			if ( !first ) buffer.append(',');
+			buffer.append( data[i].toString() );
+		}
+
+		return buffer.append(']').toString();
+	}
+
+	@Override
 	public boolean contains(Object o) {
 		throw new UnsupportedOperationException("method 'contains' is unavailable");
 	}
