@@ -1,18 +1,13 @@
 package kikaha.mustache;
 
+import java.io.IOException;
+import javax.enterprise.inject.Typed;
+import javax.inject.*;
 import com.github.mustachejava.MustacheNotFoundException;
 import io.undertow.server.HttpServerExchange;
-
-import java.io.IOException;
-
 import kikaha.core.NotFoundHandler;
 import kikaha.core.modules.http.ContentType;
-import kikaha.urouting.api.Mimes;
-import kikaha.urouting.api.Serializer;
-
-import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import kikaha.urouting.api.*;
 
 @ContentType( Mimes.HTML )
 @Singleton
@@ -32,6 +27,7 @@ public class HtmlMustacheSerializer implements Serializer {
 			String serialized = factory.serializer().serialize(template);
 			exchange.getResponseSender().send(serialized);
 		} catch ( MustacheNotFoundException cause ) {
+			cause.printStackTrace();
 			handleNotFound( exchange );
 		}
 	}
