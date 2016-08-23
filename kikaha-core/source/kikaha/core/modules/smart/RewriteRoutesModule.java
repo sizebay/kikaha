@@ -55,7 +55,7 @@ public class RewriteRoutesModule implements Module {
 		HttpHandler lastHandler = context.rootHandler();
 		for ( SmartRouteRule route : reverseRoutes ) {
 			log.info( "Reverse proxy rule: " + route );
-			final ProxyClient proxyClient = RewriterProxyClientProvider.from( route );
+			final ProxyClient proxyClient = ReverseProxyClientProvider.from( route );
 			lastHandler = new ProxyHandler( proxyClient, lastHandler );
 		}
 		context.rootHandler( lastHandler );
