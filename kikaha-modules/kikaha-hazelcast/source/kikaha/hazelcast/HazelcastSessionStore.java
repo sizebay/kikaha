@@ -27,7 +27,7 @@ public class HazelcastSessionStore extends AbstractCookieSessionStore {
 
 	@Override
 	protected void storeSession(String sessionId, Session session) {
-		sessionCache.put(sessionId, session);
+		sessionCache.set(sessionId, session);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class HazelcastSessionStore extends AbstractCookieSessionStore {
 
 	@Override
 	public void flush(Session session) {
-		sessionCache.put(session.getId(), session);
+		sessionCache.set(session.getId(), session);
 	}
 
 	public Collection<Session> retrieveAllSessions(){
