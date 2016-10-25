@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>io.skullabs.kikaha</groupId>
-        <version>2.0.4</version>
+        <version>2.1.0-SNAPSHOT</version>
         <artifactId>kikaha-parent</artifactId>
     </parent>
 
@@ -41,7 +41,7 @@
     <dependencies>
         <dependency>
             <groupId>io.skullabs.kikaha</groupId>
-            <version>2.0.4</version>
+            <version>2.1.0-SNAPSHOT</version>
             <artifactId>kikaha-injection-processor</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -68,7 +68,7 @@
                 <!-- configure kikaha-maven-plugin -->
                 <plugin>
                     <groupId>io.skullabs.kikaha</groupId>
-                    <version>2.0.4</version>
+                    <version>2.1.0-SNAPSHOT</version>
                     <artifactId>kikaha-maven-plugin</artifactId>
                     <configuration>
                         <webResourcesPath>${config.dir.web}</webResourcesPath>
