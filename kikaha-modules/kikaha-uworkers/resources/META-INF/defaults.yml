@@ -1,0 +1,4 @@
+server:
+  uworkers:
+    default:
+      parallelism: 1
