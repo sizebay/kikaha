@@ -45,7 +45,7 @@ public class Threads {
 			Future<?> future;
 			while ((future = asyncJobs.poll()) != null)
 				try {
-					future.get(25, MILLISECONDS);
+					future.get(100, MILLISECONDS);
 				} catch ( TimeoutException c ) {}
 			executorService.shutdownNow();
 		} catch ( final Exception cause ) {
