@@ -39,4 +39,9 @@ public class FieldProviderContext implements ProviderContext {
 	public <T> T attribute( Class<T> key ) {
 		return null;
 	}
+
+	@Override
+	public String toString() {
+		return field.toString();
+	}
 }

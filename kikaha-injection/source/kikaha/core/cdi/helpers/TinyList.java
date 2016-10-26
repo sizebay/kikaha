@@ -88,13 +88,13 @@ public class TinyList<T> implements List<T>, RandomAccess {
 	}
 
 	@Override
-	public boolean contains(Object o) {
-		throw new UnsupportedOperationException("method 'contains' is unavailable");
+	public Object[] toArray() {
+		return Arrays.copyOf(data, size);
 	}
 
 	@Override
-	public Object[] toArray() {
-		throw new UnsupportedOperationException("method 'toArray' is unavailable");
+	public boolean contains(Object o) {
+		throw new UnsupportedOperationException("method 'contains' is unavailable");
 	}
 
 	@Override

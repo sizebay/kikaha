@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * A background task that consumes messages from endpoints and forward it to {@link Worker}s.
+ * A background task that consumes messages from endpoints and send it to {@link Worker}s.
  */
 @Slf4j
 @RequiredArgsConstructor

@@ -1,6 +1,7 @@
 package kikaha.uworkers.api;
 
 import java.util.function.BiConsumer;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Represents a response promise from a given task sent to a Worker.
@@ -20,5 +21,18 @@ public interface Response {
 	 * @param listener
 	 * @return
 	 */
-	<RESP> Response then( BiConsumer<RESP, Throwable> listener );
+	Response then( BiConsumer<UndefinedObject, Throwable> listener );
+
+	/**
+	 * Store an object which its class is not initially known. It allow developers
+	 * to as the held object to a more convenient type more easily.
+	 */
+	@RequiredArgsConstructor
+	class UndefinedObject {
+		final Object object;
+
+		public <T> T as(Class<T> type ) {
+			return (T) object;
+		}
+	}
 }

@@ -31,7 +31,7 @@ public interface Exchange extends Response {
 
 	/**
 	 * Forward a message to a given {@link WorkerRef}. Developers are encouraged to use
-	 * this method instead of {@link WorkerRef#forward} in order to keep the code cleaner.
+	 * this method instead of {@link WorkerRef#send} in order to keep the code cleaner.
 	 *
 	 * @param request
 	 * @param <NEW_REQ>
@@ -42,7 +42,7 @@ public interface Exchange extends Response {
 	}
 
 	/**
-	 * A helper class that holds an {@code exchange} to forward a {@code request} message to a {@link WorkerRef}.
+	 * A helper class that holds an {@code exchange} to send a {@code request} message to a {@link WorkerRef}.
 	 */
 	@RequiredArgsConstructor
 	class Forwardable {
@@ -54,7 +54,7 @@ public interface Exchange extends Response {
 		 * @param ref
 		 */
 		public void to( WorkerRef ref ) {
-			ref.forward( exchange, request );
+			ref.send( exchange, request );
 		}
 	}
 }

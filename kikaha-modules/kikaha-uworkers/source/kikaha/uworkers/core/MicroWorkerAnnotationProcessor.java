@@ -29,22 +29,31 @@ public class MicroWorkerAnnotationProcessor extends AbstractProcessor implements
 	public boolean process( final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv ) {
 		try {
 			final List<ExecutableElement> elements = retrieveMethodsAnnotatedWith( roundEnv, Worker.class );
-			info( "Found " + elements.size() + " worker methods..." );
-			for ( ExecutableElement element : elements ) {
-				final MicroWorkerListenerClass clazz = createClassFrom(element);
-				info( "  Generating " + clazz.getTargetCanonicalClassName() );
-				generator.generate( clazz );
-			}
+			if ( !elements.isEmpty() )
+				process( elements );
 			return false;
 		} catch ( final IOException e ) {
 			throw new IllegalStateException( e );
 		}
 	}
 
+	private void process( final List<ExecutableElement> elements ) throws IOException {
+		info( "Found " + elements.size() + " worker methods..." );
+		for ( ExecutableElement element : elements ) {
+			final MicroWorkerListenerClass clazz = createClassFrom( element );
+			if ( clazz != null ) {
+				info("  Generating " + clazz.getTargetCanonicalClassName() );
+				generator.generate( clazz );
+			}
+		}
+	}
+
 	private MicroWorkerListenerClass createClassFrom( final ExecutableElement element ) {
 		final List<? extends VariableElement> typeParameters = element.getParameters();
-		if ( typeParameters.size() > 1 || typeParameters.isEmpty() )
-			throw new IllegalArgumentException( "Invalid method " + element.asType().toString() + ". Worker methods should have exactly one argument." );
+		if ( typeParameters.size() > 1 || typeParameters.isEmpty() ) {
+			final String className = extractCanonicalName(element.getEnclosingElement());
+			throw new IllegalArgumentException("Invalid method " + className + "." + element.toString() + ". Worker methods should have exactly one argument.");
+		}
 
 		final String parameterType = extractCanonicalName( typeParameters.get(0) );
 		return createClass( element, element.getAnnotation(Worker.class),
@@ -68,6 +77,10 @@ public class MicroWorkerAnnotationProcessor extends AbstractProcessor implements
 
 	private void info( final String msg ) {
 		processingEnv.getMessager().printMessage( Diagnostic.Kind.NOTE, msg );
+	}
+
+	private void warn( final String msg ) {
+		processingEnv.getMessager().printMessage( Diagnostic.Kind.MANDATORY_WARNING, msg );
 	}
 
 	/**
