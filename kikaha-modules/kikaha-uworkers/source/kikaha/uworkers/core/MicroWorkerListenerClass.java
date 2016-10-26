@@ -13,6 +13,9 @@ public class MicroWorkerListenerClass {
 	final String packageName;
 	final String targetClass;
 	final String methodName;
+	final String parameterType;
+	final String endpointName;
+	final String endpointURL;
 	final boolean rawObject;
 
 	public long getIdentifier() {
@@ -25,5 +28,9 @@ public class MicroWorkerListenerClass {
 
 	public String getTargetCanonicalClassName(){
 		return packageName + "." + targetClass;
+	}
+
+	public String toString(){
+		return packageName + "." + getClassName();
 	}
 }

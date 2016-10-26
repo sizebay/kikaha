@@ -3,7 +3,7 @@ package kikaha.uworkers.core;
 /**
  * Factory interface to provide {@link EndpointInboxSupplier} implementations.
  */
-public interface EndpointInboxSupplierFactory {
+public interface EndpointInboxSupplierFactory extends Comparable<EndpointInboxSupplierFactory> {
 
 	/**
 	 * Returns true if can handle the endpoint {@code endpointName}.
@@ -23,4 +23,25 @@ public interface EndpointInboxSupplierFactory {
 	 * @return
 	 */
 	EndpointInboxSupplier createSupplier( String endpointName );
+
+	/**
+	 * Defines the priority this factory have. It is useful when we have more than
+	 * one factory available on the Class Path. The greater the returned number
+	 * higher the priority.
+	 *
+	 * @return
+	 */
+	default int priority(){
+		return 0;
+	}
+
+	/**
+	 * Used to compare two factories. Developers are not encouraged to override this method.
+	 *
+	 * @param o
+	 * @return
+	 */
+	default int compareTo(EndpointInboxSupplierFactory o) {
+		return Integer.compare( priority(), o.priority() );
+	}
 }

@@ -1,10 +1,10 @@
 package kikaha.urouting;
 
-import static kikaha.urouting.AnnotationProcessorUtil.extractCanonicalName;
-import static kikaha.urouting.AnnotationProcessorUtil.extractMethodParamsFrom;
-import static kikaha.urouting.AnnotationProcessorUtil.extractPackageName;
-import static kikaha.urouting.AnnotationProcessorUtil.extractServiceInterfaceFrom;
-import static kikaha.urouting.AnnotationProcessorUtil.retrieveFirstMethodAnnotatedWith;
+import static kikaha.core.cdi.helpers.filter.AnnotationProcessorUtil.extractCanonicalName;
+import static kikaha.core.cdi.helpers.filter.AnnotationProcessorUtil.extractMethodParamsFrom;
+import static kikaha.core.cdi.helpers.filter.AnnotationProcessorUtil.extractPackageName;
+import static kikaha.core.cdi.helpers.filter.AnnotationProcessorUtil.extractServiceInterfaceFrom;
+import static kikaha.core.cdi.helpers.filter.AnnotationProcessorUtil.retrieveFirstMethodAnnotatedWith;
 
 import java.lang.annotation.Annotation;
 

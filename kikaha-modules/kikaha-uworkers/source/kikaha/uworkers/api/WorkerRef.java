@@ -10,10 +10,9 @@ public interface WorkerRef {
 	 *
 	 * @param request
 	 * @param <REQ>
-	 * @param <RESP>
 	 * @return
 	 */
-	<REQ, RESP> Response<REQ, RESP> send(REQ request);
+	<REQ> Response send(REQ request);
 
 	/**
 	 * Forward a received message {@code request} to the Worker referenced by {@link WorkerRef}.
@@ -23,7 +22,6 @@ public interface WorkerRef {
 	 * @param exchange
 	 * @param request
 	 * @param <REQ>
-	 * @param <RESP>
 	 */
-	<REQ, RESP> void forward( Exchange<?, RESP> exchange, REQ request );
+	<REQ> void forward( Exchange exchange, REQ request );
 }

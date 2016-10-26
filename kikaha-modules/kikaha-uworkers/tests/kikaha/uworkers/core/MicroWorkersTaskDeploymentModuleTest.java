@@ -4,9 +4,9 @@ import static java.util.Arrays.asList;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import java.io.IOException;
-import javax.inject.*;
+import javax.inject.Inject;
 import kikaha.core.test.KikahaRunner;
-import kikaha.uworkers.api.Exchange;
+import kikaha.uworkers.api.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -76,7 +76,7 @@ public class MicroWorkersTaskDeploymentModuleTest {
 	}
 }
 
-@Named("first")
+@Worker( endpoint = "first", alias = "first" )
 class FirstWorkerEndpointMessageListener implements WorkerEndpointMessageListener {
 
 	@Override
@@ -85,7 +85,7 @@ class FirstWorkerEndpointMessageListener implements WorkerEndpointMessageListene
 	}
 }
 
-@Named("second")
+@Worker( endpoint = "second", alias = "second" )
 class SecondWorkerEndpointMessageListener implements WorkerEndpointMessageListener {
 
 	@Override
@@ -94,7 +94,7 @@ class SecondWorkerEndpointMessageListener implements WorkerEndpointMessageListen
 	}
 }
 
-@Named("configured")
+@Worker( endpoint = "configured", alias = "configured" )
 class ConfiguredWorkerEndpointMessageListener implements WorkerEndpointMessageListener {
 
 	@Override
@@ -103,7 +103,7 @@ class ConfiguredWorkerEndpointMessageListener implements WorkerEndpointMessageLi
 	}
 }
 
-@Named("not-configured")
+@Worker( endpoint = "not-configured", alias = "not-configured" )
 class NotConfiguredWorkerEndpointMessageListener implements WorkerEndpointMessageListener {
 
 	@Override

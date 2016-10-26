@@ -28,7 +28,7 @@ public class EndpointInboxConsumerTest {
 
 	@Before
 	public void createConsumer(){
-		consumer = new EndpointInboxConsumer( supplier, listener, "default" );
+		consumer = new EndpointInboxConsumer( supplier, listener, "default", "default" );
 	}
 
 	@Test

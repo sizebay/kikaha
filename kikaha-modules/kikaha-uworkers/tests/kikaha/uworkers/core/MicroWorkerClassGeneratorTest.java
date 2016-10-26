@@ -36,7 +36,7 @@ public class MicroWorkerClassGeneratorTest {
 	@SneakyThrows
 	public void ensureCanGenerateARawListenerClass(){
 		final MicroWorkerListenerClass workerListenerClass = new MicroWorkerListenerClass(
-			"io.kikaha.sample", "TargetClass", "methodName", true);
+			"io.kikaha.sample", "TargetClass", "methodName", "java.lang.String", "no-exchange", "no-exchange", true);
 		generator.generate( workerListenerClass );
 
 		final String expectedGeneratedClass = readFile("expected-generated-raw-class.java");
@@ -47,7 +47,7 @@ public class MicroWorkerClassGeneratorTest {
 	@SneakyThrows
 	public void ensureCanGenerateAListenerClass(){
 		final MicroWorkerListenerClass workerListenerClass = new MicroWorkerListenerClass(
-				"io.kikaha.sample", "TargetClass", "methodName", false);
+				"io.kikaha.sample", "TargetClass", "methodName", "java.lang.String", "with-exchange", "with-exchange", false);
 		generator.generate( workerListenerClass );
 
 		final String expectedGeneratedClass = readFile("expected-generated-class.java");

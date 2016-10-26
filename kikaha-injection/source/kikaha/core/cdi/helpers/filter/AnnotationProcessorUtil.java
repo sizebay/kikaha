@@ -1,28 +1,21 @@
-package kikaha.urouting;
+package kikaha.core.cdi.helpers.filter;
 
-import kikaha.core.cdi.helpers.filter.Condition;
-import kikaha.core.cdi.helpers.filter.Filter;
-import lombok.RequiredArgsConstructor;
-import lombok.val;
-
+import java.lang.annotation.Annotation;
+import java.util.*;
 import javax.annotation.processing.RoundEnvironment;
 import javax.enterprise.inject.Typed;
 import javax.lang.model.element.*;
-import javax.lang.model.type.MirroredTypesException;
-import javax.lang.model.type.TypeMirror;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
+import javax.lang.model.type.*;
 
 public class AnnotationProcessorUtil {
 
 	final static String METHOD_PARAM_EOL = "\n\t\t\t";
 
 	@SuppressWarnings( "unchecked" )
-	public static List<Element> retrieveMethodsAnnotatedWith( final RoundEnvironment roundEnv,
+	public static List<ExecutableElement> retrieveMethodsAnnotatedWith( final RoundEnvironment roundEnv,
 			final Class<? extends Annotation> annotation )
 	{
-		return asList((Iterable<Element>) Filter.filter(
+		return (List) asList((Iterable<Element>) Filter.filter(
 				roundEnv.getElementsAnnotatedWith( annotation ),
 				new MethodsOnlyCondition() ));
 	}
@@ -93,32 +86,5 @@ public class AnnotationProcessorUtil {
 	}
 }
 
-class MethodsOnlyCondition implements Condition<Element> {
 
-	@Override
-	public boolean check( final Element object ) {
-		val parentClass = object.getEnclosingElement();
-		return object.getKind().equals( ElementKind.METHOD )
-				&& isNotAbstract( parentClass );
-	}
 
-	private boolean isNotAbstract( Element clazz ) {
-		for ( val modifier : clazz.getModifiers() )
-			if ( Modifier.ABSTRACT.equals( modifier ) )
-				return false;
-		return true;
-	}
-}
-
-@RequiredArgsConstructor
-class AnnotatedMethodsCondition implements Condition<Element> {
-
-	final Class<? extends Annotation> annotationType;
-
-	@Override
-	public boolean check( final Element element ) {
-		final MethodsOnlyCondition methodsOnlyCondition = new MethodsOnlyCondition();
-		return methodsOnlyCondition.check( element )
-				&& element.getAnnotation( annotationType ) != null;
-	}
-}

@@ -5,7 +5,7 @@ import java.lang.annotation.Annotation;
 import javax.lang.model.element.*;
 import io.undertow.websockets.core.CloseMessage;
 import kikaha.core.modules.websocket.WebSocketSession;
-import kikaha.urouting.AnnotationProcessorUtil.MethodParameterParser;
+import kikaha.core.cdi.helpers.filter.AnnotationProcessorUtil.MethodParameterParser;
 import kikaha.urouting.EventDispatcher.Matcher;
 import kikaha.urouting.api.*;
 import lombok.*;

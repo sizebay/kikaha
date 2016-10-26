@@ -5,8 +5,9 @@ import kikaha.uworkers.api.*;
 import javax.inject.*;
 
 @Singleton
+@Worker( endpoint = "no-exchange", alias = "no-exchange" )
 @SuppressWarnings("unchecked")
-public class GeneratedRoutingMethod1479529980 implements WorkerEndpointMessageListener {
+public class GeneratedRoutingMethod770339057 implements WorkerEndpointMessageListener {
 
 	@Inject io.kikaha.sample.TargetClass listener;
 
@@ -14,7 +15,7 @@ public class GeneratedRoutingMethod1479529980 implements WorkerEndpointMessageLi
 	public void onMessage( final Exchange exchange ) throws Throwable {
 		try {
 			listener.methodName(
-				exchange.request()
+				(java.lang.String)exchange.request()
 			);
 		} catch ( Throwable cause ) {
 			exchange.reply( cause );

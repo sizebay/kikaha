@@ -8,6 +8,7 @@ import io.undertow.Undertow;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
+import kikaha.uworkers.api.Worker;
 import lombok.Getter;
 
 /**
@@ -44,12 +45,11 @@ public class MicroWorkersTaskDeploymentModule implements Module {
 	}
 
 	private EndpointInboxConsumer createConsumerFor( final WorkerEndpointMessageListener listener ) throws IOException {
-		final Named annotation = listener.getClass().getAnnotation(Named.class);
+		final Worker annotation = listener.getClass().getAnnotation(Worker.class);
 		if ( annotation == null )
-			throw new IOException( "Can't instantiate " + listener.getClass() + ": no @Named endpoint found." );
-		final String endpointName = annotation.value();
-		final EndpointInboxSupplier inbox = createSupplierFor(endpointName);
-		return new EndpointInboxConsumer( inbox, listener, endpointName);
+			throw new IOException( "Can't instantiate " + listener.getClass() + ": no @Worker endpoint found." );
+		final EndpointInboxSupplier inbox = createSupplierFor( annotation.endpoint() );
+		return new EndpointInboxConsumer( inbox, listener, annotation.alias(), annotation.endpoint() );
 	}
 
 	EndpointInboxSupplier createSupplierFor(String endpoint ) throws IOException {

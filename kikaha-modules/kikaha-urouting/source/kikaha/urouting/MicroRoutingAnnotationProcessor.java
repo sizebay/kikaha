@@ -1,29 +1,14 @@
 package kikaha.urouting;
 
-import static kikaha.urouting.AnnotationProcessorUtil.retrieveMethodsAnnotatedWith;
-
+import static kikaha.core.cdi.helpers.filter.AnnotationProcessorUtil.retrieveMethodsAnnotatedWith;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Filer;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
+import java.util.*;
+import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
 import javax.tools.Diagnostic.Kind;
-
-import kikaha.urouting.api.DELETE;
-import kikaha.urouting.api.GET;
-import kikaha.urouting.api.MultiPartFormData;
-import kikaha.urouting.api.PATCH;
-import kikaha.urouting.api.POST;
-import kikaha.urouting.api.PUT;
+import kikaha.urouting.api.*;
 
 @SupportedAnnotationTypes( "kikaha.urouting.api.*" )
 public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
@@ -52,11 +37,11 @@ public class MicroRoutingAnnotationProcessor extends AbstractProcessor {
 	}
 
 	void generateRoutingMethods( final RoundEnvironment roundEnv, final Class<? extends Annotation> httpMethodAnnotation ) throws IOException {
-		final List<Element> elementsAnnotatedWith = retrieveMethodsAnnotatedWith( roundEnv, httpMethodAnnotation );
+		final List<ExecutableElement> elementsAnnotatedWith = retrieveMethodsAnnotatedWith( roundEnv, httpMethodAnnotation );
 		if ( !elementsAnnotatedWith.isEmpty() )
 			info( "Found HTTP methods to generate Undertow Routes" );
-		for ( final Element method : elementsAnnotatedWith )
-			generateRoutingMethods( (ExecutableElement)method, roundEnv, httpMethodAnnotation );
+		for ( final ExecutableElement method : elementsAnnotatedWith )
+			generateRoutingMethods( method, roundEnv, httpMethodAnnotation );
 	}
 
 	void generateRoutingMethods( final ExecutableElement method, final RoundEnvironment roundEnv,

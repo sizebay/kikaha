@@ -5,13 +5,13 @@ import lombok.RequiredArgsConstructor;
 /**
  * Represents a communication between the sender and the receiver of a message.
  */
-public interface Exchange<REQ,RESP> extends Response<REQ,RESP> {
+public interface Exchange extends Response {
 
 	/**
 	 * Returns the object sent by the sender.
 	 * @return
 	 */
-	REQ request();
+	<REQ> REQ request();
 
 	/**
 	 * Send a response to the sender.
@@ -19,7 +19,7 @@ public interface Exchange<REQ,RESP> extends Response<REQ,RESP> {
 	 * @param response
 	 * @return
 	 */
-	Exchange<REQ, RESP> reply(RESP response);
+	<RESP> Exchange reply(RESP response);
 
 	/**
 	 * Send an error response to the sender.
@@ -27,7 +27,7 @@ public interface Exchange<REQ,RESP> extends Response<REQ,RESP> {
 	 * @param error
 	 * @return
 	 */
-	Exchange<REQ, RESP> reply(Throwable error);
+	Exchange reply(Throwable error);
 
 	/**
 	 * Forward a message to a given {@link WorkerRef}. Developers are encouraged to use
@@ -37,20 +37,17 @@ public interface Exchange<REQ,RESP> extends Response<REQ,RESP> {
 	 * @param <NEW_REQ>
 	 * @return
 	 */
-	default <NEW_REQ> Forwardable<NEW_REQ, RESP> forward( NEW_REQ request ){
+	default <NEW_REQ> Forwardable forward( NEW_REQ request ){
 		return new Forwardable( request, this );
 	}
 
 	/**
 	 * A helper class that holds an {@code exchange} to forward a {@code request} message to a {@link WorkerRef}.
-	 *
-	 * @param <NEW_REQ>
-	 * @param <RESP>
 	 */
 	@RequiredArgsConstructor
-	class Forwardable<NEW_REQ,RESP> {
-		final NEW_REQ request;
-		final Exchange<?,RESP> exchange;
+	class Forwardable {
+		final Object request;
+		final Exchange exchange;
 
 		/**
 		 * Forwards the {@code request} message to a {@link WorkerRef}.

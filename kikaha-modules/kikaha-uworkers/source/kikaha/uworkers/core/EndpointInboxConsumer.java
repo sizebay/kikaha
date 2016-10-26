@@ -15,6 +15,7 @@ public class EndpointInboxConsumer implements Runnable {
 	final EndpointInboxSupplier inbox;
 	final WorkerEndpointMessageListener listener;
 	final String name;
+	final String endpointURL;
 
 	@Override
 	public void run() {

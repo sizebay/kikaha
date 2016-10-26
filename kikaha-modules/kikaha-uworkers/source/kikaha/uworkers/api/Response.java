@@ -5,14 +5,14 @@ import java.util.function.BiConsumer;
 /**
  * Represents a response promise from a given task sent to a Worker.
  */
-public interface Response<REQ,RESP> {
+public interface Response {
 
 	/**
 	 * Awaits for a response to come.
 	 *
 	 * @return
 	 */
-	RESP response();
+	<RESP> RESP response();
 
 	/**
 	 * Attach a listener that will be notified when the response is available.
@@ -20,5 +20,5 @@ public interface Response<REQ,RESP> {
 	 * @param listener
 	 * @return
 	 */
-	Response<REQ, RESP> then( BiConsumer<RESP, Throwable> listener );
+	<RESP> Response then( BiConsumer<RESP, Throwable> listener );
 }
