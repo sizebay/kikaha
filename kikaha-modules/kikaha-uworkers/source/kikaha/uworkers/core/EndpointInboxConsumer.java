@@ -32,9 +32,11 @@ public class EndpointInboxConsumer implements Runnable {
 	private Exchange getNextAvailableTask(){
 		try {
 			return inbox.receiveMessage();
-		} catch ( InterruptedException | IOException e ) {
+		} catch ( IOException e ) {
 			log.error( "Could not receive a message", e );
-			return null;
+		} catch ( InterruptedException e ) {
+			log.debug( "Could not receive a message", e );
 		}
+		return null;
 	}
 }

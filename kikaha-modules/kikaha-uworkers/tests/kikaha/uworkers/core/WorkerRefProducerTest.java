@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import kikaha.core.cdi.ProviderContext;
 import kikaha.core.test.KikahaRunner;
 import kikaha.uworkers.api.*;
+import kikaha.uworkers.local.LocalWorkerRef;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -19,7 +20,6 @@ public class WorkerRefProducerTest {
 
 	@Inject WorkerRefProducer producer;
 
-	@Inject
 	@Worker( endpoint = "same-endpoint")
 	WorkerRef injectedEndpoint;
 
@@ -51,5 +51,9 @@ public class WorkerRefProducerTest {
 		final WorkerRef workerRef = producer.produceAWorkerRef(providerContext);
 		assertNotNull( workerRef );
 		assertEquals( workerRef, injectedEndpoint );
+
+		final LocalWorkerRef localInjectedEndpoint = (LocalWorkerRef)injectedEndpoint;
+		final LocalWorkerRef localWorkerRef = (LocalWorkerRef)workerRef;
+		assertSame( localInjectedEndpoint.getSupplier(), localWorkerRef.getSupplier() );
 	}
 }

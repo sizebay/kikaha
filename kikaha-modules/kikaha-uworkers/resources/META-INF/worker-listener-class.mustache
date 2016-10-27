@@ -19,6 +19,6 @@ public class {{className}} implements WorkerEndpointMessageListener {
 			);
 		} catch ( Throwable cause ) {
 			exchange.reply( cause );
-		}
+		} finally { {{#rawObject}}exchange.acknowledge();{{/rawObject}} }
 	}
 }

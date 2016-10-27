@@ -6,6 +6,7 @@ import lombok.*;
 /**
  *
  */
+@Getter
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class LocalWorkerRef implements WorkerRef {
@@ -22,5 +23,10 @@ public class LocalWorkerRef implements WorkerRef {
 	public Response send( Exchange exchange ) {
 		supplier.sendMessage( exchange );
 		return exchange;
+	}
+
+	@Override
+	public String toString() {
+		return "WorkerRef( supplier = " + supplier + " )";
 	}
 }

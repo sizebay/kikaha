@@ -9,16 +9,18 @@ import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
 import kikaha.uworkers.api.Worker;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  */
+@Slf4j
 @Getter
 @Singleton
 public class MicroWorkersTaskDeploymentModule implements Module {
 
 	final String name = "uworkers-deployment";
-	Threads threads = Threads.elasticPool();
+	Threads threads;
 
 	@Inject EndpointContext endpointContext;
 
@@ -28,6 +30,11 @@ public class MicroWorkersTaskDeploymentModule implements Module {
 
 	@Override
 	public void load( final Undertow.Builder server, final DeploymentContext context) throws IOException {
+		if ( consumers.isEmpty() ) return;
+
+		log.info( "Deploying " + consumers.size() + " workers endpoints..." );
+
+		threads = Threads.elasticPool();
 		final int defaultParallelism = endpointContext.getEndpointParallelism("default", 1);
 		for ( final WorkerEndpointMessageListener consumer : consumers )
 			deploy( consumer, defaultParallelism );
@@ -51,5 +58,10 @@ public class MicroWorkersTaskDeploymentModule implements Module {
 	void runInBackgroundWithParallelism( final EndpointInboxConsumer consumer, final int parallelism ){
 		for ( int i=0; i<parallelism; i++ )
 			threads.submit( consumer );
+	}
+
+	@Override
+	public void unload() {
+		threads.shutdown();
 	}
 }

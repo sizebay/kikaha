@@ -4,10 +4,12 @@ import javax.enterprise.inject.Produces;
 import javax.inject.*;
 import kikaha.core.cdi.ProviderContext;
 import kikaha.uworkers.api.*;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  */
+@Slf4j
 @Singleton
 public class WorkerRefProducer {
 
@@ -19,6 +21,8 @@ public class WorkerRefProducer {
 		if ( annotation == null )
 			throw new IllegalArgumentException( "Missing @Worker annotation on " + providerContext );
 		final EndpointFactory factory = endpointContext.getFactoryFor(annotation.endpoint());
-		return factory.createWorkerRef( annotation.alias(), annotation.endpoint() );
+		final WorkerRef workerRef = factory.createWorkerRef(annotation.alias(), annotation.endpoint());
+		log.debug( "Creating " + workerRef );
+		return workerRef;
 	}
 }

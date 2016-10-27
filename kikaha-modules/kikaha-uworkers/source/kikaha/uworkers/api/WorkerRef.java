@@ -8,7 +8,16 @@ import kikaha.uworkers.core.WrappedExchange;
 public interface WorkerRef {
 
 	/**
-	 * Send a new request to the Worker referenced by this {@link WorkerRef}.
+	 * Sends an empty object to the Worker.
+	 *
+	 * @return
+	 */
+	default Response send() {
+		return send( new TimeStamp() );
+	}
+
+	/**
+	 * Send a new request to the Worker.
 	 *
 	 * @param request
 	 * @param <REQ>
@@ -17,16 +26,15 @@ public interface WorkerRef {
 	<REQ> Response send(REQ request);
 
 	/**
-	 * Send a new {@link Exchange} to the Worker referenced by this {@link WorkerRef}.
+	 * Send a new {@link Exchange} to the Worker.
 	 * @param exchange
 	 * @return
 	 */
 	Response send( Exchange exchange );
 
 	/**
-	 * Forward a received message {@code request} to the Worker referenced by {@link WorkerRef}.
-	 * Whoever receive this message will be able to send a reply to the original sender that the
-	 * current {@link Exchange} is holding.
+	 * Forward a received message {@code request} to the Worker. Whoever receive this message
+	 * will be able to send a reply to the original sender that the current {@link Exchange} is holding.
 	 *
 	 * @param exchange
 	 * @param request

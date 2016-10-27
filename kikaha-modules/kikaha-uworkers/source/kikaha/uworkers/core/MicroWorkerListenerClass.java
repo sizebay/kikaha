@@ -23,7 +23,7 @@ public class MicroWorkerListenerClass {
 	}
 
 	public String getClassName(){
-		return "GeneratedRoutingMethod" + getIdentifier();
+		return "GeneratedWorkerMethod" + getIdentifier();
 	}
 
 	public String getTargetCanonicalClassName(){

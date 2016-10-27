@@ -30,6 +30,11 @@
       <artifactId>kikaha-injection-processor</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

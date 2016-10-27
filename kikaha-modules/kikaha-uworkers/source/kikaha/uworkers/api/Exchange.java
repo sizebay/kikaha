@@ -30,6 +30,16 @@ public interface Exchange extends Response {
 	Exchange reply(Throwable error);
 
 	/**
+	 * Send an empty object as response to the send. It is useful to
+	 * make the send aware that the job the Worker was supposed to do have finished.
+	 *
+	 * @return
+	 */
+	default Exchange acknowledge() {
+		return reply( new TimeStamp() );
+	}
+
+	/**
 	 * Forward a message to a given {@link WorkerRef}. Developers are encouraged to use
 	 * this method instead of {@link WorkerRef#send} in order to keep the code cleaner.
 	 *

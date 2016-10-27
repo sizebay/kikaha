@@ -14,8 +14,6 @@
     <packaging>pom</packaging>
 
     <properties>
-        <!-- -->
-        <version.logback>1.1.7</version.logback>
         <!-- Configs -->
         <config.dir.source>${project.basedir}/src/main/java</config.dir.source>
         <config.dir.source.generated>${project.build.directory}/generated-sources/annotations</config.dir.source.generated>
@@ -27,16 +25,6 @@
         <config.dir.web>${project.basedir}/src/main/webapp</config.dir.web>
         <config.encoding>UTF-8</config.encoding>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${version.logback}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
