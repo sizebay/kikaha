@@ -1,17 +1,13 @@
 package kikaha.hazelcast;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.*;
+import javax.inject.*;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.XmlConfigBuilder;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.*;
 import kikaha.config.Config;
 import lombok.Getter;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 @Singleton
 public class HazelcastInstanceProducer {
@@ -29,6 +25,7 @@ public class HazelcastInstanceProducer {
 	@PostConstruct
 	public void preloadInstance(){
 		instance = createHazelcastInstance();
+		Runtime.getRuntime().addShutdownHook( new Thread( instance::shutdown ) );
 	}
 
 	/**
