@@ -34,5 +34,7 @@ public interface Response {
 		public <T> T as(Class<T> type ) {
 			return (T) object;
 		}
+
+		public <T> T get() { return (T)object; }
 	}
 }
