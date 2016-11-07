@@ -14,6 +14,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>kikaha-cloud-aws</module>
     <module>kikaha-uworkers</module>
     <module>kikaha-urouting</module>
     <module>kikaha-urouting-jackson</module>

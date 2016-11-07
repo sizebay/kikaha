@@ -78,6 +78,7 @@
         <version.vibur>9.0</version.vibur>
         <version.java.mail>1.4.4</version.java.mail>
         <version.logback>1.1.7</version.logback>
+        <version.aws>1.11.51</version.aws>
         <!-- Plugin's Versions -->
         <version.compiler.plugin>3.3</version.compiler.plugin>
         <version.resources.plugin>2.6</version.resources.plugin>
@@ -189,6 +190,11 @@
             <dependency>
                 <groupId>io.skullabs.kikaha</groupId>
                 <artifactId>kikaha-java-mail</artifactId>
+                <version>2.1.0-alpha1</version>
+            </dependency>
+            <dependency>
+                <groupId>io.skullabs.kikaha</groupId>
+                <artifactId>kikaha-cloud-aws</artifactId>
                 <version>2.1.0-alpha1</version>
             </dependency>
             <!-- Main project dependencies -->

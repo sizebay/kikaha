@@ -1,0 +1,11 @@
+server:
+  aws:
+    credentials:
+
+      default:
+        access-key-id: "1234"
+        secret-access-key: "4321"
+
+      alternative:
+        access-key-id: "2345"
+        secret-access-key: "5432"
