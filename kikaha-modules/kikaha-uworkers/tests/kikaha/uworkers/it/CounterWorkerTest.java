@@ -16,10 +16,10 @@ import org.junit.runner.RunWith;
 @RunWith(KikahaRunner.class)
 public class CounterWorkerTest {
 
-	@Worker( endpoint = "count-down")
+	@Worker( value = "count-down")
 	WorkerRef countDownWorker;
 
-	@Worker( endpoint = "get-count")
+	@Worker( value = "get-count")
 	WorkerRef getCountDownWorker;
 
 	@Inject CounterWorker workerInstance;

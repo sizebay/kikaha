@@ -14,7 +14,6 @@ public class MicroWorkerListenerClass {
 	final String targetClass;
 	final String methodName;
 	final String parameterType;
-	final String endpointName;
 	final String endpointURL;
 	final boolean rawObject;
 

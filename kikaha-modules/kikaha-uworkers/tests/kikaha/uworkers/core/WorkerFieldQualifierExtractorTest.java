@@ -47,7 +47,7 @@ public class WorkerFieldQualifierExtractorTest {
 
 class HypotheticalClassWithWorkerReferences {
 
-	@Worker( endpoint = "fake-worker" )
+	@Worker( value = "fake-worker" )
 	WorkerRef workerRef;
 	WorkerRef workerRefNotAnnotated;
 

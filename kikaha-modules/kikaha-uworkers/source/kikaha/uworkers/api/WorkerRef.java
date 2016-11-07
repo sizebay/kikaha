@@ -3,7 +3,7 @@ package kikaha.uworkers.api;
 import kikaha.uworkers.core.WrappedExchange;
 
 /**
- * A reference to a worker endpoint.
+ * A reference to a worker value.
  */
 public interface WorkerRef {
 

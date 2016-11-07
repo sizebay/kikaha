@@ -39,7 +39,7 @@ public class MicroWorkersTaskDeploymentModuleTest {
 		endpointContext.config = config;
 		endpointContext.factories = asList( inboxSupplierFactory );
 		doReturn( true ).when( inboxSupplierFactory ).canHandleEndpoint( anyString() );
-		doReturn( inbox ).when( inboxSupplierFactory ).createSupplier( anyString(), anyString() );
+		doReturn( inbox ).when( inboxSupplierFactory ).createSupplier( anyString() );
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class MicroWorkersTaskDeploymentModuleTest {
 	}
 }
 
-@Worker( endpoint = "first", alias = "first" )
+@Worker( value = "first" )
 class FirstWorkerEndpointMessageListener implements WorkerEndpointMessageListener {
 
 	@Override
@@ -84,7 +84,7 @@ class FirstWorkerEndpointMessageListener implements WorkerEndpointMessageListene
 	}
 }
 
-@Worker( endpoint = "second", alias = "second" )
+@Worker( value = "second" )
 class SecondWorkerEndpointMessageListener implements WorkerEndpointMessageListener {
 
 	@Override
@@ -93,7 +93,7 @@ class SecondWorkerEndpointMessageListener implements WorkerEndpointMessageListen
 	}
 }
 
-@Worker( endpoint = "configured", alias = "configured" )
+@Worker( value = "configured" )
 class ConfiguredWorkerEndpointMessageListener implements WorkerEndpointMessageListener {
 
 	@Override
@@ -102,7 +102,7 @@ class ConfiguredWorkerEndpointMessageListener implements WorkerEndpointMessageLi
 	}
 }
 
-@Worker( endpoint = "not-configured", alias = "not-configured" )
+@Worker( value = "not-configured" )
 class NotConfiguredWorkerEndpointMessageListener implements WorkerEndpointMessageListener {
 
 	@Override

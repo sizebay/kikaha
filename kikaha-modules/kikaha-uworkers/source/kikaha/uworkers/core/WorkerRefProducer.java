@@ -20,8 +20,8 @@ public class WorkerRefProducer {
 		final Worker annotation = providerContext.getAnnotation(Worker.class);
 		if ( annotation == null )
 			throw new IllegalArgumentException( "Missing @Worker annotation on " + providerContext );
-		final EndpointFactory factory = endpointContext.getFactoryFor(annotation.endpoint());
-		final WorkerRef workerRef = factory.createWorkerRef(annotation.alias(), annotation.endpoint());
+		final EndpointFactory factory = endpointContext.getFactoryFor(annotation.value());
+		final WorkerRef workerRef = factory.createWorkerRef(annotation.value());
 		log.debug( "Creating " + workerRef );
 		return workerRef;
 	}

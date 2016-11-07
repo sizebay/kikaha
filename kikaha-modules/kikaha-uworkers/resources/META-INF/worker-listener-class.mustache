@@ -5,7 +5,7 @@ import kikaha.uworkers.api.*;
 import javax.inject.*;
 
 @Singleton
-@Worker( endpoint = "{{endpointURL}}", alias = "{{endpointName}}" )
+@Worker( "{{endpointURL}}" )
 @SuppressWarnings("unchecked")
 public class {{className}} implements WorkerEndpointMessageListener {
 

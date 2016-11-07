@@ -70,8 +70,7 @@ public class MicroWorkerAnnotationProcessor extends AbstractProcessor implements
 				extractCanonicalName( element.getEnclosingElement() ).replace( packageName + ".", "" ),
 				element.getSimpleName().toString(),
 				parameterType,
-				workerAnnotation.alias(),
-				workerAnnotation.endpoint(),
+				workerAnnotation.value(),
 				isRawObject );
 	}
 

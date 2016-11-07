@@ -18,7 +18,7 @@ public class LocalEndpointFactory implements EndpointFactory {
 	@Inject EndpointContext endpointContext;
 
 	@Override
-	public LocalEndpointInboxSupplier createSupplier( String alias, String endpointName) {
+	public LocalEndpointInboxSupplier createSupplier( String endpointName) {
 		return cachedSuppliers.computeIfAbsent( endpointName, this::instantiateSupplier );
 	}
 
@@ -31,8 +31,8 @@ public class LocalEndpointFactory implements EndpointFactory {
 	}
 
 	@Override
-	public LocalWorkerRef createWorkerRef( String alias, String endpointName ) {
-		final LocalEndpointInboxSupplier supplier = createSupplier(alias, endpointName);
+	public LocalWorkerRef createWorkerRef( String endpointName ) {
+		final LocalEndpointInboxSupplier supplier = createSupplier(endpointName);
 		return new LocalWorkerRef( supplier );
 	}
 

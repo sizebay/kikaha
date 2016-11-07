@@ -5,7 +5,7 @@ import kikaha.uworkers.api.*;
 import javax.inject.*;
 
 @Singleton
-@Worker( endpoint = "with-exchange", alias = "with-exchange" )
+@Worker( "with-exchange" )
 @SuppressWarnings("unchecked")
 public class GeneratedWorkerMethod299710559 implements WorkerEndpointMessageListener {
 

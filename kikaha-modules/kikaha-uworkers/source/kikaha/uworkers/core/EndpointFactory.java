@@ -9,11 +9,9 @@ import kikaha.uworkers.api.WorkerRef;
 public interface EndpointFactory extends Comparable<EndpointFactory> {
 
 	/**
-	 * Returns true if can handle the endpoint {@code endpointName}.
+	 * Returns true if can handle the value {@code endpointName}.
 	 *
-	 * @param endpointName - the endpoint that uniquely identifies the supplier. If
-	 *                     this endpoint is managed by external a broken (ActiveMQ, RabbitMQ,
-	 *                     AWS SQS, etc), then the endpoint name could be the endpoint broker URL.
+	 * @param endpointName - the value that uniquely identifies the supplier
 	 * @return
 	 */
 	boolean canHandleEndpoint( String endpointName );
@@ -24,26 +22,20 @@ public interface EndpointFactory extends Comparable<EndpointFactory> {
 	 * only if the method {@link EndpointFactory#canHandleEndpoint} have
 	 * returned {@code true} for this same {@code endpointName}.
 	 *
-	 * @param alias - the name used on the configuration file
-	 * @param endpointName - the endpoint that uniquely identifies the supplier. If
-	 *                     this endpoint is managed by external a broken (ActiveMQ, RabbitMQ,
-	 *                     AWS SQS, etc), then the endpoint name could be the endpoint broker URL.
+	 * @param endpointName - the value that uniquely identifies the supplier
 	 * @return
 	 */
-	EndpointInboxSupplier createSupplier(String alias, String endpointName);
+	EndpointInboxSupplier createSupplier(String endpointName);
 
 	/**
 	 * Creates a reference to a Worker. This method will be called automatically by
 	 * the {@code kikaha-uWorker} module only if the method {@link EndpointFactory#canHandleEndpoint} have
 	 * returned {@code true} for this same {@code endpointName}.
 	 *
-	 * @param alias - the name used on the configuration file.
-	 * @param endpointName - the endpoint that uniquely identifies the supplier. If
-	 *                     this endpoint is managed by external a broken (ActiveMQ, RabbitMQ,
-	 *                     AWS SQS, etc), then the endpoint name could be the endpoint broker URL.
+	 * @param endpointName - the value that uniquely identifies the supplier
 	 * @return
 	 */
-	WorkerRef createWorkerRef(String alias, String endpointName );
+	WorkerRef createWorkerRef(String endpointName );
 
 	/**
 	 * Defines the priority this factory have. It is useful when we have more than

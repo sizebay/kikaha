@@ -20,7 +20,7 @@ public class WorkerRefProducerTest {
 
 	@Inject WorkerRefProducer producer;
 
-	@Worker( endpoint = "same-endpoint")
+	@Worker( value = "same-value")
 	WorkerRef injectedEndpoint;
 
 	@Mock Worker workerAnnotation;
@@ -39,7 +39,7 @@ public class WorkerRefProducerTest {
 
 	@Test
 	public void ensureCanProduceAWorkerRef(){
-		doReturn( "any-endpoint" ).when( workerAnnotation ).endpoint();
+		doReturn( "any-value" ).when( workerAnnotation ).value();
 		final WorkerRef workerRef = producer.produceAWorkerRef(providerContext);
 		assertNotNull( workerRef );
 		assertNotEquals( workerRef, injectedEndpoint );
@@ -47,7 +47,7 @@ public class WorkerRefProducerTest {
 
 	@Test
 	public void ensureCanProduceTheSameWorkerRefAlreadyInjectedOnThisTestClass(){
-		doReturn( "same-endpoint" ).when( workerAnnotation ).endpoint();
+		doReturn( "same-value" ).when( workerAnnotation ).value();
 		final WorkerRef workerRef = producer.produceAWorkerRef(providerContext);
 		assertNotNull( workerRef );
 		assertEquals( workerRef, injectedEndpoint );

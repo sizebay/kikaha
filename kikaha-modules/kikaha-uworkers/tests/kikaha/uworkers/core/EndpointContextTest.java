@@ -34,7 +34,7 @@ public class EndpointContextTest {
 
 	@Test
 	public void ensureThatIsAbleToRetrieveAEndpointFactoryForAGivenEndpointName(){
-		final EndpointFactory factory = context.getFactoryFor("any-endpoint-name");
+		final EndpointFactory factory = context.getFactoryFor("any-value-name");
 		assertNotNull(factory);
 		assertTrue(LocalEndpointFactory.class.isInstance( factory ));
 	}

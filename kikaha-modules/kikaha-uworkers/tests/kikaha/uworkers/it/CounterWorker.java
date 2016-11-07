@@ -18,12 +18,12 @@ public class CounterWorker {
 		counter = new CountDownLatch( MANY_TIMES );
 	}
 
-	@Worker( endpoint = "count-down")
+	@Worker( value = "count-down")
 	public void count( Object object ){
 		counter.countDown();
 	}
 
-	@Worker( endpoint = "get-count")
+	@Worker( value = "get-count")
 	public void getCount(Exchange exchange) {
 		exchange.reply( counter.getCount() );
 	}
