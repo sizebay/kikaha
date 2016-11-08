@@ -7,7 +7,7 @@ import javax.inject.*;
 @Singleton
 @Worker( "no-exchange" )
 @SuppressWarnings("unchecked")
-public class GeneratedWorkerMethod770339057 implements WorkerEndpointMessageListener {
+public class GeneratedWorkerMethod4012354918 implements WorkerEndpointMessageListener {
 
 	@Inject io.kikaha.sample.TargetClass listener;
 
@@ -15,7 +15,7 @@ public class GeneratedWorkerMethod770339057 implements WorkerEndpointMessageList
 	public void onMessage( final Exchange exchange ) throws Throwable {
 		try {
 			listener.methodName(
-				(java.lang.String)exchange.request()
+				exchange.requestAs(java.lang.String.class)
 			);
 		} catch ( Throwable cause ) {
 			exchange.reply( cause );

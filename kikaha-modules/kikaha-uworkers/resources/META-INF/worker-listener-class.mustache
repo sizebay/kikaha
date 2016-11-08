@@ -15,7 +15,7 @@ public class {{className}} implements WorkerEndpointMessageListener {
 	public void onMessage( final Exchange exchange ) throws Throwable {
 		try {
 			listener.{{methodName}}(
-				({{parameterType}}){{#rawObject}}exchange.request(){{/rawObject}}{{^rawObject}}exchange{{/rawObject}}
+				{{#rawObject}}exchange.requestAs({{parameterType}}.class){{/rawObject}}{{^rawObject}}exchange{{/rawObject}}
 			);
 		} catch ( Throwable cause ) {
 			exchange.reply( cause );

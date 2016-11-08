@@ -16,6 +16,14 @@ public interface Response {
 	<RESP> RESP response();
 
 	/**
+	 * Awaits for a response to come.
+	 *
+	 * @param targetClass
+	 * @return
+	 */
+	<RESP> RESP responseAs( Class<RESP> targetClass );
+
+	/**
 	 * Attach a listener that will be notified when the response is available.
 	 *
 	 * @param listener

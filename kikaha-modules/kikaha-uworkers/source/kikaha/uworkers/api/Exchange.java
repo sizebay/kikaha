@@ -1,5 +1,6 @@
 package kikaha.uworkers.api;
 
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -12,6 +13,13 @@ public interface Exchange extends Response {
 	 * @return
 	 */
 	<REQ> REQ request();
+
+	/**
+	 * Returns the object sent by the sender.
+	 * @param targetClass
+	 * @return
+	 */
+	<REQ> REQ requestAs( Class<REQ> targetClass ) throws IOException;
 
 	/**
 	 * Send a response to the sender.

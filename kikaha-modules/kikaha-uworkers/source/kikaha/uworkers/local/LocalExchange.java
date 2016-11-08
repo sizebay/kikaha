@@ -65,6 +65,16 @@ public class LocalExchange implements Exchange {
 	}
 
 	@Override
+	public <REQ> REQ requestAs( Class<REQ> requestType ) {
+		return (REQ)request();
+	}
+
+	@Override
+	public <RESP> RESP responseAs( Class<RESP> responseType ) {
+		return response();
+	}
+
+	@Override
 	public <RESP> RESP response() {
 		while ( response == null && exception == null )
 			LockSupport.parkNanos(1l);

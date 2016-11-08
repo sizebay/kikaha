@@ -14,6 +14,11 @@ public class WrappedExchange implements Exchange {
 	final Exchange listener;
 
 	@Override
+	public <REQ> REQ requestAs( Class<REQ> requestType ) {
+		return (REQ)request;
+	}
+
+	@Override
 	public <REQ> REQ request() {
 		return (REQ)request;
 	}
@@ -39,5 +44,10 @@ public class WrappedExchange implements Exchange {
 	@Override
 	public <RESP> RESP response() {
 		throw new UnsupportedOperationException("response not available here!");
+	}
+
+	@Override
+	public <RESP> RESP responseAs(Class<RESP> targetClass) {
+		throw new UnsupportedOperationException("responseAs not available here!");
 	}
 }
