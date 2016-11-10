@@ -1,22 +1,30 @@
 package kikaha.hazelcast;
 
+import javax.inject.*;
 import io.undertow.server.HttpServerExchange;
-import kikaha.core.modules.security.AuthenticationRule;
-import kikaha.core.modules.security.DefaultSecurityContext;
-import kikaha.core.modules.security.SecurityContext;
-import kikaha.core.modules.security.SecurityContextFactory;
+import kikaha.core.modules.security.*;
+import lombok.extern.slf4j.Slf4j;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+@Slf4j
 @Singleton
+@Deprecated
 public class HazelcastSecurityContextFactory implements SecurityContextFactory {
 
 	@Inject
 	HazelcastSessionStore store;
 
+	public HazelcastSecurityContextFactory(){
+		log.info( "HazelcastSecurityContextFactory is deprecated and should be removed on the next major release. " +
+				"Please, take a look at the http://kikaha.io for more information" );
+	}
+
 	@Override
-	public SecurityContext createSecurityContextFor(HttpServerExchange exchange, AuthenticationRule rule ) {
-		return new DefaultSecurityContext( rule, exchange, store );
+	public SecurityContext createSecurityContextFor(
+			final HttpServerExchange exchange,
+			final AuthenticationRule rule,
+			final SessionStore sessionStore,
+			final SessionIdManager sessionIdManager)
+	{
+		return new DefaultSecurityContext( rule, exchange, store, sessionIdManager );
 	}
 }

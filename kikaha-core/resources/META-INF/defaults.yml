@@ -77,6 +77,8 @@ server:
       permission-denied-page: ""
 
     security-context-factory: kikaha.core.modules.security.DefaultSecurityContextFactory
+    session-id-manager: kikaha.core.modules.security.SessionCookie
+    session-store: kikaha.core.modules.security.InMemorySessionStore
 
     identity-managers:
       default: kikaha.core.modules.security.FixedUserAndPasswordIdentityManager

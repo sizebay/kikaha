@@ -1,46 +1,42 @@
 package kikaha.core.modules.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
+import javax.inject.Inject;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
-import kikaha.core.test.HttpServerExchangeStub;
-
-import kikaha.core.test.KikahaRunner;
+import kikaha.core.test.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.inject.Inject;
 
 @RunWith(KikahaRunner.class)
 public class InMemorySessionStoreTest {
 
 	final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
+	final SessionIdManager sessionIdManager = new SessionCookie();
 
 	@Inject
 	InMemorySessionStore store;
 
 	@Test
 	public void ensureThatIsAbleToCreateNewSessions(){
-		final Session session = store.createOrRetrieveSession(exchange);
+		final Session session = store.createOrRetrieveSession(exchange, sessionIdManager);
 		assertNotNull(session);
 	}
 
 	@Test
 	public void ensureThatRegisterACookieToTheNewSession(){
-		final Session session = store.createOrRetrieveSession(exchange);
+		final Session session = store.createOrRetrieveSession(exchange, sessionIdManager);
 		assertNotNull(session);
 		assertHasCookieForTheSession(session);
 	}
 
 	@Test
 	public void ensureThatIsAbleToRetrieveAJustCreatedSession(){
-		final Session session = store.createOrRetrieveSession(exchange);
+		final Session session = store.createOrRetrieveSession(exchange, sessionIdManager);
 		assertNotNull(session);
 		assertHasCookieForTheSession(session);
 		defineResponseCookiesAsRequestCookiesForTestPropose();
-		final Session retrievedSession = store.createOrRetrieveSession(exchange);
+		final Session retrievedSession = store.createOrRetrieveSession(exchange, sessionIdManager);
 		assertEquals( store.retrieveAllSessions().size(), 1 );
 		assertSame(session, retrievedSession);
 	}

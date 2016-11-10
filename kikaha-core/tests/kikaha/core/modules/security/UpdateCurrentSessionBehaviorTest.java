@@ -3,20 +3,12 @@ package kikaha.core.modules.security;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
+import java.util.Arrays;
 import io.undertow.security.idm.Account;
 import io.undertow.server.HttpServerExchange;
-
-import java.util.Arrays;
-
 import kikaha.core.test.HttpServerExchangeStub;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -48,7 +40,7 @@ public class UpdateCurrentSessionBehaviorTest {
 
 	@Before
 	public void configureSession(){
-		doReturn(session).when(store).createOrRetrieveSession(any());
+		doReturn(session).when(store).createOrRetrieveSession(any(),any());
 	}
 
 	@Test
@@ -79,7 +71,7 @@ public class UpdateCurrentSessionBehaviorTest {
 
 	private SecurityContext getAuthenticatedSecurityContext() {
 		doReturn( account ).when( mechanism ).authenticate( any(), any(), any() );
-		final SecurityContext context = new DefaultSecurityContext(rule, exchange, store);
+		final SecurityContext context = new DefaultSecurityContext(rule, exchange, store, new SessionCookie());
 		assertTrue( context.authenticate() );
 		verify( mechanism, never() ).sendAuthenticationChallenge( any(), any() );
 		verify( store, times( 1 ) ).flush( any() );

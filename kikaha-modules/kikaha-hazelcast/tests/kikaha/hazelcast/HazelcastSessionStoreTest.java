@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 import javax.inject.Inject;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
-import kikaha.core.modules.security.Session;
+import kikaha.core.modules.security.*;
 import kikaha.core.test.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,30 +13,30 @@ import org.junit.runner.RunWith;
 public class HazelcastSessionStoreTest {
 
 	final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
+	final SessionIdManager manager = new SessionCookie();
 
-	@Inject
-	HazelcastSessionStore store;
+	@Inject HazelcastSessionStore store;
 
 	@Test
 	public void ensureThatIsAbleToCreateNewSessions(){
-		final Session session = store.createOrRetrieveSession(exchange);
+		final Session session = store.createOrRetrieveSession(exchange, manager);
 		assertNotNull(session);
 	}
 
 	@Test
 	public void ensureThatRegisterACookieToTheNewSession(){
-		final Session session = store.createOrRetrieveSession(exchange);
+		final Session session = store.createOrRetrieveSession(exchange, manager);
 		assertNotNull(session);
 		assertHasCookieForTheSession(session);
 	}
 
 	@Test
 	public void ensureThatIsAbleToRetrieveAJustCreatedSession(){
-		final Session session = store.createOrRetrieveSession(exchange);
+		final Session session = store.createOrRetrieveSession(exchange, manager);
 		assertNotNull(session);
 		assertHasCookieForTheSession(session);
 		defineResponseCookiesAsRequestCookiesForTestPropose();
-		store.createOrRetrieveSession(exchange);
+		store.createOrRetrieveSession(exchange, manager);
 		assertEquals( store.retrieveAllSessions().size(), 1 );
 	}
 

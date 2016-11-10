@@ -2,29 +2,34 @@ package kikaha.core.modules.security;
 
 import java.util.*;
 import io.undertow.server.HttpServerExchange;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-@RequiredArgsConstructor
-public class InMemorySessionStore extends AbstractCookieSessionStore {
+@Slf4j
+public class InMemorySessionStore implements SessionStore {
 
+	static final String MSG_NOT_PRODUCTION_READY = "The InMemorySessionStore isn't designed for production proposes. Please consider using the HazelcastSecuritySessionStore.";
 	final Map<String, Session> cache = new HashMap<>();
 
+	public InMemorySessionStore(){
+		log.info( MSG_NOT_PRODUCTION_READY );
+	}
+
 	@Override
-	public Session createOrRetrieveSession( HttpServerExchange exchange ) {
-		final String sessionId = retrieveSessionIdFrom( exchange );
+	public Session createOrRetrieveSession( HttpServerExchange exchange, SessionIdManager sessionIdManager ) {
+		final String sessionId = sessionIdManager.retrieveSessionIdFrom( exchange );
 		Session session = getSessionFromCache( sessionId );
 		if ( session == null )
 			synchronized ( cache ) {
-				session = tryToCreateAndStoreNewSession(sessionId, exchange);
+				session = tryToCreateAndStoreNewSession(sessionId, exchange, sessionIdManager);
 			}
 		return session;
 	}
 
-	protected void storeSession(final String sessionId, Session session) {
+	public void storeSession(final String sessionId, Session session) {
 		cache.put( sessionId, session );
 	}
 
-	protected Session getSessionFromCache( String sessionId ) {
+	public Session getSessionFromCache( String sessionId ) {
 		if ( sessionId == null )
 			return null;
 		return cache.get( sessionId );

@@ -10,7 +10,7 @@ public class EmptySessionStore implements SessionStore {
 	private final Session session = new DefaultSession( SESSION_ID );
 
 	@Override
-	public Session createOrRetrieveSession( HttpServerExchange exchange ) {
+	public Session createOrRetrieveSession( HttpServerExchange exchange, SessionIdManager sessionIdManager ) {
 		return session;
 	}
 
@@ -19,4 +19,14 @@ public class EmptySessionStore implements SessionStore {
 
 	@Override
 	public void flush( Session currentSession ) {}
+
+	@Override
+	public Session getSessionFromCache(String sessionId) {
+		throw new UnsupportedOperationException("getSessionFromCache not implemented yet!");
+	}
+
+	@Override
+	public void storeSession(String sessionId, Session session) {
+		throw new UnsupportedOperationException("storeSession not implemented yet!");
+	}
 }

@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
  * A helper class to retrieve and store cookies into the {@link HttpServerExchange}.
  */
 @RequiredArgsConstructor
-public class SessionCookie {
+public class SessionCookie implements SessionIdManager {
 
 	final String cookieName;
 
@@ -26,6 +26,7 @@ public class SessionCookie {
 	 * @param exchange
 	 * @param sessionId
 	 */
+	@Override
 	public void attachSessionCookie(HttpServerExchange exchange, String sessionId ) {
 		final Cookie cookie = new CookieImpl( this.cookieName, sessionId ).setPath( "/" );
 		exchange.setResponseCookie( cookie );
@@ -37,6 +38,7 @@ public class SessionCookie {
 	 * @param sessionIdCreator
 	 * @return
 	 */
+	@Override
 	public String retrieveSessionIdFrom(HttpServerExchange exchange, Supplier<String> sessionIdCreator ) {
 		final Cookie cookie = exchange.getRequestCookies().get( cookieName );
 		return cookie != null ? cookie.getValue() : sessionIdCreator.get();

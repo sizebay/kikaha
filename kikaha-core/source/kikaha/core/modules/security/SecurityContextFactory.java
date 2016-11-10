@@ -20,5 +20,10 @@ public interface SecurityContextFactory {
 	 * @param exchange
 	 * @return
 	 */
-	SecurityContext createSecurityContextFor( HttpServerExchange exchange, AuthenticationRule rule );
+	SecurityContext createSecurityContextFor(
+		HttpServerExchange exchange,
+		AuthenticationRule rule,
+	    SessionStore sessionStore,
+	    SessionIdManager sessionIdManager
+	);
 }

@@ -27,10 +27,11 @@ public class DefaultSecurityContext implements SecurityContext {
 	@NonNull private final AuthenticationRule rule;
 	@NonNull private final HttpServerExchange exchange;
 	@NonNull private final SessionStore store;
+	@NonNull private final SessionIdManager sessionIdManager;
 
 	@Override
 	public boolean authenticate() {
-		currentSession = store.createOrRetrieveSession(exchange);
+		currentSession = store.createOrRetrieveSession(exchange, sessionIdManager);
 		final Account account = performAuthentication();
 		if ( account == null ){
 			authenticated = false;
