@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RESTAPISecurityContextFactory implements SecurityContextFactory {
 
 	public RESTAPISecurityContextFactory(){
-		log.info( "RESTAPISecurityContextFactory is deprecated and should be removed on the next major release. " +
+		log.warn( "RESTAPISecurityContextFactory is deprecated and should be removed on the next major release. " +
 				"Please, take a look at the http://kikaha.io for more information" );
 	}
 
@@ -21,6 +21,6 @@ public class RESTAPISecurityContextFactory implements SecurityContextFactory {
 			final SessionStore sessionStore,
 			final SessionIdManager sessionIdManager)
 	{
-		return new DefaultSecurityContext( rule, exchange, new EmptySessionStore(), sessionIdManager );
+		return new DefaultSecurityContext( rule, exchange, new RESTAPISessionStore(), sessionIdManager );
 	}
 }

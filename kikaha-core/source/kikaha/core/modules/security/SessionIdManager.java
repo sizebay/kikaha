@@ -14,7 +14,7 @@ public interface SessionIdManager {
 	 * @param exchange
 	 * @param sessionId
 	 */
-	void attachSessionCookie(HttpServerExchange exchange, String sessionId );
+	void attachSessionId(HttpServerExchange exchange, String sessionId );
 
 	/**
 	 * Extracts the session id from the current request ({@code exchange}).

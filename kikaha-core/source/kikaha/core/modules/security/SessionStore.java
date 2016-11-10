@@ -42,7 +42,7 @@ public interface SessionStore {
 	default Session createAndStoreNewSession(String sessionId, HttpServerExchange exchange, SessionIdManager sessionIdManager ){
 		Session session = new DefaultSession( sessionId );
 		storeSession(session.getId(), session);
-		sessionIdManager.attachSessionCookie(exchange, session.getId());
+		sessionIdManager.attachSessionId(exchange, session.getId());
 		return session;
 	}
 

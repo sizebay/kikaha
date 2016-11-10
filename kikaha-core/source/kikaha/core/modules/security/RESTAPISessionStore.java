@@ -4,7 +4,12 @@ import java.util.UUID;
 
 import io.undertow.server.HttpServerExchange;
 
-public class EmptySessionStore implements SessionStore {
+/**
+ * A {@link SessionStore} designed for stateless REST API. It does not store sessions,
+ * which forces every request received to be validated again against the configured {@link IdentityManager} and
+ * {@link AuthenticationMechanism}.
+ */
+public class RESTAPISessionStore implements SessionStore {
 
 	private static final String SESSION_ID = UUID.randomUUID().toString();
 	private final Session session = new DefaultSession( SESSION_ID );
@@ -26,7 +31,7 @@ public class EmptySessionStore implements SessionStore {
 	}
 
 	@Override
-	public void storeSession(String sessionId, Session session) {
+	public void storeSession( String sessionId, Session session ) {
 		throw new UnsupportedOperationException("storeSession not implemented yet!");
 	}
 }

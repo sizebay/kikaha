@@ -1,22 +1,15 @@
 package kikaha.core.modules.security;
 
 import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-
+import static org.mockito.Mockito.*;
+import java.util.List;
+import javax.inject.Inject;
+import io.undertow.server.HttpHandler;
 import kikaha.core.DeploymentContext;
 import kikaha.core.test.KikahaRunner;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import javax.inject.Inject;
-import java.util.List;
+import org.mockito.*;
 
 @RunWith(KikahaRunner.class)
 public class AuthenticationRulesDeploymentTest {
@@ -33,10 +26,13 @@ public class AuthenticationRulesDeploymentTest {
 	@Mock
 	List<AuthenticationRule> rules;
 
+	@Mock HttpHandler nextHandler;
+
 	@Before
 	public void initializeMocks() {
 		MockitoAnnotations.initMocks( this );
 		this.deployment = spy( deployment );
+		doReturn( nextHandler ).when( deploymentContext ).rootHandler();
 	}
 
 	@Test

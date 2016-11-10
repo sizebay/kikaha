@@ -14,7 +14,7 @@ public class HazelcastSecurityContextFactory implements SecurityContextFactory {
 	HazelcastSessionStore store;
 
 	public HazelcastSecurityContextFactory(){
-		log.info( "HazelcastSecurityContextFactory is deprecated and should be removed on the next major release. " +
+		log.warn( "HazelcastSecurityContextFactory is deprecated and should be removed on the next major release. " +
 				"Please, take a look at the http://kikaha.io for more information" );
 	}
 
