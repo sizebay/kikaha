@@ -71,7 +71,7 @@ public interface Exchange extends Response {
 		 * Forwards the {@code request} message to a {@link WorkerRef}.
 		 * @param ref
 		 */
-		public void to( WorkerRef ref ) {
+		public void to( WorkerRef ref ) throws IOException {
 			ref.send( exchange, request );
 		}
 	}

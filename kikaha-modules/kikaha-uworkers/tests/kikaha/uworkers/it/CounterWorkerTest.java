@@ -43,21 +43,21 @@ public class CounterWorkerTest {
 	}
 
 	@Test(timeout = 1000)
-	public void ensureWorkerInstanceCanCountDownByOne() throws InterruptedException {
+	public void ensureWorkerInstanceCanCountDownByOne() throws InterruptedException, IOException {
 		final Response response = countDownWorker.send();
 		response.response();
 		assertEquals( MANY_TIMES - 1, workerInstance.counter.getCount() );
 	}
 
 	@Test(timeout = 1000)
-	public void ensureWorkerInstanceCanCountDownManyTimes() throws InterruptedException {
+	public void ensureWorkerInstanceCanCountDownManyTimes() throws InterruptedException, IOException {
 		for ( int i=0; i<MANY_TIMES; i++ )
 			countDownWorker.send();
 		workerInstance.counter.await();
 	}
 
 	@Test(timeout = 1000)
-	public void ensureWorkerIsAbleToCountDownAndRetrieveZeroAsResponse() throws InterruptedException {
+	public void ensureWorkerIsAbleToCountDownAndRetrieveZeroAsResponse() throws InterruptedException, IOException {
 		for ( int i=0; i<MANY_TIMES; i++ )
 			countDownWorker.send();
 		workerInstance.counter.await();

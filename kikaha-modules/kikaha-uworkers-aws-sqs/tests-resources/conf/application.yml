@@ -1,0 +1,15 @@
+server:
+
+  # Worker pointing to localhost for test propose
+  uworkers:
+    sample-msg:
+      parallelism: 2
+      pool-size: 20
+      url: 'http://localhost:9324'
+
+  # default AWS credential is used by the SQS Module
+  aws:
+    credentials:
+      default:
+        access-key-id: "access-id"
+        secret-access-key: "secret-key"

@@ -16,6 +16,7 @@
   <modules>
     <module>kikaha-cloud-aws</module>
     <module>kikaha-uworkers</module>
+    <module>kikaha-uworkers-aws-sqs</module>
     <module>kikaha-urouting</module>
     <module>kikaha-urouting-jackson</module>
     <module>kikaha-urouting-jaxb</module>
