@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 
@@ -93,4 +95,15 @@ public class ConfigLoaderTest {
 		assertTrue( structureConfig.getBoolean("enabled") );
 		assertFalse( structureConfig.getBoolean( "disabled" ) );
 	}
+
+	@Test
+	public void ensureThatCanMergeMultipleConfFilesIntoOneSingleYamlFile() throws IOException {
+		final MergeableConfig config = MergeableConfig.create();
+		config.load(new File("tests-resources/conf/snippet1.yml"));
+		config.load(new File("tests-resources/conf/snippet2.yml"));
+
+        final byte[] bytes = Files.readAllBytes(Paths.get("tests-resources/conf/expected-merged-snippet.yml"));
+        final String expectedFile = new String(bytes);
+        assertEquals( expectedFile, config.toString() );
+    }
 }

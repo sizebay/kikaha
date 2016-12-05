@@ -42,7 +42,7 @@ public class MergeableConfig implements Config {
 
 	@Override
 	public String toString() {
-		return conf.toString();
+		return yaml.dump( conf );
 	}
 
 	@Override
