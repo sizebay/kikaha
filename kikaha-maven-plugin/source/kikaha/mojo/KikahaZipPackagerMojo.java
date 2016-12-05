@@ -4,6 +4,9 @@ import java.io.*;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.*;
+
+import kikaha.mojo.packager.ZipFileReader;
+import kikaha.mojo.packager.ZipFileWriter;
 import lombok.Cleanup;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -15,7 +18,7 @@ import org.apache.maven.project.MavenProject;
 
 @Mojo( name = "package",
 		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME )
-public class KikahaPackagerMojo extends AbstractMojo {
+public class KikahaZipPackagerMojo extends AbstractMojo {
 
 	static final String DEFAULT_DIR = "META-INF/defaults/";
 	static final String METAINF_DIR = "META-INF";
@@ -45,7 +48,7 @@ public class KikahaPackagerMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		ensureTargetDirectoryExists();
 		final ZipFileWriter zip = createZipFile();
-		getLog().info( "Building application package: " + zip.fileName );
+		getLog().info( "Building application package: " + zip.getFileName());
 		populateZip( zip );
 		zip.close();
 	}

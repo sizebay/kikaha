@@ -1,4 +1,6 @@
-package kikaha.mojo;
+package kikaha.mojo.packager;
+
+import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,9 +9,7 @@ import java.util.function.BiConsumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.maven.plugin.MojoExecutionException;
-
-public class ZipFileReader {
+public class ZipFileReader implements AutoCloseable {
 
 	static final String MESSAGE_CANT_OPEN_ZIP = "Can't open zip file";
 	final ZipFile zip;

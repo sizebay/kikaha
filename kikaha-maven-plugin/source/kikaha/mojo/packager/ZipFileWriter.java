@@ -1,4 +1,7 @@
-package kikaha.mojo;
+package kikaha.mojo.packager;
+
+import lombok.Getter;
+import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -9,12 +12,11 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.maven.plugin.MojoExecutionException;
+import static kikaha.mojo.packager.Packager.MESSAGE_CANT_ADD_TO_ZIP;
+import static kikaha.mojo.packager.Packager.MESSAGE_CANT_CREATE_ZIP;
 
+@Getter
 public class ZipFileWriter {
-
-	static final String MESSAGE_CANT_CREATE_ZIP = "Can't create zip file";
-	static final String MESSAGE_CANT_ADD_TO_ZIP = "Can't add file to zip";
 
 	final List<String> prefixesToStripOutFromName = new ArrayList<>();
 	final ZipOutputStream output;
@@ -50,7 +52,6 @@ public class ZipFileWriter {
 		for ( final String prefix : prefixesToStripOutFromName )
 			entryName = entryName.replaceFirst( prefix, "" );
 		final String finalEntryName = rootDirectory + "/" + entryName;
-		// System.out.println( ":: Adding " + finalEntryName );
 		return finalEntryName;
 	}
 
