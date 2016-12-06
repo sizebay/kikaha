@@ -64,7 +64,7 @@ public class DefaultTaskExchangeTest {
 		assertEquals( ping, pong.getPing() );
 	}
 
-	@Test(timeout = 3000)
+	@Test(timeout = 10000)
 	public void readSyncResponseWhenValueIsSetAfterItIsRequested() {
 		final LocalExchange exchange = LocalExchange.of(ping);
 		newSingleThreadExecutor().submit( ()-> {

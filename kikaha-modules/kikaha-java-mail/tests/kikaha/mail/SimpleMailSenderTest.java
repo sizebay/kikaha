@@ -35,7 +35,7 @@ public class SimpleMailSenderTest {
 		server.stop();
 	}
 
-	@Test( timeout = 2000 )
+	@Test( timeout = 5000 )
 	@SuppressWarnings( "unchecked" )
 	public void ensureThatCanSendEmail() {
 		sender.sendMail( "you@about.you", "Hello", "World!" );

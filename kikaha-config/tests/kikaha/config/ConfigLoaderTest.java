@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -105,5 +106,14 @@ public class ConfigLoaderTest {
         final byte[] bytes = Files.readAllBytes(Paths.get("tests-resources/conf/expected-merged-snippet.yml"));
         final String expectedFile = new String(bytes);
         assertEquals( expectedFile, config.toString() );
+    }
+
+    @Test
+    public void ensureCanReadAMergedYamlFile() throws IOException {
+        final MergeableConfig config = MergeableConfig.create();
+        config.load(new File("tests-resources/conf/expected-merged-snippet.yml"));
+        final Map<String, Object> stringObjectMap = config.toMap();
+        assertNotNull( stringObjectMap );
+        assertEquals( 4, stringObjectMap.size() );
     }
 }
