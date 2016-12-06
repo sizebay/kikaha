@@ -12,8 +12,7 @@ public class SimplifiedAPTRunnerTest {
 	static final String SOURCE_DIR = "tests-resources";
 	static final String OUTPUT_DIR = "output";
 
-	final ClassFileReader reader = new ClassFileReader( new File( OUTPUT_DIR ), true );
-
+	final ClassFileReader reader = new ClassFileReader( new File( SOURCE_DIR ), true );
 	SimplifiedAPTRunner runner;
 
 	@Before

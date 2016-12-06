@@ -40,7 +40,8 @@ public class JarWriter {
 
     public void addFile( final String name, final InputStream content ) {
         try {
-            final FileMerger writable = mergers.get( name );
+            final FileMerger writable = mergers.computeIfAbsent( name,
+                n-> n.startsWith(SERVICE_FILE_NAME) ? new SimpleMerger(n) : null );
             if ( writable != null )
                writable.add( content );
             else if ( !jarFiles.contains( name ) )

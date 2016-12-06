@@ -38,13 +38,13 @@ public class ClassFileReader {
 
 	public StringJavaSource decompile( File classFile ) {
 		final File packageFolder = getOutputLocationFor( classFile.getParentFile() );
-		final File targetDir = new File( rootDir, packageFolder.getPath() );
+		final File targetDir = new File( rootDir.getAbsolutePath(), packageFolder.getPath() );
 		decompile( classFile, targetDir );
 
-		final String className = extractClassFromClassFile( classFile );
-		final File decompiledFile = new File( targetDir, className + ".java" );
+		final String className = extractClassNameFromClassFile( classFile );
+		final File decompiledFile = new File( targetDir.getAbsolutePath(), className + ".java" );
 
-		final String canonicalName = packageFolder.getPath().replace( "/", "." ) + "." + className;
+		final String canonicalName = packageFolder.getPath().replaceAll( "[/\\\\]", "." ) + "." + className;
 		return readFileAndRemove( canonicalName, decompiledFile );
 	}
 
@@ -57,12 +57,13 @@ public class ClassFileReader {
 
 	private File getOutputLocationFor( File file ) {
 		final String s = file.getAbsolutePath()
-				.replaceFirst( "^" + rootDir.getAbsolutePath(), "" )
+				.replaceAll( "\\\\", "/" )
+				.replaceFirst( "^" + rootDir.getAbsolutePath().replaceAll( "\\\\", "/" ), "" )
 				.replaceFirst( "^/", "" );
 		return new File( s );
 	}
 
-	private static String extractClassFromClassFile( File classFile ) {
+	private static String extractClassNameFromClassFile(File classFile ) {
 		final String absolutePath = classFile.getName();
 		return absolutePath.substring( 0, absolutePath.length() - 6 );
 	}
