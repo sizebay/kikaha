@@ -1,20 +1,11 @@
 package kikaha.mojo.packager;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import static kikaha.mojo.packager.packager.*;
+import java.io.*;
+import java.util.*;
+import java.util.zip.*;
+import lombok.*;
 import org.apache.maven.plugin.MojoExecutionException;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import static kikaha.mojo.packager.Packager.MESSAGE_CANT_ADD_TO_ZIP;
-import static kikaha.mojo.packager.Packager.copy;
 
 /**
  * Created by miere.teixeira on 05/12/2016.
@@ -23,8 +14,9 @@ import static kikaha.mojo.packager.Packager.copy;
 @RequiredArgsConstructor
 public class JarWriter {
 
+    final Set<String> jarFiles = new HashSet<>();
     final ZipOutputStream output;
-    final Map<String, Packager.FileMerger> mergers;
+    final Map<String, FileMerger> mergers;
     final String fileName;
 
     public JarWriter( final String fileName ) throws FileNotFoundException {
@@ -48,10 +40,10 @@ public class JarWriter {
 
     public void addFile( final String name, final InputStream content ) {
         try {
-            final Packager.FileMerger writable = mergers.get( name );
+            final FileMerger writable = mergers.get( name );
             if ( writable != null )
                writable.add( content );
-            else
+            else if ( !jarFiles.contains( name ) )
                 add( name, content );
         } catch (IOException e) {
             throw new RuntimeException( e );
@@ -63,14 +55,16 @@ public class JarWriter {
             output.putNextEntry( new ZipEntry( name ) );
             copy( content, output::write );
             output.closeEntry();
+            jarFiles.add( name );
         } catch ( final IOException e ) {
-            throw new RuntimeException( MESSAGE_CANT_ADD_TO_ZIP, e );
+            e.printStackTrace();
+            throw new RuntimeException( MESSAGE_CANT_ADD_TO_ZIP + " ("+name+")", e );
         }
     }
 
     public void flush() throws MojoExecutionException {
         try {
-            for (Packager.FileMerger merger : mergers.values()) {
+            for (final FileMerger merger : mergers.values()) {
                 final String merged = merger.merge();
                 add(merger.getFileName(), merged);
             }
@@ -87,7 +81,8 @@ public class JarWriter {
             output.write( bytes, 0, bytes.length );
             output.closeEntry();
         } catch (IOException e) {
-            throw new RuntimeException( MESSAGE_CANT_ADD_TO_ZIP, e );
+            e.printStackTrace();
+            throw new RuntimeException( MESSAGE_CANT_ADD_TO_ZIP + " ("+name+")", e );
         }
     }
 

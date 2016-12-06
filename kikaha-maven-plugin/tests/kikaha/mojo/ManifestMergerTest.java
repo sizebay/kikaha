@@ -1,11 +1,9 @@
 package kikaha.mojo;
 
+import static org.junit.Assert.assertEquals;
+import java.io.IOException;
 import kikaha.mojo.packager.ManifestMerger;
 import org.junit.Test;
-
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by miere.teixeira on 05/12/2016.
@@ -13,9 +11,8 @@ import static org.junit.Assert.assertEquals;
 public class ManifestMergerTest {
 
     final String expectedMergedManifest = "Manifest-Version: 1.0\r\n" +
-            "Bundle-Description: sample\r\n" +
-            "Bnd-LastModified: 6150020147525\r\n" +
-            "Created-By: 1.4.0 (Sun Microsystems Inc.)\r\n" +
+            "Created-By: Kikaha 2.1.0-alpha3\r\n" +
+            "Main-Class: kikaha.core.cdi.ApplicationRunner\r\n" +
             "\r\n";
 
     @Test
@@ -23,6 +20,8 @@ public class ManifestMergerTest {
         final ManifestMerger merger = new ManifestMerger( "META-INF/MANIFEST.MF" );
         merger.add( getClass().getResourceAsStream( "/MANIFEST1.MF" ) );
         merger.add( getClass().getResourceAsStream( "/MANIFEST2.MF" ) );
-        assertEquals( expectedMergedManifest, merger.merge() );
+
+        final String merged = merger.merge();
+        assertEquals( expectedMergedManifest, merged );
     }
 }

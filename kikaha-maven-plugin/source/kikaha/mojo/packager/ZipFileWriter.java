@@ -1,19 +1,11 @@
 package kikaha.mojo.packager;
 
+import static kikaha.mojo.packager.packager.*;
+import java.io.*;
+import java.util.*;
+import java.util.zip.*;
 import lombok.Getter;
 import org.apache.maven.plugin.MojoExecutionException;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import static kikaha.mojo.packager.Packager.MESSAGE_CANT_ADD_TO_ZIP;
-import static kikaha.mojo.packager.Packager.MESSAGE_CANT_CREATE_ZIP;
 
 @Getter
 public class ZipFileWriter {
