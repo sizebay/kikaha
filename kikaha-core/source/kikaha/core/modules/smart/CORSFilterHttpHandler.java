@@ -77,7 +77,6 @@ public class CORSFilterHttpHandler implements HttpHandler {
 	private String getHttpMethod( HttpServerExchange exchange ) {
 		final HeaderValues strings = exchange.getRequestHeaders().get(ACCESS_METHOD);
 		return strings != null ? strings.getFirst() : "";
-
 	}
 
 	private void sendRequiredHeaders(HttpServerExchange exchange, String originHost, String method) {
@@ -89,7 +88,7 @@ public class CORSFilterHttpHandler implements HttpHandler {
 	}
 
 	private void sendBasicNeededHeadersToAllowRequest(final HeaderMap responseHeaders, String originHost, String method ){
-		responseHeaders.put( ALLOWED_ORIGIN, originHost );
+		responseHeaders.put( ALLOWED_ORIGIN, config.alwaysAllowOrigin ? "*" : originHost );
 		responseHeaders.put( ALLOWED_METHOD, method );
 		if ( config.allowCredentials )
 			responseHeaders.put( ALLOWED_CREDENTIALS, TRUE );
