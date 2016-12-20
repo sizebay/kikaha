@@ -23,8 +23,6 @@ import java.io.IOException;
 @Singleton
 public class StaticResourceModule implements Module {
 
-	final String name = "static-resources";
-
 	@Inject
 	Config config;
 

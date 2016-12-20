@@ -1,24 +1,25 @@
 package kikaha.core.modules.smart;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
-import javax.inject.*;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.proxy.*;
+import io.undertow.server.handlers.proxy.ProxyClient;
+import io.undertow.server.handlers.proxy.ProxyHandler;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Getter
 @Singleton
 public class RewriteRoutesModule implements Module {
-
-	final String name = "rewrite";
 
 	@Inject
 	Config config;

@@ -20,8 +20,6 @@ import java.io.IOException;
 @Singleton
 public class HttpHandlerDeploymentModule implements Module {
 
-	final String name = "http-handler-deployment";
-
 	@Inject
 	@Typed(HttpHandler.class)
 	Iterable<HttpHandler> handlers;

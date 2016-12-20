@@ -1,15 +1,17 @@
 package kikaha.uworkers.core;
 
-import java.io.IOException;
-import java.util.*;
-import javax.enterprise.inject.Typed;
-import javax.inject.*;
 import io.undertow.Undertow;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
 import kikaha.uworkers.api.Worker;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.enterprise.inject.Typed;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  *
@@ -19,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 public class MicroWorkersTaskDeploymentModule implements Module {
 
-	final String name = "uworkers-deployment";
 	Threads threads;
 
 	@Inject EndpointContext endpointContext;

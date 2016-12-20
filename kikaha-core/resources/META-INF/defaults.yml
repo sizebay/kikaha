@@ -13,6 +13,7 @@ server:
     - security
     - http
     - https
+    - unnamed
 
   # HTTP server mode
   http:

@@ -1,8 +1,9 @@
 package kikaha.core.modules;
 
-import java.io.IOException;
 import io.undertow.Undertow;
 import kikaha.core.DeploymentContext;
+
+import java.io.IOException;
 
 /**
  * Defines a module that should be executed when the application is started or
@@ -15,7 +16,9 @@ public interface Module {
 	 *
 	 * @return the module name.
 	 */
-	String getName();
+	default String getName() {
+		return "unnamed";
+	}
 
 	/**
 	 * Event executed when server is initializing. This event allow developers to enhance

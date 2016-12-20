@@ -1,11 +1,16 @@
 package kikaha.core.modules.smart;
 
-import java.net.*;
-import java.util.*;
-import io.undertow.server.*;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
 import io.undertow.util.*;
 import kikaha.core.url.URLMatcher;
 import lombok.RequiredArgsConstructor;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
