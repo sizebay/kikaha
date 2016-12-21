@@ -24,6 +24,10 @@ public class HttpHandlerDeploymentModule implements Module {
 	@Typed(HttpHandler.class)
 	Iterable<HttpHandler> handlers;
 
+	@Inject
+	@Typed(HttpHandlerDeploymentCustomizer.class)
+	Iterable<HttpHandlerDeploymentCustomizer> customizers;
+
 	@Override
 	public void load(Undertow.Builder server, DeploymentContext context) throws IOException {
 		for (HttpHandler handler : handlers) {
@@ -32,7 +36,27 @@ public class HttpHandlerDeploymentModule implements Module {
 				log.warn( "Invalid web resource: " + handler.getClass().getCanonicalName() );
 				continue;
 			}
-			context.register( resource.path(), resource.method(), handler );
+			register( context, handler, resource );
 		}
+	}
+
+	void register( final DeploymentContext context, HttpHandler handler, WebResource resource ){
+		HttpHandler newHandler;
+		//if ( customizers != null )
+			for ( final HttpHandlerDeploymentCustomizer customizer : customizers ) {
+				newHandler = customizer.customize(handler, resource);
+				if ( newHandler != null )
+					handler = newHandler;
+			}
+		context.register( resource.path(), resource.method(), handler );
+	}
+
+	/**
+	 * Allow developers to be notified about the deployment of a specific {@link HttpHandler}
+	 * and take some action with this - e.g. wrap the HttpHandler, etc.
+	 */
+	public interface HttpHandlerDeploymentCustomizer {
+
+		HttpHandler customize( HttpHandler httpHandler, WebResource webResource );
 	}
 }

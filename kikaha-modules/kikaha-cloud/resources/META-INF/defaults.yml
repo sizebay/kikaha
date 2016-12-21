@@ -1,0 +1,7 @@
+server:
+
+  # Cloud Metrics module
+  metrics:
+    enabled: false
+    store-individual-web-metrics: false
+    store-summarized-web-metrics: false
