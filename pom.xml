@@ -79,6 +79,7 @@
         <version.java.mail>1.4.4</version.java.mail>
         <version.logback>1.1.7</version.logback>
         <version.aws>1.11.51</version.aws>
+        <version.metrics>3.1.0</version.metrics>
         <!-- Plugin's Versions -->
         <version.compiler.plugin>3.3</version.compiler.plugin>
         <version.resources.plugin>2.6</version.resources.plugin>
@@ -252,6 +253,11 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>1.16</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>${version.metrics}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

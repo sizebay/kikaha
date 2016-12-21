@@ -1,5 +1,6 @@
 package kikaha.cloud.metrics;
 
+import com.codahale.metrics.MetricRegistry;
 import io.undertow.server.HttpHandler;
 import kikaha.config.Config;
 import kikaha.core.modules.http.WebResource;
@@ -13,7 +14,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static kikaha.cloud.metrics.MetricsModule.*;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for {@link MetricsModule}.
@@ -53,7 +56,7 @@ public class MetricsModuleTest {
         final HttpHandler customizedHandler = module.customize(httpHandler, webResource);
         assertEquals( customizedHandler.getClass(), MetricHttpHandler.class );
         final MetricHttpHandler metricHttpHandler = (MetricHttpHandler)customizedHandler;
-        assertEquals( "POST /path", metricHttpHandler.meter.getName() );
+        verify( metricRegistry ).timer( eq("kikaha.transactions.POST /path") );
         assertEquals( httpHandler, metricHttpHandler.httpHandler );
     }
 
@@ -66,7 +69,7 @@ public class MetricsModuleTest {
         final HttpHandler customizedHandler = module.customize(httpHandler, webResource);
         assertEquals( customizedHandler.getClass(), MetricHttpHandler.class );
         final MetricHttpHandler metricHttpHandler = (MetricHttpHandler)customizedHandler;
-        assertEquals( SUMMARIZED, metricHttpHandler.meter.getName() );
+        verify( metricRegistry ).timer( eq("kikaha.transactions.summarized") );
         assertEquals( httpHandler, metricHttpHandler.httpHandler );
     }
 
@@ -80,9 +83,10 @@ public class MetricsModuleTest {
         final HttpHandler customizedHandler = module.customize(httpHandler, webResource);
         assertEquals( customizedHandler.getClass(), MetricHttpHandler.class );
         final MetricHttpHandler metricHttpHandler = (MetricHttpHandler)customizedHandler;
-        assertEquals( SUMMARIZED, metricHttpHandler.meter.getName() );
         final MetricHttpHandler wrappedMetricHttpHandler = (MetricHttpHandler)metricHttpHandler.httpHandler;
-        assertEquals( "POST /path", wrappedMetricHttpHandler.meter.getName() );
         assertEquals( httpHandler, wrappedMetricHttpHandler.httpHandler );
+
+        verify( metricRegistry ).timer( eq("kikaha.transactions.summarized") );
+        verify( metricRegistry ).timer( eq("kikaha.transactions.POST /path") );
     }
 }

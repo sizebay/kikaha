@@ -1,5 +1,7 @@
 package kikaha.cloud.metrics;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -24,8 +26,8 @@ import java.io.IOException;
 public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDeploymentCustomizer, Module {
 
     final static String
-        NAMESPACE_WEB = "WebTransactions",
-        SUMMARIZED = "Summarized",
+        NAMESPACE_WEB = "kikaha.transactions",
+        SUMMARIZED = "summarized",
         IS_MODULE_ENABLED = "server.metrics.enabled",
         SHOULD_STORE_INDIVIDUAL_WEB_METRICS = "server.metrics.store-individual-web-metrics",
         SHOULD_STORE_SUMMARIZED_WEB_METRICS = "server.metrics.store-summarized-web-metrics"
@@ -54,13 +56,13 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
         final String name = webResource.method() + " " + webResource.path();
 
         if (shouldStoreIndividualWebMetrics) {
-            final FairMeter meter = metricRegistry.meter( name, NAMESPACE_WEB );
+            final Timer meter = metricRegistry.timer( MetricRegistry.name(NAMESPACE_WEB, name) );
             httpHandler = new MetricHttpHandler( httpHandler, meter );
             log.debug( "Registered individual metric for " + name );
         }
 
         if ( shouldStoreSummarizedWebMetrics ) {
-            final FairMeter meter = metricRegistry.meter( SUMMARIZED, NAMESPACE_WEB );
+            final Timer meter = metricRegistry.timer( MetricRegistry.name(NAMESPACE_WEB, SUMMARIZED) );
             httpHandler = new MetricHttpHandler( httpHandler, meter );
             log.debug( "Registered summarized metric for " + name );
         }
@@ -78,16 +80,15 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
 class MetricHttpHandler implements HttpHandler {
 
     final HttpHandler httpHandler;
-    final FairMeter meter;
+    final Timer timer;
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-        final long startTime = System.currentTimeMillis();
+        final Timer.Context context = timer.time();
         try {
             httpHandler.handleRequest(exchange);
         } finally {
-            meter.addElapsedTime( System.currentTimeMillis() - startTime );
-            meter.mark();
+            context.stop();
         }
     }
 }
