@@ -40,6 +40,7 @@ public class ModuleLoader {
 	}
 
 	public void load( Undertow.Builder builder, DeploymentContext context ) throws IOException {
+		log.info( "Looking for modules..." );
 		loadModulesConfigurations();
 		loadIndexedModules(builder, context);
 		loadUnindexedModules(builder, context);
@@ -55,8 +56,10 @@ public class ModuleLoader {
 		for (String moduleName : this.enabledModules) {
 			final List<Module> modules = modulesIndexedByName.remove( moduleName );
 			if ( modules != null )
-				for ( final Module module : modules )
-					module.load( builder, context );
+				for ( final Module module : modules ) {
+					log.debug( "  Deploying module " + module.getClass().getCanonicalName() + "(name=" + moduleName + ")..." );
+					module.load(builder, context);
+				}
 		}
 	}
 

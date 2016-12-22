@@ -1,7 +1,20 @@
 package kikaha.cloud.metrics;
 
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
+import lombok.extern.slf4j.Slf4j;
+
 /**
- * Created by miere.teixeira on 21/12/2016.
+ * A {@link ReporterConfiguration} implementation that starts a {@link JmxReporter}
+ * in background.
  */
-public class JMXReporterConfiguration {
+@Slf4j
+public class JMXReporterConfiguration implements ReporterConfiguration {
+
+    @Override
+    public void configureAndStartReportFor(MetricRegistry registry) {
+        final JmxReporter reporter = JmxReporter.forRegistry(registry).build();
+        reporter.start();
+        log.info( "JVM Metric Reporter started." );
+    }
 }

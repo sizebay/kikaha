@@ -9,10 +9,11 @@ server:
 
   # The bellow list also represents the order that modules will be loaded
   enabled-modules:
-    - undertow-basic-configuration
-    - security
     - http
     - https
+    - security
+    - undertow-basic-configuration
+    - metrics
     - unnamed
 
   # HTTP server mode

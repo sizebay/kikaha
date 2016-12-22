@@ -1,12 +1,16 @@
 package kikaha.uworkers.local;
 
+import kikaha.uworkers.core.Threads;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.Value;
+import org.junit.Test;
+
+import java.util.concurrent.CountDownLatch;
+
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static kikaha.uworkers.local.CounterInterceptor.andCount;
 import static org.junit.Assert.assertEquals;
-import java.util.concurrent.CountDownLatch;
-import kikaha.uworkers.core.Threads;
-import lombok.*;
-import org.junit.Test;
 
 /**
  * Unit test for {@link LocalExchange}.
@@ -16,7 +20,7 @@ public class DefaultTaskExchangeTest {
 	static final Ping ping = new Ping();
 	static final Pong pong = new Pong( ping );
 
-	@Test(timeout = 1000)
+	@Test(timeout = 15000)
 	@SneakyThrows
 	public void receiveAsyncResponseWhenListenerIsSetBeforeResponseIsDefined() {
 		final CountDownLatch counter = new CountDownLatch(1);
@@ -47,7 +51,7 @@ public class DefaultTaskExchangeTest {
 		counter.await();
 	}
 
-	@Test(timeout = 1000)
+	@Test(timeout = 15000)
 	public void readSyncResponseWhenValueIsSetAlmostAtSameTimeItIsRequested() {
 		final LocalExchange exchange = LocalExchange.of(ping);
 		newSingleThreadExecutor().submit( ()-> exchange.reply( pong ) );
@@ -55,7 +59,7 @@ public class DefaultTaskExchangeTest {
 		assertEquals( ping, pong.getPing() );
 	}
 
-	@Test(timeout = 3000)
+	@Test(timeout = 15000)
 	public void readSyncResponseWhenValueIsSetBeforeItIsRequested() {
 		final LocalExchange exchange = LocalExchange.of(ping);
 		newSingleThreadExecutor().submit( ()-> exchange.reply( pong ) );
@@ -64,7 +68,7 @@ public class DefaultTaskExchangeTest {
 		assertEquals( ping, pong.getPing() );
 	}
 
-	@Test(timeout = 10000)
+	@Test(timeout = 15000)
 	public void readSyncResponseWhenValueIsSetAfterItIsRequested() {
 		final LocalExchange exchange = LocalExchange.of(ping);
 		newSingleThreadExecutor().submit( ()-> {

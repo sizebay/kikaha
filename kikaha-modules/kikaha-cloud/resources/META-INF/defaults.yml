@@ -3,5 +3,17 @@ server:
   # Cloud Metrics module
   metrics:
     enabled: false
-    store-individual-web-metrics: false
-    store-summarized-web-metrics: false
+    reporter-configuration: kikaha.cloud.metrics.JMXReporterConfiguration
+
+    # Metrics for web transactions
+    web-transactions:
+      store-individual-metrics: true
+      store-summarized-metrics: true
+
+    # Metrics for JVM
+    jvm:
+      memory-usage: true
+      buffer-pool-usage: true
+      thread-usage: true
+      gc-usage: true
+      fd-usage: true
