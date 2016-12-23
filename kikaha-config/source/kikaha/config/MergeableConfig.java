@@ -1,14 +1,19 @@
 package kikaha.config;
 
-import static java.lang.String.format;
-import java.io.*;
+import lombok.RequiredArgsConstructor;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.yaml.snakeyaml.Yaml;
+
+import static java.lang.String.format;
 
 /**
  *
@@ -126,16 +131,19 @@ public class MergeableConfig implements Config {
 	}
 
 	@Override
-	public int getInteger(String path) {
-		return getInteger( path, 0 );
-	}
-
-	@Override
 	public int getInteger(String path, int defaultValue) {
 		final String propertyValue = System.getProperty(rootPath + path);
 		if ( propertyValue != null )
 			return Integer.valueOf( propertyValue );
 		return read( path, o->ifNull( (Integer)o, defaultValue ) );
+	}
+
+	@Override
+	public long getLong(String path, long defaultValue) {
+		final String propertyValue = System.getProperty(rootPath + path);
+		if ( propertyValue != null )
+			return Integer.valueOf( propertyValue );
+		return read( path, o->ifNull( (Long)o, defaultValue ) );
 	}
 
 	@Override

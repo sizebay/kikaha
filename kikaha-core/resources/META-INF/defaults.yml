@@ -7,14 +7,19 @@ server:
     default-unserializer: "text/plain"
     worker-threads: -1
 
-  # The bellow list also represents the order that modules will be loaded
-  enabled-modules:
-    - http
-    - https
-    - security
-    - undertow-basic-configuration
-    - metrics
-    - unnamed
+  # Module Loader configuration
+  modules:
+    enable-graceful-shutdown: true
+    graceful-shutdown-timeout: 300000
+
+    # The bellow list also represents the order that modules will be loaded
+    enabled-modules:
+      - http
+      - https
+      - security
+      - undertow-basic-configuration
+      - metrics
+      - unnamed
 
   # HTTP server mode
   http:

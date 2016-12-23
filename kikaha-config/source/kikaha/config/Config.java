@@ -30,9 +30,23 @@ public interface Config {
 	 * @param path which configuration should be read
 	 * @return a configuration Integer
 	 */
-	int getInteger(String path);
+	default int getInteger(String path) {
+		return getInteger( path, 0 );
+	}
 
 	int getInteger(String path, int defaultValue);
+
+	/**
+	 * Retrieve a configuration Long from a file.
+	 *
+	 * @param path which configuration should be read
+	 * @return a configuration Long
+	 */
+	default long getLong(String path) {
+		return getLong( path, 0 );
+	}
+
+	long getLong(String path, long defaultValue);
 
 	/**
 	 * Retrieve a Boolean parameter from configuration.

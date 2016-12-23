@@ -33,6 +33,7 @@ public class ModuleLoader {
 
 	Map<String, List<Module>> modulesIndexedByName;
 	List<String> enabledModules;
+	GracefulShutdownHandler gracefulShutdownHandler;
 
 	@PostConstruct
 	public void memorizeShutdownHooks(){
@@ -44,12 +45,20 @@ public class ModuleLoader {
 		loadModulesConfigurations();
 		loadIndexedModules(builder, context);
 		loadUnindexedModules(builder, context);
+		configureGracefulShutdown( context );
 	}
 
 	private void loadModulesConfigurations(){
 		modulesIndexedByName = modulesIndexedByName();
-		enabledModules = config.getStringList("server.enabled-modules");
+		enabledModules = config.getStringList("server.modules.enabled-modules");
 		reverse(enabledModules);
+	}
+
+	private Map<String, List<Module>> modulesIndexedByName(){
+		final Map<String, List<Module>> index = new HashMap<>();
+		for (Module module : modules)
+			index.computeIfAbsent( module.getName(), k-> new ArrayList<>() ).add( module );
+		return index;
 	}
 
 	private void loadIndexedModules( Undertow.Builder builder, DeploymentContext context ) throws IOException {
@@ -69,15 +78,27 @@ public class ModuleLoader {
 				module.load( builder, context );
 	}
 
-	private Map<String, List<Module>> modulesIndexedByName(){
-		final Map<String, List<Module>> index = new HashMap<>();
-		for (Module module : modules)
-			index.computeIfAbsent( module.getName(), k-> new ArrayList<>() ).add( module );
-		return index;
+	private void configureGracefulShutdown( final DeploymentContext context ){
+		final boolean isGracefulShutdownEnabled = config.getBoolean("server.modules.enable-graceful-shutdown");
+		if ( isGracefulShutdownEnabled ) {
+			gracefulShutdownHandler = new GracefulShutdownHandler( context.rootHandler() );
+			context.rootHandler( gracefulShutdownHandler );
+			gracefulShutdownHandler.addShutdownListener( shutdownSuccessful -> {
+				for ( Module module : modules )
+					module.unload();
+			});
+		}
 	}
 
-	private void unloadModules(){
-		for ( Module module : modules )
-			module.unload();
+	protected void unloadModules(){
+		if ( gracefulShutdownHandler != null ) {
+			gracefulShutdownHandler.shutdown();
+			final long shutdownTimeout = config.getLong("server.modules.graceful-shutdown-timeout");
+			try {
+				gracefulShutdownHandler.awaitShutdown( shutdownTimeout );
+			} catch (InterruptedException e) {
+				log.error( "Graceful shutdown mechanism was abruptly interrupted", e );
+			}
+		}
 	}
 }

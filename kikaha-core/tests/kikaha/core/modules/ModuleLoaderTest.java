@@ -40,13 +40,20 @@ public class ModuleLoaderTest {
 		MockitoAnnotations.initMocks(this);
 		doReturn( "http" ).when(http).getName();
 		doReturn( "https" ).when(https).getName();
+		loader.modules = Arrays.asList( http, https );
 	}
 
 	@Test
 	public void ensureThatCanLoadModules() throws IOException {
-		loader.modules = Arrays.asList( http, https );
 		loader.load( null, context );
 		verify(http).load( anyObject(), eq( context ) );
 		verify(https).load( anyObject(), eq( context ) );
+	}
+
+	@Test
+	public void ensureThatCanUnloadModules(){
+		loader.unloadModules();
+		verify(http).unload();
+		verify(https).unload();
 	}
 }
