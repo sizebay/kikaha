@@ -34,7 +34,7 @@ server:
     password: "password"
     enabled: false
 
-    redirect-to-http: true
+    redirect-http-to-https: true
 
   # Undertow internals
   undertow:
@@ -89,4 +89,4 @@ server:
       basic: kikaha.core.modules.security.BasicAuthenticationMechanism
       form: kikaha.core.modules.security.FormAuthenticationMechanism
 
-    rules:
+    rules: []

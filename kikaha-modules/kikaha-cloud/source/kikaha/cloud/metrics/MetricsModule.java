@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.management.MBeanServer;
@@ -27,7 +28,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Created by miere.teixeira on 21/12/2016.
+ * The Cloud Metric {@link Module}.
  */
 @Slf4j
 @Singleton
@@ -49,7 +50,8 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
     @Inject MetricRegistry metricRegistry;
     @Inject MBeanServer mBeanServer;
     @Inject Config config;
-
+    @Inject @Typed( MetricRegistryConfiguration.class )
+    Iterable<MetricRegistryConfiguration> metricConfigurations;
 
     Class<? extends ReporterConfiguration> reporterConfigurationClass;
     boolean
@@ -101,18 +103,16 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
     @Override
     public void load( final Undertow.Builder server, final DeploymentContext context ) throws IOException {
         if ( !isEnabled ) return;
+        runExternalMetricConfigurations();
         loadJvmMetrics();
 
         final ReporterConfiguration reporterConfiguration = initializeReporter();
         reporterConfiguration.configureAndStartReportFor( metricRegistry );
     }
 
-    ReporterConfiguration initializeReporter() {
-        try {
-            return this.reporterConfigurationClass.newInstance();
-        } catch (IllegalAccessException | InstantiationException e) {
-            throw new UnsupportedOperationException( e );
-        }
+    private void runExternalMetricConfigurations() {
+        for ( final MetricRegistryConfiguration configuration : metricConfigurations )
+            configuration.configure( metricRegistry );
     }
 
     void loadJvmMetrics(){
@@ -135,6 +135,14 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
         final String metricName = MetricRegistry.name(NAMESPACE_JVM, key);
         metricRegistry.register( metricName, metric );
         log.debug( "  Registered JVM metric " + metricName );
+    }
+
+    ReporterConfiguration initializeReporter() {
+        try {
+            return this.reporterConfigurationClass.newInstance();
+        } catch (IllegalAccessException | InstantiationException e) {
+            throw new UnsupportedOperationException( e );
+        }
     }
 }
 

@@ -16,6 +16,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 
+import static java.util.Arrays.asList;
 import static kikaha.cloud.metrics.MetricsModule.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -36,8 +37,7 @@ public class MetricsModuleTest {
     @Mock HttpHandler httpHandler;
     @Mock WebResource webResource;
     @Mock ReporterConfiguration reporterConfiguration;
-
-    Class<? extends ReporterConfiguration> reporterConfigurationClass = ReporterConfiguration.class;
+    @Mock MetricRegistryConfiguration metricRegistryConfiguration;
 
     @Spy @InjectMocks
     MetricsModule module;
@@ -47,7 +47,12 @@ public class MetricsModuleTest {
         doReturn( "POST" ).when( webResource ).method();
         doReturn( "/path" ).when( webResource ).path();
         doReturn( reporterConfiguration ).when( module ).initializeReporter();
+
+        final Config defaultConfiguration = ConfigLoader.loadDefaults().getConfig(JVM_METRICS);
+        doReturn( defaultConfiguration ).when( config ).getConfig( eq( JVM_METRICS ) );
+
         module.mBeanServer = new Producers().produceMBeanServer();
+        module.metricConfigurations = asList( metricRegistryConfiguration );
     }
 
     @Test
@@ -104,8 +109,6 @@ public class MetricsModuleTest {
 
     @Test
     public void shouldBeAbleToStartAllJVMMetrics() throws IOException {
-        final Config defaultConfiguration = ConfigLoader.loadDefaults().getConfig(JVM_METRICS);
-        doReturn( defaultConfiguration ).when( config ).getConfig( eq( JVM_METRICS ) );
         doReturn( true ).when( config ).getBoolean( IS_MODULE_ENABLED );
         module.loadConfig();
 
@@ -125,5 +128,13 @@ public class MetricsModuleTest {
         module.loadConfig();
         module.load( null, null );
         verify( reporterConfiguration ).configureAndStartReportFor( eq( metricRegistry ) );
+    }
+
+    @Test
+    public void shouldBeAbleToCallAllMetricRegistryConfigurations() throws IOException {
+        doReturn(true).when(config).getBoolean(IS_MODULE_ENABLED);
+        module.loadConfig();
+        module.load( null, null );
+        verify( metricRegistryConfiguration ).configure( eq( metricRegistry ) );
     }
 }
