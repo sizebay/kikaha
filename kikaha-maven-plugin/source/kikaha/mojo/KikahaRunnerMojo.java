@@ -1,17 +1,28 @@
 package kikaha.mojo;
 
-import java.io.File;
-import java.util.*;
 import kikaha.core.cdi.ApplicationRunner;
 import kikaha.mojo.runner.MainClassService;
 import lombok.val;
-import org.apache.maven.artifact.*;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.*;
-import org.apache.maven.plugin.*;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.*;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 @Mojo( name = "run",
 	requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME )
@@ -34,6 +45,9 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	@Parameter( defaultValue = "${project.build.finalName}", required = true)
 	String finalName;
 
+	@Parameter( defaultValue = "false", required = true)
+	public boolean force;
+
 	@Parameter( defaultValue = "-Xmx256m", required = true)
 	String jvmArgs;
 
@@ -42,6 +56,7 @@ public class KikahaRunnerMojo extends AbstractMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if ( !project.getPackaging().equals( "jar" ) && !force ) return;
 		try {
 			val classpath = memorizeClassPathWithRunnableJar();
 			val log = getLog();

@@ -1,21 +1,39 @@
 package kikaha.mojo;
 
+import kikaha.mojo.generator.*;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProject;
+
+import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
+import javax.tools.ToolProvider;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
-import java.util.stream.Collectors;
-import javax.tools.*;
-import kikaha.mojo.generator.*;
-import org.apache.maven.plugin.*;
-import org.apache.maven.plugins.annotations.*;
-import org.apache.maven.plugins.annotations.Mojo;
 
 @Mojo( name = "generate-sources",
 		defaultPhase = LifecyclePhase.COMPILE,
 		requiresDependencyResolution = ResolutionScope.TEST )
 public class KikahaGenerateSourcesMojo extends AbstractMojo {
+
+	@Parameter(defaultValue = "${project}", required = true)
+	MavenProject project;
 
 	@Parameter( defaultValue = "${project.build.outputDirectory}", required = true )
 	public String compileClassesDirectory;
@@ -29,12 +47,16 @@ public class KikahaGenerateSourcesMojo extends AbstractMojo {
 	@Parameter( defaultValue = "true", required = true )
 	public boolean shouldRemoveFiles;
 
+	@Parameter( defaultValue = "false", required = true)
+	public boolean force;
+
 	ClassFileReader decompiler;
 	SimplifiedAPTRunner runner;
 	Config config;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if ( !project.getPackaging().equals( "jar" ) && !force ) return;
 		readConfiguration();
 		ensureSourceDirectoriesExists();
 		configRunnerAndDecompiler();

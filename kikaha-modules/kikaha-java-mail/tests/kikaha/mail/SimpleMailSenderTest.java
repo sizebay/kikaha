@@ -1,21 +1,18 @@
 package kikaha.mail;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Iterator;
-
+import com.dumbster.smtp.SimpleSmtpServer;
+import com.dumbster.smtp.SmtpMessage;
 import kikaha.core.test.KikahaRunner;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.dumbster.smtp.SimpleSmtpServer;
-import com.dumbster.smtp.SmtpMessage;
-
 import javax.inject.Inject;
+import java.util.Iterator;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith( KikahaRunner.class )
 public class SimpleMailSenderTest {
@@ -35,7 +32,7 @@ public class SimpleMailSenderTest {
 		server.stop();
 	}
 
-	@Test( timeout = 5000 )
+	@Test( timeout = 15000 )
 	@SuppressWarnings( "unchecked" )
 	public void ensureThatCanSendEmail() {
 		sender.sendMail( "you@about.you", "Hello", "World!" );
