@@ -1,6 +1,6 @@
 # Kikaha
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.skullabs.kikaha/kikaha-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.skullabs.kikaha/kikaha-parent)
-[![Codeship Status](https://img.shields.io/codeship/3e90ba20-7994-0132-52d3-5ad3a80e87e7/master.svg)](https://www.codeship.io/projects/55927)
+[![Codeship Status](https://circleci.com/gh/Skullabs/kikaha.png?circle-token=65585c046fe1119aa73977da5eeaf0150b82ac9c)](https://circleci.com/gh/Skullabs/kikaha/)
 
 
 Kikaha is a micro container writen over the fast Undertow core. It was developed with two core ideas in mind:
