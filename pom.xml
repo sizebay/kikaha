@@ -192,11 +192,19 @@
                 <groupId>io.skullabs.kikaha</groupId>
                 <artifactId>kikaha-java-mail</artifactId>
                 <version>2.1.0-alpha4</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>io.skullabs.kikaha</groupId>
                 <artifactId>kikaha-cloud-aws</artifactId>
                 <version>2.1.0-alpha4</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.skullabs.kikaha</groupId>
+                <artifactId>kikaha-cloud</artifactId>
+                <version>2.1.0-alpha4</version>
+                <scope>compile</scope>
             </dependency>
             <!-- Main project dependencies -->
             <dependency>

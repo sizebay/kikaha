@@ -7,7 +7,6 @@ import kikaha.core.modules.Module;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.net.ssl.SSLContext;
@@ -32,9 +31,10 @@ public class HttpsModule implements Module {
 	@Override
 	public void load(Undertow.Builder server, DeploymentContext context) throws IOException {
 		Config httpConfig = config.getConfig("server.https");
-		if ( httpConfig.getBoolean("enabled") )
-			loadHttpsListener( httpConfig, server );
-		deployHttpToHttps( context );
+		if ( httpConfig.getBoolean("enabled") ) {
+			loadHttpsListener(httpConfig, server);
+			deployHttpToHttps(context);
+		}
 	}
 
 	void loadHttpsListener( Config httpConfig, Undertow.Builder server ) throws IOException {
