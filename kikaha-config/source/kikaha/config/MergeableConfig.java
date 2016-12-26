@@ -142,8 +142,8 @@ public class MergeableConfig implements Config {
 	public long getLong(String path, long defaultValue) {
 		final String propertyValue = System.getProperty(rootPath + path);
 		if ( propertyValue != null )
-			return Integer.valueOf( propertyValue );
-		return read( path, o->ifNull( (Long)o, defaultValue ) );
+			return Long.valueOf( propertyValue );
+		return read( path, o->ifNull( asLong(o), defaultValue ) );
 	}
 
 	@Override
@@ -223,5 +223,13 @@ public class MergeableConfig implements Config {
 
 	private static <T> T ifNull( T value, T defaultValue ) {
 		return value != null ? value : defaultValue;
+	}
+
+	private static long asLong( Object o ) {
+		if ( o instanceof Integer )
+			return (int)o;
+		else if ( o instanceof String )
+			return Long.valueOf( (String)o );
+		return (Long)o;
 	}
 }

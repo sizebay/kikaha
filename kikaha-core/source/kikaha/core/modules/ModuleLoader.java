@@ -83,14 +83,16 @@ public class ModuleLoader {
 		if ( isGracefulShutdownEnabled ) {
 			gracefulShutdownHandler = new GracefulShutdownHandler( context.rootHandler() );
 			context.rootHandler( gracefulShutdownHandler );
-			gracefulShutdownHandler.addShutdownListener( shutdownSuccessful -> {
-				for ( Module module : modules )
-					module.unload();
-			});
 		}
 	}
 
-	protected void unloadModules(){
+	void unloadModules(){
+		notifyGracefulShutdownListener();
+		for ( Module module : modules )
+			module.unload();
+	}
+
+	private void notifyGracefulShutdownListener(){
 		if ( gracefulShutdownHandler != null ) {
 			gracefulShutdownHandler.shutdown();
 			final long shutdownTimeout = config.getLong("server.modules.graceful-shutdown-timeout");

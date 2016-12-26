@@ -15,6 +15,7 @@ import java.util.Arrays;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -55,5 +56,13 @@ public class ModuleLoaderTest {
 		loader.unloadModules();
 		verify(http).unload();
 		verify(https).unload();
+	}
+
+	@Test
+	public void ensureThatWouldShutdownTheGracefulShutdownListener() throws InterruptedException {
+		loader.gracefulShutdownHandler = mock( GracefulShutdownHandler.class );
+		loader.unloadModules();
+		verify(loader.gracefulShutdownHandler).shutdown();
+		verify(loader.gracefulShutdownHandler).awaitShutdown( eq(300000l) );
 	}
 }

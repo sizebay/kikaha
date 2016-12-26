@@ -5,9 +5,10 @@ import io.undertow.server.ExchangeCompletionListener;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 /**
@@ -20,20 +21,20 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
  * what you are doing.
  *
  * <p>
- *     <b>Note</b>: this is a copy from the original {@link io.undertow.server.handlers.GracefulShutdownHandler}, only
- *     minor changes was made related to {@link ShutdownListener}s' life cycle.
+ *     <b>Note</b>: this is a stripped copy from the original {@link io.undertow.server.handlers.GracefulShutdownHandler}, only
+ *     minor changes was made.
  * </p>
  *
  * @author Stuart Douglas
  */
+@Slf4j
 public class GracefulShutdownHandler implements HttpHandler {
 
     private volatile boolean shutdown = false;
     private final GracefulShutdownListener listener = new GracefulShutdownListener();
-    private final List<ShutdownListener> shutdownListeners = new ArrayList<>();
-
     private final Object lock = new Object();
 
+    @Getter(value = AccessLevel.PACKAGE)
     private volatile long activeRequests = 0;
     private static final AtomicLongFieldUpdater<GracefulShutdownHandler> activeRequestsUpdater = AtomicLongFieldUpdater.newUpdater(GracefulShutdownHandler.class, "activeRequests");
 
@@ -45,36 +46,18 @@ public class GracefulShutdownHandler implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-        activeRequestsUpdater.incrementAndGet(this);
         if (shutdown) {
-            decrementRequests();
             exchange.setStatusCode(StatusCodes.SERVICE_UNAVAILABLE);
             exchange.endExchange();
-            return;
+        } else {
+            activeRequestsUpdater.incrementAndGet(this);
+            exchange.addExchangeCompleteListener(listener);
+            next.handleRequest(exchange);
         }
-        exchange.addExchangeCompleteListener(listener);
-        next.handleRequest(exchange);
     }
-
 
     public void shutdown() {
         shutdown = true;
-    }
-
-    void forceShutdown(){
-        synchronized (lock) {
-            shutdown();
-            shutdownComplete();
-        }
-    }
-
-    private void shutdownComplete() {
-        assert Thread.holdsLock(lock);
-        lock.notifyAll();
-        for (ShutdownListener listener : shutdownListeners) {
-            listener.shutdown(true);
-        }
-        shutdownListeners.clear();
     }
 
     /**
@@ -102,60 +85,15 @@ public class GracefulShutdownHandler implements HttpHandler {
         }
     }
 
-    /**
-     * Adds a shutdown listener that will be invoked when all requests have finished. If all requests have already been finished
-     * the listener will be invoked immediately.
-     *
-     * @param shutdownListener The shutdown listener
-     */
-    public void addShutdownListener(final ShutdownListener shutdownListener) {
-        synchronized (lock) {
-            if (!shutdown) {
-                shutdownListeners.add(shutdownListener);
-                return;
-            }
-            long count = activeRequestsUpdater.get(this);
-            if (count == 0) {
-                shutdownListener.shutdown(true);
-            } else {
-                shutdownListeners.add(shutdownListener);
-            }
-        }
-    }
-
-    private void decrementRequests() {
-        long active = activeRequestsUpdater.decrementAndGet(this);
-        if (shutdown) {
-            synchronized (lock) {
-                if (active == 0) {
-                    shutdownComplete();
-                }
-            }
-        }
-    }
-
     private final class GracefulShutdownListener implements ExchangeCompletionListener {
 
         @Override
         public void exchangeEvent(HttpServerExchange exchange, NextListener nextListener) {
             try {
-                decrementRequests();
+                activeRequestsUpdater.decrementAndGet(GracefulShutdownHandler.this);
             } finally {
                 nextListener.proceed();
             }
         }
-    }
-
-    /**
-     * A listener which can be registered with the handler to be notified when all pending requests have finished.
-     */
-    public interface ShutdownListener {
-
-        /**
-         * Notification that the container has shutdown.
-         *
-         * @param shutdownSuccessful If the shutdown succeeded or not
-         */
-        void shutdown(boolean shutdownSuccessful);
     }
 }
