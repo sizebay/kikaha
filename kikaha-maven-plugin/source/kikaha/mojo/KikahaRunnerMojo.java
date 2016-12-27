@@ -42,9 +42,6 @@ public class KikahaRunnerMojo extends AbstractMojo {
 	@Component
 	ArtifactResolver resolver;
 
-	@Parameter( defaultValue = "${project.build.finalName}", required = true)
-	String finalName;
-
 	@Parameter( defaultValue = "false", required = true)
 	public boolean force;
 
