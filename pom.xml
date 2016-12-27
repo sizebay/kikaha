@@ -66,18 +66,17 @@
 
     <properties>
         <!-- Dependencies Versions -->
-        <version.undertow>1.4.0.Final</version.undertow>
+        <version.undertow>1.4.8.Final</version.undertow>
         <version.jackson>2.7.5</version.jackson>
-        <version.hazelcast>3.7.2</version.hazelcast>
+        <version.hazelcast>3.7.4</version.hazelcast>
         <version.slf4j>1.7.21</version.slf4j>
-        <version.logback>1.1.7</version.logback>
+        <version.logback>1.1.8</version.logback>
         <version.junit>4.12</version.junit>
-        <version.lombok>1.16.10</version.lombok>
+        <version.lombok>1.16.12</version.lombok>
         <version.mockito>1.10.19</version.mockito>
-        <version.jmustache>1.12</version.jmustache>
-        <version.vibur>9.0</version.vibur>
+        <version.jmustache>1.13</version.jmustache>
+        <version.vibur>11.0</version.vibur>
         <version.java.mail>1.4.4</version.java.mail>
-        <version.logback>1.1.7</version.logback>
         <version.aws>1.11.51</version.aws>
         <version.metrics>3.1.0</version.metrics>
         <!-- Plugin's Versions -->
