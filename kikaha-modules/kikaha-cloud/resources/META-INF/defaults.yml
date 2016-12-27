@@ -12,8 +12,8 @@ server:
 
     # Metrics for JVM
     jvm:
-      memory-usage: true
-      buffer-pool-usage: true
-      thread-usage: true
-      gc-usage: true
-      fd-usage: true
+      memory-usage: false
+      buffer-pool-usage: false
+      thread-usage: false
+      gc-usage: false
+      fd-usage: false

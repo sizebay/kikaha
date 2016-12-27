@@ -13,7 +13,7 @@ public class JMXReporterConfiguration implements ReporterConfiguration {
 
     @Override
     public void configureAndStartReportFor(MetricRegistry registry) {
-        final JmxReporter reporter = JmxReporter.forRegistry(registry).build();
+        final JmxReporter reporter = JmxReporter.forRegistry(registry).inDomain("kikaha").build();
         reporter.start();
         log.info( "JVM Metric Reporter started." );
     }
