@@ -59,6 +59,7 @@
                     <version>2.1.0-alpha4</version>
                     <artifactId>kikaha-maven-plugin</artifactId>
                     <configuration>
+                        <jvmArgs>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArgs>
                         <webResourcesPath>${config.dir.web}</webResourcesPath>
                     </configuration>
                 </plugin>
