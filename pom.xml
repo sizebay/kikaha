@@ -299,7 +299,6 @@
         <resources>
             <resource>
                 <directory>${config.dir.resource}</directory>
-                <filtering>true</filtering>
                 <includes>
                     <include>**/*.*</include>
                 </includes>
