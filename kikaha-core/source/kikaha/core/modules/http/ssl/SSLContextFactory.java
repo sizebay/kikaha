@@ -65,6 +65,7 @@ public class SSLContextFactory {
 			throws IOException {
 		final KeyStore keystore = loadKeyStore( keyStoreName, keystorePassword );
 		final KeyStore truststore = loadKeyStore( trustStoreName, keystorePassword );
+		log.debug( "Keystore and Truststore loaded. Creating SSLContext..." );
 		return createSSLContext( keystore, truststore, keystorePassword );
 	}
 
@@ -84,9 +85,17 @@ public class SSLContextFactory {
 
 	InputStream openFile( final String name ) {
 		try {
-			return new FileInputStream( name );
+			log.debug( "Opening certificate from the ClassPath: " + name );
+			InputStream inputStream = getClass().getClassLoader().getResourceAsStream( name );
+
+			if ( inputStream == null ) {
+				log.debug("Opening certificate from the file system: " + name);
+				inputStream = new FileInputStream(name);
+			}
+
+			return inputStream;
 		} catch ( FileNotFoundException e ) {
-			return getClass().getClassLoader().getResourceAsStream( name );
+			return null;
 		}
 	}
 
