@@ -35,10 +35,13 @@ public class KikahaJarPackagerMojo extends AbstractMojo {
     File targetDirectory;
 
     @Parameter(defaultValue = "${project.build.finalName}", required = true)
-    String finalName;
+    String originalJarFileName;
+
+    @Parameter(defaultValue = "${project.build.finalName}-runnable.jar", required = true)
+    String jarFileName;
 
     @Parameter( defaultValue = "false", required = true)
-    public boolean force;
+    boolean force;
 
     @Component
     ArtifactResolver resolver;
@@ -65,7 +68,7 @@ public class KikahaJarPackagerMojo extends AbstractMojo {
 
     private JarWriter createZipFile() throws MojoExecutionException {
         try {
-            final String fileName = targetDirectory.getAbsolutePath() + File.separatorChar + finalName + "-runnable.jar";
+            final String fileName = targetDirectory.getAbsolutePath() + File.separatorChar + jarFileName;
             final JarWriter zipFile = new JarWriter(fileName);
             return zipFile;
         } catch (FileNotFoundException e) {
@@ -111,7 +114,7 @@ public class KikahaJarPackagerMojo extends AbstractMojo {
 
     private void copyFinalArtifactToZip(final JarWriter zip) {
         try {
-            final String fileName = String.format("%s.%s", finalName, project.getPackaging());
+            final String fileName = String.format("%s.%s", originalJarFileName, project.getPackaging());
             final File file = new File(targetDirectory, fileName);
             zip.mergeJar( file.getAbsolutePath() );
         } catch (MojoExecutionException e) {

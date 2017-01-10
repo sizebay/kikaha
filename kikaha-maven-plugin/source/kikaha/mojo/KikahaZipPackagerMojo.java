@@ -43,7 +43,7 @@ public class KikahaZipPackagerMojo extends AbstractMojo {
 	@Parameter( defaultValue = "${project.build.resources[0].directory}", required = true )
 	File resourceDirectory;
 
-	@Parameter( defaultValue = "${project.build.finalName}", required = true )
+	@Parameter( defaultValue = "${project.build.originalJarFileName}", required = true )
 	String finalName;
 
 	@Parameter( defaultValue = "false", required = true)
