@@ -1,7 +1,7 @@
 package kikaha.uworkers.core;
 
-import java.io.IOException;
-import kikaha.uworkers.api.*;
+import kikaha.uworkers.api.Exchange;
+import kikaha.uworkers.api.Worker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,10 +31,11 @@ public class EndpointInboxConsumer implements Runnable {
 	private Exchange getNextAvailableTask(){
 		try {
 			return inbox.receiveMessage();
-		} catch ( IOException e ) {
-			log.error( "Could not receive a message", e );
 		} catch ( InterruptedException e ) {
 			log.debug( "Could not receive a message", e );
+		} catch ( Throwable e ) {
+			log.error( "Could not receive a message", e );
+			return new FailureExchange( e );
 		}
 		return null;
 	}
