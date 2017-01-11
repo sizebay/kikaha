@@ -2,59 +2,47 @@ package kikaha.uworkers.core;
 
 import kikaha.uworkers.api.Exchange;
 import kikaha.uworkers.api.Response;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.function.BiConsumer;
 
 /**
- * Represents a failure while retrieving an {@link Exchange} from
- * the {@link EndpointInboxSupplier}.
+ * Empty implementation of {@link Exchange}.
  */
-@Slf4j
-@RequiredArgsConstructor
-public class FailureExchange implements Exchange {
-
-    final Throwable failure;
+public class EmptyExchange implements Exchange {
 
     @Override
     public <RESP> RESP response() {
-        throw failure();
+        return null;
     }
 
     @Override
     public <RESP> RESP responseAs(Class<RESP> targetClass) {
-        throw failure();
+        return null;
     }
 
     @Override
     public Response then(BiConsumer<UndefinedObject, Throwable> listener) {
-        throw failure();
+        return null;
     }
 
     @Override
     public <REQ> REQ request() {
-        throw failure();
+        return null;
     }
 
     @Override
     public <REQ> REQ requestAs(Class<REQ> targetClass) throws IOException {
-        throw failure();
+        return null;
     }
 
     @Override
     public <RESP> Exchange reply(RESP response) {
-        throw failure();
+        return null;
     }
 
     @Override
     public Exchange reply(Throwable error) {
-        throw failure();
-    }
-
-    private RuntimeException failure(){
-        log.info( "FAILED: " + failure.getMessage() );
-        return new IllegalStateException( failure );
+        return null;
     }
 }

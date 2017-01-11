@@ -14,29 +14,46 @@ public class EndpointInboxConsumer implements Runnable {
 
 	final EndpointInboxSupplier inbox;
 	final WorkerEndpointMessageListener listener;
-	final String endpointURL;
+	final String name;
 
 	@Override
 	public void run() {
-		Exchange exchange;
-		while ( (exchange = getNextAvailableTask()) != null ) {
+		while ( true ) {
 			try {
-				listener.onMessage(exchange);
-			} catch ( Throwable c ) {
-				exchange.reply( c );
+				consumeNextMessage();
+			} catch (InterruptedException e) {
+				return;
 			}
 		}
 	}
 
-	private Exchange getNextAvailableTask(){
+	private void consumeNextMessage() throws InterruptedException {
+		final Exchange exchange;
+		try {
+			exchange = getNextAvailableTask();
+		} catch ( Throwable e ) {
+			log.info( "BAH!" );
+			throw e;
+		}
+		try {
+			if ( !EmptyExchange.class.isInstance( exchange ) )
+				listener.onMessage(exchange);
+		} catch (Throwable c) {
+			exchange.reply(c);
+		}
+	}
+
+	private Exchange getNextAvailableTask() throws InterruptedException {
 		try {
 			return inbox.receiveMessage();
+		} catch ( EndpointInboxConsumerTimeoutException e ) {
+			return new EmptyExchange();
 		} catch ( InterruptedException e ) {
-			log.debug( "Could not receive a message", e );
+			log.debug( "Endpoint finished", e );
+			throw e;
 		} catch ( Throwable e ) {
-			log.error( "Could not receive a message", e );
+			log.debug( "Could not receive a message", e );
 			return new FailureExchange( e );
 		}
-		return null;
 	}
 }

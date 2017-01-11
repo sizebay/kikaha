@@ -15,7 +15,8 @@ public class LocalEndpointFactory implements EndpointFactory {
 
 	final Map<String, LocalEndpointInboxSupplier> cachedSuppliers = new ConcurrentHashMap<>();
 
-	@Inject EndpointContext endpointContext;
+	@Inject
+    MicroWorkersContext microWorkersContext;
 
 	@Override
 	public LocalEndpointInboxSupplier createSupplier( String endpointName) {
@@ -23,7 +24,7 @@ public class LocalEndpointFactory implements EndpointFactory {
 	}
 
 	LocalEndpointInboxSupplier instantiateSupplier( String endpointName ) {
-		final Config endpointConfig = endpointContext.getEndpointConfig(endpointName);
+		final Config endpointConfig = microWorkersContext.getEndpointConfig(endpointName);
 		final int poolSize = endpointConfig.getInteger("pool-size", -1);
 		return ( poolSize > 0 )
 			? LocalEndpointInboxSupplier.withFixedSize( poolSize )

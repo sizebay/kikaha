@@ -1,16 +1,17 @@
 package kikaha.uworkers.core;
 
+import kikaha.uworkers.api.Response;
 import org.junit.Test;
 
 import java.io.IOException;
-
-import static org.mockito.Matchers.any;
+import java.util.function.BiConsumer;
 
 /**
  * Unit tests for {@link FailureExchange}.
  */
 public class FailureExchangeTest {
 
+    final BiConsumer<Response.UndefinedObject, Throwable> listener = ( r, t ) -> {};
     final IOException failure = new IOException();
     final FailureExchange exchange = new FailureExchange( failure );
 
@@ -26,7 +27,7 @@ public class FailureExchangeTest {
 
     @Test( expected = IllegalStateException.class )
     public void then() throws Exception {
-        exchange.then( any() );
+        exchange.then( listener );
     }
 
     @Test( expected = IllegalStateException.class )
@@ -36,7 +37,7 @@ public class FailureExchangeTest {
 
     @Test( expected = IllegalStateException.class )
     public void requestAs() throws Exception {
-        exchange.requestAs( any() );
+        exchange.requestAs( Object.class );
     }
 
     @Test( expected = IllegalStateException.class )

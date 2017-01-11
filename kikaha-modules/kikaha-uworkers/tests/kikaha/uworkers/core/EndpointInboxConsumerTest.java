@@ -1,15 +1,19 @@
 package kikaha.uworkers.core;
 
-import static java.lang.Thread.sleep;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
-import java.io.IOException;
 import kikaha.uworkers.api.Exchange;
 import lombok.SneakyThrows;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import java.io.IOException;
+
+import static java.lang.Thread.sleep;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link EndpointInboxConsumer}.
@@ -18,7 +22,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 @SuppressWarnings("unchecked")
 public class EndpointInboxConsumerTest {
 
-	static final Threads threads = Threads.elasticPool();
+	Threads threads;
 
 	@Mock Exchange exchange;
 	@Mock EndpointInboxSupplier supplier;
@@ -28,7 +32,13 @@ public class EndpointInboxConsumerTest {
 
 	@Before
 	public void createConsumer(){
+		threads = Threads.fixedPool(1);
 		consumer = new EndpointInboxConsumer( supplier, listener, "default" );
+	}
+
+	@After
+	public void shutdownThreads(){
+		threads.shutdown();
 	}
 
 	@Test

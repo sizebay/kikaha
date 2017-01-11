@@ -1,12 +1,17 @@
 package kikaha.urouting;
 
-import java.io.IOException;
-import java.util.*;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
-import io.undertow.util.*;
-import kikaha.urouting.api.*;
+import io.undertow.util.HeaderMap;
+import io.undertow.util.HttpString;
+import kikaha.urouting.api.ConversionException;
+import kikaha.urouting.api.Response;
+import kikaha.urouting.api.Unserializer;
 import lombok.RequiredArgsConstructor;
+
+import java.io.IOException;
+import java.util.Deque;
+import java.util.Map;
 
 /**
  * Represents an incoming request. Most of time, is just a very tiny layer above
@@ -18,6 +23,7 @@ public class SimpleExchange {
 	final HttpServerExchange exchange;
 	final RoutingMethodParameterReader parameterReader;
 	final RoutingMethodResponseWriter responseWriter;
+	final RoutingMethodExceptionHandler exceptionHandler;
 
 	/**
 	 * Return the host, and also the port if this request was sent to a non-standard port. In general
@@ -177,6 +183,27 @@ public class SimpleExchange {
 	 * another one.
 	 *
 	 * @param type
+	 * @param <T>
+	 * @return
+	 * @throws IOException
+	 */
+	public <T> T getRequestBody( Class<T> type ) throws IOException {
+		return getRequestBody( type, parameterReader.defaultContentType );
+	}
+
+	/**
+	 * Get the body of current request and convert to {@code <T>} type as
+	 * defined by {@code clazz} argument.<br>
+	 * <br>
+	 * <p>
+	 * It searches for {@link Unserializer} implementations to convert sent data
+	 * from client into the desired object. The "Content-Type" header is the
+	 * information needed to define which {@link Unserializer} should be used to
+	 * decode the sent data into an object. When no {@link Unserializer} is
+	 * found it uses the {@code defaultConsumingContentType} argument to seek
+	 * another one.
+	 *
+	 * @param type
 	 * @param contentType
 	 * @param <T>
 	 * @return
@@ -197,6 +224,26 @@ public class SimpleExchange {
 	}
 
 	/**
+	 * Serialize and send a failure response to the HTTP Client.
+	 *
+	 * @param response
+	 * @throws IOException
+	 */
+	public void sendResponse(Throwable response) throws IOException {
+		sendResponse( exceptionHandler.handle( response ) );
+	}
+
+	/**
+	 * Serialize and send the {@code response} object to the HTTP Client.
+	 *
+	 * @param response
+	 * @throws IOException
+	 */
+	public void sendResponse(Object response) throws IOException {
+		sendResponse( response, responseWriter.defaultContentType );
+	}
+
+	/**
 	 * Serialize and send the {@code response} object to the HTTP Client.
 	 *
 	 * @param response
@@ -205,5 +252,12 @@ public class SimpleExchange {
 	 */
 	public void sendResponse(Object response, String contentType) throws IOException {
 		responseWriter.write( exchange, contentType, response );
+	}
+
+	/**
+	 * Ends the exchange. See {@link HttpServerExchange#endExchange()} for more details.
+	 */
+	public void endExchange(){
+		exchange.endExchange();
 	}
 }

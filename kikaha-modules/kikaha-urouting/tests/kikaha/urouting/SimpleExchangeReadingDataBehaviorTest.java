@@ -1,17 +1,26 @@
 package kikaha.urouting;
 
-import static org.junit.Assert.assertEquals;
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
-import javax.inject.Inject;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.server.handlers.*;
-import io.undertow.util.*;
-import kikaha.core.test.*;
+import io.undertow.server.handlers.Cookie;
+import io.undertow.server.handlers.CookieImpl;
+import io.undertow.util.HeaderMap;
+import io.undertow.util.Headers;
+import io.undertow.util.HttpString;
+import io.undertow.util.PathTemplateMatch;
+import kikaha.core.test.Exposed;
+import kikaha.core.test.KikahaRunner;
 import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -19,51 +28,49 @@ import org.junit.runner.RunWith;
 @RunWith(KikahaRunner.class)
 public class SimpleExchangeReadingDataBehaviorTest {
 
-	@Inject
-	RoutingMethodParameterReader parameterReader;
-
-	@Inject
-	RoutingMethodResponseWriter responseWriter;
+	@Inject RoutingMethodParameterReader parameterReader;
+	@Inject RoutingMethodResponseWriter responseWriter;
+	@Inject RoutingMethodExceptionHandler exceptionHandler;
 
 	@Test
 	public void ensureThatIsPossibleToRetrieveHostAndPort(){
 		final HttpServerExchange request = createExchange("POST", "http://server:80/hello");
-		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter, exceptionHandler );
 		assertEquals( "server:80", exchange.getHostAndPort() );
 	}
 
 	@Test
 	public void ensureThatIsPossibleToRetrieveHostAndPortOnRequestsOmittingTheDefaultPort(){
 		final HttpServerExchange request = createExchange("POST", "http://server/hello");
-		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter, exceptionHandler );
 		assertEquals( "server", exchange.getHostAndPort() );
 	}
 
 	@Test
 	public void ensureThatIsPossibleToRetrieveTheCurrentProtocol(){
 		final HttpServerExchange request = createExchange("POST", "http://server/hello");
-		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter, exceptionHandler );
 		assertEquals( "http", exchange.getRequestScheme() );
 	}
 
 	@Test
 	public void ensureThatIsPossibleToRetrieveTheCurrentHttpMethod(){
 		final HttpServerExchange request = createExchange("POST", "http://server/hello");
-		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter, exceptionHandler );
 		assertEquals( "POST", exchange.getHttpMethod().toString() );
 	}
 
 	@Test
 	public void ensureThatIsPossibleToRetrieveTheCurrentRelativePath(){
 		final HttpServerExchange request = createExchange("POST", "http://server/hello");
-		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter, exceptionHandler );
 		assertEquals( "/hello", exchange.getRelativePath() );
 	}
 
 	@Test
 	public void ensureThatIsPossibleToRetrieveTheCurrentQueryParameters(){
 		final HttpServerExchange request = createExchange("POST", "http://server/hello?q=1");
-		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter, exceptionHandler );
 		final Map<String, Deque<String>> queryParameters = exchange.getQueryParameters();
 		assertEquals( "1", queryParameters.get("q").getFirst() );
 	}
@@ -71,7 +78,7 @@ public class SimpleExchangeReadingDataBehaviorTest {
 	@Test
 	public void ensureThatIsPossibleToRetrieveASingleQueryParameter() throws IOException {
 		final HttpServerExchange request = createExchange("POST", "http://server/hello?q=1");
-		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter, exceptionHandler );
 		assertEquals( 1l, exchange.getQueryParameter( "q", Long.TYPE ), 0 );
 	}
 
@@ -80,7 +87,7 @@ public class SimpleExchangeReadingDataBehaviorTest {
 		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
 		simulatePathParameterRequest( request );
 
-		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter, exceptionHandler );
 		final Map<String, String> queryParameters = exchange.getPathParameters();
 		assertEquals( "123", queryParameters.get("id") );
 	}
@@ -90,7 +97,7 @@ public class SimpleExchangeReadingDataBehaviorTest {
 		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
 		simulatePathParameterRequest( request );
 
-		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter, exceptionHandler );
 		assertEquals( 123l, exchange.getPathParameter( "id", Long.TYPE ), 0 );
 	}
 
@@ -104,7 +111,7 @@ public class SimpleExchangeReadingDataBehaviorTest {
 	@Test
 	public void ensureThatIsPossibleToRetrieveTheCurrentHeaderParameters(){
 		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
-		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter, exceptionHandler );
 		final HeaderMap queryParameters = exchange.getHeaderParameters();
 		assertEquals( "server", queryParameters.get("HOST").getFirst() );
 	}
@@ -112,14 +119,14 @@ public class SimpleExchangeReadingDataBehaviorTest {
 	@Test
 	public void ensureThatIsPossibleToRetrieveASingleHeaderParameter() throws IOException {
 		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
-		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter, exceptionHandler );
 		assertEquals( "server", exchange.getHeaderParameter( "HOST", String.class ) );
 	}
 
 	@Test
 	public void ensureThatIsPossibleToRetrieveTheCurrentCookieParameters(){
 		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
-		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter, exceptionHandler );
 		final Map<String, Cookie> cookies = exchange.getCookieParameters();
 		assertEquals( "1324", cookies.get("JSESSIONID").getValue() );
 	}
@@ -127,7 +134,7 @@ public class SimpleExchangeReadingDataBehaviorTest {
 	@Test
 	public void ensureThatIsPossibleToRetrieveASingleCookieParameter() throws IOException {
 		final HttpServerExchange request = createExchange("POST", "http://server/hello/123");
-		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter );
+		final SimpleExchange exchange = SimpleExchange.wrap( request, parameterReader, responseWriter, exceptionHandler );
 		assertEquals( "1324", exchange.getCookieParameter( "JSESSIONID", String.class ) );
 	}
 

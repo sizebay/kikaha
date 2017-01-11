@@ -1,10 +1,14 @@
 package kikaha.uworkers.local;
 
-import java.util.concurrent.locks.*;
-import java.util.function.BiConsumer;
 import kikaha.uworkers.api.Exchange;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiConsumer;
 
 @RequiredArgsConstructor(staticName = "of")
 @SuppressWarnings("unchecked")
@@ -88,5 +92,9 @@ public class LocalExchange implements Exchange {
 	@Override
 	public String toString() {
 		return super.toString() + "; Response: " + response + "; Exception: " + exception;
+	}
+
+	public static LocalExchange create(){
+		return LocalExchange.of( null );
 	}
 }

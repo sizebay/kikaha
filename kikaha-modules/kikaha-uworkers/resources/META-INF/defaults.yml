@@ -1,4 +1,22 @@
 server:
   uworkers:
+
+    # Exposes the uWorkers as REST API
+    rest-api:
+
+      # is the rest API enabled?
+      enabled: false
+
+      # which will be the base URL for each exposed uWorkers endpoint
+      base-endpoint: "/api/internal/uworkers"
+
+      # what is the maximum amount of messages should we queue?
+      # -1 means it will be unbounded
+      max-task-pool-size: 10
+
+    # Configurations that may apply to every exposed endpoint
+    # if otherwise it wasn't override.
     default:
+
+      # The default number of Workers that will be consuming an endpoint
       parallelism: 1

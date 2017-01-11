@@ -1,16 +1,22 @@
 package kikaha.uworkers.core;
 
+import kikaha.config.Config;
+import kikaha.core.DeploymentContext;
+import kikaha.core.test.KikahaRunner;
+import kikaha.uworkers.api.Exchange;
+import kikaha.uworkers.api.Worker;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import javax.inject.Inject;
+import java.io.IOException;
+
 import static java.util.Arrays.asList;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import java.io.IOException;
-import javax.inject.Inject;
-import kikaha.config.Config;
-import kikaha.core.test.KikahaRunner;
-import kikaha.uworkers.api.*;
-import org.junit.*;
-import org.junit.runner.RunWith;
-import org.mockito.*;
 
 /**
  * Unit test for {@code MicroWorkersTaskDeploymentModule}.
@@ -24,9 +30,10 @@ public class MicroWorkersTaskDeploymentModuleTest {
 	final WorkerEndpointMessageListener notConfigured = new NotConfiguredWorkerEndpointMessageListener();
 
 	@Inject MicroWorkersTaskDeploymentModule module;
-	@Inject EndpointContext endpointContext;
+	@Inject MicroWorkersContext microWorkersContext;
 	@Inject Config config;
 
+	@Mock DeploymentContext deploymentContext;
 	@Mock EndpointInboxSupplier inbox;
 	@Mock EndpointFactory inboxSupplierFactory;
 	@Mock WorkerEndpointMessageListener listener;
@@ -36,8 +43,8 @@ public class MicroWorkersTaskDeploymentModuleTest {
 	public void injectMocks(){
 		MockitoAnnotations.initMocks(this);
 		module = spy( module );
-		endpointContext.config = config;
-		endpointContext.factories = asList( inboxSupplierFactory );
+		microWorkersContext.config = config;
+		microWorkersContext.factories = asList( inboxSupplierFactory );
 		doReturn( true ).when( inboxSupplierFactory ).canHandleEndpoint( anyString() );
 		doReturn( inbox ).when( inboxSupplierFactory ).createSupplier( anyString() );
 	}
@@ -45,19 +52,19 @@ public class MicroWorkersTaskDeploymentModuleTest {
 	@Test
 	public void ensureThatCanDeployAllMessageConsumers() throws IOException {
 		module.consumers = asList( first, second );
-		module.load( null, null );
-		verify( module, times(2) ).deploy( any(WorkerEndpointMessageListener.class), eq(1) );
+		module.load( null, deploymentContext );
+		verify( module, times(2) ).deploy( eq(deploymentContext), any(WorkerEndpointMessageListener.class), eq(1) );
 	}
 
 	@Test
 	public void ensureThatDeployedMessageConsumerHaveItsParallelismConfigurationRead() throws IOException {
 		doReturn( 1 ).when( mockedConfig ).getInteger( anyString(), anyInt() );
-		endpointContext.config = mockedConfig;
+		microWorkersContext.config = mockedConfig;
 		module.consumers = asList( first, second );
-		module.load( null, null );
-		verify( module, times(2) ).deploy( any(WorkerEndpointMessageListener.class), eq(1) );
-		verify( endpointContext.config ).getInteger( eq( "server.uworkers.first.parallelism" ), eq(1) );
-		verify( endpointContext.config ).getInteger( eq( "server.uworkers.second.parallelism" ), eq(1) );
+		module.load( null, deploymentContext );
+		verify( module, times(2) ).deploy( eq(deploymentContext), any(WorkerEndpointMessageListener.class), eq(1) );
+		verify( microWorkersContext.config ).getInteger( eq( "server.uworkers.first.parallelism" ), eq(1) );
+		verify( microWorkersContext.config ).getInteger( eq( "server.uworkers.second.parallelism" ), eq(1) );
 	}
 
 	@Test

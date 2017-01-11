@@ -13,14 +13,15 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 public class WorkerRefProducer {
 
-	@Inject EndpointContext endpointContext;
+	@Inject
+    MicroWorkersContext microWorkersContext;
 
 	@Produces
 	public WorkerRef produceAWorkerRef(ProviderContext providerContext){
 		final Worker annotation = providerContext.getAnnotation(Worker.class);
 		if ( annotation == null )
 			throw new IllegalArgumentException( "Missing @Worker annotation on " + providerContext );
-		final EndpointFactory factory = endpointContext.getFactoryFor(annotation.value());
+		final EndpointFactory factory = microWorkersContext.getFactoryFor(annotation.value());
 		final WorkerRef workerRef = factory.createWorkerRef(annotation.value());
 		log.debug( "Creating " + workerRef );
 		return workerRef;

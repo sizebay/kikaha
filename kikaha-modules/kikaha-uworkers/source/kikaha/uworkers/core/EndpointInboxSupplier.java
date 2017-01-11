@@ -1,7 +1,9 @@
 package kikaha.uworkers.core;
 
+import kikaha.uworkers.api.Exchange;
+import kikaha.uworkers.api.Worker;
+
 import java.io.IOException;
-import kikaha.uworkers.api.*;
 
 /**
  * A supplier responsible for the receiving messages that will be forwarded to
@@ -16,7 +18,9 @@ public interface EndpointInboxSupplier {
 	 * @return
 	 * @throws InterruptedException
 	 * @throws IOException
+	 * @throws EndpointInboxConsumerTimeoutException if it had elapsed the timeout
+	 * 				to retrieve a message from the endpoint.
 	 */
 	@SuppressWarnings("unchecked")
-	Exchange receiveMessage() throws InterruptedException, IOException;
+	Exchange receiveMessage() throws InterruptedException, IOException, EndpointInboxConsumerTimeoutException;
 }

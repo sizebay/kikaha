@@ -14,9 +14,10 @@ import org.junit.runner.RunWith;
  *
  */
 @RunWith(KikahaRunner.class)
-public class EndpointContextTest {
+public class MicroWorkersContextTest {
 
-	@Inject EndpointContext context;
+	@Inject
+    MicroWorkersContext context;
 	@Inject Config config;
 
 	@Before
