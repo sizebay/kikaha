@@ -1,12 +1,15 @@
 package kikaha.core.cdi;
 
-import java.util.*;
-import java.util.concurrent.locks.LockSupport;
-import java.util.function.*;
 import kikaha.core.cdi.helpers.*;
-import kikaha.core.cdi.helpers.filter.*;
+import kikaha.core.cdi.helpers.filter.Condition;
+import kikaha.core.cdi.helpers.filter.Filter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.*;
+import java.util.concurrent.locks.LockSupport;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Slf4j
 @SuppressWarnings( { "rawtypes", "unchecked" } )
@@ -237,7 +240,10 @@ public class DefaultServiceProvider implements ServiceProvider {
 			while ( !classesToBeConstructed.isEmpty() ) {
 				final Injectable injectable = classesToBeConstructed.poll();
 				try { injectable.postConstruct(); }
-				catch ( final Throwable cause ) { cause.printStackTrace(); }
+				catch ( final Throwable cause ) {
+					throw new ServiceProviderException( "Could not Post Construct the class "
+						+ injectable.instance.getClass().getCanonicalName(), cause );
+				}
 			}
 		}
 

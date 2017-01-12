@@ -21,7 +21,6 @@
         <dependency>
             <groupId>io.skullabs.kikaha</groupId>
             <artifactId>kikaha-urouting</artifactId>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

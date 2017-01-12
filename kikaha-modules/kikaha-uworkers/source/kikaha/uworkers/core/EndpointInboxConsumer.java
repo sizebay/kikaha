@@ -28,17 +28,11 @@ public class EndpointInboxConsumer implements Runnable {
 	}
 
 	private void consumeNextMessage() throws InterruptedException {
-		final Exchange exchange;
-		try {
-			exchange = getNextAvailableTask();
-		} catch ( Throwable e ) {
-			log.info( "BAH!" );
-			throw e;
-		}
+		final Exchange exchange = getNextAvailableTask();
 		try {
 			if ( !EmptyExchange.class.isInstance( exchange ) )
 				listener.onMessage(exchange);
-		} catch (Throwable c) {
+		} catch ( final Throwable c ) {
 			exchange.reply(c);
 		}
 	}
@@ -46,12 +40,12 @@ public class EndpointInboxConsumer implements Runnable {
 	private Exchange getNextAvailableTask() throws InterruptedException {
 		try {
 			return inbox.receiveMessage();
-		} catch ( EndpointInboxConsumerTimeoutException e ) {
+		} catch ( final EndpointInboxConsumerTimeoutException e ) {
 			return new EmptyExchange();
-		} catch ( InterruptedException e ) {
+		} catch ( final InterruptedException e ) {
 			log.debug( "Endpoint finished", e );
 			throw e;
-		} catch ( Throwable e ) {
+		} catch ( final Throwable e ) {
 			log.debug( "Could not receive a message", e );
 			return new FailureExchange( e );
 		}
