@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
  *
  */
 @RunWith(KikahaRunner.class)
-public class CounterWorkerTest {
+public class CounterWorkerIntegrationTest {
 
 	@Worker( value = "count-down")
 	WorkerRef countDownWorker;

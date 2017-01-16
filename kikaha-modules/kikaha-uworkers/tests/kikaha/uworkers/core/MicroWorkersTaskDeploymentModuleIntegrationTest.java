@@ -5,6 +5,7 @@ import kikaha.core.DeploymentContext;
 import kikaha.core.test.KikahaRunner;
 import kikaha.uworkers.api.Exchange;
 import kikaha.uworkers.api.Worker;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +23,7 @@ import static org.mockito.Mockito.*;
  * Unit test for {@code MicroWorkersTaskDeploymentModule}.
  */
 @RunWith(KikahaRunner.class)
-public class MicroWorkersTaskDeploymentModuleTest {
+public class MicroWorkersTaskDeploymentModuleIntegrationTest {
 
 	final WorkerEndpointMessageListener first = new FirstWorkerEndpointMessageListener();
 	final WorkerEndpointMessageListener second = new SecondWorkerEndpointMessageListener();
@@ -47,6 +48,11 @@ public class MicroWorkersTaskDeploymentModuleTest {
 		microWorkersContext.factories = asList( inboxSupplierFactory );
 		doReturn( true ).when( inboxSupplierFactory ).canHandleEndpoint( anyString() );
 		doReturn( inbox ).when( inboxSupplierFactory ).createSupplier( anyString() );
+	}
+
+	@After
+	public void shutdownModules(){
+		module.unload();
 	}
 
 	@Test

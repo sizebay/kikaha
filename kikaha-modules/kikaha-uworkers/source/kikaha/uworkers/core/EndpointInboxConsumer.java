@@ -5,6 +5,8 @@ import kikaha.uworkers.api.Worker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * A background task that consumes messages from endpoints and send it to {@link Worker}s.
  */
@@ -12,13 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class EndpointInboxConsumer implements Runnable {
 
+	final AtomicBoolean isShutdown;
 	final EndpointInboxSupplier inbox;
 	final WorkerEndpointMessageListener listener;
 	final String name;
 
 	@Override
 	public void run() {
-		while ( true ) {
+		while ( !isShutdown.get() ) {
 			try {
 				consumeNextMessage();
 			} catch (InterruptedException e) {

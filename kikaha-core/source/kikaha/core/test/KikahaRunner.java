@@ -13,14 +13,15 @@ import org.junit.runners.model.*;
  */
 public class KikahaRunner extends Runner implements Filterable {
 
-	private final DefaultServiceProvider cdi = new DefaultServiceProvider();
+	private final DefaultServiceProvider cdi;
 	private final BlockJUnit4ClassRunner runner;
 
-	public KikahaRunner( Class<?> klass ) throws InitializationError {
+	public KikahaRunner( Class<?> clazz ) throws InitializationError {
+		cdi = new DefaultServiceProvider();
 		cdi.providerFor( Config.class, ConfigLoader.loadDefaults() );
 		cdi.loadAllCustomClassConstructors();
 
-		runner = new BlockJUnit4ClassRunner( klass ) {
+		runner = new BlockJUnit4ClassRunner( clazz ) {
 			@Override
 			protected Statement withBefores( FrameworkMethod method, Object target, Statement statement ) {
 				cdi.provideOn( target );

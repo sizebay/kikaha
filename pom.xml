@@ -84,8 +84,8 @@
         <version.resources.plugin>2.6</version.resources.plugin>
         <version.source.plugin>2.3</version.source.plugin>
         <version.javadoc.plugin>2.10.1</version.javadoc.plugin>
-        <version.surfire.plugin>2.18</version.surfire.plugin>
-        <version.failsafe.plugin>2.18</version.failsafe.plugin>
+        <version.surfire.plugin>2.19.1</version.surfire.plugin>
+        <version.failsafe.plugin>2.19.1</version.failsafe.plugin>
         <version.gpg.plugin>1.5</version.gpg.plugin>
         <version.nexus-staging.plugin>1.6.3</version.nexus-staging.plugin>
         <!-- Configs -->
@@ -356,7 +356,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.18</version>
+                <version>${version.failsafe.plugin}</version>
                 <executions>
                     <execution>
                         <id>integration-tests</id>
@@ -374,6 +374,13 @@
                         </configuration>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit47</artifactId>
+                        <version>${version.surfire.plugin}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

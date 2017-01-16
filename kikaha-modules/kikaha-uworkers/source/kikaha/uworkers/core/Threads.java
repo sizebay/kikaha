@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-public class Threads {
+public class Threads implements AutoCloseable {
 
 	final Queue<Future<?>> asyncJobs = new ArrayDeque<>();
 	final ExecutorService executorService;
@@ -46,11 +46,16 @@ public class Threads {
 			while ((future = asyncJobs.poll()) != null)
 				try {
 					future.get(100, MILLISECONDS);
-				} catch ( TimeoutException c ) {}
+				} catch ( TimeoutException | ExecutionException c ) {}
 			executorService.shutdownNow();
 		} catch ( final Exception cause ) {
 			throw new RuntimeException(cause);
 		}
+	}
+
+	@Override
+	public void close() {
+		shutdown();
 	}
 
 	public class BackgroundJob implements AutoCloseable {

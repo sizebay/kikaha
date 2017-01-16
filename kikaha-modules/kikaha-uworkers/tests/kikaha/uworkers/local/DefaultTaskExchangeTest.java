@@ -4,6 +4,8 @@ import kikaha.uworkers.core.Threads;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.Value;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
@@ -23,77 +25,86 @@ public class DefaultTaskExchangeTest {
 	@Test(timeout = 15000)
 	@SneakyThrows
 	public void receiveAsyncResponseWhenListenerIsSetBeforeResponseIsDefined() {
-		final CountDownLatch counter = new CountDownLatch(1);
-		final LocalExchange exchange = LocalExchange.of(ping);
+		try ( Threads threads = Threads.fixedPool( 1 )) {
+			final CountDownLatch counter = new CountDownLatch(1);
+			final LocalExchange exchange = LocalExchange.of(ping);
 
-		exchange.then( (e,t) -> {
-			assertEquals( ping, e.as( Pong.class ).getPing() );
-			counter.countDown();
-		});
+			exchange.then((e, t) -> {
+				assertEquals(ping, e.as(Pong.class).getPing());
+				counter.countDown();
+			});
 
-		newSingleThreadExecutor().submit( ()-> exchange.reply( pong ) );
-		counter.await();
+			threads.submit(() -> exchange.reply(pong));
+			counter.await();
+		}
 	}
 
 	@Test(timeout = 15000)
 	@SneakyThrows
 	public void receiveAsyncResponseWhenListenerIsSetAfterResponseIsDefined() {
-		final CountDownLatch counter = new CountDownLatch(1);
-		final LocalExchange exchange = LocalExchange.of(ping);
+		try ( Threads threads = Threads.fixedPool( 1 )) {
+			final CountDownLatch counter = new CountDownLatch(1);
+			final LocalExchange exchange = LocalExchange.of(ping);
 
-		newSingleThreadExecutor().submit( ()-> exchange.reply( pong ) );
+			threads.submit(() -> exchange.reply(pong));
 
-		exchange.then( (e,t) -> {
-			assertEquals( ping, e.as( Pong.class ).getPing() );
-			counter.countDown();
-		});
+			exchange.then((e, t) -> {
+				assertEquals(ping, e.as(Pong.class).getPing());
+				counter.countDown();
+			});
 
-		counter.await();
+			counter.await();
+		}
 	}
 
 	@Test(timeout = 15000)
 	public void readSyncResponseWhenValueIsSetAlmostAtSameTimeItIsRequested() {
-		final LocalExchange exchange = LocalExchange.of(ping);
-		newSingleThreadExecutor().submit( ()-> exchange.reply( pong ) );
-		final Pong pong = exchange.response();
-		assertEquals( ping, pong.getPing() );
+		try ( Threads threads = Threads.fixedPool( 1 ) ) {
+			final LocalExchange exchange = LocalExchange.of(ping);
+			threads.submit(() -> exchange.reply(pong));
+			final Pong pong = exchange.response();
+			assertEquals(ping, pong.getPing());
+		}
 	}
 
 	@Test(timeout = 15000)
 	public void readSyncResponseWhenValueIsSetBeforeItIsRequested() {
-		final LocalExchange exchange = LocalExchange.of(ping);
-		newSingleThreadExecutor().submit( ()-> exchange.reply( pong ) );
-		sleep(1);
-		final Pong pong = exchange.response();
-		assertEquals( ping, pong.getPing() );
+		try ( Threads threads = Threads.fixedPool( 1 ) ) {
+			final LocalExchange exchange = LocalExchange.of(ping);
+			threads.submit(() -> exchange.reply(pong));
+			sleep(1);
+			final Pong pong = exchange.response();
+			assertEquals(ping, pong.getPing());
+		}
 	}
 
 	@Test(timeout = 15000)
 	public void readSyncResponseWhenValueIsSetAfterItIsRequested() {
-		final LocalExchange exchange = LocalExchange.of(ping);
-		newSingleThreadExecutor().submit( ()-> {
-			sleep(1);
-			exchange.reply( pong );
-		} );
-		final Pong pong = exchange.response();
-		assertEquals( ping, pong.getPing() );
+		try ( Threads threads = Threads.fixedPool( 1 ) ) {
+			final LocalExchange exchange = LocalExchange.of(ping);
+			threads.submit(() -> {
+				sleep(1);
+				exchange.reply(pong);
+			});
+			final Pong pong = exchange.response();
+			assertEquals(ping, pong.getPing());
+		}
 	}
 
 	@Test( timeout = 30000 )
 	public void doIntenseStressTest() throws InterruptedException {
 		final CountDownLatch counter = new CountDownLatch(90);
-		final Threads async = Threads.elasticPool();
+		try ( Threads threads = Threads.elasticPool() ) {
+			for (int i = 0; i < 18; i++) {
+				threads.submit(andCount(counter, this::readSyncResponseWhenValueIsSetAlmostAtSameTimeItIsRequested));
+				threads.submit(andCount(counter, this::readSyncResponseWhenValueIsSetBeforeItIsRequested));
+				threads.submit(andCount(counter, this::readSyncResponseWhenValueIsSetAfterItIsRequested));
+				threads.submit(andCount(counter, this::receiveAsyncResponseWhenListenerIsSetAfterResponseIsDefined));
+				threads.submit(andCount(counter, this::receiveAsyncResponseWhenListenerIsSetBeforeResponseIsDefined));
+			}
 
-		for ( int i=0; i<18; i++ ) {
-			async.submit( andCount( counter, this::readSyncResponseWhenValueIsSetAlmostAtSameTimeItIsRequested ) );
-			async.submit( andCount( counter, this::readSyncResponseWhenValueIsSetBeforeItIsRequested ) );
-			async.submit( andCount( counter, this::readSyncResponseWhenValueIsSetAfterItIsRequested ) );
-			async.submit( andCount( counter, this::receiveAsyncResponseWhenListenerIsSetAfterResponseIsDefined ) );
-			async.submit( andCount( counter, this::receiveAsyncResponseWhenListenerIsSetBeforeResponseIsDefined ) );
+			counter.await();
 		}
-
-		counter.await();
-		async.shutdown();
 	}
 
 	static void sleep( int secs ){

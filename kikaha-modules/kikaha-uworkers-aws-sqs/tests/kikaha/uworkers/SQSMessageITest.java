@@ -23,18 +23,15 @@ public class SQSMessageITest {
 	@Inject SQSSampleEndpointListener listener;
 	@Worker("sample-msg") WorkerRef ref;
 
-	@PostConstruct
-	public void deployModules() throws IOException {
-		module.load( null, null );
-	}
-
 	@Before
-	public void start() {
+	public void start() throws IOException {
+		module.load( null, null );
 		sqsRestServer = SQSRestServerBuilder.withPort(9325).withInterface("localhost").start();
 	}
 
 	@After
 	public void shutdown(){
+		module.unload();
 		sqsRestServer.stopAndWait();
 	}
 

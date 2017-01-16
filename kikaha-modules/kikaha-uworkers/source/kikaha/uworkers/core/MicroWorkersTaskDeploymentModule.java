@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -21,6 +22,8 @@ import java.util.Collection;
 @Getter
 @Singleton
 public class MicroWorkersTaskDeploymentModule implements Module {
+
+	final AtomicBoolean isShutdown = new AtomicBoolean( false );
 
 	Threads threads;
 
@@ -37,6 +40,7 @@ public class MicroWorkersTaskDeploymentModule implements Module {
 
 		log.info( "Deploying " + consumers.size() + " workers endpoints..." );
 
+		isShutdown.set( false );
 		threads = Threads.elasticPool();
 		final int defaultParallelism = microWorkersContext.getEndpointParallelism("default", 1);
 		for ( final WorkerEndpointMessageListener consumer : consumers )
@@ -52,7 +56,7 @@ public class MicroWorkersTaskDeploymentModule implements Module {
 			context.register( microWorkersContext.restApiPrefix + "/" + listenerName, "POST", RESTFulMicroWorkersHttpHandler.with( undertowHelper, restSupplier ) );
 			inbox = restSupplier;
 		}
-		final EndpointInboxConsumer consumer = new EndpointInboxConsumer( inbox, listener, listenerName );
+		final EndpointInboxConsumer consumer = new EndpointInboxConsumer( isShutdown, inbox, listener, listenerName );
 		final int parallelism = microWorkersContext.getEndpointParallelism( consumer.name, defaultParallelism );
 		runInBackgroundWithParallelism( consumer, parallelism );
 	}
@@ -71,6 +75,7 @@ public class MicroWorkersTaskDeploymentModule implements Module {
 
 	@Override
 	public void unload() {
+		isShutdown.set( true );
 		threads.shutdown();
 	}
 }

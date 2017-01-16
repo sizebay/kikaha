@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
 import static org.mockito.Matchers.eq;
@@ -22,6 +23,8 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings("unchecked")
 public class EndpointInboxConsumerTest {
 
+	final AtomicBoolean isShutdown = new AtomicBoolean( false );
+
 	Threads threads;
 
 	@Mock Exchange exchange;
@@ -33,11 +36,12 @@ public class EndpointInboxConsumerTest {
 	@Before
 	public void createConsumer(){
 		threads = Threads.fixedPool(1);
-		consumer = new EndpointInboxConsumer( supplier, listener, "default" );
+		consumer = new EndpointInboxConsumer( isShutdown, supplier, listener, "default" );
 	}
 
 	@After
 	public void shutdownThreads(){
+		isShutdown.set( true );
 		threads.shutdown();
 	}
 

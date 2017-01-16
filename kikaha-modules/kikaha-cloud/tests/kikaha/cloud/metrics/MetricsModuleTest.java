@@ -8,6 +8,7 @@ import kikaha.config.MergeableConfig;
 import kikaha.core.modules.http.WebResource;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -107,6 +108,7 @@ public class MetricsModuleTest {
         verify( metricRegistry ).timer( eq("kikaha.transactions.POST /path") );
     }
 
+    @Ignore
     @Test
     public void shouldBeAbleToStartAllJVMMetrics() throws IOException {
         doReturn( true ).when( config ).getBoolean( IS_MODULE_ENABLED );

@@ -54,7 +54,6 @@ public class FailureExchange implements Exchange {
     }
 
     private RuntimeException failure(){
-        log.info( "FAILED: " + failure.getMessage() );
         return new IllegalStateException( failure );
     }
 }
