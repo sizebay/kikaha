@@ -168,13 +168,13 @@ public class SPIProcessor extends AbstractProcessor {
 	}
 
 	void createSingletonMetaInf() throws IOException {
+		info( "Running dependency injection optimization..." );
 		for ( final String interfaceClass : this.singletons.keySet() ) {
-			final Writer resource = createResource( SERVICES + interfaceClass );
-			info( "Exposing implementations of " + interfaceClass );
-			for ( final String implementation : this.singletons.get( interfaceClass ) ) {
-				resource.write( implementation + EOL );
+			try ( final Writer resource = createResource( SERVICES + interfaceClass ) ) {
+				debug("  " + interfaceClass);
+				for (final String implementation : this.singletons.get(interfaceClass))
+					resource.write(implementation + EOL);
 			}
-			resource.close();
 		}
 	}
 
@@ -208,6 +208,10 @@ public class SPIProcessor extends AbstractProcessor {
 
 	private void info( final String msg ) {
 		processingEnv.getMessager().printMessage( Kind.NOTE, msg );
+	}
+
+	private void debug( final String msg ) {
+		processingEnv.getMessager().printMessage( Kind.OTHER, msg );
 	}
 
 	public void flush() throws IOException {

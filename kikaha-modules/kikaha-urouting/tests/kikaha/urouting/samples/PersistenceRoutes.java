@@ -3,18 +3,7 @@ package kikaha.urouting.samples;
 import java.util.concurrent.ExecutorService;
 
 import kikaha.urouting.User;
-import kikaha.urouting.api.AsyncResponse;
-import kikaha.urouting.api.Context;
-import kikaha.urouting.api.DELETE;
-import kikaha.urouting.api.DefaultResponse;
-import kikaha.urouting.api.GET;
-import kikaha.urouting.api.Mimes;
-import kikaha.urouting.api.POST;
-import kikaha.urouting.api.PUT;
-import kikaha.urouting.api.Path;
-import kikaha.urouting.api.PathParam;
-import kikaha.urouting.api.Produces;
-import kikaha.urouting.api.Response;
+import kikaha.urouting.api.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -55,5 +44,11 @@ public class PersistenceRoutes {
 	public void doAsyncSearchById(
 		final AsyncResponse response, @PathParam( "id" ) final Long id ) {
 		executor.submit( () -> response.write( DefaultResponse.notModified() ) );
+	}
+
+	@POST
+	@Path("form")
+	public String doSomethingWithFormData( @FormParam( "name" ) String name ){
+		return name;
 	}
 }

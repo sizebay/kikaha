@@ -8,6 +8,8 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormData.FormValue;
+import io.undertow.server.handlers.form.FormDataParser;
+import io.undertow.server.handlers.form.FormParserFactory;
 import io.undertow.util.*;
 import kikaha.config.Config;
 import kikaha.urouting.api.*;
@@ -87,8 +89,11 @@ public class RoutingMethodParameterReader {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getFormParam(final FormData form, final String formParam, final Class<T> clazz)
+	public <T> T getFormParam(final HttpServerExchange exchange, final String formParam, final Class<T> clazz)
 			throws ConversionException, InstantiationException, IllegalAccessException {
+		final FormData form = exchange.getAttachment( FormDataParser.FORM_DATA );
+		if (form == null)
+			throw new IllegalAccessException( "Could not found the FormData." );
 		final FormValue formValue = form.getFirst(formParam);
 		if (formValue == null)
 			return null;
@@ -142,8 +147,8 @@ public class RoutingMethodParameterReader {
 	 * @param exchange
 	 * @return
 	 */
-	public Map<String, String> getPathParams(final HttpServerExchange exchange ){
-		final PathTemplateMatch pathTemplate = exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY);
+	public Map<String, String> getPathParams( final HttpServerExchange exchange ){
+		final PathTemplateMatch pathTemplate = exchange.getAttachment( PathTemplateMatch.ATTACHMENT_KEY );
 		return pathTemplate.getParameters();
 	}
 

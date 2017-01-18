@@ -9,7 +9,10 @@ import kikaha.core.modules.http.WebResource;
 import kikaha.urouting.RoutingMethodResponseWriter;
 import kikaha.urouting.RoutingMethodParameterReader;
 import kikaha.urouting.RoutingMethodExceptionHandler;
+import kikaha.urouting.api.Response;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Singleton
 @Typed( HttpHandler.class )
 @WebResource( path="/hello/world", method="GET" )
@@ -18,16 +21,46 @@ public class GeneratedRoutingMethod123 implements HttpHandler {
 	@Inject RoutingMethodResponseWriter responseWriter;
 	@Inject RoutingMethodParameterReader methodDataProvider;
 	@Inject RoutingMethodExceptionHandler exceptionHandler;
-	
+
 	@Inject java.lang.String instance;
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
-		try {
-			instance.renderRelatoMais(  );
-			responseWriter.write( exchange );
-		} catch ( Throwable cause ) {
-			responseWriter.write( exchange, exceptionHandler.handle( cause ) );
+        try {
+			/* Does not require to parse form data. */
+            /* Does not require to parse body data. */
+            runMethod( exchange );
+        } catch ( Throwable cause ) {
+            this.handleException( exchange, cause );
+        }
+	}
+
+	private void runMethod( final HttpServerExchange exchange ){
+		if ( exchange.isInIoThread() ) {
+			exchange.dispatch( this::runMethod );
+			return;
 		}
+
+		try {
+				instance.renderRelatoMais(  );
+				responseWriter.write( exchange );
+		} catch ( Throwable cause ) {
+			this.handleException( exchange, cause );
+		}
+	}
+
+	private void handleException( final HttpServerExchange exchange, final Throwable cause ){
+        if ( exchange.isInIoThread() ) {
+            exchange.dispatch( ()-> handleException( exchange, cause ) );
+            return;
+        }
+
+        try {
+            final Response response = exceptionHandler.handle( cause );
+            responseWriter.write( exchange, response );
+        } catch ( Throwable newCause ){
+            log.error( "Could not handle the failure." );
+            exchange.endExchange();
+        }
 	}
 }

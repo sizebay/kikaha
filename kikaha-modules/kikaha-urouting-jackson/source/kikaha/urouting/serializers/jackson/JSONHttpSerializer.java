@@ -6,6 +6,8 @@ import javax.inject.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.modules.http.ContentType;
+import kikaha.urouting.RoutingMethodParameterReader;
+import kikaha.urouting.UndertowHelper;
 import kikaha.urouting.api.*;
 import lombok.val;
 
@@ -18,18 +20,19 @@ public class JSONHttpSerializer implements Serializer, Unserializer {
 
 	@Override
 	public <T> void serialize(T object, HttpServerExchange exchange, String encoding) throws IOException {
-		val buffer = ByteBuffer.wrap( jackson.objectMapper().writeValueAsBytes(object) );
+		final ByteBuffer buffer = ByteBuffer.wrap( jackson.objectMapper().writeValueAsBytes(object) );
 		send(exchange, buffer);
-		exchange.dispatch();
+		exchange.endExchange();
 	}
 
-	public void send(HttpServerExchange exchange, final ByteBuffer buffer) {
+	public void send(final HttpServerExchange exchange, final ByteBuffer buffer) {
 		exchange.getResponseSender().send( buffer );
 	}
 
 	@Override
-	public <T> T unserialize(HttpServerExchange input, Class<T> targetClass, String encoding) throws IOException {
+	public <T> T unserialize(final HttpServerExchange exchange, final Class<T> targetClass, final String encoding) throws IOException {
 		final ObjectMapper mapper = jackson.objectMapper();
-		return mapper.readValue(input.getInputStream(), targetClass);
+		final byte[] bodyData = UndertowHelper.getReadBodyData(exchange);
+		return mapper.readValue( bodyData, targetClass );
 	}
 }

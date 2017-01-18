@@ -12,7 +12,9 @@ import io.undertow.server.*;
 import kikaha.core.cdi.*;
 import kikaha.core.cdi.helpers.filter.Condition;
 import kikaha.core.modules.http.ContentType;
+import kikaha.core.test.HttpServerExchangeStub;
 import kikaha.core.test.KikahaRunner;
+import kikaha.urouting.UndertowHelper;
 import kikaha.urouting.api.*;
 import kikaha.urouting.serializers.jackson.User.Address;
 import lombok.SneakyThrows;
@@ -20,34 +22,25 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.xnio.conduits.StreamSinkConduit;
 
-@RunWith( KikahaRunner.class )
+@RunWith( MockitoJUnitRunner.class )
 public class SerializationTest {
 
 	final ServiceProvider provider = new DefaultServiceProvider();
 	final User user = new User( "gerolasdiwn",
 			new Address( "Madison Avenue", 10 ) );
 
-	ServerConnection connection;
-
-	@Mock
-	StreamSinkConduit conduit;
-
-	@Mock
-	BlockingHttpExchange blockingExchange;
-
-	@Before
-	public void setup(){
-		MockitoAnnotations.initMocks(this);
-		connection = spy( ServerConnection.class );
-	}
+	@Spy ServerConnection connection;
+	@Mock StreamSinkConduit conduit;
+	@Mock BlockingHttpExchange blockingExchange;
 
 	@Test
 	@SneakyThrows
 	public void grantThatSerializeItAsJSON() {
 		final JSONHttpSerializer serializer = spy((JSONHttpSerializer)provider.load( Serializer.class, new JSONContentTypeCondition<>() ));
-		final HttpServerExchange exchange = new HttpServerExchange(connection);
+		final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
 		doAnswer( this::ensureThatWasCorrectlySerialized ).when(serializer).send( eq(exchange), any( ByteBuffer.class ));
 		serializer.serialize( user, exchange, "UTF-8" );
 	}
@@ -66,10 +59,11 @@ public class SerializationTest {
 	public void grantThatUnserializeJSONIntoObjectAsExpected() {
 		final String json = readFile( "serialization.expected-json.json" );
 		final InputStream inputStream = new ByteArrayInputStream(json.getBytes());
-		doReturn(inputStream).when(blockingExchange).getInputStream();
+		doReturn( inputStream ).when(blockingExchange).getInputStream();
 		final Unserializer unserializer = provider.load( Unserializer.class, new JSONContentTypeCondition<>() );
-		final HttpServerExchange exchange = new HttpServerExchange(connection);
+		final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
 		exchange.startBlocking( blockingExchange );
+		UndertowHelper.storeReadBodyData( exchange, json.getBytes() );
 		final User user = unserializer.unserialize( exchange, User.class, "UTF-8" );
 		assertIsValidUser( user );
 	}

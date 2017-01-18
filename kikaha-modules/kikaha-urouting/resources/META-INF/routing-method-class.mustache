@@ -2,11 +2,10 @@ package {{packageName}};
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-{{#isMultiPart}}
-import io.undertow.server.handlers.form.FormData;
+{{#requiresFormData}}
 import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormParserFactory;
-{{/isMultiPart}}
+{{/requiresFormData}}
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.enterprise.inject.Typed;
@@ -14,10 +13,16 @@ import kikaha.core.modules.http.WebResource;
 import kikaha.urouting.RoutingMethodResponseWriter;
 import kikaha.urouting.RoutingMethodParameterReader;
 import kikaha.urouting.RoutingMethodExceptionHandler;
+{{#requiresBodyData}}
+import kikaha.urouting.UndertowHelper;
+{{/requiresBodyData}}
 {{#asyncMode}}
 import kikaha.urouting.api.AsyncResponse;
 {{/asyncMode}}
+import kikaha.urouting.api.Response;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Singleton
 @Typed( HttpHandler.class )
 @WebResource( path="{{httpPath}}", method="{{httpMethod}}" )
@@ -26,7 +31,7 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 	@Inject RoutingMethodResponseWriter responseWriter;
 	@Inject RoutingMethodParameterReader methodDataProvider;
 	@Inject RoutingMethodExceptionHandler exceptionHandler;
-	
+
 	{{#serviceInterface}}
 	@Inject {{{serviceInterface}}} instance;
 	{{/serviceInterface}}
@@ -36,35 +41,60 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
-		{{#hasIOBound}}
-			if ( exchange.isInIoThread() ) {
-				exchange.dispatch(this);
-				return;
-			}
-			else if ( !exchange.isInIoThread() && !exchange.isBlocking() )
-				exchange.startBlocking();
-		{{/hasIOBound}}
-		try {
-		{{#isMultiPart}}
+        try {
+		{{#requiresFormData}}
+			/* Requires to parse form data. */
 			final FormDataParser parser = FormParserFactory.builder().build().createParser(exchange);
-			final FormData formData = parser.parseBlocking();
-		{{/isMultiPart}}
-		{{^asyncMode}}
-		{{#returnType}}
-			final {{{returnType}}} response = instance.{{methodName}}( {{{methodParams}}} );
-			{{#responseContentType}}
-				responseWriter.write( exchange, "{{{responseContentType}}}", response );
-			{{/responseContentType}}
-			{{^responseContentType}}
-				responseWriter.write( exchange, response );
-			{{/responseContentType}}
-		{{/returnType}}
-		{{^returnType}}
-			instance.{{methodName}}( {{{methodParams}}} );
-			responseWriter.write( exchange );
-		{{/returnType}}
-		{{/asyncMode}}
-		{{#asyncMode}}
+			parser.parse( this::runMethod );
+		{{/requiresFormData}}
+		{{^requiresFormData}}
+			/* Does not require to parse form data. */
+		{{#requiresBodyData}}
+			/* Requires to parse body data. */
+			exchange.getRequestReceiver()
+				.receiveFullBytes((e, data) -> {
+                    UndertowHelper.storeReadBodyData( e, data );
+					runMethod( e );
+				}, this::handleException );
+		{{/requiresBodyData}}
+        {{^requiresBodyData}}
+        {{/requiresBodyData}}
+            /* Does not require to parse body data. */
+            runMethod( exchange );
+		{{/requiresFormData}}
+        } catch ( Throwable cause ) {
+            this.handleException( exchange, cause );
+        }
+	}
+
+	{{^asyncMode}}
+	private void runMethod( final HttpServerExchange exchange ){
+		if ( exchange.isInIoThread() ) {
+			exchange.dispatch( this::runMethod );
+			return;
+		}
+
+		try {
+			{{#returnType}}
+				final {{{returnType}}} response = instance.{{methodName}}( {{{methodParams}}} );
+				{{#responseContentType}}
+					responseWriter.write( exchange, "{{{responseContentType}}}", response );
+				{{/responseContentType}}
+				{{^responseContentType}}
+					responseWriter.write( exchange, response );
+				{{/responseContentType}}
+			{{/returnType}}
+			{{^returnType}}
+				instance.{{methodName}}( {{{methodParams}}} );
+				responseWriter.write( exchange );
+			{{/returnType}}
+		} catch ( Throwable cause ) {
+			this.handleException( exchange, cause );
+		}
+	}
+	{{/asyncMode}}{{#asyncMode}}
+	private void runMethod( final HttpServerExchange exchange ){
+		try {
 			{{#responseContentType}}
 			final AsyncResponse asyncResponse = new AsyncResponse( exchange, responseWriter, exceptionHandler, "{{{responseContentType}}}" );
 			{{/responseContentType}}
@@ -73,12 +103,24 @@ public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
 			{{/responseContentType}}
 			exchange.dispatch();
 			instance.{{methodName}}( {{{methodParams}}} );
-		{{/asyncMode}}
 		} catch ( Throwable cause ) {
-			responseWriter.write( exchange, exceptionHandler.handle( cause ) );
-			{{#asyncMode}}
-			exchange.endExchange();
-			{{/asyncMode}}
+			this.handleException( exchange, cause );
 		}
+	}
+	{{/asyncMode}}
+
+	private void handleException( final HttpServerExchange exchange, final Throwable cause ){
+        if ( exchange.isInIoThread() ) {
+            exchange.dispatch( ()-> handleException( exchange, cause ) );
+            return;
+        }
+
+        try {
+            final Response response = exceptionHandler.handle( cause );
+            responseWriter.write( exchange, response );
+        } catch ( Throwable newCause ){
+            log.error( "Could not handle the failure." );
+            exchange.endExchange();
+        }
 	}
 }

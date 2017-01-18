@@ -46,8 +46,8 @@ public class RoutingMethodData {
 	final String httpPath;
 	final String httpMethod;
 	final String serviceInterface;
-	final boolean hasIOBound;
-	final boolean isMultiPart;
+	final boolean requiresBodyData;
+	final boolean requiresFormData;
 	final boolean asyncMode;
 
 	@Getter( lazy = true )
@@ -83,27 +83,21 @@ public class RoutingMethodData {
 		final String methodParams, final boolean isAsyncMode )
 	{
 		val returnType = extractReturnTypeFrom( method );
+		val requiresBodyData = methodParams.contains( "methodDataProvider.getBody" );
+
+		if ( returnType != null && isAsyncMode )
+			throw new UnsupportedOperationException( "Invalid Routing Method '" + method.asType().toString() +"'. Async methods should not have return type." );
+
 		return new RoutingMethodData(
 			type, extractPackageName( type ), method.getSimpleName().toString(),
 			methodParams, returnType, extractResponseContentTypeFrom( method ),
 			measureHttpPathFrom( method ), httpMethod, extractServiceInterfaceFrom( method ),
-			hasIOBlockingOperations( methodParams ) || returnType != null, isMultiPart,
-			isAsyncMode );
-	}
-
-	private static boolean hasIOBlockingOperations( final String methodParams )
-	{
-		return methodParams.contains( "methodDataProvider.getBody" )
-			|| methodParams.contains( "methodDataProvider.getQueryParam" )
-			|| methodParams.contains( "methodDataProvider.getHeaderParam" )
-			|| methodParams.contains( "methodDataProvider.getCookieParam" )
-			|| methodParams.contains( "methodDataProvider.getFormParam" )
-			|| methodParams.contains( "methodDataProvider.getData" );
+			requiresBodyData, isMultiPart, isAsyncMode );
 	}
 
 	public static String extractPackageName( final String canonicalName )
 	{
-		return canonicalName.replaceAll( "^(.*)\\.[^\\.]+", "$1" );
+		return canonicalName.replaceAll( "^(.*)\\.[^.]+", "$1" );
 	}
 
 	static String extractReturnTypeFrom( final ExecutableElement method ) {
@@ -151,18 +145,13 @@ public class RoutingMethodData {
 			return getParam( CookieParam.class, cookieParam.value(), targetType );
 		FormParam formParam = parameter.getAnnotation( FormParam.class );
 		if ( formParam != null )
-			return getFormParam( formParam.value(), targetType );
+			return getParam( FormParam.class, formParam.value(), targetType );
 		if ( AsyncResponse.class.getCanonicalName().equals( targetType ) )
 			return format( "asyncResponse" );
 		Context dataParam = parameter.getAnnotation( Context.class );
 		if ( dataParam != null )
 			return format( "methodDataProvider.getData( exchange, %s.class )", targetType );
 		return getBodyParam( method, targetType );
-	}
-
-	static String getFormParam( final String param, final String targetType ) {
-		return format( "methodDataProvider.getFormParam( formData, \"%s\", %s.class )",
-				param, targetType );
 	}
 
 	static String getParam( final Class<?> targetAnnotation, final String param, final String targetType ) {
