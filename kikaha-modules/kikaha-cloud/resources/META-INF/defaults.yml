@@ -1,5 +1,9 @@
 server:
 
+  health-check:
+    enabled: false
+    url: "/api/internal/health-check"
+
   # Cloud Metrics module
   metrics:
     enabled: false

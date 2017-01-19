@@ -1,6 +1,7 @@
 package kikaha.cloud.metrics;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.health.HealthCheckRegistry;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
@@ -14,6 +15,7 @@ import java.lang.management.ManagementFactory;
 public class Producers {
 
     final MetricRegistry metricRegistry = new MetricRegistry();
+    final HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
     final MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
 
     @Produces
@@ -24,5 +26,10 @@ public class Producers {
     @Produces
     public MBeanServer produceMBeanServer(){
         return  mBeanServer;
+    }
+
+    @Produces
+    public HealthCheckRegistry produceHealthCheckRegistry(){
+        return healthCheckRegistry;
     }
 }
