@@ -1,5 +1,16 @@
 server:
 
+  # Configure how does the application should behave at the cloud
+  smart-server:
+    enabled: false
+    service-registry:
+
+    # Information about the current application
+    application:
+        name: "api.kikaha.sample"
+        version: 0.0.1
+
+  # Configure how does the Health-Check should behave
   health-check:
     enabled: false
     url: "/api/internal/health-check"
