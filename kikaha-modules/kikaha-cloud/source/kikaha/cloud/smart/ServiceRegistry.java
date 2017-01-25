@@ -39,5 +39,6 @@ public interface ServiceRegistry {
 		@NonNull final String version;
 		@NonNull final String localAddress;
 		final int localPort;
+		final boolean isHttps;
 	}
 }

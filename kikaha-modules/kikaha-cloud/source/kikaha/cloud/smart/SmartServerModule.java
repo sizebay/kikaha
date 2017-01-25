@@ -31,8 +31,12 @@ public class SmartServerModule implements Module {
 			serviceRegistry.generateTheMachineId(),
 			config.getString( "server.smart-server.application.name" ),
 			config.getString( "server.smart-server.application.version" ),
-			localAddressResolver.getLocalAddress(), getLocalPort()
+			localAddressResolver.getLocalAddress(), getLocalPort(), isLocalProtocolHttps()
 		));
+	}
+
+	private boolean isLocalProtocolHttps() {
+		return config.getBoolean( "server.https.enabled" );
 	}
 
 	ServiceRegistry loadServiceRegistry(){
@@ -50,10 +54,10 @@ public class SmartServerModule implements Module {
 	}
 
 	int getLocalPort(){
-		if ( config.getBoolean( "server.http.enabled" ) )
-			return config.getInteger( "server.http.port" );
-		else if ( config.getBoolean( "server.https.enabled" ) )
+		if ( config.getBoolean( "server.https.enabled" ) )
 			return config.getInteger( "server.https.port" );
+		else if ( config.getBoolean( "server.http.enabled" ) )
+			return config.getInteger( "server.http.port" );
 		throw new IllegalArgumentException( "No Http/Https module enabled" );
 	}
 }

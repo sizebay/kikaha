@@ -36,6 +36,9 @@ public class SmartServerModuleTest {
 
 	@Test
 	public void ensureCanExecuteTheServiceRegistry() throws IOException {
+		doReturn( "123" ).when( serviceRegistry ).generateTheMachineId();
+		doReturn( "name" ).when( config ).getString( "server.smart-server.application.name" );
+		doReturn( "1.0" ).when( config ).getString( "server.smart-server.application.version" );
 		doReturn( true ).when( config ).getBoolean( "server.smart-server.enabled" );
 		doReturn( serviceRegistry.getClass() ).when( config ).getClass( eq("server.smart-server.service-registry") );
 		module.load( null, null );

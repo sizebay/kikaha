@@ -1,5 +1,6 @@
 package kikaha.cloud.consul;
 
+import static java.lang.String.format;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -16,7 +17,7 @@ public class ConsulClient implements ServiceRegistry {
 	final static String REQUEST_CHECK_STRING =
 			"{\"ID\": \"{id}\",\"Name\": \"{name}\",\"Address\": \"{host}\",\"Port\": {port}, \"Tags\": {tags}," +
 			"\"Check\": { \"DeregisterCriticalServiceAfter\": \"{deregister-after}m\", \"HTTP\": \"{health-check-url}\"," +
-			"\"Interval\": \"{health-check-interval}s\",\"TTL\": \"{health-check-ttl}s\"}}\n";
+			"\"Interval\": \"{health-check-interval}s\",\"TTL\": \"{health-check-ttl}s\"}}";
 
 	@Inject Config config;
 
@@ -25,7 +26,10 @@ public class ConsulClient implements ServiceRegistry {
 		final String message = asMessage( applicationData );
 		final String consulHost = config.getString( "server.consul.host", "localhost" );
 		final int consulPort = config.getInteger( "server.consul.port", 8500 );
-		post( "http://" + consulHost + ":" + consulPort + "/v1/agent/service/register", message );
+		final int port = post("http://" + consulHost + ":" + consulPort + "/v1/agent/service/register", message);
+
+		if ( port != 200 )
+			throw new IOException( "Could not register the application on consul.io." );
 	}
 
 	String asMessage( final ApplicationData applicationData ) {
@@ -44,18 +48,26 @@ public class ConsulClient implements ServiceRegistry {
 		final Map<String, String> params = new HashMap<>();
 		params.put( "id", applicationData.getMachineId() );
 		params.put( "name", applicationData.getName() + ":" + applicationData.getVersion() );
-		params.put( "host", config.getString( "server.smart-server.application.host" ) );
-		params.put( "port", config.getString( "server.smart-server.application.port" ) );
+		params.put( "host", applicationData.getLocalAddress() );
+		params.put( "port", String.valueOf(applicationData.getLocalPort()) );
 		params.put( "tags", asTagList( config.getStringList( "server.smart-server.application.tags" ) ) );
-		params.put( "deregister-after", config.getString( "server.smart-server.application.deregister-critical-service-after", "90" ) );
-		params.put( "health-check-interval", config.getString( "server.smart-server.application.health-check-interval" ) );
-		params.put( "health-check-ttl", config.getString( "server.smart-server.application.health-check-ttl" ) );
-		params.put( "health-check-url", config.getString( "server.smart-server.application.health-check-url", getHealthCheckUrl() ) );
+		params.put( "deregister-after", String.valueOf(config.getInteger( "server.consul.deregister-critical-service-after" )) );
+		params.put( "health-check-interval", String.valueOf(config.getInteger( "server.consul.health-check-interval" )) );
+		params.put( "health-check-ttl", String.valueOf(config.getInteger( "server.consul.health-check-ttl" )) );
+		params.put( "health-check-url", getHealthCheckUrl( applicationData ) );
 		return params;
 	}
 
-	String getHealthCheckUrl(){
-		final String healthCheckUrl = config.getString( "server.health-check.url" );
+	String getHealthCheckUrl(ApplicationData applicationData){
+		String healthCheckUrl = config.getString("server.smart-server.application.health-check-url" );
+		if ( healthCheckUrl == null || healthCheckUrl.isEmpty() ) {
+			healthCheckUrl = format( "%s://%s:%d%s",
+				applicationData.isHttps() ? "https" : "http",
+				applicationData.getLocalAddress(),
+				applicationData.getLocalPort(),
+				config.getString("server.health-check.url")
+			);
+		}
 		return healthCheckUrl;
 	}
 
