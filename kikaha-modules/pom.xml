@@ -23,6 +23,7 @@
     <module>kikaha-urouting-jaxb</module>
     <module>kikaha-urouting-mustache</module>
     <module>kikaha-db</module>
+    <module>kikaha-consul</module>
     <module>kikaha-java-mail</module>
     <module>kikaha-hazelcast</module>
   </modules>

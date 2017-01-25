@@ -36,6 +36,7 @@ public interface SessionIdGenerator {
 		final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
 		while ( networkInterfaces.hasMoreElements() ) {
 			final NetworkInterface networkInterface = networkInterfaces.nextElement();
+			System.out.println( networkInterface.getDisplayName() );
 			final byte[] hardwareAddress = networkInterface.getHardwareAddress();
 			if ( hardwareAddress != null && hardwareAddress.length > 4 )
 				return networkInterface;

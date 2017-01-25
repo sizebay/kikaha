@@ -34,8 +34,10 @@ public interface ServiceRegistry {
 	@Getter
 	@RequiredArgsConstructor
 	class ApplicationData {
-		final String machineId;
-		final String name;
-		final String version;
+		@NonNull final String machineId;
+		@NonNull final String name;
+		@NonNull final String version;
+		@NonNull final String localAddress;
+		final int localPort;
 	}
 }

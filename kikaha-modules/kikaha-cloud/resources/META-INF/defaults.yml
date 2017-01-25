@@ -5,6 +5,12 @@ server:
     enabled: false
     service-registry:
 
+    # Configure how the server should infer its local address
+    local-address:
+      resolver: kikaha.cloud.smaart.DefaultLocalAddressResolver
+      ipv4-only: true
+      default-interface: "eth0"
+
     # Information about the current application
     application:
         name: "api.kikaha.sample"
