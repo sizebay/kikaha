@@ -1,22 +1,16 @@
 package kikaha.core.modules;
 
-import kikaha.core.DeploymentContext;
-import kikaha.core.test.KikahaRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.Arrays;
-
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
+import java.io.IOException;
+import java.util.Arrays;
+import javax.inject.Inject;
+import kikaha.core.DeploymentContext;
+import kikaha.core.test.KikahaRunner;
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.*;
 
 /**
  *
@@ -52,7 +46,7 @@ public class ModuleLoaderTest {
 	}
 
 	@Test
-	public void ensureThatCanUnloadModules(){
+	public void ensureThatCanUnloadModules() throws IOException {
 		loader.unloadModules();
 		verify(http).unload();
 		verify(https).unload();

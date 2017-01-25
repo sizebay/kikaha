@@ -17,7 +17,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith( MockitoJUnitRunner.class )
 public class ConsulClientTest {
 
-	final String EXPECTED_REGISTER_MSG = "{\"ID\": \"unit01\",\"Name\": \"unit01:1.0\",\"Address\": \"localhost\",\"Port\": 9000, \"Tags\": [],\"Check\": { \"DeregisterCriticalServiceAfter\": \"90m\", \"HTTP\": \"http://localhost:9000/api/internal/health-check\",\"Interval\": \"1s\",\"TTL\": \"15s\"}}";
+	final ServiceRegistry.ApplicationData applicationData = new ServiceRegistry.ApplicationData("unit01", "unit01", "1.0", "localhost", 9000, false);
+	final String EXPECTED_REGISTER_MSG = "{\"ID\": \"unit01\",\"Name\": \"unit01:1.0\",\"Address\": \"localhost\",\"Port\": 9000, \"Tags\": [],\"Check\": { \"DeregisterCriticalServiceAfter\": \"90m\", \"HTTP\": \"http://localhost:9000/api/internal/health-check\",\"Interval\": \"1s\"}}";
 
 	Config config = ConfigLoader.loadDefaults();
 	@Mock ServiceProvider serviceProvider;
@@ -32,8 +33,14 @@ public class ConsulClientTest {
 
 	@Test
 	public void ensureCanRegisterOnConsul() throws IOException {
-		final ServiceRegistry.ApplicationData applicationData = new ServiceRegistry.ApplicationData("unit01", "unit01", "1.0", "localhost", 9000, false);
-		consulClient.registerCluster( applicationData );
-		verify( consulClient ).post( eq("http://localhost:8500/v1/agent/service/register"), eq(EXPECTED_REGISTER_MSG) );
+		consulClient.registerIntoCluster( applicationData );
+		verify( consulClient ).post( eq("/v1/agent/service/register"), eq(EXPECTED_REGISTER_MSG) );
+	}
+
+	@Test
+	public void ensureCanDeregisterOnConsul() throws IOException {
+		ensureCanRegisterOnConsul();
+		consulClient.deregisterFromCluster( applicationData );
+		verify( consulClient ).put( eq("/v1/agent/service/deregister/unit01") );
 	}
 }

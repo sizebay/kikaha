@@ -1,21 +1,15 @@
 package kikaha.core.modules;
 
+import static java.util.Collections.reverse;
+import java.io.IOException;
+import java.util.*;
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Typed;
+import javax.inject.*;
 import io.undertow.Undertow;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Collections.reverse;
 
 /**
  * Load and manage {@link Module}s life cycle.
@@ -88,8 +82,12 @@ public class ModuleLoader {
 
 	void unloadModules(){
 		notifyGracefulShutdownListener();
-		for ( Module module : modules )
-			module.unload();
+		for (Module module : modules)
+			try {
+				module.unload();
+			} catch ( Throwable cause ) {
+				log.error( "Could not unload module " + module.getName(), cause );
+			}
 	}
 
 	private void notifyGracefulShutdownListener(){

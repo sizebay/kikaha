@@ -1,6 +1,7 @@
 package kikaha.cloud.smart;
 
 import java.io.IOException;
+import javax.annotation.PostConstruct;
 import javax.inject.*;
 import io.undertow.Undertow.Builder;
 import kikaha.cloud.smart.ServiceRegistry.ApplicationData;
@@ -20,19 +21,23 @@ public class SmartServerModule implements Module {
 
 	@Inject Config config;
 	@Inject ServiceProvider serviceProvider;
+	ServiceRegistry serviceRegistry;
+	ApplicationData applicationData;
+	boolean isModuleEnabled;
 
-	@Override
-	public void load( final Builder server, final DeploymentContext context ) throws IOException {
-		if ( !config.getBoolean( "server.smart-server.enabled" ) ) return;
+	@PostConstruct
+	public void loadApplicationData() throws IOException {
+		isModuleEnabled = config.getBoolean( "server.smart-server.enabled" );
+		if ( !isModuleEnabled ) return;
 
 		final LocalAddressResolver localAddressResolver = loadLocalAddressResolver();
-		final ServiceRegistry serviceRegistry = loadServiceRegistry();
-		serviceRegistry.registerCluster( new ApplicationData(
+		serviceRegistry = loadServiceRegistry();
+		applicationData = new ApplicationData(
 			serviceRegistry.generateTheMachineId(),
 			config.getString( "server.smart-server.application.name" ),
 			config.getString( "server.smart-server.application.version" ),
 			localAddressResolver.getLocalAddress(), getLocalPort(), isLocalProtocolHttps()
-		));
+		);
 	}
 
 	private boolean isLocalProtocolHttps() {
@@ -59,5 +64,17 @@ public class SmartServerModule implements Module {
 		else if ( config.getBoolean( "server.http.enabled" ) )
 			return config.getInteger( "server.http.port" );
 		throw new IllegalArgumentException( "No Http/Https module enabled" );
+	}
+
+	@Override
+	public void load( final Builder server, final DeploymentContext context ) throws IOException {
+		if ( isModuleEnabled )
+			serviceRegistry.registerIntoCluster( applicationData );
+	}
+
+	@Override
+	public void unload() throws IOException {
+		if ( isModuleEnabled )
+			serviceRegistry.deregisterFromCluster( applicationData );
 	}
 }

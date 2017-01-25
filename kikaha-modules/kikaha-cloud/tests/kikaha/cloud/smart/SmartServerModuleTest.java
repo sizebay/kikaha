@@ -25,7 +25,7 @@ public class SmartServerModuleTest {
 	@Spy SmartServerModule module;
 
 	@Before
-	public void configureMocks(){
+	public void configureMocks() throws IOException {
 		doReturn( localAddressResolver.getClass() ).when( config ).getClass( eq("server.smart-server.local-address.resolver") );
 		doReturn( localAddressResolver ).when( serviceProvider ).load( eq(localAddressResolver.getClass()) );
 		doReturn( "10.0.0.1" ).when( localAddressResolver ).getLocalAddress();
@@ -36,27 +36,43 @@ public class SmartServerModuleTest {
 
 	@Test
 	public void ensureCanExecuteTheServiceRegistry() throws IOException {
+		provideDataNeededToExecuteTheModule();
+		module.loadApplicationData();
+		module.load( null, null );
+		verify( serviceRegistry ).generateTheMachineId();
+		verify( serviceRegistry ).registerIntoCluster( any( ApplicationData.class ) );
+	}
+
+	@Test
+	public void ensureCanDeregisterTheService() throws IOException {
+		provideDataNeededToExecuteTheModule();
+		module.loadApplicationData();
+		module.unload();
+		verify( serviceRegistry ).generateTheMachineId();
+		verify( serviceRegistry ).deregisterFromCluster( any( ApplicationData.class ) );
+	}
+
+	void provideDataNeededToExecuteTheModule() throws IOException {
 		doReturn( "123" ).when( serviceRegistry ).generateTheMachineId();
 		doReturn( "name" ).when( config ).getString( "server.smart-server.application.name" );
 		doReturn( "1.0" ).when( config ).getString( "server.smart-server.application.version" );
 		doReturn( true ).when( config ).getBoolean( "server.smart-server.enabled" );
 		doReturn( serviceRegistry.getClass() ).when( config ).getClass( eq("server.smart-server.service-registry") );
-		module.load( null, null );
-		verify( serviceRegistry ).generateTheMachineId();
-		verify( serviceRegistry ).registerCluster( any( ApplicationData.class ) );
 	}
 
 	@Test
 	public void ensureWillNotStartModuleIfItIsNotEnabled() throws IOException {
 		doReturn( false ).when( config ).getBoolean( "server.smart-server.enabled" );
+		module.loadApplicationData();
 		module.load( null, null );
 		verify( serviceRegistry, never() ).generateTheMachineId();
-		verify( serviceRegistry, never() ).registerCluster( any( ApplicationData.class ) );
+		verify( serviceRegistry, never() ).registerIntoCluster( any( ApplicationData.class ) );
 	}
 
 	@Test( expected = InstantiationError.class )
 	public void ensureWillFailIfNoServiceRegistryIsAvailable() throws IOException {
 		doReturn( true ).when( config ).getBoolean( "server.smart-server.enabled" );
+		module.loadApplicationData();
 		module.load( null, null );
 	}
 }

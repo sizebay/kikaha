@@ -26,7 +26,15 @@ public interface ServiceRegistry {
 	 * @param applicationData contains the basic needed information to join the cluster.
 	 * @throws IOException whenever the ServiceRegistry wasn't able to register this application.
 	 */
-	void registerCluster( final ApplicationData applicationData ) throws IOException ;
+	void registerIntoCluster(final ApplicationData applicationData ) throws IOException;
+
+	/**
+	 * Leave the cluster.
+	 *
+	 * @param applicationData contains the basic needed information to leave the cluster.
+	 * @throws IOException whenever the ServiceRegistry wasn't able to deregister this application.
+	 */
+	void deregisterFromCluster( final ApplicationData applicationData ) throws IOException;
 
 	/**
 	 * Contains the basic information needed information to join a cluster.

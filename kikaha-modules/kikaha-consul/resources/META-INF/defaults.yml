@@ -6,5 +6,3 @@ server:
     deregister-critical-service-after: 90
     # interval (in seconds) that consul should check if the server is alive
     health-check-interval: 1
-    # time-to-live in seconds
-    health-check-ttl: 15

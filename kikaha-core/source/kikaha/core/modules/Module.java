@@ -40,5 +40,5 @@ public interface Module {
 	 * Event executed when the server is shutdown. Allow developers to execute
 	 * graceful-shutdown routines avoiding data loss when the server needs to shutdown.
 	 */
-	default void unload(){}
+	default void unload() throws IOException {}
 }
