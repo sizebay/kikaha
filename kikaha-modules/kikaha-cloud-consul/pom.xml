@@ -8,7 +8,7 @@
 		<artifactId>kikaha-modules</artifactId>
 	</parent>
 
-	<artifactId>kikaha-consul</artifactId>
+	<artifactId>kikaha-cloud-consul</artifactId>
 	<name>Kikaha: Cloud Providers: Consul</name>
 	<packaging>jar</packaging>
 

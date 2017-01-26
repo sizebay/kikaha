@@ -201,6 +201,12 @@
             </dependency>
             <dependency>
                 <groupId>io.skullabs.kikaha</groupId>
+                <artifactId>kikaha-cloud-consul</artifactId>
+                <version>2.1.0-alpha5</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.skullabs.kikaha</groupId>
                 <artifactId>kikaha-cloud</artifactId>
                 <version>2.1.0-alpha5</version>
                 <scope>compile</scope>

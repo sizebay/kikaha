@@ -6,10 +6,12 @@ import java.util.*;
 import javax.inject.*;
 import kikaha.cloud.smart.ServiceRegistry;
 import kikaha.config.Config;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  */
+@Slf4j
 @Singleton
 public class ConsulClient implements ServiceRegistry {
 
@@ -22,6 +24,8 @@ public class ConsulClient implements ServiceRegistry {
 
 	@Override
 	public void registerIntoCluster( final ApplicationData applicationData ) throws IOException {
+		final String clusterName = applicationData.getName() + ":" + applicationData.getVersion();
+		log.info( "Joining consul cluster '" + clusterName + "' as '" + applicationData.getMachineId() + "'..." );
 		final String message = asMessage( applicationData );
 		final int status = post( "/v1/agent/service/register", message );
 		if ( status != 200 )
@@ -37,6 +41,7 @@ public class ConsulClient implements ServiceRegistry {
 			message = message.replace("{" + entry.getKey() + "}", value );
 		}
 
+		log.debug( "Consul request: " + message );
 		return message;
 	}
 
@@ -63,6 +68,8 @@ public class ConsulClient implements ServiceRegistry {
 				config.getString("server.health-check.url")
 			);
 		}
+
+		log.info( "  Health check URL: " + healthCheckUrl );
 		return healthCheckUrl;
 	}
 
@@ -78,6 +85,7 @@ public class ConsulClient implements ServiceRegistry {
 
 	@Override
 	public void deregisterFromCluster( final ApplicationData applicationData ) throws IOException {
+		log.info( "Leaving consul cluster..." );
 		final int status = put( "/v1/agent/service/deregister/" + applicationData.getMachineId() );
 		if ( status != 200 )
 			throw new IOException( "Could not register the application on consul.io." );

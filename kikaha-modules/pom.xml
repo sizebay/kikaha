@@ -16,6 +16,7 @@
   <modules>
     <module>kikaha-cloud</module>
     <module>kikaha-cloud-aws</module>
+    <module>kikaha-cloud-consul</module>
     <module>kikaha-uworkers</module>
     <module>kikaha-uworkers-aws-sqs</module>
     <module>kikaha-urouting</module>
@@ -23,7 +24,6 @@
     <module>kikaha-urouting-jaxb</module>
     <module>kikaha-urouting-mustache</module>
     <module>kikaha-db</module>
-    <module>kikaha-consul</module>
     <module>kikaha-java-mail</module>
     <module>kikaha-hazelcast</module>
   </modules>

@@ -24,8 +24,8 @@ public class DefaultLocalAddressResolverTest {
 
 	@Test
 	public void ensureCanResolveTheIpAddressAsExpected(){
-		doReturn( "wlp9s0" ).when( config ).getString( eq("server.cloud.local-address.default-interface" ), anyString() );
-		doReturn( true ).when( config ).getBoolean( eq("server.cloud.local-address.ipv4-only"), eq(true) );
+		doReturn( "wlp9s0" ).when( config ).getString( eq("server.smart-server.local-address.default-interface" ), anyString() );
+		doReturn( true ).when( config ).getBoolean( eq("server.smart-server.local-address.ipv4-only"), eq(true) );
 		final String localAddress = resolver.getLocalAddress();
 		assertEquals( "192.168.0.137", localAddress );
 	}

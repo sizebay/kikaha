@@ -24,7 +24,7 @@ public class DefaultLocalAddressResolver implements LocalAddressResolver {
 	}
 
 	String getLocalAddressFrom( final NetworkInterface networkInterface ) throws SocketException {
-		final boolean useIpv4Only = config.getBoolean("server.cloud.local-address.ipv4-only", true);
+		final boolean useIpv4Only = config.getBoolean("server.smart-server.local-address.ipv4-only", true);
 		final Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
 		while ( addresses.hasMoreElements() ) {
 			final InetAddress inetAddress = addresses.nextElement();
@@ -35,7 +35,7 @@ public class DefaultLocalAddressResolver implements LocalAddressResolver {
 	}
 
 	NetworkInterface getNetworkInterface() throws SocketException {
-		final String interfaceName = config.getString("server.cloud.local-address.default-interface", "eth0");
+		final String interfaceName = config.getString("server.smart-server.local-address.default-interface", "eth0");
 		final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
 
 		while ( networkInterfaces.hasMoreElements() ) {
@@ -44,6 +44,6 @@ public class DefaultLocalAddressResolver implements LocalAddressResolver {
 				return networkInterface;
 		}
 
-		throw new SocketException( "Could not find the expected NetworkInterface." );
+		throw new SocketException( "Could not find the expected NetworkInterface: " + interfaceName );
 	}
 }
