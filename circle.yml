@@ -6,7 +6,7 @@ machine:
   services:
     - docker
   post:
-    - docker rm -f consul
+    - docker rm -f consul 2>/dev/null || echo "No consul image found. Skipping"
     - docker run -d -p 8500:8500 --name consul consul
 
 dependencies:
