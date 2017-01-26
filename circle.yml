@@ -5,7 +5,7 @@ machine:
     America/Sao_Paulo
   services:
     - docker
-  pre:
+  post:
     - docker rm -f consul
     - docker run -d -p 8500:8500 --name consul consul
 
