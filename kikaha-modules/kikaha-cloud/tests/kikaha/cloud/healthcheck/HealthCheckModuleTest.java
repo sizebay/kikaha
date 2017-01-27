@@ -41,7 +41,7 @@ public class HealthCheckModuleTest {
 		doReturn( true ).when( config ).getBoolean( eq( "server.health-check.enabled" ) );
 		module.load( null, context );
 		verify( registry ).register( anyString(), eq( healthCheck ) );
-		verify( context ).register( anyString(), anyString(), any( HealthCheckHttpHandler.class ) );
+		verify( context ).register( eq("/sample"), eq("GET"), any( HealthCheckHttpHandler.class ) );
 	}
 
 	@Test

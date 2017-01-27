@@ -1,31 +1,23 @@
 package kikaha.cloud.metrics;
 
-import com.codahale.metrics.Metric;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.MetricSet;
+import java.io.IOException;
+import java.util.*;
+import java.util.function.Consumer;
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Typed;
+import javax.inject.*;
+import javax.management.MBeanServer;
+import com.codahale.metrics.*;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.jvm.*;
 import io.undertow.Undertow;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
+import io.undertow.server.*;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
-import kikaha.core.modules.http.HttpHandlerDeploymentModule;
-import kikaha.core.modules.http.WebResource;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import kikaha.core.modules.http.*;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.management.MBeanServer;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * The Cloud Metric {@link Module}.
@@ -68,7 +60,6 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
         shouldStoreSummarizedWebMetrics = config.getBoolean( SHOULD_STORE_SUMMARIZED_WEB_METRICS );
         reporterConfigurationClass = (Class<? extends ReporterConfiguration>) config.getClass( REPORTER_CONFIGURATION_CLASS );
         registerAvailableJvmMetrics();
-        log.info( "Initializing the Cloud Metric module..." );
     }
 
     private void registerAvailableJvmMetrics(){
@@ -82,6 +73,7 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
     @Override
     public HttpHandler customize( HttpHandler httpHandler, final WebResource webResource) {
         if ( !isEnabled) return httpHandler;
+        log.debug( "Extracting metrics for " + httpHandler.toString() + " ..." );
 
         final String name = webResource.method() + " " + webResource.path();
 
@@ -103,6 +95,7 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
     @Override
     public void load( final Undertow.Builder server, final DeploymentContext context ) throws IOException {
         if ( !isEnabled ) return;
+        log.info( "Initializing the Cloud Metric module..." );
         runExternalMetricConfigurations();
         loadJvmMetrics();
 

@@ -1,9 +1,9 @@
 package kikaha.cloud.healthcheck;
 
+import java.io.IOException;
+import java.util.Collection;
 import javax.enterprise.inject.Typed;
 import javax.inject.*;
-import java.io.IOException;
-import java.util.*;
 import com.codahale.metrics.health.*;
 import io.undertow.Undertow.Builder;
 import io.undertow.util.Methods;
@@ -47,6 +47,6 @@ public class HealthCheckModule implements Module {
 
 	void deployHealthCheckEndpoint( final DeploymentContext context ){
 		final String url = config.getString( "server.health-check.url" );
-		context.register( url, Methods.POST_STRING, httpHandler );
+		context.register( url, Methods.GET_STRING, httpHandler );
 	}
 }
