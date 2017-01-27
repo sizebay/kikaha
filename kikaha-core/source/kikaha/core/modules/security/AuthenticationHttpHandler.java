@@ -16,7 +16,7 @@ class AuthenticationHttpHandler implements HttpHandler {
 
 	@Override
 	public void handleRequest(final HttpServerExchange exchange) throws Exception {
-		AuthenticationRule rule = retrieveRuleThatEnsureRequestShouldBeAuthenticated( exchange );
+		final AuthenticationRule rule = retrieveRuleThatEnsureRequestShouldBeAuthenticated( exchange );
 		if ( rule == null || isAuthenticated( exchange ) )
 			next.handleRequest(exchange);
 		else
@@ -29,7 +29,7 @@ class AuthenticationHttpHandler implements HttpHandler {
 	}
 
 	private AuthenticationRule retrieveRuleThatEnsureRequestShouldBeAuthenticated( final HttpServerExchange exchange ) {
-		String relativePath = exchange.getRelativePath();
+		final String relativePath = exchange.getRelativePath();
 		return authenticationRuleMatcher.retrieveAuthenticationRuleForUrl( relativePath );
 	}
 

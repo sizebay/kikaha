@@ -4,7 +4,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -38,19 +38,23 @@ public class Threads implements AutoCloseable {
 		return new BackgroundJob();
 	}
 
-	public void shutdown(){
+	public synchronized void shutdown(){
 		log.debug("Shutting down thread pool... " + asyncJobs.size() + " jobs still running.");
 		try {
 			executorService.shutdown();
-			Future<?> future;
-			while ((future = asyncJobs.poll()) != null)
-				try {
-					future.get(100, MILLISECONDS);
-				} catch ( TimeoutException | ExecutionException c ) {}
-			executorService.shutdownNow();
+			shutdownNow();
 		} catch ( final Exception cause ) {
-			throw new RuntimeException(cause);
+			throw new RuntimeException( cause );
 		}
+	}
+
+	private void shutdownNow() throws InterruptedException {
+		Future<?> future;
+		while ( ( future = asyncJobs.poll() ) != null )
+			try {
+				future.get( 100, MILLISECONDS );
+			} catch ( TimeoutException | ExecutionException c ) { }
+		executorService.shutdownNow();
 	}
 
 	@Override
@@ -58,6 +62,32 @@ public class Threads implements AutoCloseable {
 		shutdown();
 	}
 
+	/**
+	 * Return the total of tasks that have been previously submitted to run in background.
+	 * Note that this method does not check if the task have finished or not.
+	 *
+	 * @return
+	 */
+	public int getTotalOfScheduledTasks(){
+		return asyncJobs.size();
+	}
+
+	/**
+	 * Return the total os tasks previously submitted to run in background that stills running.
+	 *
+	 * @return
+	 */
+	public int getTotalOfActiveTasks() {
+		int total = 0;
+		for ( Future<?> future : asyncJobs )
+			if ( !future.isDone() )
+				total++;
+		return total;
+	}
+
+	/**
+	 * Represents a set of tasks that would/should be executed in background.
+	 */
 	public class BackgroundJob implements AutoCloseable {
 
 		final Queue<Future<?>> asyncJobs = new ArrayDeque<>();

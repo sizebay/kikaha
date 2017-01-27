@@ -16,8 +16,7 @@ public class HealthCheckHttpHandler implements HttpHandler {
 
 	static final String
 			HEALTHY_MSG = "The service is healthy.",
-			UNHEALTHY_MSG = "The service %s is unhealthy.",
-			NO_HEALTH_CHECK_MSG = "No HealthCheck found on ClassPath";
+			UNHEALTHY_MSG = "The service %s is unhealthy. %s";
 
 	@Inject HealthCheckRegistry registry;
 
@@ -36,7 +35,7 @@ public class HealthCheckHttpHandler implements HttpHandler {
 		for ( final Map.Entry<String, HealthCheck.Result> entry : registry.runHealthChecks().entrySet() )
 			if ( !entry.getValue().isHealthy() ) {
 				responseStatus = StatusCodes.SERVICE_UNAVAILABLE;
-				message = String.format( UNHEALTHY_MSG, entry.getKey() );
+				message = String.format( UNHEALTHY_MSG, entry.getKey(), entry.getValue().getMessage() );
 				break;
 			}
 
