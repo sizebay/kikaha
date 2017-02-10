@@ -1,6 +1,7 @@
 package kikaha.mojo;
 
 import kikaha.mojo.generator.*;
+import kikaha.mojo.generator.ClassFileReader.SourceNotCompiledException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -93,8 +94,12 @@ public class KikahaGenerateSourcesMojo extends AbstractMojo {
 		final List<File> javaClassFiles = readJavaClassFiles();
 		final List<StringJavaSource> decompiledSources = new ArrayList<>();
 		for ( final File file : javaClassFiles ) {
-			final StringJavaSource decompiled = decompiler.decompile( file );
-			decompiledSources.add( decompiled );
+			try {
+				final StringJavaSource decompiled = decompiler.decompile( file );
+				decompiledSources.add( decompiled );
+			} catch ( SourceNotCompiledException cause ) {
+				getLog().warn( "Ignoring " + file + ". " + cause.getMessage() );
+			}
 		}
 		return decompiledSources;
 	}

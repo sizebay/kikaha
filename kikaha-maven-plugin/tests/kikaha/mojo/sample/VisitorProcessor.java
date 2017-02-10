@@ -9,6 +9,8 @@ import javax.tools.Diagnostic.Kind;
 @SupportedAnnotationTypes( "kikaha.mojo.sample.*" )
 public class VisitorProcessor extends AbstractProcessor {
 
+	public VisitorProcessor(){}
+
 	@Override
 	public boolean process( Set<? extends TypeElement> annotations, RoundEnvironment roundEnv ) {
 		final Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith( Visit.class );

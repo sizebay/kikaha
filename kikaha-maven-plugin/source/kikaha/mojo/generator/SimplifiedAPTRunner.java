@@ -8,7 +8,8 @@ import javax.tools.JavaCompiler.CompilationTask;
 public class SimplifiedAPTRunner {
 
 	final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-	final List<String> compilerOptions = Arrays.asList(); // "-proc:only"
+	final List<String> compilerOptions = Arrays.asList();
+	final List<String> compilerOptionsForProcOnly = Arrays.asList( "-proc:only" );
 
 	final JavaCompiler compiler;
 	final StandardJavaFileManager fileManager;
@@ -26,7 +27,7 @@ public class SimplifiedAPTRunner {
 	}
 
 	public APTResult run( Iterable<? extends JavaFileObject> compilationUnits ) {
-		final CompilationTask task = compiler.getTask( null, fileManager, diagnostics, compilerOptions, null, compilationUnits );
+		final CompilationTask task = compiler.getTask( null, fileManager, diagnostics, compilerOptionsForProcOnly, null, compilationUnits );
 		final boolean success = task.call();
 		final List<Diagnostic<? extends JavaFileObject>> generatedDiagnostics = diagnostics.getDiagnostics();
 		return new APTResult( success, generatedDiagnostics );
