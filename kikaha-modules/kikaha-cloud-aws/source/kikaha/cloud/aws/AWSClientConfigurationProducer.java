@@ -4,6 +4,7 @@ import java.util.Collection;
 import javax.enterprise.inject.*;
 import javax.inject.*;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.services.ec2.AmazonEC2Client;
 import lombok.Getter;
 
 /**

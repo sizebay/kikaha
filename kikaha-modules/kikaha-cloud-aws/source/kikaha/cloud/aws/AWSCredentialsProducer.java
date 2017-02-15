@@ -18,9 +18,18 @@ public class AWSCredentialsProducer {
 	@Inject Config config;
 
 	@Produces
-	public AWSCredentials produceCredentials(ProviderContext context ){
+	public AWSCredentials produceCredentials( final ProviderContext context ){
 		final IAM annotation = context.getAnnotation(IAM.class);
 		final String configurationName = annotation != null ? annotation.value() : "default";
+		return getCredentials( configurationName );
+	}
+
+	public AWSCredentialsProvider getCredentialProvider(  final String configurationName  ) {
+		final AWSCredentials credentials = getCredentials( configurationName );
+		return new AWSStaticCredentialsProvider( credentials );
+	}
+
+	public AWSCredentials getCredentials( final String configurationName ) {
 		return cache.computeIfAbsent( configurationName, this::createCredential );
 	}
 

@@ -19,16 +19,16 @@ public class SmartServerModuleTest {
 	@Mock Config config;
 	@Mock ServiceRegistry serviceRegistry;
 	@Mock ServiceProvider serviceProvider;
-	@Mock LocalAddressResolver localAddressResolver;
+	@Mock LocalMachineIdentification localMachineIdentification;
 
 	@InjectMocks
 	@Spy SmartServerModule module;
 
 	@Before
 	public void configureMocks() throws IOException {
-		doReturn( localAddressResolver.getClass() ).when( config ).getClass( eq("server.smart-server.local-address.resolver") );
-		doReturn( localAddressResolver ).when( serviceProvider ).load( eq(localAddressResolver.getClass()) );
-		doReturn( "10.0.0.1" ).when( localAddressResolver ).getLocalAddress();
+		doReturn( localMachineIdentification.getClass() ).when( config ).getClass( eq("server.smart-server.local-address.identification") );
+		doReturn( localMachineIdentification ).when( serviceProvider ).load( eq( localMachineIdentification.getClass()) );
+		doReturn( "10.0.0.1" ).when( localMachineIdentification ).getLocalAddress();
 		doReturn( serviceRegistry ).when( serviceProvider ).load( eq(serviceRegistry.getClass()) );
 		doReturn( true ).when( config ).getBoolean( eq("server.http.enabled") );
 		doReturn( 9000 ).when( config ).getInteger( eq("server.http.port") );
@@ -39,7 +39,8 @@ public class SmartServerModuleTest {
 		provideDataNeededToExecuteTheModule();
 		module.loadApplicationData();
 		module.load( null, null );
-		verify( serviceRegistry ).generateTheMachineId();
+		verify( localMachineIdentification ).generateTheMachineId();
+		verify( localMachineIdentification ).getLocalAddress();
 		verify( serviceRegistry ).registerIntoCluster( any( ApplicationData.class ) );
 	}
 
@@ -48,15 +49,18 @@ public class SmartServerModuleTest {
 		provideDataNeededToExecuteTheModule();
 		module.loadApplicationData();
 		module.unload();
-		verify( serviceRegistry ).generateTheMachineId();
+		verify( localMachineIdentification ).generateTheMachineId();
+		verify( localMachineIdentification ).getLocalAddress();
 		verify( serviceRegistry ).deregisterFromCluster( any( ApplicationData.class ) );
 	}
 
 	void provideDataNeededToExecuteTheModule() throws IOException {
-		doReturn( "123" ).when( serviceRegistry ).generateTheMachineId();
+		doReturn( "123" ).when( localMachineIdentification ).generateTheMachineId();
+		doReturn( "127.0.0.1" ).when( localMachineIdentification ).getLocalAddress();
 		doReturn( "name" ).when( config ).getString( "server.smart-server.application.name" );
 		doReturn( "1.0" ).when( config ).getString( "server.smart-server.application.version" );
 		doReturn( true ).when( config ).getBoolean( "server.smart-server.enabled" );
+		doReturn( localMachineIdentification.getClass() ).when( config ).getClass( "server.smart-server.local-address.identification" );
 		doReturn( serviceRegistry.getClass() ).when( config ).getClass( eq("server.smart-server.service-registry") );
 	}
 
@@ -65,7 +69,8 @@ public class SmartServerModuleTest {
 		doReturn( false ).when( config ).getBoolean( "server.smart-server.enabled" );
 		module.loadApplicationData();
 		module.load( null, null );
-		verify( serviceRegistry, never() ).generateTheMachineId();
+		verify( localMachineIdentification, never() ).generateTheMachineId();
+		verify( localMachineIdentification, never() ).getLocalAddress();
 		verify( serviceRegistry, never() ).registerIntoCluster( any( ApplicationData.class ) );
 	}
 

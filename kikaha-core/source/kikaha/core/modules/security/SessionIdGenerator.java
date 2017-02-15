@@ -12,7 +12,7 @@ public interface SessionIdGenerator {
 
 	/**
 	 * Generate a new session id.
-	 * @return
+	 * @return a new session id.
 	 */
 	static String generate(){
 		return MAC_ADDRESS + UUID.randomUUID().toString().replace("-","");
@@ -21,12 +21,12 @@ public interface SessionIdGenerator {
 	/**
 	 * Retrieve the first MAC Address found at the machine.
 	 *
-	 * @return
+	 * @return the first MAC Address found at the machine.
 	 */
 	static String retrieveCurrentMacAddress(){
 		try {
 			final NetworkInterface networkInterface = getNetworkInterface();
-			return new String( convertMACBytesToString( networkInterface.getHardwareAddress() ) );
+			return convertMACBytesToString( networkInterface.getHardwareAddress() );
 		} catch ( final SocketException e ) {
 			throw new RuntimeException(e);
 		}
@@ -36,12 +36,11 @@ public interface SessionIdGenerator {
 		final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
 		while ( networkInterfaces.hasMoreElements() ) {
 			final NetworkInterface networkInterface = networkInterfaces.nextElement();
-			System.out.println( networkInterface.getDisplayName() );
 			final byte[] hardwareAddress = networkInterface.getHardwareAddress();
 			if ( hardwareAddress != null && hardwareAddress.length > 4 )
 				return networkInterface;
 		}
-		return null;
+		throw new RuntimeException("No network interfaces found.");
 	}
 
 	static String convertMACBytesToString( byte[] mac ){

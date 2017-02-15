@@ -2,6 +2,7 @@ package kikaha.cloud.smart;
 
 import java.io.IOException;
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Produces;
 import javax.inject.*;
 import io.undertow.Undertow.Builder;
 import kikaha.cloud.smart.ServiceRegistry.ApplicationData;
@@ -21,27 +22,25 @@ public class SmartServerModule implements Module {
 
 	@Inject Config config;
 	@Inject ServiceProvider serviceProvider;
-	ServiceRegistry serviceRegistry;
-	ApplicationData applicationData;
 	boolean isModuleEnabled;
+
+	ApplicationData applicationData;
+	ServiceRegistry serviceRegistry;
+	LocalMachineIdentification localMachineIdentification;
 
 	@PostConstruct
 	public void loadApplicationData() throws IOException {
 		isModuleEnabled = config.getBoolean( "server.smart-server.enabled" );
 		if ( !isModuleEnabled ) return;
 
-		final LocalAddressResolver localAddressResolver = loadLocalAddressResolver();
+		localMachineIdentification = loadLocalMachineIdentification();
 		serviceRegistry = loadServiceRegistry();
 		applicationData = new ApplicationData(
-			serviceRegistry.generateTheMachineId(),
-			config.getString( "server.smart-server.application.name" ),
-			config.getString( "server.smart-server.application.version" ),
-			localAddressResolver.getLocalAddress(), getLocalPort(), isLocalProtocolHttps()
+				localMachineIdentification.generateTheMachineId(),
+				config.getString( "server.smart-server.application.name" ),
+				config.getString( "server.smart-server.application.version" ),
+				localMachineIdentification.getLocalAddress(), getLocalPort(), isLocalProtocolHttps()
 		);
-	}
-
-	private boolean isLocalProtocolHttps() {
-		return config.getBoolean( "server.https.enabled" );
 	}
 
 	ServiceRegistry loadServiceRegistry(){
@@ -51,19 +50,23 @@ public class SmartServerModule implements Module {
 		return (ServiceRegistry)serviceProvider.load( serviceRegistryClass );
 	}
 
-	LocalAddressResolver loadLocalAddressResolver(){
-		final Class<?> localAddressResolver = config.getClass( "server.smart-server.local-address.resolver" );
-		if ( localAddressResolver == null )
-			throw new InstantiationError( "No LocalAddressResolver defined" );
-		return (LocalAddressResolver)serviceProvider.load( localAddressResolver );
+	LocalMachineIdentification loadLocalMachineIdentification(){
+		final Class<?> localMachineIdentification = config.getClass( "server.smart-server.local-address.identification" );
+		if ( localMachineIdentification == null )
+			throw new InstantiationError( "No LocalMachineIdentification defined" );
+		return (LocalMachineIdentification)serviceProvider.load( localMachineIdentification );
 	}
 
-	int getLocalPort(){
-		if ( config.getBoolean( "server.https.enabled" ) )
+	public int getLocalPort(){
+		if ( isLocalProtocolHttps() )
 			return config.getInteger( "server.https.port" );
 		else if ( config.getBoolean( "server.http.enabled" ) )
 			return config.getInteger( "server.http.port" );
 		throw new IllegalArgumentException( "No Http/Https module enabled" );
+	}
+
+	public boolean isLocalProtocolHttps() {
+		return config.getBoolean( "server.https.enabled" );
 	}
 
 	@Override
@@ -76,5 +79,10 @@ public class SmartServerModule implements Module {
 	public void unload() throws IOException {
 		if ( isModuleEnabled )
 			serviceRegistry.deregisterFromCluster( applicationData );
+	}
+
+	@Produces
+	public ApplicationData produceApplicationData(){
+		return applicationData;
 	}
 }

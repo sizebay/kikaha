@@ -9,7 +9,7 @@ import kikaha.config.Config;
  *
  */
 @Singleton
-public class DefaultLocalAddressResolver implements LocalAddressResolver {
+public class DefaultLocalMachineIdentification implements LocalMachineIdentification {
 
 	@Inject Config config;
 

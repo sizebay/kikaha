@@ -7,7 +7,7 @@ server:
 
     # Configure how the server should infer its local address
     local-address:
-      resolver: kikaha.cloud.smart.DefaultLocalAddressResolver
+      identification: kikaha.cloud.smart.DefaultLocalMachineIdentification
       ipv4-only: true
       default-interface: "eth0"
 

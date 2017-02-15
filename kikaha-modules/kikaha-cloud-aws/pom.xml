@@ -23,5 +23,14 @@
           <artifactId>aws-java-sdk-core</artifactId>
           <version>${version.aws}</version>
         </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-ec2</artifactId>
+            <version>${version.aws}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.skullabs.kikaha</groupId>
+            <artifactId>kikaha-cloud</artifactId>
+        </dependency>
     </dependencies>
 </project>

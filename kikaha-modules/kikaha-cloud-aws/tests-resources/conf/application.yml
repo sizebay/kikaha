@@ -1,5 +1,8 @@
 server:
   aws:
+    ec2:
+      default-credential: "default"
+
     credentials:
 
       default:
