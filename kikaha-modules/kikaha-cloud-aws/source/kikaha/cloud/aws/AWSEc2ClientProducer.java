@@ -3,8 +3,8 @@ package kikaha.cloud.aws;
 import javax.enterprise.inject.Produces;
 import javax.inject.*;
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.services.ec2.*;
 import kikaha.config.Config;
 
 /**
@@ -18,9 +18,12 @@ public class AWSEc2ClientProducer {
 	@Inject AWSCredentialsProducer credentialsProducer;
 
 	@Produces
-	public AmazonEC2Client produceAmazonEC2Client(){
+	public AmazonEC2 produceAmazonEC2Client(){
 		final String credentialName = config.getString( "server.aws.ec2.default-credential" );
-		final AWSCredentials credentials = credentialsProducer.getCredentials( credentialName );
-		return new AmazonEC2Client( credentials, configuration );
+		final AWSCredentialsProvider credentials = credentialsProducer.getCredentialProvider( credentialName );
+		return AmazonEC2ClientBuilder.standard()
+			.withClientConfiguration( configuration )
+			.withCredentials( credentials )
+			.build();
 	}
 }

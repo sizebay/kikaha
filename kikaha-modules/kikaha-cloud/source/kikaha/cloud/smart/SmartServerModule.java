@@ -10,12 +10,14 @@ import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.cdi.ServiceProvider;
 import kikaha.core.modules.Module;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The smart server module. It will attempt to automatically expose this application
  * to the cloud. The Service Template is defined by the {@link ServiceRegistry} implementation
  * configured on your {@code application.yml}.
  */
+@Slf4j
 @Singleton
 @SuppressWarnings( "unchecked" )
 public class SmartServerModule implements Module {
@@ -71,14 +73,18 @@ public class SmartServerModule implements Module {
 
 	@Override
 	public void load( final Builder server, final DeploymentContext context ) throws IOException {
-		if ( isModuleEnabled )
-			serviceRegistry.registerIntoCluster( applicationData );
+		if ( isModuleEnabled ) {
+			log.info("Starting SmartServer cloud module");
+			serviceRegistry.registerIntoCluster(applicationData);
+		}
 	}
 
 	@Override
 	public void unload() throws IOException {
-		if ( isModuleEnabled )
-			serviceRegistry.deregisterFromCluster( applicationData );
+		if ( isModuleEnabled ) {
+			log.info("Stopping SmartServer cloud module");
+			serviceRegistry.deregisterFromCluster(applicationData);
+		}
 	}
 
 	@Produces

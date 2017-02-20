@@ -1,10 +1,9 @@
 package kikaha.cloud.aws;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
 import javax.inject.Inject;
 import com.amazonaws.auth.*;
-import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.AmazonEC2;
 import kikaha.core.test.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +18,7 @@ public class AWSEc2ClientProducerTest {
 
 	@Test
 	public void ensureCanRetrieveTheEC2ClientWithTheRightCredential(){
-		final AmazonEC2Client client = producer.produceAmazonEC2Client();
+		final AmazonEC2 client = producer.produceAmazonEC2Client();
 		final Exposed exposed = new Exposed( client );
 		final AWSCredentialsProvider credentialsProvider = exposed.getFieldValue( "awsCredentialsProvider", AWSCredentialsProvider.class );
 		final AWSCredentials credentials = credentialsProvider.getCredentials();

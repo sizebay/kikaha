@@ -2,3 +2,5 @@ server:
   aws:
     ec2:
       default-credential: "ec2"
+    alb:
+      default-credential: "alb"

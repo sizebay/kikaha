@@ -4,7 +4,6 @@ import java.util.Collection;
 import javax.enterprise.inject.*;
 import javax.inject.*;
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.services.ec2.AmazonEC2Client;
 import lombok.Getter;
 
 /**
@@ -21,6 +20,8 @@ public class AWSClientConfigurationProducer {
 
 	private ClientConfiguration createClientConfiguration() {
 		final ClientConfiguration configuration = new ClientConfiguration();
+		configuration.setConnectionTimeout(60);
+		configuration.setRequestTimeout(60);
 		listeners.forEach( c->c.configure( configuration ) );
 		return configuration;
 	}

@@ -29,6 +29,11 @@
             <version>${version.aws}</version>
         </dependency>
         <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-elasticloadbalancing</artifactId>
+            <version>${version.aws}</version>
+        </dependency>
+        <dependency>
             <groupId>io.skullabs.kikaha</groupId>
             <artifactId>kikaha-cloud</artifactId>
         </dependency>

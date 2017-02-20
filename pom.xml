@@ -77,7 +77,7 @@
         <version.jmustache>1.13</version.jmustache>
         <version.vibur>11.0</version.vibur>
         <version.java.mail>1.4.4</version.java.mail>
-        <version.aws>1.11.51</version.aws>
+        <version.aws>1.11.91</version.aws>
         <version.metrics>3.1.2</version.metrics>
         <!-- Plugin's Versions -->
         <version.compiler.plugin>3.3</version.compiler.plugin>
@@ -104,6 +104,7 @@
         <config.encoding.source>${config.encoding}</config.encoding.source>
         <config.encoding.resources>${config.encoding}</config.encoding.resources>
         <project.build.sourceEncoding>${config.encoding}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${config.encoding}</project.reporting.outputEncoding>
     </properties>
 
     <dependencyManagement>
