@@ -1,11 +1,9 @@
 package kikaha.uworkers.core;
 
-import kikaha.uworkers.api.Exchange;
-import kikaha.uworkers.api.Worker;
+import java.util.concurrent.atomic.AtomicBoolean;
+import kikaha.uworkers.api.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A background task that consumes messages from endpoints and send it to {@link Worker}s.
@@ -25,7 +23,7 @@ public class EndpointInboxConsumer implements Runnable {
 			try {
 				consumeNextMessage();
 			} catch (InterruptedException e) {
-				return;
+				log.warn( "Consumer failed to get next message because it was interrupted...", e );
 			}
 		}
 	}
