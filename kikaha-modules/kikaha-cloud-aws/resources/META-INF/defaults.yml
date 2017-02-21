@@ -1,6 +1,7 @@
 server:
   aws:
     ec2:
-      default-credential: "ec2"
-    alb:
-      default-credential: "alb"
+      iam-policy: "ec2"
+    elb:
+      auto-join-to: "default-load-balancer"
+      iam-policy: "elb"

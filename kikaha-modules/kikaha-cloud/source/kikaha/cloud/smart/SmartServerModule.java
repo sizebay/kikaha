@@ -38,10 +38,11 @@ public class SmartServerModule implements Module {
 		localMachineIdentification = loadLocalMachineIdentification();
 		serviceRegistry = loadServiceRegistry();
 		applicationData = new ApplicationData(
-				localMachineIdentification.generateTheMachineId(),
-				config.getString( "server.smart-server.application.name" ),
-				config.getString( "server.smart-server.application.version" ),
-				localMachineIdentification.getLocalAddress(), getLocalPort(), isLocalProtocolHttps()
+			() -> localMachineIdentification.generateTheMachineId(),
+			() -> localMachineIdentification.getLocalAddress(),
+			config.getString( "server.smart-server.application.name" ),
+			config.getString( "server.smart-server.application.version" ),
+			getLocalPort(), isLocalProtocolHttps()
 		);
 	}
 

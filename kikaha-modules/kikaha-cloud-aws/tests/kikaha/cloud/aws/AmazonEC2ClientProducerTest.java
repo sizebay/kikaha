@@ -9,16 +9,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * Unit tests for AWSEc2ClientProducer.
+ * Unit tests for AmazonEC2ClientProducer.
  */
 @RunWith( KikahaRunner.class )
-public class AWSEc2ClientProducerTest {
+public class AmazonEC2ClientProducerTest {
 
-	@Inject AWSEc2ClientProducer producer;
+	@Inject
+	AmazonEC2ClientProducer producer;
 
 	@Test
 	public void ensureCanRetrieveTheEC2ClientWithTheRightCredential(){
-		final AmazonEC2 client = producer.produceAmazonEC2Client();
+		final AmazonEC2 client = producer.produceAmazonEC2Client( "ec2" );
 		final Exposed exposed = new Exposed( client );
 		final AWSCredentialsProvider credentialsProvider = exposed.getFieldValue( "awsCredentialsProvider", AWSCredentialsProvider.class );
 		final AWSCredentials credentials = credentialsProvider.getCredentials();

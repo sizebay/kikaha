@@ -14,14 +14,15 @@ import org.mockito.runners.MockitoJUnitRunner;
  *
  */
 @RunWith(MockitoJUnitRunner.class)
-public class AWSClientConfigurationProducerTest {
+public class AmazonClientConfigurationProducerTest {
 
-	@Mock AWSClientProgrammaticConfiguration configuration;
-	AWSClientConfigurationProducer producer;
+	@Mock
+	AmazonClientProgrammaticConfiguration configuration;
+	AmazonClientConfigurationProducer producer;
 
 	@Before
 	public void configureTest(){
-		producer = new DefaultServiceProvider().load( AWSClientConfigurationProducer.class );
+		producer = new DefaultServiceProvider().load( AmazonClientConfigurationProducer.class );
 		producer.listeners.add( configuration );
 	}
 

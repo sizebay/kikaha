@@ -32,7 +32,7 @@ public class ConsulClient implements ServiceRegistry {
 			throw new IOException( "Could not register the application on consul.io." );
 	}
 
-	String asMessage( final ApplicationData applicationData ) {
+	String asMessage( final ApplicationData applicationData ) throws IOException {
 		final Map<String, String> params = asParams(applicationData);
 
 		String message = REQUEST_CHECK_STRING;
@@ -45,7 +45,7 @@ public class ConsulClient implements ServiceRegistry {
 		return message;
 	}
 
-	Map<String, String> asParams( final ApplicationData applicationData ) {
+	Map<String, String> asParams( final ApplicationData applicationData ) throws IOException {
 		final Map<String, String> params = new HashMap<>();
 		params.put( "id", applicationData.getMachineId() );
 		params.put( "name", applicationData.getName() + ":" + applicationData.getVersion() );
@@ -58,7 +58,7 @@ public class ConsulClient implements ServiceRegistry {
 		return params;
 	}
 
-	String getHealthCheckUrl(ApplicationData applicationData){
+	String getHealthCheckUrl(ApplicationData applicationData) throws IOException {
 		String healthCheckUrl = config.getString("server.smart-server.application.health-check-url" );
 		if ( healthCheckUrl == null || healthCheckUrl.isEmpty() ) {
 			healthCheckUrl = format( "%s://%s:%d%s",

@@ -1,14 +1,17 @@
 server:
   aws:
+
+    hypothetical-ec2:
+      iam-policy: "alternative"
+      region: "sa-east-1"
+
     ec2:
-      default-credential: "default"
+      iam-policy: "default"
 
-    credentials:
-
+    iam-policies:
       default:
         access-key-id: "1234"
         secret-access-key: "4321"
-
       alternative:
         access-key-id: "2345"
         secret-access-key: "5432"

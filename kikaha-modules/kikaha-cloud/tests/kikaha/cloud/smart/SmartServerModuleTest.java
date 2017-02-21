@@ -8,7 +8,9 @@ import kikaha.core.cdi.ServiceProvider;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 /**
  * Unit tests for {@link SmartServerModule}.
@@ -32,6 +34,7 @@ public class SmartServerModuleTest {
 		doReturn( serviceRegistry ).when( serviceProvider ).load( eq(serviceRegistry.getClass()) );
 		doReturn( true ).when( config ).getBoolean( eq("server.http.enabled") );
 		doReturn( 9000 ).when( config ).getInteger( eq("server.http.port") );
+		doAnswer(this::registerIntoCluster).when( serviceRegistry ).registerIntoCluster( any() );
 	}
 
 	@Test
@@ -49,8 +52,6 @@ public class SmartServerModuleTest {
 		provideDataNeededToExecuteTheModule();
 		module.loadApplicationData();
 		module.unload();
-		verify( localMachineIdentification ).generateTheMachineId();
-		verify( localMachineIdentification ).getLocalAddress();
 		verify( serviceRegistry ).deregisterFromCluster( any( ApplicationData.class ) );
 	}
 
@@ -79,5 +80,16 @@ public class SmartServerModuleTest {
 		doReturn( true ).when( config ).getBoolean( "server.smart-server.enabled" );
 		module.loadApplicationData();
 		module.load( null, null );
+	}
+
+	Answer registerIntoCluster(InvocationOnMock i) {
+		try {
+			final ApplicationData applicationData = i.getArgumentAt(0, ApplicationData.class);
+			applicationData.getMachineId();
+			applicationData.getLocalAddress();
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

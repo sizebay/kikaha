@@ -10,18 +10,18 @@ import lombok.Getter;
  * A producer of {@link ClientConfiguration}.
  */
 @Singleton
-public class AWSClientConfigurationProducer {
+public class AmazonClientConfigurationProducer {
 
-	@Inject @Typed(AWSClientProgrammaticConfiguration.class)
-	Collection<AWSClientProgrammaticConfiguration> listeners;
+	@Inject @Typed(AmazonClientProgrammaticConfiguration.class)
+	Collection<AmazonClientProgrammaticConfiguration> listeners;
 
 	@Getter(lazy = true)
 	private final ClientConfiguration clientConfiguration = createClientConfiguration();
 
 	private ClientConfiguration createClientConfiguration() {
 		final ClientConfiguration configuration = new ClientConfiguration();
-		configuration.setConnectionTimeout(60);
-		configuration.setRequestTimeout(60);
+		configuration.setConnectionTimeout(60000);
+		configuration.setRequestTimeout(60000);
 		listeners.forEach( c->c.configure( configuration ) );
 		return configuration;
 	}

@@ -2,10 +2,11 @@ package kikaha.uworkers.sqs;
 
 import javax.inject.*;
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.jmespath.ObjectMapperSingleton;
-import com.amazonaws.services.sqs.AmazonSQSClient;
+import com.amazonaws.services.sqs.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kikaha.cloud.aws.AmazonConfigurationProducer;
+import kikaha.cloud.aws.AmazonConfigurationProducer.AmazonWebServiceConfiguration;
 import kikaha.config.Config;
 import kikaha.uworkers.api.WorkerRef;
 import kikaha.uworkers.core.*;
@@ -16,10 +17,9 @@ import kikaha.uworkers.core.*;
 @Singleton
 public class SQSEndpointFactory implements EndpointFactory {
 
-	@Inject
-    MicroWorkersContext microWorkersContext;
-	@Inject AWSCredentials credentials;
+	@Inject MicroWorkersContext microWorkersContext;
 	@Inject ClientConfiguration clientConfiguration;
+	@Inject AmazonConfigurationProducer configurationProducer;
 
 	@Override
 	public boolean canHandleEndpoint(String endpointName) {
@@ -30,8 +30,8 @@ public class SQSEndpointFactory implements EndpointFactory {
 	public EndpointInboxSupplier createSupplier(String endpointName) {
 		final Config endpointConfig = microWorkersContext.getEndpointConfig(endpointName);
 		final ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
-		final AmazonSQSClient client = new AmazonSQSClient(credentials, clientConfiguration);
-		return new SQSEndpointInboxSupplier( objectMapper, client,
+		return new SQSEndpointInboxSupplier( objectMapper,
+			sqsClient( endpointConfig.getString( "sqs-configuration", "sqs" ) ),
 			endpointConfig.getString( "url" ),
 			endpointConfig.getInteger( "timeout", 1 ));
 	}
@@ -40,7 +40,17 @@ public class SQSEndpointFactory implements EndpointFactory {
 	public WorkerRef createWorkerRef(String endpointName) {
 		final Config endpointConfig = microWorkersContext.getEndpointConfig(endpointName);
 		final ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
-		final AmazonSQSClient client = new AmazonSQSClient(credentials, clientConfiguration);
-		return new SQSWorkerRef(objectMapper, client, endpointConfig.getString( "url" ));
+		return new SQSWorkerRef(objectMapper,
+				sqsClient( endpointConfig.getString( "sqs-configuration", "sqs" ) ),
+				endpointConfig.getString( "url" ));
+	}
+
+	AmazonSQS sqsClient( String alias ){
+		final AmazonWebServiceConfiguration amazonConfiguration = configurationProducer.configForService(alias);
+		return AmazonSQSClient.builder()
+			.withCredentials( amazonConfiguration.getIamPolicy() )
+			.withRegion( amazonConfiguration.getRegion() )
+			.withClientConfiguration( clientConfiguration )
+				.build();
 	}
 }

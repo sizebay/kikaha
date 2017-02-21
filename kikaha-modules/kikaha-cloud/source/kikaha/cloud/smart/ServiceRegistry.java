@@ -1,7 +1,6 @@
 package kikaha.cloud.smart;
 
 import java.io.IOException;
-import kikaha.core.modules.security.SessionIdGenerator;
 import lombok.*;
 
 /**
@@ -28,14 +27,25 @@ public interface ServiceRegistry {
 	/**
 	 * Contains the basic information needed information to join a cluster.
 	 */
-	@Getter
 	@RequiredArgsConstructor
 	class ApplicationData {
-		@NonNull final String machineId;
-		@NonNull final String name;
-		@NonNull final String version;
-		@NonNull final String localAddress;
-		final int localPort;
-		final boolean isHttps;
+		@NonNull final SupplierThatMayFail<String> machineId;
+		@NonNull final SupplierThatMayFail<String> localAddress;
+		@Getter @NonNull final String name;
+		@Getter @NonNull final String version;
+		@Getter final int localPort;
+		@Getter final boolean isHttps;
+
+		public final String getMachineId() throws IOException {
+			return machineId.get();
+		}
+
+		public final String getLocalAddress() throws IOException {
+			return localAddress.get();
+		}
+	}
+
+	interface SupplierThatMayFail<T> {
+		T get() throws IOException;
 	}
 }

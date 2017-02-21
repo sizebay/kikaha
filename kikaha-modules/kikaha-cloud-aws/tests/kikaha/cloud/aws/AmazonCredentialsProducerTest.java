@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
  *
  */
 @RunWith(KikahaRunner.class)
-public class AWSCredentialsProducerTest {
+public class AmazonCredentialsProducerTest {
 
 	@Inject AWSCredentials producedCredentials;
 

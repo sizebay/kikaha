@@ -6,12 +6,13 @@ import javax.inject.*;
 import com.amazonaws.auth.*;
 import kikaha.config.Config;
 import kikaha.core.cdi.ProviderContext;
+import lombok.NonNull;
 
 /**
  * A producer of {@link AWSCredentials}.
  */
 @Singleton
-public class AWSCredentialsProducer {
+public class AmazonCredentialsProducer {
 
 	final Map<String, AWSCredentials> cache = new HashMap<>();
 
@@ -24,17 +25,17 @@ public class AWSCredentialsProducer {
 		return getCredentials( configurationName );
 	}
 
-	public AWSCredentialsProvider getCredentialProvider(  final String configurationName  ) {
+	public AWSCredentialsProvider getCredentialProvider( @NonNull final String configurationName  ) {
 		final AWSCredentials credentials = getCredentials( configurationName );
 		return new AWSStaticCredentialsProvider( credentials );
 	}
 
-	public AWSCredentials getCredentials( final String configurationName ) {
+	public AWSCredentials getCredentials( @NonNull final String configurationName ) {
 		return cache.computeIfAbsent( configurationName, this::createCredential );
 	}
 
 	BasicAWSCredentials createCredential( String name ) {
-		final Config config = this.config.getConfig("server.aws.credentials." + name);
+		final Config config = this.config.getConfig("server.aws.iam-policies." + name);
 		if ( config == null )
 			throw new IllegalStateException( "No AWS Configuration available for '"+ name +"'" );
 		return new BasicAWSCredentials(
