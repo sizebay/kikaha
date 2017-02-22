@@ -19,12 +19,18 @@ public class EndpointInboxConsumer implements Runnable {
 
 	@Override
 	public void run() {
-		while ( !isShutdown.get() ) {
-			try {
-				consumeNextMessage();
-			} catch (InterruptedException e) {
-				log.warn( "Consumer failed to get next message because it was interrupted...", e );
+		try {
+			while (!isShutdown.get()) {
+				try {
+					consumeNextMessage();
+				} catch (InterruptedException e) {
+					log.warn("Consumer failed to get next message because it was interrupted...", e);
+				} catch (Throwable e){
+					log.error( "The consumer failed", e );
+				}
 			}
+		} finally {
+			log.warn( "Consumer finished! Shutdown = " + isShutdown.get() );
 		}
 	}
 
