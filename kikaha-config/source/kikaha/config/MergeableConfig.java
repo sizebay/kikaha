@@ -29,8 +29,13 @@ public class MergeableConfig implements Config {
 	final Map<String, Object> conf;
 	final String rootPath;
 
+	MergeableConfig(){
+		this.conf = new HashMap<>();
+		this.rootPath = "";
+	}
+
 	public static MergeableConfig create(){
-		return new MergeableConfig( new HashMap<>(), "" );
+		return new MergeableConfig();
 	}
 
 	public MergeableConfig load(File file ) throws IOException {

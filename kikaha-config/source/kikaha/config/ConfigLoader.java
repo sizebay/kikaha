@@ -13,7 +13,7 @@ import java.util.Enumeration;
 @Slf4j
 public abstract class ConfigLoader {
 
-	public static Config loadDefaults() {
+	public static MergeableConfig loadDefaults() {
 		try {
 			final MergeableConfig config = MergeableConfig.create();
 			loadFiles(config, ClassLoader.getSystemResources("META-INF/defaults.yml"));
