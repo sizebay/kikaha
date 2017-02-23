@@ -55,6 +55,11 @@ server:
       - path: "/{action}/{id}"
         to: "http://localhost/do/{{action}}?id={{id}}"
 
+    static-headers:
+      - url: "/static/url"
+        headers:
+          Location: "/invalid/url"
+
   auth:
 
     fixed-auth:
