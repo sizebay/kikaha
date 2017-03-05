@@ -31,8 +31,6 @@ final public class GeneratedRoutingMethod123 implements HttpHandler {
 			/* Requires to parse body data. */
 			exchange.getRequestReceiver()
 				.receiveFullBytes( this::runMethod, this::handleException );
-            /* Does not require to parse body data. */
-            this.runMethod( exchange );
         } catch ( Throwable cause ) {
             this.handleException( exchange, cause );
         }
@@ -43,12 +41,9 @@ final public class GeneratedRoutingMethod123 implements HttpHandler {
     }
 
 	private void runMethod( final HttpServerExchange exchange, final byte[] bodyData ){
-		if ( exchange.isInIoThread() ) {
-			exchange.dispatch( this::runMethod );
-			return;
-		}
-
-		try {
+		if ( exchange.isInIoThread() )
+			exchange.dispatch( ()-> this.runMethod( exchange, bodyData ) );
+		else try {
 				final String response = instance.renderRelatoMais( true );
 					responseWriter.write( exchange, response );
 		} catch ( Throwable cause ) {

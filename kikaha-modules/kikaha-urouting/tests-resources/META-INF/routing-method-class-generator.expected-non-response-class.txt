@@ -40,12 +40,9 @@ final public class GeneratedRoutingMethod123 implements HttpHandler {
     }
 
 	private void runMethod( final HttpServerExchange exchange, final byte[] bodyData ){
-		if ( exchange.isInIoThread() ) {
-			exchange.dispatch( this::runMethod );
-			return;
-		}
-
-		try {
+		if ( exchange.isInIoThread() )
+			exchange.dispatch( ()-> this.runMethod( exchange, bodyData ) );
+		else try {
 				instance.renderRelatoMais(  );
 				responseWriter.write( exchange );
 		} catch ( Throwable cause ) {
