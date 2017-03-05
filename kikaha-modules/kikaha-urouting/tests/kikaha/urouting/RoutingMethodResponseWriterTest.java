@@ -1,5 +1,6 @@
 package kikaha.urouting;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -20,14 +21,16 @@ import org.junit.runner.RunWith;
 @RunWith( KikahaRunner.class )
 public class RoutingMethodResponseWriterTest {
 
+	static final String DEFAULT_CONFIGURED_MIME = "configured/mime";
+
 	final HttpServerExchange exchange = createHttpExchange();
 
-	@Inject
-	RoutingMethodResponseWriter writer;
+	@Inject RoutingMethodResponseWriter writer;
 	@Inject TodoResource resource;
 
 	@Before
 	public void setup() {
+		writer.defaultContentType = DEFAULT_CONFIGURED_MIME;
 		writer = spy( writer );
 	}
 
@@ -48,13 +51,16 @@ public class RoutingMethodResponseWriterTest {
 		write(response);
 		verify( writer ).sendStatusCode( any(), eq(201) );
 		verify( writer, atLeastOnce() ).sendHeader( any(HeaderMap.class), any(Header.class), any(String.class) );
+
+		final HeaderValues contentType = exchange.getResponseHeaders().get(Headers.CONTENT_TYPE);
+		assertEquals( DEFAULT_CONFIGURED_MIME, contentType.getFirst() );
 	}
 
 	@SneakyThrows
 	private void write(final Response response) {
 		try {
 			exchange.startBlocking();
-			writer.write(exchange, Mimes.PLAIN_TEXT, response );
+			writer.write(exchange, response );
 		} catch ( final NullPointerException cause ) {
 			log.error( cause.getMessage(), cause );
 		}

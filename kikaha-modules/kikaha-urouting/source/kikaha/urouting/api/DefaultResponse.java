@@ -17,7 +17,7 @@ public class DefaultResponse implements Response {
 	@NonNull Object entity = "";
 	@NonNull Integer statusCode = 200;
 	@NonNull String encoding = "UTF-8";
-	@NonNull String contentType = Mimes.PLAIN_TEXT;
+	@NonNull String contentType = null;
 	@NonNull List<Header> headers = new TinyList<>();
 
 	public DefaultResponse header( final String name, final String value ) {
