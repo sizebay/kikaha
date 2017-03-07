@@ -64,7 +64,7 @@
         <version.lombok>1.16.14</version.lombok>
         <version.mockito>1.10.19</version.mockito>
         <version.jmustache>1.13</version.jmustache>
-        <version.vibur>11.0</version.vibur>
+        <version.vibur>16.2</version.vibur>
         <version.java.mail>1.4.4</version.java.mail>
         <version.aws>1.11.91</version.aws>
         <version.metrics>3.1.2</version.metrics>
