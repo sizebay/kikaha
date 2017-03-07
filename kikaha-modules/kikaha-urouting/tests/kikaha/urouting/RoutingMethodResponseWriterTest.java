@@ -51,6 +51,7 @@ public class RoutingMethodResponseWriterTest {
 		write(response);
 		verify( writer ).sendStatusCode( any(), eq(201) );
 		verify( writer, atLeastOnce() ).sendHeader( any(HeaderMap.class), any(Header.class), any(String.class) );
+		verify( writer ).sendBodyResponse( eq( exchange ), eq( DEFAULT_CONFIGURED_MIME ), anyString(), eq( response.entity() ) );
 
 		final HeaderValues contentType = exchange.getResponseHeaders().get(Headers.CONTENT_TYPE);
 		assertEquals( DEFAULT_CONFIGURED_MIME, contentType.getFirst() );

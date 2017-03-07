@@ -98,7 +98,7 @@ public class RoutingMethodResponseWriter {
 		sendStatusCode( exchange, response.statusCode() );
 		sendHeaders( exchange, response );
 		sendContentTypeHeader( exchange, contentType );
-		sendBodyResponse( exchange, response.contentType(), response.encoding(), response.entity() );
+		sendBodyResponse( exchange, contentType, response.encoding(), response.entity() );
 	}
 
 	HttpServerExchange sendStatusCode( final HttpServerExchange exchange, final Integer statusCode ) {
