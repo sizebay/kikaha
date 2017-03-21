@@ -121,9 +121,10 @@ public class RoutingMethodResponseWriter {
 
 	private void sendHeaders( final HttpServerExchange exchange, final Response response ) {
 		final HeaderMap responseHeaders = exchange.getResponseHeaders();
-		for ( final Header header : response.headers() )
-			for ( final String value : header.values() )
-				sendHeader(responseHeaders, header, value);
+		if ( response.headers() != null )
+			for ( final Header header : response.headers() )
+				for ( final String value : header.values() )
+					sendHeader(responseHeaders, header, value);
 	}
 
 	void sendHeader(final HeaderMap responseHeaders, final Header header, final String value) {
