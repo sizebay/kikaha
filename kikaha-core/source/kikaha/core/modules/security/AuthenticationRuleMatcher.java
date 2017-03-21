@@ -85,7 +85,7 @@ public class AuthenticationRuleMatcher {
 	}
 
 	private AuthenticationRule convertConfToRule( final Config ruleConf ) {
-		List<IdentityManager> identityManager = getIdentityManagerFor(ruleConf.getStringList("identity-manager"));
+		List<IdentityManager> identityManager = getIdentityManagerFor(ruleConf.getStringList("identity-manager", Collections.singletonList( "default" )));
 		List<AuthenticationMechanism> mechanisms = extractNeededMechanisms( ruleConf.getStringList("auth-mechanisms") );
 		return new AuthenticationRule(
 				ruleConf.getString( "pattern" ), identityManager,
