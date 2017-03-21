@@ -160,14 +160,14 @@ public class MergeableConfig implements Config {
 	}
 
 	@Override
-	public List<String> getStringList(String path) {
+	public List<String> getStringList( String path, List<String> defaultValues ) {
 		final List<String> current = read(path, o -> (List<String>) o);
 		if ( current == null )
-			return Collections.emptyList();
+			return defaultValues;
 		return current;
 	}
 
-	private <T> T read(String path, Function<Object,T> parser ) {
+	private <T> T read( String path, Function<Object,T> parser ) {
 		final String[] strings = path.split("\\.");
 		Map<String, Object> current = readPath(strings);
 		if ( current == null )

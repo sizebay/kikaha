@@ -1,8 +1,6 @@
 package kikaha.config;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents a configuration read from a file.
@@ -74,7 +72,11 @@ public interface Config {
 	 * @param path which configuration should be read
 	 * @return a list of strings from a file
 	 */
-	List<String> getStringList(String path);
+	default List<String> getStringList(String path) {
+		return getStringList( path, Collections.emptyList() );
+	}
+
+	List<String> getStringList(String path, List<String> defaultValues);
 
 	/**
 	 * Retrieve the key list available on a configuration.
