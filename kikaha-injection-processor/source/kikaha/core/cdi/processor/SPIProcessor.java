@@ -90,11 +90,10 @@ public class SPIProcessor extends AnnotationProcessor {
 		final TypeMirror superinterfaceOrClass = SingletonImplementation.getProvidedServiceClass( type );
 		if ( superinterfaceOrClass != null )
 			memorizeAServiceImplementation( new SingletonImplementation( superinterfaceOrClass.toString(), implementationClass ) );
-		else {
+		else
 			for ( final TypeMirror interfaceType : type.getInterfaces() )
 				memorizeAServiceImplementation( new SingletonImplementation( interfaceType.toString(), implementationClass ) );
-			memorizeAServiceImplementation( new SingletonImplementation( implementationClass, implementationClass ) );
-		}
+		memorizeAServiceImplementation( new SingletonImplementation( implementationClass, implementationClass ) );
 	}
 
 	void memorizeAServiceImplementation( final SingletonImplementation from ) {
