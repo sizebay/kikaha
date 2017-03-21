@@ -1,4 +1,4 @@
-package package kikaha.urouting.samples;
+package package kikaha.urouting.unit.samples;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;

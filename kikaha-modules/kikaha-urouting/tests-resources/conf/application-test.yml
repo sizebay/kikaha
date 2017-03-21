@@ -1,3 +1,12 @@
 server:
+  http:
+    port: 19999
+
   urouting:
     content-type-priority: "REQUEST"
+
+  auth:
+    auth-mechanisms:
+      default: kikaha.urouting.it.context.FixedAuthenticationMechanism
+    rules:
+      - { pattern: "/it/parameters/contextual/*", auth-mechanisms: ["default"] }

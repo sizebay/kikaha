@@ -8,8 +8,9 @@ import javax.inject.Inject;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.*;
 import kikaha.core.test.*;
+import kikaha.urouting.RoutingMethodResponseWriter;
 import kikaha.urouting.api.*;
-import kikaha.urouting.samples.TodoResource.Todo;
+import kikaha.urouting.unit.samples.TodoResource.Todo;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
