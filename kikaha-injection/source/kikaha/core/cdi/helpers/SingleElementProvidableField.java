@@ -26,7 +26,9 @@ public class SingleElementProvidableField<T> implements ProvidableField {
 	{
 		final Object value = provider.load( fieldType, condition, providerContext );
 		if ( value == null )
-			log.warn( "No data found for " + fieldType.getCanonicalName() + ". Condition: " + condition );
+			log.warn( "No data found for " + fieldType.getCanonicalName()
+					+ "; Location: " + instance.getClass().getCanonicalName()
+					+ "; Condition: " + condition );
 		set( instance, value );
 	}
 
