@@ -1,5 +1,6 @@
 package kikaha.uworkers.core;
 
+import kikaha.apt.GenerableClass;
 import lombok.*;
 
 /**
@@ -8,28 +9,13 @@ import lombok.*;
 @Getter
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class MicroWorkerListenerClass {
+public class MicroWorkerListenerClass implements GenerableClass {
 
 	final String packageName;
-	final String targetClass;
+	final String typeName;
 	final String methodName;
+
 	final String parameterType;
 	final String endpointURL;
 	final boolean rawObject;
-
-	public long getIdentifier() {
-		return hashCode() & 0xffffffffl;
-	}
-
-	public String getClassName(){
-		return "GeneratedWorkerMethod" + getIdentifier();
-	}
-
-	public String getTargetCanonicalClassName(){
-		return packageName + "." + targetClass;
-	}
-
-	public String toString(){
-		return packageName + "." + getClassName();
-	}
 }

@@ -1,13 +1,13 @@
 package kikaha.urouting;
 
-import static kikaha.urouting.RoutingMethodData.extractPackageName;
-import static kikaha.urouting.RoutingMethodData.generateHttpPath;
+import static kikaha.apt.APT.extractPackageName;
+import static kikaha.urouting.MicroRoutingAnnotationProcessor.generateHttpPath;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-public class RoutingMethodDataTest {
+public class MicroRoutingAnnotationProcessorTest {
 
 	@Test
 	public void ensureThatFormatsHttpPathAsExpected() {

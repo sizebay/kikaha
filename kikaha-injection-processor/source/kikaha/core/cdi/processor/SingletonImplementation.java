@@ -1,18 +1,16 @@
 package kikaha.core.cdi.processor;
 
-import java.lang.annotation.Annotation;
-import java.util.*;
 import javax.enterprise.inject.Typed;
-import javax.inject.*;
+import javax.inject.Qualifier;
 import javax.lang.model.element.*;
 import javax.lang.model.type.*;
-import kikaha.core.cdi.Stateless;
+import java.lang.annotation.Annotation;
+import java.util.*;
 import kikaha.core.cdi.helpers.TinyList;
 
 public class SingletonImplementation {
 
-	public static final List<Class<? extends Annotation>> QUALIFIERS =
-			Arrays.asList( Qualifier.class );
+	public static final List<Class<? extends Annotation>> QUALIFIERS = Arrays.asList( Qualifier.class );
 
 	final String interfaceClass;
 	final String implementationClass;
@@ -34,26 +32,11 @@ public class SingletonImplementation {
 		return getProvidedServiceClassAsString( type, type.asType().toString() );
 	}
 
-	public static String getProvidedServiceClassAsStringOrNull( final TypeElement type ) {
-		String string = getProvidedServiceClassAsString( type, null );
-		if ( string == null && ( isAnnotatedForSingleton( type ) || isAnnotatedForStateless( type ) ) )
-			string = type.asType().toString();
-		return string;
-	}
-
 	private static String getProvidedServiceClassAsString( final TypeElement type, String defaultValue ) {
 		final TypeMirror typeMirror = getProvidedServiceClass( type );
 		if ( typeMirror != null )
 			return typeMirror.toString();
 		return defaultValue;
-	}
-
-	private static boolean isAnnotatedForStateless( final TypeElement type ) {
-		return type.getAnnotation( Stateless.class ) != null;
-	}
-
-	private static boolean isAnnotatedForSingleton( final TypeElement type ) {
-		return type.getAnnotation( Singleton.class ) != null;
 	}
 
 	static TypeMirror getProvidedServiceClass( final TypeElement type ) {
@@ -68,7 +51,6 @@ public class SingletonImplementation {
 			return cause.getTypeMirrors().get( 0 );
 		} catch ( final java.lang.ClassCastException cause ) {
 			System.err.println( cause.getMessage() );
-			// throw cause;
 			return null;
 		}
 	}

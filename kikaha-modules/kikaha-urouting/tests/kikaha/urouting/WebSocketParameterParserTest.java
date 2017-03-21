@@ -41,7 +41,7 @@ public class WebSocketParameterParserTest {
 		defineMethodParameterAs( Long.class );
 		doReturn( pathAnnotation ).when( parameter ).getAnnotation( PathParam.class );
 		doReturn( "id" ).when( pathAnnotation ).value();
-		final String parsed = parser.parse( method, parameter );
+		final String parsed = parser.apply( method, parameter );
 		assertEquals( "dataProvider.getPathParam( session, \"id\", java.lang.Long.class )", parsed );
 	}
 
@@ -50,7 +50,7 @@ public class WebSocketParameterParserTest {
 		defineMethodParameterAs( Long.class );
 		doReturn( headerAnnotation ).when( parameter ).getAnnotation( HeaderParam.class );
 		doReturn( "id" ).when( headerAnnotation ).value();
-		final String parsed = parser.parse( method, parameter );
+		final String parsed = parser.apply( method, parameter );
 		assertEquals( "dataProvider.getHeaderParam( session, \"id\", java.lang.Long.class )", parsed );
 	}
 
@@ -58,7 +58,7 @@ public class WebSocketParameterParserTest {
 	public void ensureThatCouldProvideAMessage() {
 		defineMethodParameterAs( String.class );
 		doReturn( null ).when( parameter ).getAnnotation( PathParam.class );
-		final String parsed = parser.parse( method, parameter );
+		final String parsed = parser.apply( method, parameter );
 		assertEquals( "message", parsed );
 	}
 
@@ -66,7 +66,7 @@ public class WebSocketParameterParserTest {
 	public void ensureThatCouldProvideACloseMessage() {
 		defineMethodParameterAs( CloseMessage.class );
 		doReturn( null ).when( parameter ).getAnnotation( PathParam.class );
-		final String parsed = parser.parse( method, parameter );
+		final String parsed = parser.apply( method, parameter );
 		assertEquals( "cm", parsed );
 	}
 
@@ -74,7 +74,7 @@ public class WebSocketParameterParserTest {
 	public void ensureThatCouldProvideAWebSocketSession() {
 		defineMethodParameterAs( WebSocketSession.class );
 		doReturn( null ).when( parameter ).getAnnotation( PathParam.class );
-		final String parsed = parser.parse( method, parameter );
+		final String parsed = parser.apply( method, parameter );
 		assertEquals( "session", parsed );
 	}
 
@@ -82,7 +82,7 @@ public class WebSocketParameterParserTest {
 	public void ensureThatCouldProvideAThrowable() {
 		defineMethodParameterAs( Throwable.class );
 		doReturn( null ).when( parameter ).getAnnotation( PathParam.class );
-		final String parsed = parser.parse( method, parameter );
+		final String parsed = parser.apply( method, parameter );
 		assertEquals( "cause", parsed );
 	}
 

@@ -2,39 +2,30 @@ package kikaha.core.cdi.inject.stateless;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
-import kikaha.core.cdi.processor.stateless.ExposedMethod;
-import kikaha.core.cdi.processor.stateless.StatelessClass;
-import kikaha.core.cdi.processor.stateless.StatelessClassGenerator;
-
+import java.io.*;
+import java.util.*;
+import kikaha.apt.ClassGenerator;
+import kikaha.core.cdi.processor.*;
 import org.junit.Test;
 
 public class StatelessClassGeneratorTest {
 
+	final ClassGenerator generator = new ClassGenerator( null, "stateless-class.mustache" );
+
 	@Test
 	public void ensureThatGenerateTheExpectedClassFromInterfaceImplementation() throws IOException {
 		final StatelessClass statelessClass = createStatelessImplementationOfInterface();
-		final StatelessClassGenerator generator = new StatelessClassGenerator();
-		final StringWriter writer = new StringWriter();
-		generator.write( statelessClass, writer );
+		final String generated = generator.generateSourceCodeOnly( statelessClass );
 		final String expected = readFile( "tests-resources/stateless-class-exposing-interface.txt" );
-		assertEquals( expected, writer.toString() );
+		assertEquals( expected, generated );
 	}
 
 	@Test
 	public void ensureThatGenerateTheExpectedClassFromExposedServiceByItSelf() throws IOException {
 		final StatelessClass statelessClass = createStatelessImplementationOfClass();
-		final StatelessClassGenerator generator = new StatelessClassGenerator();
-		final StringWriter writer = new StringWriter();
-		generator.write( statelessClass, writer );
+		final String generated = generator.generateSourceCodeOnly( statelessClass );
 		final String expected = readFile( "tests-resources/stateless-class-exposing-class.txt" );
-		assertEquals( expected, writer.toString() );
+		assertEquals( expected, generated );
 	}
 
 	StatelessClass createStatelessImplementationOfInterface() {
@@ -54,12 +45,12 @@ public class StatelessClassGeneratorTest {
 				list( voidMethod() ) );
 	}
 
-	ExposedMethod returnableMethod() {
-		return new ExposedMethod( "sum", "Long", list( "Double", "Integer" ) );
+	StatelessClassExposedMethod returnableMethod() {
+		return new StatelessClassExposedMethod( "sum", "Long", list( "Double", "Integer" ), list("sample.Annotation") );
 	}
 
-	ExposedMethod voidMethod() {
-		return new ExposedMethod( "voidMethod", "void", emptyStringList() );
+	StatelessClassExposedMethod voidMethod() {
+		return new StatelessClassExposedMethod( "voidMethod", "void", emptyStringList(), emptyStringList() );
 	}
 
 	@SuppressWarnings( "unchecked" )

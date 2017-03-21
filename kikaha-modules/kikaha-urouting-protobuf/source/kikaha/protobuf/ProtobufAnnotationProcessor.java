@@ -2,7 +2,7 @@ package kikaha.protobuf;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
-import static kikaha.protobuf.URoutingAnnotationRules.*;
+import static kikaha.apt.APT.*;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.*;
@@ -12,13 +12,15 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.function.Function;
 import com.google.protobuf.*;
+import kikaha.apt.AbstractAnnotatedMethodProcessor;
+import kikaha.urouting.URoutingAnnotationRules;
 import lombok.*;
 
 /**
  * @author: miere.teixeira
  */
 @Getter
-@SupportedAnnotationTypes( "protobuf.*" )
+@SupportedAnnotationTypes( "kikaha.protobuf.*" )
 public class ProtobufAnnotationProcessor extends AbstractAnnotatedMethodProcessor {
 
 	final List<Class<? extends Annotation>> expectedMethodAnnotations = singletonList( RPC.class );

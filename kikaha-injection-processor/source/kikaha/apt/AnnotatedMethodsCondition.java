@@ -1,7 +1,8 @@
-package kikaha.core.cdi.helpers.filter;
+package kikaha.apt;
 
 import java.lang.annotation.Annotation;
 import javax.lang.model.element.Element;
+import kikaha.core.cdi.helpers.filter.*;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

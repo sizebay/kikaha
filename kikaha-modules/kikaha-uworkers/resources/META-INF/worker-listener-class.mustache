@@ -7,9 +7,9 @@ import javax.inject.*;
 @Singleton
 @Worker( "{{endpointURL}}" )
 @SuppressWarnings("unchecked")
-public class {{className}} implements WorkerEndpointMessageListener {
+public class {{generatedClassName}} implements WorkerEndpointMessageListener {
 
-	@Inject {{targetCanonicalClassName}} listener;
+	@Inject {{type}} listener;
 
 	@Override
 	public void onMessage( final Exchange exchange ) throws Throwable {

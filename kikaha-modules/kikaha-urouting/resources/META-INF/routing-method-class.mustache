@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 @Typed( HttpHandler.class )
 @WebResource( path="{{httpPath}}", method="{{httpMethod}}" )
-final public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
+final public class {{generatedClassName}} implements HttpHandler {
 
 	@Inject RoutingMethodResponseWriter responseWriter;
 	@Inject RoutingMethodParameterReader methodDataProvider;

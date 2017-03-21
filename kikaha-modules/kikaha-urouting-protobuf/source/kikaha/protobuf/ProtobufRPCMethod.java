@@ -1,5 +1,6 @@
 package kikaha.protobuf;
 
+import kikaha.apt.GenerableClass;
 import lombok.*;
 
 /**
@@ -7,7 +8,7 @@ import lombok.*;
  */
 @Value
 @EqualsAndHashCode( exclude = "identifier" )
-public class ProtobufRPCMethod implements AnnotatedMethodData {
+public class ProtobufRPCMethod implements GenerableClass {
 
 	String packageName;
 	String typeName;

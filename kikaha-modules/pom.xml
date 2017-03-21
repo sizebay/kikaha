@@ -23,7 +23,7 @@
     <module>kikaha-urouting-jackson</module>
     <module>kikaha-urouting-jaxb</module>
     <module>kikaha-urouting-mustache</module>
-    <module>kikaha-urouting-urouting</module>
+    <module>kikaha-urouting-protobuf</module>
     <module>kikaha-db</module>
     <module>kikaha-java-mail</module>
     <module>kikaha-hazelcast</module>

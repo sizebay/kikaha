@@ -1,13 +1,13 @@
-package kikaha.protobuf;
+package kikaha.urouting;
 
 import static java.lang.String.format;
+import static kikaha.apt.APT.asType;
+import static kikaha.apt.APT.isAnnotatedWith;
 
 import javax.lang.model.element.*;
-import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.function.Function;
 import kikaha.urouting.api.*;
-import lombok.val;
 
 /**
  * @author: miere.teixeira
@@ -29,31 +29,5 @@ public interface URoutingAnnotationRules {
 		final String targetType = asType( parameter );
 		return format( "methodDataProvider.get%s( exchange, \"%s\", %s.class )",
 				targetAnnotation.getSimpleName(), param, targetType );
-	}
-
-	// TODO: send to AnnotationProcessorUtil.java
-	// TODO: remove from RoutingMethodData.java - it is a good time to review this class...
-
-	static String asType( final Element parameter ) {
-		return parameter.asType().toString().replaceAll("<[^>]+>","");
-	}
-
-	static boolean isAnnotatedWith( final VariableElement parameter, final Class<?extends Annotation> annotationClass ) {
-		return parameter.getAnnotation( annotationClass ) != null;
-	}
-
-	static String extractPackageName( final String canonicalName ) {
-		return canonicalName.replaceAll( "^(.*)\\.[^.]+", "$1" );
-	}
-
-	static String extractTypeName( final String canonicalName ) {
-		return canonicalName.replaceAll( "^.*\\.([^.]+)", "$1" );
-	}
-
-	static String extractReturnTypeFrom( final ExecutableElement method ) {
-		val returnTypeAsString = method.getReturnType().toString();
-		if ( "void".equals( returnTypeAsString ) )
-			return null;
-		return returnTypeAsString;
 	}
 }

@@ -1,16 +1,17 @@
 package kikaha.urouting;
 
 import static java.lang.String.format;
-import java.lang.annotation.Annotation;
+
 import javax.lang.model.element.*;
+import java.lang.annotation.Annotation;
+import java.util.function.BiFunction;
 import io.undertow.websockets.core.CloseMessage;
 import kikaha.core.modules.websocket.WebSocketSession;
-import kikaha.core.cdi.helpers.filter.AnnotationProcessorUtil.MethodParameterParser;
 import kikaha.urouting.EventDispatcher.Matcher;
 import kikaha.urouting.api.*;
 import lombok.*;
 
-class WebSocketParameterParser implements MethodParameterParser {
+class WebSocketParameterParser implements BiFunction<ExecutableElement, VariableElement, String> {
 
 	final EventDispatcher<VariableElement> dispatcher = createEventDispatcher();
 	StringBuilder parsedData;
@@ -73,7 +74,7 @@ class WebSocketParameterParser implements MethodParameterParser {
 	 * @return
 	 */
 	@Override
-	public String parse( final ExecutableElement method, final VariableElement parameter ) {
+	public String apply( final ExecutableElement method, final VariableElement parameter ) {
 		parsedData = new StringBuilder();
 		dispatcher.apply( parameter );
 		return parsedData.toString();

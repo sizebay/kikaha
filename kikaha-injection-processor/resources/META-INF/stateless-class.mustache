@@ -3,7 +3,7 @@ package {{packageName}};
 @javax.inject.Singleton
 @javax.enterprise.inject.Typed( {{typeCanonicalName}}.class )
 @kikaha.core.cdi.GeneratedFromStatelessService
-public class {{typeName}}Stateless{{identifaction}}
+public class {{generatedClassName}}
 {{#exposedByClass}}
 	extends {{{typeCanonicalName}}} {
 {{/exposedByClass}}
@@ -14,6 +14,7 @@ public class {{typeName}}Stateless{{identifaction}}
 	@javax.inject.Inject kikaha.core.cdi.ServiceProvider provider;
 	{{#exposedMethods}}
 
+{{#annotations}}    @{{.}}{{/annotations}}
 	public {{{returnType}}} {{name}}( {{{parametersWithTypesAsString}}} ) {
 		try {
 			final {{{implementationCanonicalName}}} instance = newInstance();

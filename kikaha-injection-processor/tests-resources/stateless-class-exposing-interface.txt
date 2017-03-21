@@ -3,10 +3,11 @@ package sample.project;
 @javax.inject.Singleton
 @javax.enterprise.inject.Typed( important.api.Interface.class )
 @kikaha.core.cdi.GeneratedFromStatelessService
-public class InterfaceStateless1612123513
+public class GeneratedInterface1612123513
 	extends sample.project.ServiceFromInterface implements important.api.Interface {
 
 	@javax.inject.Inject kikaha.core.cdi.ServiceProvider provider;
+
 
 	public void voidMethod(  ) {
 		try {
@@ -14,13 +15,14 @@ public class InterfaceStateless1612123513
 			try {
 				instance.voidMethod(  );
 			} finally {
-				preDestroyInterface1612123513( instance );
+				preDestroyInterface( instance );
 			}
 		} catch ( Throwable cause ) {
 			throw new RuntimeException( cause );
 		}
 	}
 
+    @sample.Annotation
 	public Long sum( Double arg0,Integer arg1 ) {
 		try {
 			final sample.project.ServiceFromInterface instance = newInstance();
@@ -28,7 +30,7 @@ public class InterfaceStateless1612123513
 				final Long returnValue = instance.sum( arg0,arg1 );
 				return returnValue;
 			} finally {
-				preDestroyInterface1612123513( instance );
+				preDestroyInterface( instance );
 			}
 		} catch ( Throwable cause ) {
 			throw new RuntimeException( cause );
@@ -41,7 +43,7 @@ public class InterfaceStateless1612123513
 		return instance;
 	}
 
-	private static void preDestroyInterface1612123513(
+	private static void preDestroyInterface(
 			final sample.project.ServiceFromInterface instance ) throws Throwable {
 		instance.voidMethod();
 	}

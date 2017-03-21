@@ -18,6 +18,7 @@ public class HelloWorldUnserializer implements Unserializer {
 	volatile boolean methodCalled;
 
 	@Override
+	@SuppressWarnings( "unchecked" )
 	public <T> T unserialize( HttpServerExchange input, Class<T> targetClass, byte[] body, String encoding ) throws IOException {
 		methodCalled = true;
 		return (T)new String( body, encoding );

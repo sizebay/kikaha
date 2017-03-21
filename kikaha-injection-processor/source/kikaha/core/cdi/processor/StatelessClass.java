@@ -1,18 +1,13 @@
-package kikaha.core.cdi.processor.stateless;
+package kikaha.core.cdi.processor;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
 import javax.lang.model.element.*;
 import javax.lang.model.type.*;
 import kikaha.core.cdi.helpers.TinyList;
-import kikaha.core.cdi.processor.*;
+import kikaha.apt.GenerableClass;
 
 public class StatelessClass implements GenerableClass {
-
-	/**
-	 * This attribute will be part of the class name.
-	 */
-	final long identifaction;
 
 	/**
 	 * The package where the new class should be placed.
@@ -42,17 +37,17 @@ public class StatelessClass implements GenerableClass {
 	/**
 	 * A list of methods that will be wrapped up.
 	 */
-	final List<ExposedMethod> exposedMethods;
+	final List<StatelessClassExposedMethod> exposedMethods;
 
 	/**
 	 * A list of methods that run after construct the Stateless service.
 	 */
-	final List<ExposedMethod> postConstructMethods;
+	final List<StatelessClassExposedMethod> postConstructMethods;
 
 	/**
 	 * A list of methods that run before destroy the Stateless service.
 	 */
-	final List<ExposedMethod> preDestroyMethods;
+	final List<StatelessClassExposedMethod> preDestroyMethods;
 
 	/**
 	 * @param typeCanonicalName
@@ -63,9 +58,9 @@ public class StatelessClass implements GenerableClass {
 	 * @param preDestroyMethods
 	 */
 	public StatelessClass( final String typeCanonicalName,
-		final String implementationCanonicalName, final boolean exposedByClass,
-		final List<ExposedMethod> exposedMethods, final List<ExposedMethod> postConstructMethods,
-		final List<ExposedMethod> preDestroyMethods ) {
+	                       final String implementationCanonicalName, final boolean exposedByClass,
+	                       final List<StatelessClassExposedMethod> exposedMethods, final List<StatelessClassExposedMethod> postConstructMethods,
+	                       final List<StatelessClassExposedMethod> preDestroyMethods ) {
 		this.packageName = extractPackageNameFrom( implementationCanonicalName );
 		this.typeCanonicalName = typeCanonicalName;
 		this.typeName = extractClassNameFrom( typeCanonicalName );
@@ -74,22 +69,18 @@ public class StatelessClass implements GenerableClass {
 		this.exposedMethods = exposedMethods;
 		this.postConstructMethods = postConstructMethods;
 		this.preDestroyMethods = preDestroyMethods;
-		this.identifaction = createIdentifier();
 	}
 
-	private long createIdentifier() {
-		final int hashCode =
-				String.format( "%s%s%s%s%s%s",
-						packageName, typeCanonicalName,
-						typeName, implementationCanonicalName, exposedByClass, exposedMethodsAsString() )
-						.hashCode();
-
-		return hashCode & 0xffffffffl;
+	public int hashCode() {
+		return String.format( "%s%s%s%s%s%s",
+			packageName, typeCanonicalName,
+			typeName, implementationCanonicalName, exposedByClass, exposedMethodsAsString() )
+			.hashCode();
 	}
 
 	private String exposedMethodsAsString() {
 		final StringBuilder buffer = new StringBuilder();
-		for ( final ExposedMethod method : exposedMethods )
+		for ( final StatelessClassExposedMethod method : exposedMethods )
 			buffer
 					.append( method.name )
 					.append( method.returnType )
@@ -98,15 +89,11 @@ public class StatelessClass implements GenerableClass {
 	}
 
 	String extractPackageNameFrom( final String canonicalName ) {
-		return canonicalName.replaceFirst( "(.*)\\.[^\\.]+", "$1" );
+		return canonicalName.replaceFirst( "(.*)\\.[^.]+", "$1" );
 	}
 
 	String extractClassNameFrom( final String canonicalName ) {
-		return canonicalName.replaceFirst( ".*\\.([^\\.]+)", "$1" );
-	}
-
-	public Long getIdentifaction() {
-		return identifaction;
+		return canonicalName.replaceFirst( ".*\\.([^.]+)", "$1" );
 	}
 
 	public String getPackageName() {
@@ -129,7 +116,7 @@ public class StatelessClass implements GenerableClass {
 		return exposedByClass;
 	}
 
-	public List<ExposedMethod> getExposedMethods() {
+	public List<StatelessClassExposedMethod> getExposedMethods() {
 		return exposedMethods;
 	}
 
@@ -137,15 +124,14 @@ public class StatelessClass implements GenerableClass {
 	public String getGeneratedClassCanonicalName() {
 		return String.format( "%s.%sStateless%s",
 				packageName,
-				typeName,
-				identifaction );
+				typeName, getIdentifier() );
 	}
 
 	public static StatelessClass from( final TypeElement type ) {
 		final String typeCanonicalName = SingletonImplementation.getProvidedServiceClassAsString( type );
 		final String implementationCanonicalName = type.asType().toString();
 		final boolean exposedByClass = isImplementingClass( typeCanonicalName, type );
-		final List<ExposedMethod> exposedMethods = retrieveExposedMethods( type );
+		final List<StatelessClassExposedMethod> exposedMethods = retrieveExposedMethods( type );
 		return new StatelessClass( typeCanonicalName,
 			implementationCanonicalName, exposedByClass, exposedMethods,
 			retrieveMethodsAnnotatedWith( type, javax.annotation.PostConstruct.class ),
@@ -162,23 +148,23 @@ public class StatelessClass implements GenerableClass {
 		return true;
 	}
 
-	static List<ExposedMethod> retrieveExposedMethods( final TypeElement type ) {
-		final List<ExposedMethod> list = new TinyList<>();
+	static List<StatelessClassExposedMethod> retrieveExposedMethods( final TypeElement type ) {
+		final List<StatelessClassExposedMethod> list = new TinyList<>();
 		for ( final Element method : type.getEnclosedElements() )
 			if ( isExposedMethod( method ) )
-				list.add( ExposedMethod.from( (ExecutableElement)method ) );
+				list.add( StatelessClassExposedMethod.from( (ExecutableElement)method ) );
 		return list;
 	}
 
 	@SafeVarargs
-	static List<ExposedMethod> retrieveMethodsAnnotatedWith( final TypeElement type,
-		final Class<? extends Annotation>... annotations ) {
-		final List<ExposedMethod> list = new TinyList<>();
+	static List<StatelessClassExposedMethod> retrieveMethodsAnnotatedWith( final TypeElement type,
+	                                                                       final Class<? extends Annotation>... annotations ) {
+		final List<StatelessClassExposedMethod> list = new TinyList<>();
 		for ( final Class<? extends Annotation> annotation : annotations )
 			for ( final Element method : type.getEnclosedElements() )
 				if ( isExposedMethod( method )
 					&& method.getAnnotation( annotation ) != null )
-					list.add( ExposedMethod.from( (ExecutableElement)method ) );
+					list.add( StatelessClassExposedMethod.from( (ExecutableElement)method ) );
 		return list;
 	}
 
