@@ -29,12 +29,7 @@ final public class {{generatedClassName}} implements HttpHandler {
 	@Inject RoutingMethodParameterReader methodDataProvider;
 	@Inject RoutingMethodExceptionHandler exceptionHandler;
 
-	{{#serviceInterface}}
-	@Inject {{{serviceInterface}}} instance;
-	{{/serviceInterface}}
-	{{^serviceInterface}}
-	@Inject {{{type}}} provider;
-	{{/serviceInterface}}
+	@Inject {{{type}}} instance;
 
 	@Override
 	public void handleRequest( final HttpServerExchange exchange ) throws Exception {
@@ -113,8 +108,14 @@ final public class {{generatedClassName}} implements HttpHandler {
             final Response response = exceptionHandler.handle( cause );
             responseWriter.write( exchange, response );
         } catch ( Throwable newCause ){
-            log.error( "Could not handle the failure." );
+            log.error( "Could not handle the failure. Reason: " + newCause.getMessage(), newCause );
+            log.error( "Original failure reason: " + cause.getMessage(), cause );
+            log.error( "Please double check your ExceptionHandler implementations for possible issues..." );
             exchange.endExchange();
         }
 	}
+
+    public String toString(){
+        return "{{{type}}}.{{methodName}}";
+    }
 }

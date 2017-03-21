@@ -39,7 +39,7 @@ public class MicroRoutingAnnotationProcessor extends AbstractAnnotatedMethodProc
 				methodParams = extractMethodParamsFrom( method, this::extractMethodParamFrom );
 		final boolean isMultiPart = httpMethodAnnotation.equals( MultiPartFormData.class ) || methodParams.contains( "methodDataProvider.getFormParam" ),
 				isAsyncMode = methodParams.contains( "asyncResponse" );
-		final String httpMethod = isMultiPart ? "POST" : httpMethodAnnotation.getSimpleName();
+		final String httpMethod = httpMethodAnnotation.equals( MultiPartFormData.class ) ? "POST" : httpMethodAnnotation.getSimpleName();
 		return createRouteMethodData( method, isMultiPart, httpMethod, type, methodParams, isAsyncMode );
 	}
 

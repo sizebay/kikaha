@@ -11,7 +11,7 @@ import kikaha.urouting.EventDispatcher.Matcher;
 import kikaha.urouting.api.*;
 import lombok.*;
 
-class WebSocketParameterParser implements BiFunction<ExecutableElement, VariableElement, String> {
+public class WebSocketParameterParser implements BiFunction<ExecutableElement, VariableElement, String> {
 
 	final EventDispatcher<VariableElement> dispatcher = createEventDispatcher();
 	StringBuilder parsedData;

@@ -1,6 +1,8 @@
 package kikaha.urouting.api;
 
 import static io.undertow.util.Headers.LOCATION;
+import static kikaha.core.cdi.helpers.filter.Filter.first;
+
 import java.net.URI;
 import java.util.*;
 import io.undertow.util.*;
@@ -17,14 +19,13 @@ public class DefaultResponse implements Response {
 	@NonNull Object entity = "";
 	@NonNull Integer statusCode = 200;
 	@NonNull String encoding = "UTF-8";
-	@NonNull String contentType = null;
 	@NonNull List<Header> headers = new TinyList<>();
 
 	public DefaultResponse header( final String name, final String value ) {
 		return header( new HttpString(name), value );
 	}
 
-	public DefaultResponse header(final HttpString name, final String value ) {
+	public DefaultResponse header(final HttpString name, @NonNull final String value ) {
 		Header header = getHeader( name );
 		if ( header == null ) {
 			header = DefaultHeader.createHeader( name, value );
@@ -45,6 +46,15 @@ public class DefaultResponse implements Response {
 			if ( header.name().equals(name) )
 				return header;
 		return null;
+	}
+
+	public String contentType(){
+		final Header header = getHeader( Headers.CONTENT_TYPE );
+		return header!=null ? header.values().get( 0 ) : null;
+	}
+
+	public DefaultResponse contentType( String value ) {
+		return header( Headers.CONTENT_TYPE, value );
 	}
 
 	public static DefaultResponse response() {
