@@ -68,6 +68,7 @@
         <version.java.mail>1.4.4</version.java.mail>
         <version.aws>1.11.91</version.aws>
         <version.metrics>3.1.2</version.metrics>
+        <version.protobuf>3.2.0</version.protobuf>
         <!-- Plugin's Versions -->
         <version.compiler.plugin>3.3</version.compiler.plugin>
         <version.resources.plugin>2.6</version.resources.plugin>
@@ -86,6 +87,7 @@
         <config.dir.test.source.generated>${project.build.directory}/generated-test-sources/annotations</config.dir.test.source.generated>
         <config.dir.output>${project.basedir}/output</config.dir.output>
         <config.dir.web>${project.basedir}/webapp</config.dir.web>
+        <config.dir.protobuf>${project.basedir}/src/main/protobuf</config.dir.protobuf>
         <config.skip.tests>false</config.skip.tests>
         <config.skip.tests.unit>${config.skip.tests}</config.skip.tests.unit>
         <config.skip.tests.integration>${config.skip.tests}</config.skip.tests.integration>
@@ -278,6 +280,11 @@
                 <artifactId>metrics-healthchecks</artifactId>
                 <version>${version.metrics}</version>
             </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${version.protobuf}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -402,6 +409,45 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <!-- Protobuf -->
+                <plugin>
+                    <groupId>com.github.os72</groupId>
+                    <artifactId>protoc-jar-maven-plugin</artifactId>
+                    <version>${version.protobuf}</version>
+                    <executions>
+                        <execution>
+                            <phase>generate-sources</phase>
+                            <goals><goal>run</goal></goals>
+                            <configuration>
+                                <protocVersion>${version.protobuf}</protocVersion>
+                                <protocArtifact>com.google.protobuf:protoc:${version.protobuf}</protocArtifact>
+                                <includeStdTypes>true</includeStdTypes>
+                                <inputDirectories>
+                                    <include>${config.dir.protobuf}</include>
+                                </inputDirectories>
+                                <outputTargets>
+                                    <outputTarget>
+                                        <type>java</type>
+                                        <addSources>none</addSources>
+                                        <outputDirectory>${config.dir.source.generated}</outputDirectory>
+                                    </outputTarget>
+                                    <outputTarget>
+                                        <type>descriptor</type>
+                                        <addSources>none</addSources>
+                                        <outputDirectory>${config.dir.resource}</outputDirectory>
+                                    </outputTarget>
+                                </outputTargets>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
     </build>
 
     <profiles>
