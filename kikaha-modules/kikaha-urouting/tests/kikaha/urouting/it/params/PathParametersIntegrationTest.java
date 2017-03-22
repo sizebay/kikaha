@@ -21,31 +21,31 @@ public class PathParametersIntegrationTest {
 
 	@Test
 	public void ensureCanSendGet() throws IOException {
-		final Response response = Http.request( this.request.get().build() );
+		final Response response = Http.send( this.request.get() );
 		ensureHaveTheExpectedResponse( response );
 	}
 
 	@Test
 	public void ensureCanSendPost() throws IOException {
-		final Response response = Http.request( this.request.post( new EmptyText() ).build() );
+		final Response response = Http.send( this.request.post( new EmptyText() ) );
 		ensureHaveTheExpectedResponse( response );
 	}
 
 	@Test
 	public void ensureCanSendPut() throws IOException {
-		final Response response = Http.request( this.request.put( new EmptyText() ).build() );
+		final Response response = Http.send( this.request.put( new EmptyText() ) );
 		ensureHaveTheExpectedResponse( response );
 	}
 
 	@Test
 	public void ensureCanSendPatch() throws IOException {
-		final Response response = Http.request( this.request.patch( new EmptyText() ).build() );
+		final Response response = Http.send( this.request.patch( new EmptyText() ) );
 		ensureHaveTheExpectedResponse( response );
 	}
 
 	@Test
 	public void ensureCanSendDelete() throws IOException {
-		final Response response = Http.request( this.request.delete().build() );
+		final Response response = Http.send( this.request.delete() );
 		ensureHaveTheExpectedResponse( response );
 	}
 

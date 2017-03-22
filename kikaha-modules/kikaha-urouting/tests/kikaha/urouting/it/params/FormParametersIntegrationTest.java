@@ -26,25 +26,25 @@ public class FormParametersIntegrationTest {
 
 	@Test
 	public void ensureCanSendPost() throws IOException {
-		final Response response = Http.request( this.request.post( form ).build() );
+		final Response response = Http.send( this.request.post( form ) );
 		ensureHaveTheExpectedResponse( response );
 	}
 
 	@Test
 	public void ensureCanSendMultiPart() throws IOException {
-		final Response response = Http.request( this.requestMulti.post( form ).build() );
+		final Response response = Http.send( this.requestMulti.post( form ) );
 		ensureHaveTheExpectedResponse( response );
 	}
 
 	@Test
 	public void ensureCanSendPut() throws IOException {
-		final Response response = Http.request( this.request.put( form ).build() );
+		final Response response = Http.send( this.request.put( form ) );
 		ensureHaveTheExpectedResponse( response );
 	}
 
 	@Test
 	public void ensureCanSendPatch() throws IOException {
-		final Response response = Http.request( this.request.patch( form ).build() );
+		final Response response = Http.send( this.request.patch( form ) );
 		ensureHaveTheExpectedResponse( response );
 	}
 

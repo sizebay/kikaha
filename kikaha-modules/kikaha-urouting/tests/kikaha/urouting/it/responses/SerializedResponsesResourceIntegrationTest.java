@@ -20,15 +20,15 @@ public class SerializedResponsesResourceIntegrationTest {
 
 	@Test
 	public void ensureNoContent() throws Exception {
-		final Request request = request( "http://localhost:19999/it/parameters/serialized/no-content" );
-		final Response response = Http.request( request );
+		final Request.Builder request = request( "http://localhost:19999/it/parameters/serialized/no-content" );
+		final Response response = Http.send( request );
 		assertEquals( 204, response.code() );
 	}
 
 	@Test
 	public void ensureSerializingNativeObjectAsDefaultType() throws Exception {
-		final Request request = request( "http://localhost:19999/it/parameters/serialized/native-as-default-type" );
-		final Response response = Http.request( request );
+		final Request.Builder request = request( "http://localhost:19999/it/parameters/serialized/native-as-default-type" );
+		final Response response = Http.send( request );
 		assertEquals( 200, response.code() );
 		assertEquals( Mimes.PLAIN_TEXT, response.header( "Content-Type" ) );
 		assertEquals( PLAIN_TEXT_RESPONSE, response.body().string() );
@@ -36,8 +36,8 @@ public class SerializedResponsesResourceIntegrationTest {
 
 	@Test
 	public void ensureSerializingNativeObjectAsYaml() throws Exception {
-		final Request request = request( "http://localhost:19999/it/parameters/serialized/native-as-yaml" );
-		final Response response = Http.request( request );
+		final Request.Builder request = request( "http://localhost:19999/it/parameters/serialized/native-as-yaml" );
+		final Response response = Http.send( request );
 		assertEquals( 200, response.code() );
 		assertEquals( YmlSerializer.MIME, response.header( "Content-Type" ) );
 		assertEquals( YML_RESPONSE, response.body().string() );
@@ -45,8 +45,8 @@ public class SerializedResponsesResourceIntegrationTest {
 
 	@Test
 	public void ensureSerializingResponseObjectAsDefaultType() throws Exception {
-		final Request request = request( "http://localhost:19999/it/parameters/serialized/response-as-default-type" );
-		final Response response = Http.request( request );
+		final Request.Builder request = request( "http://localhost:19999/it/parameters/serialized/response-as-default-type" );
+		final Response response = Http.send( request );
 		assertEquals( 200, response.code() );
 		assertEquals( Mimes.PLAIN_TEXT, response.header( "Content-Type" ) );
 		assertEquals( PLAIN_TEXT_RESPONSE, response.body().string() );
@@ -54,8 +54,8 @@ public class SerializedResponsesResourceIntegrationTest {
 
 	@Test
 	public void ensureSerializingResponseObjectAsYaml() throws Exception {
-		final Request request = request( "http://localhost:19999/it/parameters/serialized/response-as-yaml" );
-		final Response response = Http.request( request );
+		final Request.Builder request = request( "http://localhost:19999/it/parameters/serialized/response-as-yaml" );
+		final Response response = Http.send( request );
 		assertEquals( 200, response.code() );
 		assertEquals( YmlSerializer.MIME, response.header( "Content-Type" ) );
 		assertEquals( YML_RESPONSE, response.body().string() );
@@ -63,8 +63,8 @@ public class SerializedResponsesResourceIntegrationTest {
 
 	@Test
 	public void ensureSerializingResponseObjectAsYaml2() throws Exception {
-		final Request request = request( "http://localhost:19999/it/parameters/serialized/response-as-yaml2" );
-		final Response response = Http.request( request );
+		final Request.Builder request = request( "http://localhost:19999/it/parameters/serialized/response-as-yaml2" );
+		final Response response = Http.send( request );
 		assertEquals( 200, response.code() );
 		assertEquals( YmlSerializer.MIME, response.header( "Content-Type" ) );
 		assertEquals( YML_RESPONSE, response.body().string() );
@@ -73,8 +73,8 @@ public class SerializedResponsesResourceIntegrationTest {
 
 	@Test
 	public void ensureSerializingResponseObjectAsYaml3() throws Exception {
-		final Request request = request( "http://localhost:19999/it/parameters/serialized/response-as-yaml3" );
-		final Response response = Http.request( request );
+		final Request.Builder request = request( "http://localhost:19999/it/parameters/serialized/response-as-yaml3" );
+		final Response response = Http.send( request );
 		assertEquals( 200, response.code() );
 		assertEquals( YmlSerializer.MIME, response.header( "Content-Type" ) );
 		assertEquals( YML_RESPONSE, response.body().string() );
@@ -82,12 +82,12 @@ public class SerializedResponsesResourceIntegrationTest {
 
 	@Test
 	public void ensureRaiseAnException() throws Exception {
-		final Request request = request( "http://localhost:19999/it/parameters/serialized/failure" );
-		final Response response = Http.request( request );
+		final Request.Builder request = request( "http://localhost:19999/it/parameters/serialized/failure" );
+		final Response response = Http.send( request );
 		assertEquals( 500, response.code() );
 	}
 
-	static Request request( String url ){
-		return new Builder().url( url ).get().build();
+	static Request.Builder request( String url ){
+		return new Builder().url( url ).get();
 	}
 }

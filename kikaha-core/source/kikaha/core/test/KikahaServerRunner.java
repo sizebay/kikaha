@@ -26,6 +26,7 @@ public class KikahaServerRunner extends Runner implements Filterable {
 		cdi.provideOn( server );
 		try {
 			server.run();
+			log.info( "Unit test server started." );
 		} catch ( Exception e ) {
 			throw new IllegalStateException( e );
 		}
@@ -34,7 +35,6 @@ public class KikahaServerRunner extends Runner implements Filterable {
 	public KikahaServerRunner( Class<?> clazz ) throws InitializationError {
 		try {
 			runner = new KikahaUnitTestRunner( clazz );
-			log.info( "Unit test server started." );
 		} catch ( Exception e ) {
 			throw new InitializationError( e );
 		}
