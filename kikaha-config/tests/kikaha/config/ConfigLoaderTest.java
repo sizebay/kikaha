@@ -34,7 +34,7 @@ public class ConfigLoaderTest {
 	@Test
 	public void ensureThatCanReadConfigurationListFromYaml() throws IOException {
 		final MergeableConfig defaultConfig = MergeableConfig.create().load(new File("tests-resources/conf/snippet1.yml"));
-		final List<Config> configList = defaultConfig.getConfigList("server.params");
+		final List<Config> configList = defaultConfig.getConfigList("server.routes");
 		assertNotNull( configList );
 		assertEquals( 2l, configList.size() );
 		assertEquals( "/", configList.get(0).getString("home.path")  );
