@@ -169,6 +169,12 @@
             <dependency>
                 <groupId>io.skullabs.kikaha</groupId>
                 <version>2.1.0-alpha9</version>
+                <artifactId>kikaha-urouting-protobuf</artifactId>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.skullabs.kikaha</groupId>
+                <version>2.1.0-alpha9</version>
                 <artifactId>kikaha-hazelcast</artifactId>
                 <scope>compile</scope>
             </dependency>
