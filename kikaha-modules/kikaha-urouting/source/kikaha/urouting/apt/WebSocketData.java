@@ -1,6 +1,5 @@
-package kikaha.urouting;
+package kikaha.urouting.apt;
 
-import javax.lang.model.element.ExecutableElement;
 import kikaha.apt.GenerableClass;
 import lombok.*;
 

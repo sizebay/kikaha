@@ -1,4 +1,4 @@
-package kikaha.urouting;
+package kikaha.urouting.apt;
 
 import static kikaha.apt.APT.*;
 
@@ -6,14 +6,10 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.*;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
-import javax.tools.Diagnostic.Kind;
 
 import kikaha.apt.*;
 import kikaha.urouting.api.*;
@@ -21,6 +17,7 @@ import kikaha.urouting.api.*;
 @SupportedAnnotationTypes( "kikaha.urouting.api.*" )
 public class MicroWebSocketAnnotationProcessor extends AnnotationProcessor {
 
+	static final MethodParametersExtractor parametersExtractor = new WebSocketParameterParser();
 	ClassGenerator generator;
 
 	@Override
@@ -67,7 +64,7 @@ public class MicroWebSocketAnnotationProcessor extends AnnotationProcessor {
 			return null;
 		return new WebSocketMethodData(
 			method.getSimpleName().toString(),
-			extractMethodParamsFrom( method, new WebSocketParameterParser() ),
+			parametersExtractor.extractMethodParamsFrom( method ),
 			extractReturnTypeFrom( method ) );
 	}
 }

@@ -1,4 +1,4 @@
-package kikaha.urouting;
+package kikaha.urouting.apt;
 
 import static java.lang.String.format;
 import static kikaha.apt.APT.*;
@@ -10,8 +10,8 @@ import javax.lang.model.type.*;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.*;
-import java.util.function.Function;
 import kikaha.apt.*;
+import kikaha.urouting.RoutingMethodData;
 import kikaha.urouting.api.*;
 import lombok.Getter;
 
@@ -19,7 +19,10 @@ import lombok.Getter;
 @SupportedAnnotationTypes( "kikaha.urouting.api.*" )
 public class MicroRoutingAnnotationProcessor extends AbstractAnnotatedMethodProcessor {
 
-	final Map<Function<VariableElement, Boolean>, Function<VariableElement, String>> methodRules = URoutingAnnotationRules.createAnnotationRules();
+	final MethodParametersExtractor parametersExtractor = new MicroRoutingParameterParser(
+		this::extractParamFromNonAnnotatedParameter
+	);
+
 	final List<Class<? extends Annotation>> expectedMethodAnnotations = Arrays.asList( GET.class, POST.class, PUT.class, DELETE.class, PATCH.class, MultiPartFormData.class );
 	final String templateName = "routing-method-class.mustache";
 
@@ -36,7 +39,7 @@ public class MicroRoutingAnnotationProcessor extends AbstractAnnotatedMethodProc
 			final Class<? extends Annotation> httpMethodAnnotation )
 	{
 		final String type = asType( method.getEnclosingElement() ),
-				methodParams = extractMethodParamsFrom( method, this::extractMethodParamFrom );
+				methodParams = parametersExtractor.extractMethodParamsFrom( method );
 		final boolean isMultiPart = httpMethodAnnotation.equals( MultiPartFormData.class ) || methodParams.contains( "methodDataProvider.getFormParam" ),
 				isAsyncMode = methodParams.contains( "asyncResponse" );
 		final String httpMethod = httpMethodAnnotation.equals( MultiPartFormData.class ) ? "POST" : httpMethodAnnotation.getSimpleName();
@@ -61,8 +64,7 @@ public class MicroRoutingAnnotationProcessor extends AbstractAnnotatedMethodProc
 				requiresBodyData, isMultiPart, isAsyncMode );
 	}
 
-	@Override
-	protected String extractParamFromNonAnnotatedParameter( ExecutableElement method, VariableElement parameter ) {
+	private String extractParamFromNonAnnotatedParameter( ExecutableElement method, VariableElement parameter ) {
 		final String
 				consumingContentType = extractConsumingContentTypeFrom( method ),
 				targetType = parameter.asType().toString();

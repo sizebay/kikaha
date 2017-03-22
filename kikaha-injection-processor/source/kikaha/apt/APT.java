@@ -91,16 +91,6 @@ public interface APT {
 			return null;
 		return returnTypeAsString;
 	}
-
-	static String extractMethodParamsFrom( final ExecutableElement method, BiFunction<ExecutableElement, VariableElement, String> methodParser ) {
-		final StringBuilder buffer = new StringBuilder();
-		for ( final VariableElement parameter : method.getParameters() ) {
-			if ( buffer.length() > 0 )
-				buffer.append( ',' );
-			buffer.append( METHOD_PARAM_EOL ).append( methodParser.apply( method, parameter ) );
-		}
-		return buffer.toString();
-	}
 }
 
 

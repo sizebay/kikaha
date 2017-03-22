@@ -1,2 +1,2 @@
-kikaha.urouting.MicroRoutingAnnotationProcessor
-kikaha.urouting.MicroWebSocketAnnotationProcessor
+kikaha.urouting.apt.MicroRoutingAnnotationProcessor
+kikaha.urouting.apt.MicroWebSocketAnnotationProcessor

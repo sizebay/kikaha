@@ -47,17 +47,4 @@ public abstract class AbstractAnnotatedMethodProcessor extends AnnotationProcess
 	protected abstract void generateMethod(
 			ExecutableElement method, RoundEnvironment roundEnv, Class<? extends Annotation> annotation )
 			throws IOException;
-
-	protected String extractMethodParamFrom( ExecutableElement method, VariableElement parameter ) {
-		final Map<Function<VariableElement, Boolean>, Function<VariableElement, String>> rules = getMethodRules();
-		for ( final Entry<Function<VariableElement, Boolean>, Function<VariableElement, String>> rule : rules.entrySet() ) {
-			if ( rule.getKey().apply( parameter ) )
-				return rule.getValue().apply( parameter );
-		}
-		return extractParamFromNonAnnotatedParameter( method, parameter );
-	}
-
-	protected abstract String extractParamFromNonAnnotatedParameter( ExecutableElement method, VariableElement parameter );
-
-	protected abstract Map<Function<VariableElement, Boolean>, Function<VariableElement, String>> getMethodRules();
 }

@@ -1,7 +1,7 @@
 package kikaha.urouting.unit;
 
 import static kikaha.apt.APT.extractPackageName;
-import static kikaha.urouting.MicroRoutingAnnotationProcessor.generateHttpPath;
+import static kikaha.urouting.apt.MicroRoutingAnnotationProcessor.generateHttpPath;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 

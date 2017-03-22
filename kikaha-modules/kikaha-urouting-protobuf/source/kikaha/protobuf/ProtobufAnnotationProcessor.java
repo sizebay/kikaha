@@ -9,11 +9,10 @@ import javax.lang.model.element.*;
 import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.util.*;
-import java.util.function.Function;
-import com.google.protobuf.*;
-import kikaha.apt.AbstractAnnotatedMethodProcessor;
-import kikaha.urouting.URoutingAnnotationRules;
+import java.util.List;
+import com.google.protobuf.MessageLite;
+import kikaha.apt.*;
+import kikaha.urouting.apt.MicroRoutingParameterParser;
 import lombok.*;
 
 /**
@@ -23,8 +22,11 @@ import lombok.*;
 @SupportedAnnotationTypes( "kikaha.protobuf.*" )
 public class ProtobufAnnotationProcessor extends AbstractAnnotatedMethodProcessor {
 
+	final MethodParametersExtractor parametersExtractor = new MicroRoutingParameterParser(
+			this::extractParamFromNonAnnotatedParameter
+	);
+
 	final List<Class<? extends Annotation>> expectedMethodAnnotations = singletonList( RPC.class );
-	final Map<Function<VariableElement, Boolean>, Function<VariableElement, String>> methodRules = URoutingAnnotationRules.createAnnotationRules();
 	final String templateName = "protobuf-class.mustache";
 
 	protected void generateMethod(
@@ -43,7 +45,7 @@ public class ProtobufAnnotationProcessor extends AbstractAnnotatedMethodProcesso
 			typeName = extractTypeName( type ),
 			packageName = extractPackageName( type ),
 			methodName = method.getSimpleName().toString(),
-			methodParams = extractMethodParamsFrom( method, this::extractMethodParamFrom ),
+			methodParams = parametersExtractor.extractMethodParamsFrom( method ),
 			httpPath = format("%s.%s", type, methodName),
 			returnType = extractReturnTypeFrom( method );
 
