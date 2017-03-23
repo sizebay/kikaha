@@ -1,4 +1,4 @@
-package kikaha.uworkers.core;
+package kikaha.uworkers.apt;
 
 import kikaha.apt.GenerableClass;
 import lombok.*;

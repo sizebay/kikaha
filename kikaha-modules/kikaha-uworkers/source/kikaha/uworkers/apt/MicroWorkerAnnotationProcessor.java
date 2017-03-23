@@ -1,13 +1,11 @@
-package kikaha.uworkers.core;
+package kikaha.uworkers.apt;
 
 import static kikaha.apt.APT.*;
 import java.io.IOException;
 import java.util.*;
 import javax.annotation.processing.*;
 import javax.inject.Singleton;
-import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
-import javax.tools.Diagnostic;
 import kikaha.apt.*;
 import kikaha.uworkers.api.*;
 
