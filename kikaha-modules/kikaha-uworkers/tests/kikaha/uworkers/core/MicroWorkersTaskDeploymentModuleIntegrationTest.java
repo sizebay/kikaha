@@ -45,9 +45,7 @@ public class MicroWorkersTaskDeploymentModuleIntegrationTest {
 		MockitoAnnotations.initMocks(this);
 		module = spy( module );
 		microWorkersContext.config = config;
-		microWorkersContext.factories = asList( inboxSupplierFactory );
-		doReturn( true ).when( inboxSupplierFactory ).canHandleEndpoint( anyString() );
-		doReturn( inbox ).when( inboxSupplierFactory ).createSupplier( anyString() );
+		doReturn( inbox ).when( inboxSupplierFactory ).createSupplier( any() );
 	}
 
 	@After
@@ -59,18 +57,18 @@ public class MicroWorkersTaskDeploymentModuleIntegrationTest {
 	public void ensureThatCanDeployAllMessageConsumers() throws IOException {
 		module.consumers = asList( first, second );
 		module.load( null, deploymentContext );
-		verify( module, times(2) ).deploy( eq(deploymentContext), any(WorkerEndpointMessageListener.class), eq(1) );
+		verify( module, times(2) ).deploy( eq(deploymentContext), any(WorkerEndpointMessageListener.class) );
 	}
 
 	@Test
-	public void ensureThatDeployedMessageConsumerHaveItsParallelismConfigurationRead() throws IOException {
+	public void ensureThatDeployedMessageConsumerHaveItsOwnConfigurationRead() throws IOException {
 		doReturn( 1 ).when( mockedConfig ).getInteger( anyString(), anyInt() );
 		microWorkersContext.config = mockedConfig;
 		module.consumers = asList( first, second );
 		module.load( null, deploymentContext );
-		verify( module, times(2) ).deploy( eq(deploymentContext), any(WorkerEndpointMessageListener.class), eq(1) );
-		verify( microWorkersContext.config ).getInteger( eq( "server.uworkers.first.parallelism" ), eq(1) );
-		verify( microWorkersContext.config ).getInteger( eq( "server.uworkers.second.parallelism" ), eq(1) );
+		verify( module, times(2) ).deploy( eq(deploymentContext), any(WorkerEndpointMessageListener.class) );
+		verify( microWorkersContext.config ).getConfig( eq( "server.uworkers.first" ) );
+		verify( microWorkersContext.config ).getConfig( eq( "server.uworkers.second" ) );
 	}
 
 	@Test

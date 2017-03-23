@@ -24,7 +24,7 @@ public class EndpointInboxConsumer implements Runnable {
 				try {
 					consumeNextMessage();
 				} catch (InterruptedException e) {
-					log.warn("Consumer failed to get next message because it was interrupted...", e);
+					log.debug("Consumer failed to get next message because it was interrupted...", e);
 				} catch (Throwable e){
 					log.error( "The consumer failed", e );
 				}

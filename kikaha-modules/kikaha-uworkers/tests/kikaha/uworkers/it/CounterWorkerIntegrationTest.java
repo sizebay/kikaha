@@ -4,7 +4,7 @@ import static kikaha.uworkers.it.CounterWorker.MANY_TIMES;
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import javax.inject.Inject;
-import kikaha.core.test.KikahaRunner;
+import kikaha.core.test.*;
 import kikaha.uworkers.api.*;
 import kikaha.uworkers.core.MicroWorkersTaskDeploymentModule;
 import org.junit.*;
@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 /**
  *
  */
-@RunWith(KikahaRunner.class)
+@RunWith(KikahaServerRunner.class)
 public class CounterWorkerIntegrationTest {
 
 	@Worker( value = "count-down")
@@ -24,17 +24,9 @@ public class CounterWorkerIntegrationTest {
 
 	@Inject CounterWorker workerInstance;
 
-	@Inject MicroWorkersTaskDeploymentModule module;
-
 	@Before
 	public void simulateWorkersDeployment() throws IOException {
 		workerInstance.initialize();
-		module.load( null, null );
-	}
-
-	@After
-	public void shutdownWorkers(){
-		module.unload();
 	}
 
 	@Test(timeout = 1000)

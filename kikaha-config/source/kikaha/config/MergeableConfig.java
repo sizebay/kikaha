@@ -78,10 +78,10 @@ public class MergeableConfig implements Config {
 		return read( path, o->o );
 	}
 
-	public Class<?> getClass( String path ) {
+	public Class<?> getClass( String path, Class<?> defaultClass ) {
 		final String clazzName = getString(path);
 		if ( clazzName == null )
-			return null;
+			return defaultClass;
 		return instantiate( clazzName );
 	}
 

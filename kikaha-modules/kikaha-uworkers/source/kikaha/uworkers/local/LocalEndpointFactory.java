@@ -15,37 +15,21 @@ public class LocalEndpointFactory implements EndpointFactory {
 
 	final Map<String, LocalEndpointInboxSupplier> cachedSuppliers = new ConcurrentHashMap<>();
 
-	@Inject
-    MicroWorkersContext microWorkersContext;
-
 	@Override
-	public LocalEndpointInboxSupplier createSupplier( String endpointName) {
-		return cachedSuppliers.computeIfAbsent( endpointName, this::instantiateSupplier );
+	public LocalEndpointInboxSupplier createSupplier( EndpointConfig config ) {
+		return cachedSuppliers.computeIfAbsent( config.getEndpointName(), n -> instantiateSupplier( config ) );
 	}
 
-	LocalEndpointInboxSupplier instantiateSupplier( String endpointName ) {
-		final Config endpointConfig = microWorkersContext.getEndpointConfig(endpointName);
-		final int poolSize = endpointConfig.getInteger("pool-size", -1);
+	LocalEndpointInboxSupplier instantiateSupplier( EndpointConfig config ) {
+		final int poolSize = config.getConfig().getInteger("pool-size", -1);
 		return ( poolSize > 0 )
 			? LocalEndpointInboxSupplier.withFixedSize( poolSize )
 			: LocalEndpointInboxSupplier.withElasticSize();
 	}
 
 	@Override
-	public LocalWorkerRef createWorkerRef( String endpointName ) {
-		final LocalEndpointInboxSupplier supplier = createSupplier(endpointName);
+	public LocalWorkerRef createWorkerRef( EndpointConfig config ) {
+		final LocalEndpointInboxSupplier supplier = createSupplier( config );
 		return new LocalWorkerRef( supplier );
 	}
-
-	/**
-	 * This factory should have a lower priority to avoid conflicts with other
-	 * factories.
-	 * @return {@link Integer#MIN_VALUE}
-	 */
-	@Override
-	public int priority() { return Integer.MIN_VALUE; }
-
-	@Override
-	public boolean canHandleEndpoint(String endpointName) { return true; }
 }
-

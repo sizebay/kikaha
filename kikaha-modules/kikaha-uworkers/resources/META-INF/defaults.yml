@@ -19,4 +19,12 @@ server:
     default:
 
       # The default number of Workers that will be consuming an endpoint
+      # 0 - will disable the Worker
       parallelism: 1
+
+      # The default EndpointFactory implementation
+      endpoint-factory: kikaha.uworkers.local.LocalEndpointFactory
+
+      # The max messages that will be stored in-memory on the local pool.
+      # -1 or 0 - unbounded
+      pool-size: -1

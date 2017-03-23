@@ -42,23 +42,22 @@ public class MicroWorkersTaskDeploymentModule implements Module {
 
 		isShutdown.set( false );
 		threads = Threads.elasticPool();
-		final int defaultParallelism = microWorkersContext.getEndpointParallelism("default", 1);
 		for ( final WorkerEndpointMessageListener consumer : consumers )
-			deploy( context, consumer, defaultParallelism );
+			deploy( context, consumer );
 	}
 
-	void deploy( final DeploymentContext context, final WorkerEndpointMessageListener listener, final int defaultParallelism ) throws IOException {
+	void deploy( final DeploymentContext context, final WorkerEndpointMessageListener listener ) throws IOException {
 		final String listenerName = getListenerName(listener);
-		final EndpointFactory endpointFactory = microWorkersContext.getFactoryFor( listenerName );
-		EndpointInboxSupplier inbox = endpointFactory.createSupplier( listenerName );
+		final EndpointConfig endpointConfig = microWorkersContext.getEndpointConfig( listenerName );
+		final EndpointFactory endpointFactory = endpointConfig.getEndpointFactory();
+		EndpointInboxSupplier inbox = endpointFactory.createSupplier( endpointConfig );
 		if ( microWorkersContext.isRestEnabled ) {
 			final RESTFulEndpointInboxSupplier restSupplier = RESTFulEndpointInboxSupplier.wrap( inbox, microWorkersContext.maxTaskPoolSize );
 			context.register( microWorkersContext.restApiPrefix + "/" + listenerName, "POST", RESTFulMicroWorkersHttpHandler.with( undertowHelper, restSupplier ) );
 			inbox = restSupplier;
 		}
 		final EndpointInboxConsumer consumer = new EndpointInboxConsumer( isShutdown, inbox, listener, listenerName );
-		final int parallelism = microWorkersContext.getEndpointParallelism( consumer.name, defaultParallelism );
-		runInBackgroundWithParallelism( consumer, parallelism );
+		runInBackgroundWithParallelism( consumer, endpointConfig.getParallelism() );
 	}
 
 	private String getListenerName( final WorkerEndpointMessageListener listener ) throws IOException {

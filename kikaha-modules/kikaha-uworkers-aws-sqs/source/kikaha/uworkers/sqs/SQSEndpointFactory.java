@@ -17,18 +17,12 @@ import kikaha.uworkers.core.*;
 @Singleton
 public class SQSEndpointFactory implements EndpointFactory {
 
-	@Inject MicroWorkersContext microWorkersContext;
 	@Inject ClientConfiguration clientConfiguration;
 	@Inject AmazonConfigurationProducer configurationProducer;
 
 	@Override
-	public boolean canHandleEndpoint(String endpointName) {
-		return microWorkersContext.getEndpointConfig( endpointName ) != null;
-	}
-
-	@Override
-	public EndpointInboxSupplier createSupplier(String endpointName) {
-		final Config endpointConfig = microWorkersContext.getEndpointConfig(endpointName);
+	public EndpointInboxSupplier createSupplier( EndpointConfig endpoint ) {
+		final Config endpointConfig = endpoint.getConfig();
 		final ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
 		return new SQSEndpointInboxSupplier( objectMapper,
 			sqsClient( endpointConfig.getString( "sqs-configuration", "sqs" ) ),
@@ -37,8 +31,8 @@ public class SQSEndpointFactory implements EndpointFactory {
 	}
 
 	@Override
-	public WorkerRef createWorkerRef(String endpointName) {
-		final Config endpointConfig = microWorkersContext.getEndpointConfig(endpointName);
+	public WorkerRef createWorkerRef( EndpointConfig endpoint ) {
+		final Config endpointConfig = endpoint.getConfig();
 		final ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
 		return new SQSWorkerRef(objectMapper,
 				sqsClient( endpointConfig.getString( "sqs-configuration", "sqs" ) ),

@@ -88,7 +88,11 @@ public interface Config {
 
 	Object getObject(String path);
 
-	Class<?> getClass( String path );
+	default Class<?> getClass( String path ) {
+		return getClass( path, null );
+	}
+
+	Class<?> getClass( String path, Class<?> defaultClass );
 
 	Map<String, Object> toMap();
 }
