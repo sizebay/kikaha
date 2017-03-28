@@ -85,7 +85,7 @@ server:
 
     security-context-factory: kikaha.core.modules.security.DefaultSecurityContextFactory
     session-id-manager: kikaha.core.modules.security.SessionCookie
-    session-store: kikaha.core.modules.security.InMemorySessionStore
+    session-store: kikaha.core.modules.security.RESTAPISessionStore
 
     identity-managers:
       default: kikaha.core.modules.security.FixedUserAndPasswordIdentityManager

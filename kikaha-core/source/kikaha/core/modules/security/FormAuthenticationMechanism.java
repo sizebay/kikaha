@@ -1,26 +1,14 @@
 package kikaha.core.modules.security;
 
-import io.undertow.security.idm.Account;
-import io.undertow.security.idm.Credential;
-import io.undertow.server.DefaultResponseListener;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.server.handlers.form.FormData;
-import io.undertow.server.handlers.form.FormDataParser;
-import io.undertow.server.handlers.form.FormParserFactory;
-import io.undertow.util.Headers;
-import io.undertow.util.Methods;
-import io.undertow.util.StatusCodes;
-
 import java.io.IOException;
-
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import javax.inject.*;
+import io.undertow.security.idm.*;
+import io.undertow.server.*;
+import io.undertow.server.handlers.form.*;
+import io.undertow.util.*;
 import kikaha.config.Config;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Getter
@@ -47,8 +35,8 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 
 	@PostConstruct
 	public void readConfiguration() {
-		this.loginPage = config.getString("server.auth.form-auth.login-page");
-		this.errorPage = config.getString("server.auth.form-auth.error-page");
+		this.loginPage = config.getString("server.auth.login-page", config.getString( "server.auth.form-auth.login-page" ));
+		this.errorPage = config.getString("server.auth.error-page", config.getString( "server.auth.form-auth.error-page"));
 		this.postLocation = "j_security_check";
 	}
 

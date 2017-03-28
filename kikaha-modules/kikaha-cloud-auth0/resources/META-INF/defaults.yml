@@ -1,0 +1,13 @@
+server:
+
+  # Configuration for Auth0
+  auth0:
+    #domain: "localhost"
+    client-id: "bad-client-id"
+    client-secret: "bad-client-secret"
+
+    issuer: "https://unknown.auth0.com"
+    signing-algorithm: "RS512"
+    public-key-path: "/not/configured/path"
+
+    base64-encoded-secret: true
