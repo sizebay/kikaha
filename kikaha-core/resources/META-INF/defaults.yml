@@ -81,7 +81,9 @@ server:
     form-auth:
       login-page: "/auth/"
       error-page: "/auth/error/"
-      permission-denied-page: ""
+      success-page: "/"
+      callback-url: "/auth/callback"
+      permission-denied-page: "/auth/permission-denied"
 
     security-context-factory: kikaha.core.modules.security.DefaultSecurityContextFactory
     session-id-manager: kikaha.core.modules.security.SessionCookie

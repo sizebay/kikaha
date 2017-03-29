@@ -18,27 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 public class FormAuthenticationMechanism implements AuthenticationMechanism {
 
 	public static final String LOCATION_ATTRIBUTE = FormAuthenticationMechanism.class.getName() + ".LOCATION";
-	public static final String DEFAULT_POST_LOCATION = "/j_security_check";
+	public static final String DEFAULT_POST_LOCATION = "j_security_check";
+	private final FormParserFactory formParserFactory = FormParserFactory.builder().build();
 
-	@NonNull private String loginPage = "login.html";
-	@NonNull private String errorPage = "login-error.html";
-	@NonNull private String postLocation = DEFAULT_POST_LOCATION;
-
-	private final FormParserFactory formParserFactory;
-
-	@Inject
-	Config config;
-
-	public FormAuthenticationMechanism() {
-		this.formParserFactory = FormParserFactory.builder().build();
-	}
-
-	@PostConstruct
-	public void readConfiguration() {
-		this.loginPage = config.getString("server.auth.form-auth.login-page" );
-		this.errorPage = config.getString("server.auth.form-auth.error-page");
-		this.postLocation = "j_security_check";
-	}
+	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
+	@Inject Config config;
 
 	@Override
 	public Account authenticate(HttpServerExchange exchange, Iterable<IdentityManager> identityManagers, Session session) {
@@ -46,8 +30,6 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 		try {
 			if ( isCurrentRequestTryingToAuthenticate(exchange) )
 				account = doAuthentication(exchange, identityManagers, session);
-			else if ( !isPostLocation(exchange) )
-				memorizeCurrentPage( exchange, session );
 		} catch (final IOException e) {
 			log.error("Failed to authenticate. Skipping form authentication...", e); }
 		return account;
@@ -59,18 +41,12 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 		if ( credential != null )
 			account = verify( identityManagers, credential );
 		if ( account != null )
-			sendRedirectBack( exchange, session );
+			sendRedirectBack( exchange );
 		return account;
 	}
 
-	private static void sendRedirectBack(HttpServerExchange exchange, Session session) {
-		final String location = (String)session.getAttribute(LOCATION_ATTRIBUTE);
-		sendRedirect(exchange, location != null && !location.isEmpty() ? location : "/");
-	}
-
-	private static void memorizeCurrentPage( HttpServerExchange exchange, Session session ){
-		final String location = exchange.getRequestURI();
-		session.setAttribute(LOCATION_ATTRIBUTE, location);
+	private void sendRedirectBack(HttpServerExchange exchange) {
+		sendRedirect(exchange, formAuthenticationConfiguration.getSuccessPage() );
 	}
 
 	private Credential readCredentialFromRequest(HttpServerExchange exchange) throws IOException {
@@ -90,7 +66,8 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	@Override
 	public boolean sendAuthenticationChallenge(HttpServerExchange exchange, Session session) {
 		final String newLocation = isCurrentRequestTryingToAuthenticate(exchange)
-				? errorPage : loginPage;
+				? formAuthenticationConfiguration.getErrorPage()
+				: formAuthenticationConfiguration.getLoginPage();
 		sendRedirect(exchange, newLocation);
 		return true;
 	}
@@ -100,7 +77,7 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	}
 
 	private boolean isPostLocation(HttpServerExchange exchange) {
-		return exchange.getRelativePath().endsWith(postLocation);
+		return exchange.getRelativePath().equals( DEFAULT_POST_LOCATION );
 	}
 
 	private static void sendRedirect(HttpServerExchange exchange, final String location) {

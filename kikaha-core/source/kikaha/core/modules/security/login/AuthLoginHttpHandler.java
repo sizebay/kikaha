@@ -83,8 +83,23 @@ public class AuthLoginHttpHandler implements HttpHandler {
 		}
 	}
 
+	/**
+	 * Configure how the Login Page should behave.
+	 */
 	public interface ConfigurationHook {
+
+		/**
+		 * Retrieve extra parameters that should be available for injection on the template.
+		 * @return
+		 */
 		Map<String, Object> getExtraParameters();
+
+		/**
+		 * Configure the login request.
+		 *
+		 * @param exchange
+		 * @param session
+		 */
 		void configure( HttpServerExchange exchange, Session session );
 	}
 }
