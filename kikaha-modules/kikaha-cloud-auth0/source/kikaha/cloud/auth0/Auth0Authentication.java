@@ -21,6 +21,7 @@ public class Auth0Authentication implements AuthenticationMechanism {
 
 	public static final String STATE = "state", NONCE = "nonce";
 
+	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
 	@Inject Auth0.AuthConfig auth0Config;
 	@Inject Auth0Client auth0Client;
 	JWTVerifier verifier;
@@ -58,11 +59,11 @@ public class Auth0Authentication implements AuthenticationMechanism {
 	}
 
 	private boolean isAuthenticationCallbackPage( HttpServerExchange serverExchange ) {
-		return auth0Config.authenticationCallbackUrl.equals( serverExchange.getRelativePath() );
+		return formAuthenticationConfiguration.getCallbackUrl().equals( serverExchange.getRelativePath() );
 	}
 
 	private AuthAccount retrieveAccount( Session session ){
-		final Tokens tokens = auth0Client.getTokens( session.getId(), auth0Config.redirectOnSuccess );
+		final Tokens tokens = auth0Client.getTokens( session.getId(), formAuthenticationConfiguration.getSuccessPage() );
 		final Auth0User userProfile = auth0Client.getUserProfile( tokens );
 		final AuthAccount authAccount = new AuthAccount( userProfile );
 		session.setAuthenticatedAccount( authAccount );
@@ -71,12 +72,12 @@ public class Auth0Authentication implements AuthenticationMechanism {
 
 	void handleFailure( HttpServerExchange exchange, RuntimeException unexpectedException ) {
 		log.error( "Could not execute the Auth0 login: " + unexpectedException.getMessage(), unexpectedException );
-		redirectTo( exchange, auth0Config.redirectOnError );
+		redirectTo( exchange, formAuthenticationConfiguration.getErrorPage() );
 	}
 
 	@Override
 	public boolean sendAuthenticationChallenge( HttpServerExchange exchange, Session session ) {
-		redirectTo( exchange, auth0Config.redirectOnAuthFailure );
+		redirectTo( exchange, formAuthenticationConfiguration.getErrorPage() );
 		return true;
 	}
 

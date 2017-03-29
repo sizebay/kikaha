@@ -1,14 +1,16 @@
 server:
+  auth:
+    form-auth:
+      login-template: "auth0-login.mustache"
 
   # Configuration for Auth0
-  auth:
-    client-domain: "localhost"
-    client-id: "bad-client-id"
-    client-secret: "bad-client-secret"
+    auth0:
+      client-domain: "localhost"
+      client-id: "bad-client-id"
+      client-secret: "bad-client-secret"
 
-    issuer: "https://unknown.auth0.com"
-    signing-algorithm: "RS512"
-    public-key-path: "/not/configured/path"
+      issuer: "https://unknown.auth0.com"
+      signing-algorithm: "RS512"
+      public-key-path: "/not/configured/path"
 
-    base64-encoded-secret: true
-    login-template: "default-login.html"
+      base64-encoded-secret: true

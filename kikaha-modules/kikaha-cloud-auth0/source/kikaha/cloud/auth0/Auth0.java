@@ -22,22 +22,16 @@ import lombok.experimental.Delegate;
 public class Auth0 {
 
 	@Inject Config config;
-	@Inject FormAuthenticationMechanism formAuthenticationMechanism;
 
 	@Produces
 	AuthConfig produceAuthConfig(){
 		return new AuthConfig(
-			config.getString( "server.auth.issuer" ),
-			config.getString( "server.auth.client-id" ),
-			config.getString( "server.auth.client-secret" ),
-			config.getString( "server.auth.client-domain" ),
-			config.getString( "server.auth.signing-algorithm" ),
-			config.getString( "server.auth.public-key-path" ),
-			config.getString( "server.auth.callback-url", "/auth/callback" ),
-			config.getString( "server.auth.success-location" ),
-			formAuthenticationMechanism.getErrorPage(),
-			formAuthenticationMechanism.getLoginPage(),
-			config.getString( "server.auth.login-template", "default-login.html" ),
+			config.getString( "server.auth.auth0.issuer" ),
+			config.getString( "server.auth.auth0.client-id" ),
+			config.getString( "server.auth.auth0.client-secret" ),
+			config.getString( "server.auth.auth0.client-domain" ),
+			config.getString( "server.auth.auth0.signing-algorithm" ),
+			config.getString( "server.auth.auth0.public-key-path" ),
 			config.getBoolean( "server.auth.base64-encoded-secret" )
 		);
 	}
@@ -51,11 +45,6 @@ public class Auth0 {
 		final String clientDomain;
 		final String signingAlgorithm;
 		final String publicKeyPath;
-		final String authenticationCallbackUrl;
-		final String redirectOnSuccess;
-		final String redirectOnError;
-		final String redirectOnAuthFailure;
-		final String loginTemplatePage;
 		final boolean base64EncodedSecret;
 
 		@PostConstruct

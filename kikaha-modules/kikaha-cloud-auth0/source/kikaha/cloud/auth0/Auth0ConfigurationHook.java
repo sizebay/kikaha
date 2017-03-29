@@ -2,7 +2,7 @@ package kikaha.cloud.auth0;
 
 import static kikaha.cloud.auth0.Auth0Authentication.NONCE;
 
-import javax.inject.Inject;
+import javax.inject.*;
 import java.util.Map;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.ChainedMap;
@@ -14,7 +14,8 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-public class Auth0LoginHttpHandler implements AuthLoginHttpHandler.ConfigurationHook {
+@Singleton
+public class Auth0ConfigurationHook implements AuthLoginHttpHandler.ConfigurationHook {
 
 	@Inject Auth0.AuthConfig authConfig;
 
