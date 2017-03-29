@@ -35,8 +35,8 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 
 	@PostConstruct
 	public void readConfiguration() {
-		this.loginPage = config.getString("server.auth.login-page", config.getString( "server.auth.form-auth.login-page" ));
-		this.errorPage = config.getString("server.auth.error-page", config.getString( "server.auth.form-auth.error-page"));
+		this.loginPage = config.getString("server.auth.form-auth.login-page" );
+		this.errorPage = config.getString("server.auth.form-auth.error-page");
 		this.postLocation = "j_security_check";
 	}
 
