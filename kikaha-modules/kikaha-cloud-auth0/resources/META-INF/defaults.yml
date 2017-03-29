@@ -1,8 +1,8 @@
 server:
 
   # Configuration for Auth0
-  auth0:
-    #domain: "localhost"
+  auth:
+    client-domain: "localhost"
     client-id: "bad-client-id"
     client-secret: "bad-client-secret"
 
@@ -11,3 +11,4 @@ server:
     public-key-path: "/not/configured/path"
 
     base64-encoded-secret: true
+    login-template: "default-login.html"

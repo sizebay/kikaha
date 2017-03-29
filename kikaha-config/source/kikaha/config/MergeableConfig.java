@@ -1,6 +1,6 @@
 package kikaha.config;
 
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -190,7 +190,7 @@ public class MergeableConfig implements Config {
 	 * @param original
 	 * @param newMap
 	 */
-	private static void deepMerge( Map original, Map newMap) {
+	private static void deepMerge( @NonNull Map original, @NonNull Map newMap) {
 		for (Entry e : (Set<Entry>) newMap.entrySet()) {
 			Object currentKey = e.getKey(), currentValue = e.getValue();
 			if (shouldMergeAnyWay( original, currentKey, currentValue ))
