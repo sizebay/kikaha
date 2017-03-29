@@ -1,15 +1,14 @@
-package kikaha.cloud.auth0;
+package kikaha.core.modules.security.login;
 
-import static kikaha.cloud.auth0.Auth0Authentication.NONCE;
-import static kikaha.cloud.auth0.Auth0LoginHttpHandler.CONTENT_TYPE_JSON;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.Map;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Headers;
-import kikaha.core.SystemResource;
+import kikaha.core.*;
 import kikaha.core.modules.security.*;
 import kikaha.core.test.*;
 import org.junit.Test;
@@ -17,15 +16,14 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 
 /**
- * Unit tests for Auth0LoginHttpHandler.
+ * Unit tests for AuthLoginHttpHandler.
  */
 @RunWith( KikahaRunner.class )
-public class Auth0LoginHttpHandlerTest {
+public class AuthLoginHttpHandlerTest {
 
 	static final String EXPECTED_PARSED_TEMPLATE = SystemResource.readFileAsString( "expected-parsed-template.html", "UTF-8" );
 
-	@Inject Auth0LoginHttpHandler handler;
-
+	@Inject AuthLoginHttpHandler handler;
 	@Mock Session currentSession;
 	@Mock SecurityContext securityContext;
 	HttpServerExchange httpExchange;
@@ -36,6 +34,7 @@ public class Auth0LoginHttpHandlerTest {
 		doReturn( currentSession ).when( securityContext ).getCurrentSession();
 		httpExchange = HttpServerExchangeStub.createHttpExchange();
 		httpExchange.setSecurityContext( securityContext );
+		handler.configurationHooks = asList( new CustomConfigurationHook() );
 	}
 
 	@Test
@@ -48,9 +47,23 @@ public class Auth0LoginHttpHandlerTest {
 	public void ensureCanSendLoginPageAsResponse() throws Exception {
 		handler.handleRequest( httpExchange );
 
-		verify( currentSession ).setAttribute( eq(NONCE), eq("") );
-		verify( httpExchange.getResponseSender() ).send( eq( handler.html ) );
+		verify( currentSession ).setAttribute( eq(CustomConfigurationHook.KEY), eq(CustomConfigurationHook.VALUE) );
+		verify( httpExchange.getResponseSender() ).send( eq(handler.html) );
 		assertEquals( 200, httpExchange.getStatusCode() );
-		assertEquals( CONTENT_TYPE_JSON, httpExchange.getResponseHeaders().getFirst( Headers.CONTENT_TYPE ) );
+	}
+}
+
+class CustomConfigurationHook implements AuthLoginHttpHandler.ConfigurationHook {
+
+	final static String KEY = "KEY", VALUE = "VALUE";
+
+	@Override
+	public Map<String, Object> getExtraParameters() {
+		return ChainedMap.with( KEY, VALUE );
+	}
+
+	@Override
+	public void configure( HttpServerExchange exchange, Session session ) {
+		session.setAttribute( KEY, VALUE );
 	}
 }
