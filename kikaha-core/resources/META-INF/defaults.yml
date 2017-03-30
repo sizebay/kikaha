@@ -62,6 +62,10 @@ server:
 
   # Smart routes
   smart-routes:
+    auth:
+      enabled: false
+      #login-form-enabled: false
+      #logout-url-enabled: false
     rewrite:
     reverse:
     filter:
@@ -82,6 +86,7 @@ server:
       login-page: "/auth/"
       error-page: "/auth/error/"
       success-page: "/"
+      logout-url: "/auth/logout"
       callback-url: "/auth/callback"
       permission-denied-page: "/auth/permission-denied"
 

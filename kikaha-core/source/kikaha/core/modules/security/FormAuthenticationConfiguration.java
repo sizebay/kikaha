@@ -19,6 +19,7 @@ public class FormAuthenticationConfiguration {
 	private String errorPage;
 	private String successPage;
 	private String callbackUrl;
+	private String logoutUrl;
 	private String permissionDeniedPage;
 
 	@PostConstruct
@@ -28,6 +29,7 @@ public class FormAuthenticationConfiguration {
 		errorPage = authConfig.getString( "error-page" );
 		successPage = authConfig.getString( "success-page" );
 		callbackUrl = authConfig.getString( "callback-url" );
+		logoutUrl = authConfig.getString( "logout-url" );
 		permissionDeniedPage = authConfig.getString( "permission-denied-page" );
 	}
 }
