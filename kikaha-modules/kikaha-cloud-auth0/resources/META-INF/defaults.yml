@@ -3,6 +3,9 @@ server:
     form-auth:
       login-template: "auth0-login.mustache"
 
+    auth-mechanisms:
+      auth0: kikaha.cloud.auth0.Auth0Authentication
+
   # Configuration for Auth0
     auth0:
       client-domain: "localhost"
