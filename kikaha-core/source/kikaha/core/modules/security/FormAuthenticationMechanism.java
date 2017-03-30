@@ -81,7 +81,7 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	}
 
 	private boolean isPostLocation(HttpServerExchange exchange) {
-		return exchange.getRelativePath().endsWith( DEFAULT_POST_LOCATION );
+		return exchange.getRelativePath().equals( formAuthenticationConfiguration.getCallbackUrl() );
 	}
 
 	private static void sendRedirect(HttpServerExchange exchange, final String location) {

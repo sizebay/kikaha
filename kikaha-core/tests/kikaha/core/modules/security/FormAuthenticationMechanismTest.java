@@ -93,8 +93,7 @@ public class FormAuthenticationMechanismTest {
 	}
 
 	AuthenticationMechanism simulateLoginPost(){
-		final String defaultPostLocation = FormAuthenticationMechanism.DEFAULT_POST_LOCATION;
-		return simulateRequestTo(defaultPostLocation);
+		return simulateRequestTo( "/auth/callback" );
 	}
 
 	AuthenticationMechanism simulateRequestTo(final String defaultPostLocation) {
