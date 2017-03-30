@@ -25,7 +25,8 @@ public class MicroRoutingParameterParser extends MethodParametersExtractor {
 			.and( isAnnotatedWith( HeaderParam.class ), v -> getParam( HeaderParam.class, v.getAnnotation( HeaderParam.class ).value(), v ) )
 			.and( isAnnotatedWith( CookieParam.class ), v -> getParam( CookieParam.class, v.getAnnotation( CookieParam.class ).value(), v ) )
 			.and( isAnnotatedWith( FormParam.class ), v -> getParam( FormParam.class, v.getAnnotation( FormParam.class ).value(), v ) )
-			.and( isAnnotatedWith( Context.class ), v -> format( "methodDataProvider.getData( exchange, %s.class )", asType( v ) ) );
+			.and( isAnnotatedWith( Context.class ), v -> format( "methodDataProvider.getData( exchange, %s.class )", asType( v ) ) )
+			.and( typeIs( AsyncResponse.class ), v -> "asyncResponse" );
 		return rules;
 	}
 
@@ -33,7 +34,7 @@ public class MicroRoutingParameterParser extends MethodParametersExtractor {
 		return v -> APT.isAnnotatedWith( v, annotationClass );
 	}
 
-	static Function<VariableElement, Boolean> whichTypeIs( Class<?> clazz ) {
+	static Function<VariableElement, Boolean> typeIs(Class<?> clazz ) {
 		return v -> APT.asType( v ).equals( clazz.getCanonicalName() );
 	}
 

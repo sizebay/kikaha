@@ -1,6 +1,7 @@
 package kikaha.urouting.it.context;
 
 
+import static kikaha.urouting.api.DefaultResponse.ok;
 import javax.inject.*;
 import io.undertow.security.idm.Account;
 import io.undertow.server.HttpServerExchange;
@@ -15,6 +16,13 @@ public class ContextualParametersResource {
 	@Path( "exchange" )
 	public String headerFromServerExchange( @Context HttpServerExchange exchange ){
 		return exchange.getRequestHeaders().get( "id" ).getFirst();
+	}
+
+	@GET
+	@Path( "exchange/async1" )
+	public void headerFromServerExchange( @Context HttpServerExchange exchange, AsyncResponse asyncResponse ){
+		final String id = exchange.getRequestHeaders().get("id").getFirst();
+		asyncResponse.write( ok( id ).contentType( Mimes.PLAIN_TEXT ) );
 	}
 
 	@GET

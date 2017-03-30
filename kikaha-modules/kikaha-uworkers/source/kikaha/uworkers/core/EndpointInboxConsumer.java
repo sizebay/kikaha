@@ -30,7 +30,7 @@ public class EndpointInboxConsumer implements Runnable {
 				}
 			}
 		} finally {
-			log.warn( "Consumer finished! Shutdown = " + isShutdown.get() );
+			log.debug( "Consumer "+name+" finished! Shutdown = " + isShutdown.get() );
 		}
 	}
 

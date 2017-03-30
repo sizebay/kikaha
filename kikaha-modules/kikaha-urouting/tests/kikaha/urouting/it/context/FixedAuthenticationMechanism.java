@@ -14,7 +14,7 @@ public class FixedAuthenticationMechanism implements AuthenticationMechanism {
 
 	@Override
 	public Account authenticate( HttpServerExchange exchange, Iterable<IdentityManager> identityManagers, Session session ) {
-		final String id = exchange.getRequestHeaders().get( "id" ).getFirst();
+		final String id = exchange.getRequestHeaders().getFirst( "id" );
 		if ( "12".equals( id ) )
 			return new FixedUsernameAndRolesAccount( USERNAME, "basic-user" );
 		return null;
