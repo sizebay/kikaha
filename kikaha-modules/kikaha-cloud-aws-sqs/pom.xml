@@ -8,7 +8,7 @@
         <artifactId>kikaha-modules</artifactId>
     </parent>
 
-    <artifactId>kikaha-uworkers-aws-sqs</artifactId>
+    <artifactId>kikaha-cloud-aws-sqs</artifactId>
     <name>Kikaha: micro Workers: AWS SQS Connector</name>
     <packaging>jar</packaging>
 
