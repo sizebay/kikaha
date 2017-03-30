@@ -32,7 +32,7 @@ public class Auth0 {
 			config.getString( "server.auth.auth0.client-domain" ),
 			config.getString( "server.auth.auth0.signing-algorithm" ),
 			config.getString( "server.auth.auth0.public-key-path" ),
-			config.getBoolean( "server.auth.base64-encoded-secret" )
+			config.getBoolean( "server.auth.auth0.base64-encoded-secret" )
 		);
 	}
 
