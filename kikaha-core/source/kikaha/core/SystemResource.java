@@ -1,6 +1,7 @@
 package kikaha.core;
 
 import java.io.*;
+import lombok.NonNull;
 
 /**
  *
@@ -9,6 +10,8 @@ public interface SystemResource {
 
 	static String readFileAsString( String fileName, String encoding) {
 		try ( InputStream file = openFile( fileName ) ) {
+			if ( file == null )
+				throw new IllegalStateException( "File not found: " + fileName );
 			return readFileAsString( file, encoding );
 		} catch ( IOException cause ) {
 			throw new IllegalStateException( cause );
@@ -27,7 +30,7 @@ public interface SystemResource {
 		return readFile(inputStream).toByteArray();
 	}
 
-	static ByteArrayOutputStream readFile( final InputStream inputStream ) {
+	static ByteArrayOutputStream readFile( @NonNull final InputStream inputStream ) {
 		try {
 			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			final byte[] buffer = new byte[1024];
