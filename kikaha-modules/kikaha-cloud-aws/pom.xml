@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>kikaha-cloud-aws</artifactId>
-    <name>Kikaha: Cloud Providers: Amazon WebServices</name>
+    <name>Kikaha: Cloud Providers: AWS</name>
     <packaging>jar</packaging>
 
     <dependencies>

@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>kikaha-cloud-aws-sqs</artifactId>
-    <name>Kikaha: micro Workers: AWS SQS Connector</name>
+    <name>Kikaha: Cloud Providers: AWS: SQS Connector</name>
     <packaging>jar</packaging>
 
     <dependencies>
