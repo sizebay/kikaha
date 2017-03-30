@@ -1,7 +1,6 @@
 package kikaha.core.modules.security;
 
 import java.io.IOException;
-import javax.annotation.PostConstruct;
 import javax.inject.*;
 import io.undertow.security.idm.*;
 import io.undertow.server.*;
@@ -19,10 +18,14 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 
 	public static final String LOCATION_ATTRIBUTE = FormAuthenticationMechanism.class.getName() + ".LOCATION";
 	public static final String DEFAULT_POST_LOCATION = "j_security_check";
-	private final FormParserFactory formParserFactory = FormParserFactory.builder().build();
+	private final FormParserFactory formParserFactory;
 
 	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
 	@Inject Config config;
+
+	public FormAuthenticationMechanism(){
+		formParserFactory = FormParserFactory.builder().build();
+	}
 
 	@Override
 	public Account authenticate(HttpServerExchange exchange, Iterable<IdentityManager> identityManagers, Session session) {
@@ -81,22 +84,12 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	}
 
 	private static void sendRedirect(HttpServerExchange exchange, final String location) {
-		exchange.addDefaultResponseListener( RedirectBack.to(location) );
-		exchange.endExchange();
-	}
-}
-
-@Slf4j
-@RequiredArgsConstructor(staticName="to")
-class RedirectBack implements DefaultResponseListener {
-
-	final String location;
-
-	@Override
-	public boolean handleDefaultResponse(HttpServerExchange exchange) {
-		exchange.setStatusCode(StatusCodes.FOUND);
-		exchange.getResponseHeaders().put(Headers.LOCATION, location);
-		exchange.endExchange();
-        return true;
+		if ( !exchange.isResponseStarted() ) {
+			exchange.setStatusCode(StatusCodes.FOUND);
+			exchange.getResponseHeaders().put(Headers.LOCATION, location);
+			exchange.endExchange();
+		} else {
+			log.error("Could not redirect. Response already started.");
+		}
 	}
 }

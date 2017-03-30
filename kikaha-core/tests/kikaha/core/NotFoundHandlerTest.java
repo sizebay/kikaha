@@ -1,13 +1,11 @@
 package kikaha.core;
 
+import static org.junit.Assert.assertEquals;
+import javax.inject.Inject;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.test.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  *
