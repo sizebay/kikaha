@@ -28,7 +28,7 @@ public class SessionCookie implements SessionIdManager {
 	 */
 	@Override
 	public void attachSessionId(HttpServerExchange exchange, String sessionId ) {
-		final Cookie cookie = new CookieImpl( this.cookieName, sessionId ).setPath( "/" );
+		final Cookie cookie = new CookieImpl( this.cookieName, sessionId ).setPath( "/" ).setHttpOnly( true );
 		exchange.setResponseCookie( cookie );
 	}
 
