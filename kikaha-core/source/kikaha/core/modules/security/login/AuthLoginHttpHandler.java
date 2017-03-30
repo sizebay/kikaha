@@ -1,15 +1,15 @@
 package kikaha.core.modules.security.login;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
 import java.util.*;
 import java.util.Map.Entry;
+import javax.enterprise.inject.Typed;
+import javax.inject.Inject;
 import io.undertow.server.*;
 import io.undertow.util.*;
 import kikaha.config.Config;
-import kikaha.core.*;
+import kikaha.core.SystemResource;
 import kikaha.core.modules.security.*;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -29,12 +29,8 @@ public class AuthLoginHttpHandler implements HttpHandler {
 	@Typed( ConfigurationHook.class )
 	Iterable<ConfigurationHook> configurationHooks;
 
-	String html;
-
-	@PostConstruct
-	public void preComputeHTML(){
-		this.html = readAndParseTemplate();
-	}
+	@Getter( lazy = true )
+	private final String html = readAndParseTemplate();
 
 	String readAndParseTemplate(){
 		final Map<String, Object> templateVariables = readTemplateVariables();
@@ -68,7 +64,7 @@ public class AuthLoginHttpHandler implements HttpHandler {
 
 			exchange.setStatusCode( StatusCodes.OK );
 			exchange.getResponseHeaders().put( Headers.CONTENT_TYPE, CONTENT_HTML );
-			exchange.getResponseSender().send( html );
+			exchange.getResponseSender().send( getHtml() );
 		} catch ( Throwable cause ) {
 			handleFailure( exchange, cause );
 		}

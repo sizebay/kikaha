@@ -2,10 +2,9 @@ package kikaha.urouting.apt;
 
 import static java.lang.String.format;
 import static kikaha.apt.APT.asType;
-
-import javax.lang.model.element.*;
 import java.lang.annotation.Annotation;
 import java.util.function.*;
+import javax.lang.model.element.*;
 import kikaha.apt.*;
 import kikaha.urouting.api.*;
 
@@ -32,6 +31,10 @@ public class MicroRoutingParameterParser extends MethodParametersExtractor {
 
 	static Function<VariableElement, Boolean> isAnnotatedWith( Class<? extends Annotation> annotationClass ) {
 		return v -> APT.isAnnotatedWith( v, annotationClass );
+	}
+
+	static Function<VariableElement, Boolean> whichTypeIs( Class<?> clazz ) {
+		return v -> APT.asType( v ).equals( clazz.getCanonicalName() );
 	}
 
 	static String getParam( final Class<?> targetAnnotation, final String param, final VariableElement parameter ) {

@@ -3,10 +3,9 @@ package kikaha.core.modules.security.login;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
-
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.Map;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.*;
 import kikaha.core.modules.security.*;
@@ -48,7 +47,7 @@ public class AuthLoginHttpHandlerTest {
 		handler.handleRequest( httpExchange );
 
 		verify( currentSession ).setAttribute( eq(CustomConfigurationHook.KEY), eq(CustomConfigurationHook.VALUE) );
-		verify( httpExchange.getResponseSender() ).send( eq(handler.html) );
+		verify( httpExchange.getResponseSender() ).send( eq(handler.getHtml()) );
 		assertEquals( 200, httpExchange.getStatusCode() );
 	}
 }
