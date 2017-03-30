@@ -1,5 +1,6 @@
 package kikaha.core.modules.security;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -43,12 +44,10 @@ public class FormAuthenticationMechanismTest {
 	public void ensureThatIsAbleToSendCorrectCredentialsToIdentityManagerWhenFormFieldsArePresent(){
 		data.add("j_username", "username");
 		data.add("j_password", "password");
-		final String originalUrl = "original-url.html";
-		doReturn(originalUrl).when( session ).getAttribute(eq(FormAuthenticationMechanism.LOCATION_ATTRIBUTE));
 		final AuthenticationMechanism mechanism = simulateLoginPost();
 		final Account authenticated = mechanism.authenticate(exchange, singletonList(identityManager), session);
 		assertNotNull(authenticated);
-		assertHaveBeingRedirectedTo( originalUrl );
+		assertHaveBeingRedirectedTo( "/" );
 	}
 
 	@Test
@@ -72,7 +71,7 @@ public class FormAuthenticationMechanismTest {
 		final String postLocation = "/some/protected/place.html";
 		final AuthenticationMechanism mechanism = simulateRequestTo(postLocation);
 		assertTrue( mechanism.sendAuthenticationChallenge(exchange, session) );
-		assertHaveBeingRedirectedTo("login.html");
+		assertHaveBeingRedirectedTo("/auth/");
 	}
 
 	private void assertHaveBeingRedirectedTo(String expectedLocation) {
@@ -85,7 +84,7 @@ public class FormAuthenticationMechanismTest {
 		final AuthenticationMechanism mechanism = simulateLoginPost();
 		assertTrue( mechanism.sendAuthenticationChallenge(exchange, session) );
 		assertEquals(exchange.getStatusCode(), StatusCodes.FOUND);
-		assertEquals(exchange.getResponseHeaders().get(Headers.LOCATION).getFirst(), "login-error.html");
+		assertEquals(exchange.getResponseHeaders().get(Headers.LOCATION).getFirst(), "/auth/error/");
 	}
 
 	void ensureNeverHaveTriedToAuthenticateThroughIdentityManager(final Account authenticated) {
@@ -104,6 +103,7 @@ public class FormAuthenticationMechanismTest {
 		exchange.setRequestMethod(Methods.POST);
 		final FormAuthenticationMechanism mechanism = new FormAuthenticationMechanism(formParserFactory);
 		mechanism.formAuthenticationConfiguration = configuration;
+		mechanism.authenticate( exchange, asList(identityManager), session );
 		return mechanism;
 	}
 }

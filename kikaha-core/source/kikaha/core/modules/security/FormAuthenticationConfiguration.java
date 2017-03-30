@@ -3,13 +3,14 @@ package kikaha.core.modules.security;
 import javax.annotation.PostConstruct;
 import javax.inject.*;
 import kikaha.config.Config;
-import lombok.Getter;
+import lombok.*;
 
 /**
  *
  */
 @Getter
 @Singleton
+@ToString
 public class FormAuthenticationConfiguration {
 
 	@Inject Config config;
@@ -22,7 +23,7 @@ public class FormAuthenticationConfiguration {
 
 	@PostConstruct
 	public void readConfiguration(){
-		final Config authConfig = this.config.getConfig( "server.auth.fixed-auth" );
+		final Config authConfig = this.config.getConfig( "server.auth.form-auth" );
 		loginPage = authConfig.getString( "login-page" );
 		errorPage = authConfig.getString( "error-page" );
 		successPage = authConfig.getString( "success-page" );

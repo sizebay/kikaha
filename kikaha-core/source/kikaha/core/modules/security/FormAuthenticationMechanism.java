@@ -34,7 +34,8 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 			if ( isCurrentRequestTryingToAuthenticate(exchange) )
 				account = doAuthentication(exchange, identityManagers, session);
 		} catch (final IOException e) {
-			log.error("Failed to authenticate. Skipping form authentication...", e); }
+			log.error("Failed to authenticate. Skipping form authentication...", e);
+		}
 		return account;
 	}
 
@@ -80,7 +81,7 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	}
 
 	private boolean isPostLocation(HttpServerExchange exchange) {
-		return exchange.getRelativePath().equals( DEFAULT_POST_LOCATION );
+		return exchange.getRelativePath().endsWith( DEFAULT_POST_LOCATION );
 	}
 
 	private static void sendRedirect(HttpServerExchange exchange, final String location) {
