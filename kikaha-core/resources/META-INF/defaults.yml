@@ -16,6 +16,7 @@ server:
     enabled-modules:
       - http
       - https
+      - cors
       - security
       - undertow-basic-configuration
       - metrics

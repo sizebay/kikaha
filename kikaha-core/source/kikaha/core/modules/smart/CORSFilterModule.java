@@ -1,22 +1,17 @@
 package kikaha.core.modules.smart;
 
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+import javax.inject.*;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import kikaha.config.Config;
-import kikaha.core.DeploymentContext;
-import kikaha.core.NotFoundHandler;
+import kikaha.core.*;
 import kikaha.core.modules.Module;
 import kikaha.core.url.URLMatcher;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -25,6 +20,8 @@ import java.util.stream.Collectors;
 @Getter
 @Singleton
 public class CORSFilterModule implements Module {
+
+	final String name = "cors";
 
 	@Inject
 	NotFoundHandler notFoundHandler;
