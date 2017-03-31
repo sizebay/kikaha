@@ -92,6 +92,7 @@ final public class {{generatedClassName}} implements HttpHandler {
 			final AsyncResponse asyncResponse = new AsyncResponse( exchange, responseWriter, exceptionHandler );
 			{{/responseContentType}}
 			instance.{{methodName}}( {{{methodParams}}} );
+			exchange.dispatch();
 		} catch ( Throwable cause ) {
 			this.handleException( exchange, cause );
 		}
