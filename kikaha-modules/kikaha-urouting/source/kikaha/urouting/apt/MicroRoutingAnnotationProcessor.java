@@ -2,14 +2,13 @@ package kikaha.urouting.apt;
 
 import static java.lang.String.format;
 import static kikaha.apt.APT.*;
-
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.*;
 import javax.annotation.processing.*;
 import javax.enterprise.inject.Typed;
 import javax.lang.model.element.*;
 import javax.lang.model.type.*;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.*;
 import kikaha.apt.*;
 import kikaha.urouting.RoutingMethodData;
 import kikaha.urouting.api.*;
@@ -67,7 +66,7 @@ public class MicroRoutingAnnotationProcessor extends AbstractAnnotatedMethodProc
 	private String extractParamFromNonAnnotatedParameter( ExecutableElement method, VariableElement parameter ) {
 		final String
 				consumingContentType = extractConsumingContentTypeFrom( method ),
-				targetType = parameter.asType().toString();
+				targetType = asType( parameter );
 
 		if ( consumingContentType != null )
 			return format( "methodDataProvider.getBody( exchange, %s.class, bodyData, \"%s\" )", targetType, consumingContentType );

@@ -1,12 +1,11 @@
 package kikaha.apt;
 
+import java.lang.annotation.Annotation;
+import java.util.*;
 import javax.annotation.processing.RoundEnvironment;
 import javax.enterprise.inject.Typed;
 import javax.lang.model.element.*;
 import javax.lang.model.type.*;
-import java.lang.annotation.Annotation;
-import java.util.*;
-import java.util.function.BiFunction;
 import kikaha.core.cdi.helpers.filter.*;
 
 public interface APT {
@@ -53,10 +52,10 @@ public interface APT {
 				classes[0].getCanonicalName();
 				return null;
 			}
-			return classElement.asType().toString();
+			return classElement.asType().toString().replaceAll("<[^>]+>","");
 		} catch ( MirroredTypesException cause ) {
 			final TypeMirror typeMirror = cause.getTypeMirrors().get(0);
-			return typeMirror.toString();
+			return typeMirror.toString().replaceAll("<[^>]+>","");
 		}
 	}
 
@@ -86,7 +85,7 @@ public interface APT {
 	}
 
 	static String extractReturnTypeFrom( final ExecutableElement method ) {
-		final String returnTypeAsString = method.getReturnType().toString();
+		final String returnTypeAsString = method.getReturnType().toString().replaceAll("<[^>]+>","");
 		if ( "void".equals( returnTypeAsString ) )
 			return null;
 		return returnTypeAsString;
