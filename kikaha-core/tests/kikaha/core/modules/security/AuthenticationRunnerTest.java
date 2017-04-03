@@ -2,47 +2,26 @@ package kikaha.core.modules.security;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import io.undertow.security.api.SecurityContext;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import kikaha.config.Config;
-import kikaha.core.test.HttpServerExchangeStub;
-import kikaha.core.cdi.ServiceProvider;
-import kikaha.core.test.KikahaRunner;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
+import static org.mockito.Mockito.*;
+import java.util.*;
 import javax.inject.Inject;
+import io.undertow.server.*;
+import kikaha.config.Config;
+import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.test.*;
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.*;
 
 @RunWith( KikahaRunner.class )
 public class AuthenticationRunnerTest {
 
-	@Inject
-	Config config;
+	@Inject Config config;
+	@Inject ServiceProvider provider;
+	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
 
-	@Inject
-	ServiceProvider provider;
-
-	@Mock
-	SecurityContext securityContext;
-
-	@Mock
-	HttpHandler rootHandler;
+	@Mock SecurityContext securityContext;
+	@Mock HttpHandler rootHandler;
 
 	AuthenticationRunner authHandler;
 	HttpServerExchange exchange;
@@ -110,13 +89,13 @@ public class AuthenticationRunnerTest {
 
 	void initializeAuthHandler() {
 		AuthenticationRuleMatcher matcher = mockAuthRuleMatcher();
-		matchedRule = spy( matcher.retrieveAuthenticationRuleForUrl( "/user" ) );
+		matchedRule = spy( matcher.retrieveAuthenticationRuleForUrl( "/user", "" ) );
 		authHandler = spy( new AuthenticationRunner( exchange, rootHandler,
 			securityContext, createExpectedRoles(), "" ) );
 	}
 
 	AuthenticationRuleMatcher mockAuthRuleMatcher() {
-		return spy( new AuthenticationRuleMatcher( provider, config.getConfig("server.auth") ) );
+		return spy( new AuthenticationRuleMatcher( provider, config.getConfig("server.auth"), formAuthenticationConfiguration ) );
 	}
 
 	Set<String> createExpectedRoles() {

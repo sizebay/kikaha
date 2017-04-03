@@ -1,13 +1,12 @@
 package kikaha.core.modules.security;
 
-import io.undertow.security.api.SecurityContext;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
+import java.util.Collection;
+import io.undertow.server.*;
 import io.undertow.util.Headers;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collection;
-
+@Slf4j
 @RequiredArgsConstructor
 public class AuthenticationRunner implements Runnable {
 
@@ -69,7 +68,7 @@ public class AuthenticationRunner implements Runnable {
 	}
 
 	void handleException( final Throwable cause ) {
-		cause.printStackTrace();
+		log.error( "Failed to execute the endpoint", cause );
 		if ( !exchange.isResponseStarted() ) {
 			exchange.setStatusCode( 500 );
 			exchange.getResponseSender().send( "Internal Server Error: " + cause.getMessage() );

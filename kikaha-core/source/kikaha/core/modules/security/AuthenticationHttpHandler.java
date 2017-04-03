@@ -2,6 +2,7 @@ package kikaha.core.modules.security;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
 import lombok.*;
 
 @RequiredArgsConstructor
@@ -16,33 +17,32 @@ class AuthenticationHttpHandler implements HttpHandler {
 
 	@Override
 	public void handleRequest(final HttpServerExchange exchange) throws Exception {
-		final AuthenticationRule rule = retrieveRuleThatEnsureRequestShouldBeAuthenticated( exchange );
-		if ( rule == null || isAuthenticated( exchange ) )
-			next.handleRequest(exchange);
+		AuthenticationRule rule = retrieveRuleThatEnsureRequestShouldBeAuthenticated( exchange );
+		if ( rule == null )
+			rule = AuthenticationRule.EMPTY;
+		final SecurityContext securityContext = getOrCreateSecurityContext(exchange, rule);
+		if ( securityContext.isAuthenticated() )
+			try {
+				next.handleRequest(exchange);
+			} catch ( Throwable cause ) {
+				cause.printStackTrace();
+			}
 		else
-			runAuthenticationInIOThread( exchange, rule );
-	}
-
-	private boolean isAuthenticated( final HttpServerExchange exchange ) {
-		final SecurityContext securityContext = (SecurityContext)exchange.getSecurityContext();
-		return securityContext != null && securityContext.isAuthenticated();
+			runAuthenticationInIOThread( exchange, rule, securityContext );
 	}
 
 	private AuthenticationRule retrieveRuleThatEnsureRequestShouldBeAuthenticated( final HttpServerExchange exchange ) {
 		final String relativePath = exchange.getRelativePath();
-		return authenticationRuleMatcher.retrieveAuthenticationRuleForUrl( relativePath );
+		final String referer = exchange.getRequestHeaders().getFirst( Headers.REFERER );
+		return authenticationRuleMatcher.retrieveAuthenticationRuleForUrl( relativePath, referer );
 	}
 
-	void runAuthenticationInIOThread(
-			final HttpServerExchange exchange, final AuthenticationRule rule )
-	{
-		final SecurityContext context = createSecurityContext( exchange, rule );
-		exchange.setSecurityContext( context );
-		runAuthenticationInIOThread(exchange, rule, context);
-	}
-
-	private SecurityContext createSecurityContext( final HttpServerExchange exchange, final AuthenticationRule rule ) {
-		final SecurityContext securityContext = securityContextFactory.createSecurityContextFor(exchange, rule, sessionStore, sessionIdManager);
+	private SecurityContext getOrCreateSecurityContext( final HttpServerExchange exchange, final AuthenticationRule rule ) {
+		SecurityContext securityContext = (SecurityContext)exchange.getSecurityContext();
+		if ( securityContext == null ) {
+			securityContext = securityContextFactory.createSecurityContextFor(exchange, rule, sessionStore, sessionIdManager);
+			exchange.setSecurityContext( securityContext );
+		}
 		exchange.addExchangeCompleteListener( new SecurityContextAutoUpdater( securityContext ) );
 		return securityContext;
 	}

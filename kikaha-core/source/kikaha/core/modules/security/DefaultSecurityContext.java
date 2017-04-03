@@ -22,7 +22,7 @@ public class DefaultSecurityContext implements SecurityContext {
 
 	private AuthenticationMechanism currentAuthMechanism = null;
 	private Session currentSession = null;
-	private boolean authenticated = true;
+	private boolean authenticated = false;
 
 	@NonNull private final AuthenticationRule rule;
 	@NonNull private final HttpServerExchange exchange;
@@ -31,6 +31,7 @@ public class DefaultSecurityContext implements SecurityContext {
 
 	@Override
 	public boolean authenticate() {
+		authenticated = true;
 		currentSession = store.createOrRetrieveSession(exchange, sessionIdManager);
 		final Account account = performAuthentication();
 		if ( account == null ){
@@ -53,7 +54,7 @@ public class DefaultSecurityContext implements SecurityContext {
 	}
 
 	private void sendAuthenticationChallenge() {
-		if ( !currentAuthMechanism.sendAuthenticationChallenge( exchange, currentSession ) )
+		if ( currentAuthMechanism != null && !currentAuthMechanism.sendAuthenticationChallenge( exchange, currentSession ) )
 			throw new IllegalStateException( "Cannot send authentication challenge" );
 	}
 

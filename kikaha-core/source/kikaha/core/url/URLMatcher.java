@@ -1,11 +1,13 @@
 package kikaha.core.url;
 
 import java.util.*;
-import kikaha.core.cdi.helpers.TinyList;
+import kikaha.core.cdi.helpers.*;
 import lombok.*;
 
 @RequiredArgsConstructor
 public class URLMatcher implements Matcher {
+
+	public static final URLMatcher EMPTY = new URLMatcher( EmptyIterable.instance() );
 
 	final Iterable<Matcher> patternMatchers;
 

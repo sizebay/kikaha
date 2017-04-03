@@ -85,10 +85,10 @@ public interface APT {
 	}
 
 	static String extractReturnTypeFrom( final ExecutableElement method ) {
-		final String returnTypeAsString = method.getReturnType().toString().replaceAll("<[^>]+>","");
+		final String returnTypeAsString = method.getReturnType().toString();
 		if ( "void".equals( returnTypeAsString ) )
 			return null;
-		return returnTypeAsString;
+		return returnTypeAsString.replaceAll("<[^>]+>","");
 	}
 }
 

@@ -26,13 +26,14 @@ public class AuthenticationHttpHandlerTest {
 	@Inject AuthenticationModule deployment;
 	@Inject ServiceProvider provider;
 	@Inject Config config;
+	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
 
 	AuthenticationHttpHandler authenticationHook;
 
 	@Before
 	public void initializeMocks() {
 		MockitoAnnotations.initMocks( this );
-		AuthenticationRuleMatcher authenticationRuleMatcher = new AuthenticationRuleMatcher( provider, config.getConfig("server.auth") );
+		AuthenticationRuleMatcher authenticationRuleMatcher = new AuthenticationRuleMatcher( provider, config.getConfig("server.auth"), formAuthenticationConfiguration );
 		authenticationHook = spy( new AuthenticationHttpHandler( authenticationRuleMatcher, "",
 				rootHandler, factory, deployment.sessionStore, deployment.sessionIdManager ) );
 	}
@@ -46,15 +47,20 @@ public class AuthenticationHttpHandlerTest {
 				any( HttpServerExchange.class ), any( AuthenticationRule.class ),
 				any(SessionStore.class), any(SessionIdManager.class) );
 		authenticationHook.handleRequest(exchange);
-		verify( authenticationHook ).runAuthenticationInIOThread( eq(exchange), any( AuthenticationRule.class ) );
+		verify( authenticationHook ).runAuthenticationInIOThread( eq(exchange), any( AuthenticationRule.class ), eq(securityContext) );
 		assertNotNull( exchange.getSecurityContext() );
 	}
 
 	@Test
 	@SneakyThrows
 	public void ensureThatCallTheHookInSameThreadWhenThereWasRuleThatMatchesTheRelativePath() {
+		doNothing().when(authenticationHook).runAuthenticationInIOThread( any(), any(), any());
+		doReturn(securityContext).when(factory).createSecurityContextFor(
+				eq(exchange), any( AuthenticationRule.class ),
+				eq(deployment.sessionStore), eq(deployment.sessionIdManager) );
 		exchange.setRelativePath( "invalid-authenticated-url/" );
 		authenticationHook.handleRequest(exchange);
-		verify( authenticationHook, never() ).runAuthenticationInIOThread( eq(exchange), any( AuthenticationRule.class ) );
+		verify( authenticationHook ).runAuthenticationInIOThread( eq(exchange), eq(AuthenticationRule.EMPTY), eq(securityContext) );
+		assertNotNull( exchange.getSecurityContext() );
 	}
 }

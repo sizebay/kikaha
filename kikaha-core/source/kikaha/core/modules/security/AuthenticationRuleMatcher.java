@@ -22,21 +22,16 @@ public class AuthenticationRuleMatcher {
 	final Map<String, AuthenticationMechanism> mechanisms;
 	final Map<String, IdentityManager> identityManagers;
 	final List<AuthenticationRule> rules;
+	final FormAuthenticationConfiguration formAuthenticationConfiguration;
 
-	final String loginPage;
-	final String errorPage;
-	final String permissionDeniedPage;
-
-	public AuthenticationRuleMatcher( final ServiceProvider provider, final Config authConfig ) {
+	public AuthenticationRuleMatcher( final ServiceProvider provider, final Config authConfig, final FormAuthenticationConfiguration formAuthenticationConfiguration ) {
 		this.authConfig = authConfig;
 		this.provider = provider;
 		mechanisms = instantiateMechanismsFoundOnConfig();
 		identityManagers = instantiateIdentityManagersFoundOnConfig();
 		securityContextFactory = instantiateSecurityContextFactory( authConfig );
 		rules = readRulesFromConfig();
-		loginPage = authConfig.getString( "form-auth.login-page" );
-		errorPage = authConfig.getString( "form-auth.error-page" );
-		permissionDeniedPage = authConfig.getString( "form-auth.permission-denied-page" );
+		this.formAuthenticationConfiguration = formAuthenticationConfiguration;
 	}
 
 	private SecurityContextFactory instantiateSecurityContextFactory( final Config authConfig ) {
@@ -49,7 +44,7 @@ public class AuthenticationRuleMatcher {
 	private Map<String, AuthenticationMechanism> instantiateMechanismsFoundOnConfig() {
 		final Map<String, Object> values = authConfig.getConfig("auth-mechanisms").toMap();
 		Map<String, AuthenticationMechanism> mechanisms = convert( values, o->instantiate( (String)o, AuthenticationMechanism.class ) );
-		log.debug("Found Mechanisms: " + mechanisms);
+		log.debug("Found Authentication Mechanisms: " + mechanisms);
 		return mechanisms;
 	}
 
@@ -110,8 +105,8 @@ public class AuthenticationRuleMatcher {
 				.collect(Collectors.toList());
 	}
 
-	public AuthenticationRule retrieveAuthenticationRuleForUrl( final String url ) {
-		if ( !isUrlFromAuthenticationResources( url ) )
+	public AuthenticationRule retrieveAuthenticationRuleForUrl( final String url, final String referer ) {
+		if ( !isUrlFromAuthenticationResources( url ) && !isUrlFromAuthenticationResources( referer ) )
 			for ( final AuthenticationRule rule : rules )
 				if ( rule.matches( url ) )
 					return rule;
@@ -119,8 +114,7 @@ public class AuthenticationRuleMatcher {
 	}
 
 	private boolean isUrlFromAuthenticationResources( final String url ) {
-		return errorPage.equals( url )
-			|| loginPage.equals( url )
-			|| permissionDeniedPage.equals( url );
+		return formAuthenticationConfiguration.getErrorPage().equals( url )
+			|| formAuthenticationConfiguration.getLoginPage().equals( url );
 	}
 }

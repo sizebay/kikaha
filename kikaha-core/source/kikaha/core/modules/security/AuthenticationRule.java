@@ -1,6 +1,6 @@
 package kikaha.core.modules.security;
 
-import java.util.List;
+import java.util.*;
 import kikaha.core.cdi.helpers.TinyList;
 import kikaha.core.url.URLMatcher;
 import lombok.*;
@@ -9,9 +9,14 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors( fluent = true )
 @ToString(of = {"pattern", "identityManagers", "mechanisms"})
+@RequiredArgsConstructor
 public class AuthenticationRule {
 
 	private final static String MSG_INVALID_RULE = "Invalid rule: ";
+	public final static AuthenticationRule EMPTY = new AuthenticationRule(
+			"*", Collections.emptyList(), URLMatcher.EMPTY,
+			Collections.emptyList(), Collections.emptyList(), Collections.emptyList()
+		);
 
 	final String pattern;
 	final List<URLMatcher> exceptionPatterns;

@@ -20,6 +20,7 @@ public class AuthenticationModule implements Module {
 
 	@Inject ServiceProvider provider;
 	@Inject Config config;
+	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
 
 	SecurityContextFactory factory;
 	SessionIdManager sessionIdManager;
@@ -46,6 +47,8 @@ public class AuthenticationModule implements Module {
 	}
 
 	AuthenticationRuleMatcher createRuleMatcher() {
-		return new AuthenticationRuleMatcher( provider, config.getConfig("server.auth") );
+		return new AuthenticationRuleMatcher(
+			provider, config.getConfig("server.auth"),
+			formAuthenticationConfiguration );
 	}
 }

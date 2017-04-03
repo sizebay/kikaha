@@ -3,13 +3,12 @@ package kikaha.protobuf;
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static kikaha.apt.APT.*;
-
-import javax.annotation.processing.*;
-import javax.lang.model.element.*;
-import javax.lang.model.type.TypeMirror;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import javax.annotation.processing.*;
+import javax.lang.model.element.*;
+import javax.lang.model.type.TypeMirror;
 import com.google.protobuf.MessageLite;
 import kikaha.apt.*;
 import kikaha.urouting.apt.MicroRoutingParameterParser;
@@ -56,11 +55,15 @@ public class ProtobufAnnotationProcessor extends AbstractAnnotatedMethodProcesso
 	}
 
 	void ensureReturnTypeIsValid( final String returnType ) throws IOException {
-		if ( returnType != null ) {
-			final TypeMirror typeToBeChecked = processingEnv.getElementUtils().getTypeElement( returnType ).asType();
-			final TypeMirror expectedInterface = processingEnv.getElementUtils().getTypeElement( MessageLite.class.getCanonicalName() ).asType();
-			if ( !processingEnv.getTypeUtils().isAssignable( typeToBeChecked, expectedInterface ) )
-				throw new IOException( "RPC methods should return Protobuf compatible objects." );
+		try {
+			if (returnType != null) {
+				final TypeMirror typeToBeChecked = processingEnv.getElementUtils().getTypeElement(returnType).asType();
+				final TypeMirror expectedInterface = processingEnv.getElementUtils().getTypeElement(MessageLite.class.getCanonicalName()).asType();
+				if (!processingEnv.getTypeUtils().isAssignable(typeToBeChecked, expectedInterface))
+					throw new IOException("RPC methods should return Protobuf compatible objects.");
+			}
+		} catch ( NullPointerException cause ) {
+			throw new IOException( "Could not check return type for " + returnType, cause );
 		}
 	}
 
