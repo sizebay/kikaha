@@ -28,15 +28,8 @@ public class AuthenticationRunnerTest {
 	AuthenticationRule matchedRule;
 
 	@Test
-	public void ensureThatSetAuthenticationAsRequired() throws Exception {
-		doReturn( true ).when( securityContext ).authenticate();
-		when( securityContext.getAuthenticatedAccount() ).thenReturn( new FixedUsernameAndRolesAccount( createExpectedRoles(), null ) );
-		authHandler.run();
-		verify( securityContext ).setAuthenticationRequired();
-	}
-
-	@Test
 	public void ensureThatCouldCallTheTargetHttpHandlerWhenIsAuthenticated() throws Exception {
+		doReturn( true ).when( securityContext ).isAuthenticationRequired();
 		when( securityContext.authenticate() ).thenReturn( true );
 		when( securityContext.isAuthenticated() ).thenReturn( true );
 		when( securityContext.getAuthenticatedAccount() ).thenReturn( new FixedUsernameAndRolesAccount( createExpectedRoles(), null ) );
@@ -46,6 +39,7 @@ public class AuthenticationRunnerTest {
 
 	@Test
 	public void ensureThatNotCallTheTargetHttpHandlerWhenDoesntMatchExpectedRoles() throws Exception {
+		doReturn( true ).when( securityContext ).isAuthenticationRequired();
 		doNothing().when( authHandler ).endCommunicationWithClient();
 		doNothing().when( authHandler ).sendForbiddenError();
 		when( securityContext.authenticate() ).thenReturn( true );
@@ -60,6 +54,7 @@ public class AuthenticationRunnerTest {
 
 	@Test
 	public void ensureThatNotCallTheTargetHttpHandleWhenWasNotAuthenticatedRequests() throws Exception {
+		doReturn( true ).when( securityContext ).isAuthenticationRequired();
 		doNothing().when( authHandler ).endCommunicationWithClient();
 		when( securityContext.authenticate() ).thenReturn( false );
 		authHandler.run();
@@ -69,6 +64,7 @@ public class AuthenticationRunnerTest {
 
 	@Test
 	public void ensureThatIsAbleToHandleExceptionsInRunMethod() throws Exception {
+		doReturn( true ).when( securityContext ).isAuthenticationRequired();
 		doThrow( new IllegalStateException() ).when( securityContext ).authenticate();
 		doNothing().when( authHandler ).handleException( any( Throwable.class ) );
 		authHandler.run();

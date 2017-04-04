@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 public class FormAuthenticationMechanism implements AuthenticationMechanism {
 
 	public static final String LOCATION_ATTRIBUTE = FormAuthenticationMechanism.class.getName() + ".LOCATION";
-	public static final String DEFAULT_POST_LOCATION = "j_security_check";
 	private final FormParserFactory formParserFactory;
 
 	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;

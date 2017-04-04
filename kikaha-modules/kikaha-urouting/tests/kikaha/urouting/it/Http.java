@@ -12,7 +12,9 @@ import okio.BufferedSink;
  */
 public interface Http {
 
-	OkHttpClient client = new OkHttpClient();
+	OkHttpClient client = new OkHttpClient()
+			.newBuilder()
+			.followRedirects(false).build();
 
 	static Request.Builder url( String url ) {
 		return new Request.Builder().url( url );

@@ -4,10 +4,12 @@ import javax.annotation.PostConstruct;
 import javax.inject.*;
 import kikaha.config.Config;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  */
+@Slf4j
 @Getter
 @Singleton
 @ToString
@@ -31,5 +33,15 @@ public class FormAuthenticationConfiguration {
 		callbackUrl = authConfig.getString( "callback-url" );
 		logoutUrl = authConfig.getString( "logout-url" );
 		permissionDeniedPage = authConfig.getString( "permission-denied-page" );
+		logDetailedInformationAboutThisConfig();
+	}
+
+	private void logDetailedInformationAboutThisConfig() {
+		log.info( "Form Authentication configuration:" );
+		log.info( "  login-page: " + loginPage );
+		log.info( "  error-page: " + errorPage );
+		log.info( "  success-page: " + successPage );
+		log.info( "  callback-url: " + callbackUrl );
+		log.info( "  logout-url: " + logoutUrl );
 	}
 }

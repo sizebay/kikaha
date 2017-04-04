@@ -106,7 +106,8 @@ public class AuthenticationRuleMatcher {
 	}
 
 	public AuthenticationRule retrieveAuthenticationRuleForUrl( final String url, final String referer ) {
-		if ( !isUrlFromAuthenticationResources( url ) && !isUrlFromAuthenticationResources( referer ) )
+		if ( formAuthenticationConfiguration.getCallbackUrl().equals(url)
+		|| (!isUrlFromAuthenticationResources( url ) && !isUrlFromAuthenticationResources( referer )) )
 			for ( final AuthenticationRule rule : rules )
 				if ( rule.matches( url ) )
 					return rule;

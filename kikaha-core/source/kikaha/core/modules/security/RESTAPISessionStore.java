@@ -12,11 +12,10 @@ import io.undertow.server.HttpServerExchange;
 public class RESTAPISessionStore implements SessionStore {
 
 	private static final String SESSION_ID = UUID.randomUUID().toString();
-	private final Session session = new DefaultSession( SESSION_ID );
 
 	@Override
 	public Session createOrRetrieveSession( HttpServerExchange exchange, SessionIdManager sessionIdManager ) {
-		return session;
+		return new DefaultSession( SESSION_ID );
 	}
 
 	@Override

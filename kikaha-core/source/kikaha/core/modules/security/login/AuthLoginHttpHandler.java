@@ -34,7 +34,7 @@ public class AuthLoginHttpHandler implements HttpHandler {
 
 	String readAndParseTemplate(){
 		final Map<String, Object> templateVariables = readTemplateVariables();
-		final String loginTemplatePage = config.getString( "server.auth.login-template", "default-login.html" );
+		final String loginTemplatePage = config.getString( "server.auth.form-auth.login-template", "default-login.html" );
 
 		String template = SystemResource.readFileAsString( loginTemplatePage, "UTF-8" );
 		for ( final Entry<String, Object> var : templateVariables.entrySet() )

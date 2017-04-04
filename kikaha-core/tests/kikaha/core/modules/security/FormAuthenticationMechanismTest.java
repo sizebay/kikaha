@@ -96,7 +96,7 @@ public class FormAuthenticationMechanismTest {
 		return simulateRequestTo( "/auth/callback" );
 	}
 
-	AuthenticationMechanism simulateRequestTo(final String defaultPostLocation) {
+	AuthenticationMechanism simulateRequestTo(String defaultPostLocation) {
 		exchange.setRelativePath(defaultPostLocation);
 		exchange.setRequestURI(defaultPostLocation);
 		exchange.setRequestMethod(Methods.POST);

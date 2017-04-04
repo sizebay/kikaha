@@ -20,5 +20,8 @@ server:
   auth:
     auth-mechanisms:
       default: kikaha.urouting.it.context.FixedAuthenticationMechanism
+    form-auth:
+      callback-url: "/it/form-auth/callback"
     rules:
       - { pattern: "/it/parameters/contextual/*", auth-mechanisms: ["default"] }
+      - { pattern: "/it/form-auth/*", auth-mechanisms: ["form"] }

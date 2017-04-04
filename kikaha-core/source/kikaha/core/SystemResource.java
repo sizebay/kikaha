@@ -44,15 +44,23 @@ public interface SystemResource {
 	}
 
 	static InputStream openFile( String fileName ){
-		return open( new File( fileName ) );
+		InputStream stream = open(new File(fileName));
+		if ( stream == null )
+			stream = ClassLoader.getSystemResourceAsStream( fileName );
+		if ( stream == null ) {
+			fileName = fileName.replaceFirst( "^/", "" );
+			stream = ClassLoader.getSystemResourceAsStream( fileName );
+		}
+		return stream;
 	}
 
 	static InputStream open( File file ) {
 		try {
 			if ( file.exists() )
+				file = new File(".", file.getPath());
+			if ( file.exists() )
 				return new FileInputStream( file );
-			final String fileName = file.getName().replaceFirst( "^/", "" );
-			return ClassLoader.getSystemResourceAsStream( fileName );
+			return null;
 		} catch ( IOException cause ) {
 			throw new IllegalStateException( cause );
 		}

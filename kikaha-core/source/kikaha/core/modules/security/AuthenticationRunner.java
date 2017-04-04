@@ -19,8 +19,7 @@ public class AuthenticationRunner implements Runnable {
 	@Override
 	public void run() {
 		try {
-			context.setAuthenticationRequired();
-			if ( context.authenticate() && context.isAuthenticated() ) {
+			if ( !context.isAuthenticationRequired() || (context.authenticate() && context.isAuthenticated()) ) {
 				if ( !exchange.isResponseStarted() )
 					tryExecuteChain();
 			} else
@@ -33,7 +32,7 @@ public class AuthenticationRunner implements Runnable {
 	}
 
 	void tryExecuteChain() throws Exception {
-		if ( matchesExpectedRoles() )
+		if ( !context.isAuthenticated() || matchesExpectedRoles() )
 			next.handleRequest(exchange);
 		else
 			handlePermissionDenied();

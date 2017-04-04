@@ -23,25 +23,9 @@ public class SampleWebSocketResourceTest {
 	@Test(timeout = 90000)
 	public void ensureWebSocketIsAbleToReceiveMessage() throws InterruptedException {
 		final Request.Builder url = Http.url("http://localhost:19999/it/websocket");
-		/*final okhttp3.WebSocket webSocket = Http.client.newWebSocket(url.build(), new WebSocketListener() {
-			@Override
-			public void onOpen(okhttp3.WebSocket webSocket, Response response) {
-				System.out.println("opened");
-			}
-
-			@Override
-			public void onMessage(okhttp3.WebSocket webSocket, String text) {
-				System.out.println(text);
-			}
-
-			@Override
-			public void onFailure(okhttp3.WebSocket webSocket, Throwable t, Response response) {
-				t.printStackTrace();
-			}
-		});*/
 		final WebSocket webSocket = Http.connect( url );
 		assertTrue( webSocket.send( HELLO_WORLD ) );
-		Thread.sleep( 1000l );
+		Thread.sleep( 100l );
 		assertTrue( webSocketResource.opened );
 		assertEquals( HELLO_WORLD, webSocketResource.message );
 	}

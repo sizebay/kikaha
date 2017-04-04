@@ -31,29 +31,28 @@ public class DefaultSecurityContext implements SecurityContext {
 	@Override
 	public boolean authenticate() {
 		authenticated = true;
-		currentSession = store.createOrRetrieveSession(exchange, sessionIdManager);
 		final Account account = performAuthentication();
 		if ( account == null ){
 			authenticated = false;
 			sendAuthenticationChallenge();
 		}
-		currentSession.setAuthenticatedAccount( account );
+		getCurrentSession().setAuthenticatedAccount( account );
 		updateCurrentSession();
 		return authenticated;
 	}
 
 	private Account performAuthentication() {
 		final Iterator<AuthenticationMechanism> iterator = rule.mechanisms().iterator();
-		Account account = currentSession.getAuthenticatedAccount();
+		Account account = getCurrentSession().getAuthenticatedAccount();
 		while ( account == null && iterator.hasNext() ) {
 			currentAuthMechanism = iterator.next();
-			account = currentAuthMechanism.authenticate( exchange, rule.identityManagers(), currentSession );
+			account = currentAuthMechanism.authenticate( exchange, rule.identityManagers(), getCurrentSession() );
 		}
 		return account;
 	}
 
 	private void sendAuthenticationChallenge() {
-		if ( currentAuthMechanism != null && !currentAuthMechanism.sendAuthenticationChallenge( exchange, currentSession ) )
+		if ( currentAuthMechanism != null && !currentAuthMechanism.sendAuthenticationChallenge( exchange, getCurrentSession() ) )
 			throw new IllegalStateException( "Cannot send authentication challenge" );
 	}
 
@@ -69,6 +68,12 @@ public class DefaultSecurityContext implements SecurityContext {
 			try { store.flush( currentSession ); }
 			finally { currentSession.flush(); }
 		}
+	}
+
+	public Session getCurrentSession(){
+		if ( currentSession == null )
+			currentSession = store.createOrRetrieveSession(exchange, sessionIdManager);
+		return currentSession;
 	}
 
 	public void setCurrentSession( Session session ){
