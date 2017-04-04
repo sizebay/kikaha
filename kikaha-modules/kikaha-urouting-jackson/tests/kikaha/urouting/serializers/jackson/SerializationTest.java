@@ -40,16 +40,14 @@ public class SerializationTest {
 	public void grantThatSerializeItAsJSON() {
 		final JSONHttpSerializer serializer = spy((JSONHttpSerializer)provider.load( Serializer.class, new JSONContentTypeCondition<>() ));
 		final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
-		doAnswer( this::ensureThatWasCorrectlySerialized ).when(serializer).send( eq(exchange), any( ByteBuffer.class ));
+		doAnswer( this::ensureThatWasCorrectlySerialized ).when(serializer).send( eq(exchange), any( String.class ));
 		serializer.serialize( user, exchange, "UTF-8" );
 	}
 
 	Void ensureThatWasCorrectlySerialized(InvocationOnMock invocation) throws Throwable {
-		final ByteBuffer buffer = invocation.getArgumentAt(1, ByteBuffer.class);
+		final String buffer = invocation.getArgumentAt(1, String.class);
 		final String expected = readFile( "serialization.expected-json.json" );
-		final byte[] bytes = new byte[buffer.capacity()];
-		buffer.get(bytes);
-		assertEquals( expected, new String( bytes ) );
+		assertEquals( expected, buffer );
 		return null;
 	}
 

@@ -17,13 +17,13 @@ public class JSONHttpSerializer implements Serializer, Unserializer {
 
 	@Override
 	public <T> void serialize(T object, HttpServerExchange exchange, String encoding) throws IOException {
-		final ByteBuffer buffer = ByteBuffer.wrap( jackson.objectMapper().writeValueAsBytes(object) );
-		send(exchange, buffer);
+		final String string = jackson.objectMapper().writeValueAsString( object );
+		send(exchange, string);
 		exchange.endExchange();
 	}
 
-	public void send(final HttpServerExchange exchange, final ByteBuffer buffer) {
-		exchange.getResponseSender().send( buffer );
+	public void send(final HttpServerExchange exchange, final String string) {
+		exchange.getResponseSender().send( string );
 	}
 
 	@Override
