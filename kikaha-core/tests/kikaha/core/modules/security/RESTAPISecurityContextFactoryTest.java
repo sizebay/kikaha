@@ -1,6 +1,7 @@
 package kikaha.core.modules.security;
 
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.test.HttpServerExchangeStub;
 import org.junit.Test;
@@ -27,6 +28,6 @@ public class RESTAPISecurityContextFactoryTest {
 		final DefaultSecurityContext secondSecurityContext = factory.createSecurityContextFor(exchange, rule, store, manager);
 
 		assertNotSame( firstSecurityContext, secondSecurityContext );
-		assertNotSame( firstSecurityContext.getStore(), secondSecurityContext.getStore() );
+		assertSame( firstSecurityContext.getStore(), secondSecurityContext.getStore() );
 	}
 }

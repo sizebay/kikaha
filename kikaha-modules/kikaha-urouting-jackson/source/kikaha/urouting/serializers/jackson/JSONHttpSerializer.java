@@ -1,8 +1,7 @@
 package kikaha.urouting.serializers.jackson;
 
-import javax.inject.*;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import javax.inject.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.modules.http.ContentType;
@@ -19,7 +18,6 @@ public class JSONHttpSerializer implements Serializer, Unserializer {
 	public <T> void serialize(T object, HttpServerExchange exchange, String encoding) throws IOException {
 		final String string = jackson.objectMapper().writeValueAsString( object );
 		send(exchange, string);
-		exchange.endExchange();
 	}
 
 	public void send(final HttpServerExchange exchange, final String string) {
