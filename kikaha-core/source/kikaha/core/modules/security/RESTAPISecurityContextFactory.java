@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Singleton
 @Deprecated
-public class RESTAPISecurityContextFactory implements SecurityContextFactory {
+public class RESTAPISecurityContextFactory extends DefaultSecurityContextFactory {
 
 	public RESTAPISecurityContextFactory(){
 		log.warn( "RESTAPISecurityContextFactory is deprecated and should be removed on the next major release. " +
@@ -21,6 +21,6 @@ public class RESTAPISecurityContextFactory implements SecurityContextFactory {
 			final SessionStore sessionStore,
 			final SessionIdManager sessionIdManager)
 	{
-		return new DefaultSecurityContext( rule, exchange, new RESTAPISessionStore(), sessionIdManager );
+		return super.createSecurityContextFor( exchange, rule, new RESTAPISessionStore(), sessionIdManager );
 	}
 }

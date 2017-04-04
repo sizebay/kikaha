@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Singleton
 @Deprecated
-public class HazelcastSecurityContextFactory implements SecurityContextFactory {
+public class HazelcastSecurityContextFactory extends DefaultSecurityContextFactory {
 
 	@Inject
 	HazelcastSessionStore store;
@@ -19,12 +19,12 @@ public class HazelcastSecurityContextFactory implements SecurityContextFactory {
 	}
 
 	@Override
-	public SecurityContext createSecurityContextFor(
+	public DefaultSecurityContext createSecurityContextFor(
 			final HttpServerExchange exchange,
 			final AuthenticationRule rule,
 			final SessionStore sessionStore,
 			final SessionIdManager sessionIdManager)
 	{
-		return new DefaultSecurityContext( rule, exchange, store, sessionIdManager );
+		return super.createSecurityContextFor ( exchange, rule, store, sessionIdManager );
 	}
 }
