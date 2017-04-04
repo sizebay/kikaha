@@ -3,12 +3,16 @@ package kikaha.hazelcast;
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.*;
 import javax.inject.*;
+import java.io.InputStream;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.*;
 import kikaha.config.Config;
+import kikaha.core.SystemResource;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Singleton
 public class HazelcastInstanceProducer {
 
@@ -64,6 +68,7 @@ public class HazelcastInstanceProducer {
 		// UNCHECKED: It should handle any exception thrown
 		} catch ( final Exception cause ) {
 		// CHECKED
+			log.error( "Can't initialize Hazelcast", cause );
 			throw new IllegalStateException( cause );
 		}
 	}
@@ -75,7 +80,8 @@ public class HazelcastInstanceProducer {
 	 */
 	private com.hazelcast.config.Config loadConfig() throws Exception {
 		final String configFile = config.getString("server.hazelcast.config");
-		final com.hazelcast.config.Config config = new XmlConfigBuilder( configFile ).build();
+		final InputStream inputStream = SystemResource.openFile( configFile );
+		final com.hazelcast.config.Config config = new XmlConfigBuilder( inputStream ).build();
 		config.setProperty( "hazelcast.logging.type", "slf4j" );
 		return config;
 	}
