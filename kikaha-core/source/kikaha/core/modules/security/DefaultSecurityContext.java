@@ -18,8 +18,6 @@ public class DefaultSecurityContext implements SecurityContext {
 	private static final String MSG_NO_MANUAL_LOGIN = "You can't perform a manual login.";
 	private static final String MSG_NOT_SUPPORTED_BY_DEFAULT = "This operation is not supported by default.";
 
-	private final boolean authenticationRequired = true;
-
 	private AuthenticationMechanism currentAuthMechanism = null;
 	private Session currentSession = null;
 	private boolean authenticated = false;
@@ -28,6 +26,7 @@ public class DefaultSecurityContext implements SecurityContext {
 	@NonNull private final HttpServerExchange exchange;
 	@NonNull private final SessionStore store;
 	@NonNull private final SessionIdManager sessionIdManager;
+	@NonNull private final boolean authenticationRequired;
 
 	@Override
 	public boolean authenticate() {
