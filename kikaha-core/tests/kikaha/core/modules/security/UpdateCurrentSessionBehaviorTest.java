@@ -71,7 +71,7 @@ public class UpdateCurrentSessionBehaviorTest {
 
 	private SecurityContext getAuthenticatedSecurityContext() {
 		doReturn( account ).when( mechanism ).authenticate( any(), any(), any() );
-		final SecurityContext context = new DefaultSecurityContext(rule, exchange, store, new SessionCookie());
+		final SecurityContext context = new DefaultSecurityContext(rule, exchange, store, new SessionCookie(), true);
 		assertTrue( context.authenticate() );
 		verify( mechanism, never() ).sendAuthenticationChallenge( any(), any() );
 		verify( store, times( 1 ) ).flush( any() );
