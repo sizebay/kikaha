@@ -34,7 +34,7 @@ class AuthenticationHttpHandler implements HttpHandler {
 	private AuthenticationRule retrieveRuleThatEnsureRequestShouldBeAuthenticated( final HttpServerExchange exchange ) {
 		final String relativePath = exchange.getRelativePath();
 		final String referer = exchange.getRequestHeaders().getFirst( Headers.REFERER );
-		return authenticationRuleMatcher.retrieveAuthenticationRuleForUrl( relativePath, referer );
+		return authenticationRuleMatcher.retrieveAuthenticationRuleForUrl( relativePath, referer != null ? referer : "" );
 	}
 
 	private SecurityContext getOrCreateSecurityContext( final HttpServerExchange exchange, final AuthenticationRule rule ) {

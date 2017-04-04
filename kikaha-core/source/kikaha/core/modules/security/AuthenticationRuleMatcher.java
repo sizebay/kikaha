@@ -1,11 +1,13 @@
 package kikaha.core.modules.security;
 
+import java.net.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import kikaha.config.Config;
 import kikaha.core.cdi.ServiceProvider;
 import kikaha.core.cdi.helpers.TinyList;
+import kikaha.core.url.URL;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +86,7 @@ public class AuthenticationRuleMatcher {
 		List<AuthenticationMechanism> mechanisms = extractNeededMechanisms( ruleConf.getStringList("auth-mechanisms") );
 		return new AuthenticationRule(
 				ruleConf.getString( "pattern" ), identityManager,
-				mechanisms, ruleConf.getStringList( "expected-roles" ),
+				mechanisms, ruleConf.getStringList( "expected-roles", Collections.emptyList() ),
 			ruleConf.getStringList( "exclude-patterns" ) );
 	}
 
@@ -106,16 +108,21 @@ public class AuthenticationRuleMatcher {
 	}
 
 	public AuthenticationRule retrieveAuthenticationRuleForUrl( final String url, final String referer ) {
-		if ( formAuthenticationConfiguration.getCallbackUrl().equals(url)
-		|| (!isUrlFromAuthenticationResources( url ) && !isUrlFromAuthenticationResources( referer )) )
-			for ( final AuthenticationRule rule : rules )
-				if ( rule.matches( url ) )
-					return rule;
+		try {
+			final String refererPath = new URI( referer ).getPath();
+			if ( formAuthenticationConfiguration.getCallbackUrl().equals( url )
+					|| ( !isUrlFromAuthenticationResources( url ) && !isUrlFromAuthenticationResources( refererPath ) ) )
+				for ( final AuthenticationRule rule : rules )
+					if ( rule.matches( url ) )
+						return rule;
+		} catch ( URISyntaxException cause ) {
+			log.error( "Can't execute this AuthenticationRule", cause );
+		}
 		return null;
 	}
 
 	private boolean isUrlFromAuthenticationResources( final String url ) {
-		return formAuthenticationConfiguration.getErrorPage().equals( url )
-			|| formAuthenticationConfiguration.getLoginPage().equals( url );
+		return  formAuthenticationConfiguration.getErrorPage().equals( url )
+			||  formAuthenticationConfiguration.getLoginPage().equals( url );
 	}
 }
