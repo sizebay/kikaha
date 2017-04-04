@@ -56,7 +56,7 @@ public interface SystemResource {
 
 	static InputStream open( File file ) {
 		try {
-			if ( file.exists() )
+			if ( !file.exists() )
 				file = new File(".", file.getPath());
 			if ( file.exists() )
 				return new FileInputStream( file );
