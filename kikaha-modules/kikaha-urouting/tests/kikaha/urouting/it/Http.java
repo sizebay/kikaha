@@ -1,6 +1,7 @@
 package kikaha.urouting.it;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 import kikaha.urouting.api.Mimes;
 import lombok.experimental.Delegate;
@@ -14,6 +15,9 @@ public interface Http {
 
 	OkHttpClient client = new OkHttpClient()
 			.newBuilder()
+			.connectTimeout(3, TimeUnit.SECONDS)
+			.readTimeout(3, TimeUnit.SECONDS)
+			.writeTimeout(3, TimeUnit.SECONDS)
 			.followRedirects(false).build();
 
 	static Request.Builder url( String url ) {

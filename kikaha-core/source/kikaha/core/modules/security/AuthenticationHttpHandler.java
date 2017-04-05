@@ -22,11 +22,7 @@ class AuthenticationHttpHandler implements HttpHandler {
 			rule = AuthenticationRule.EMPTY;
 		final SecurityContext securityContext = getOrCreateSecurityContext(exchange, rule);
 		if ( securityContext.isAuthenticated() )
-			try {
-				next.handleRequest(exchange);
-			} catch ( Throwable cause ) {
-				cause.printStackTrace();
-			}
+			next.handleRequest(exchange);
 		else
 			runAuthenticationInIOThread( exchange, rule, securityContext );
 	}

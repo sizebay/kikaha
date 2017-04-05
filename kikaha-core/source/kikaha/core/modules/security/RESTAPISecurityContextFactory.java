@@ -23,6 +23,6 @@ public class RESTAPISecurityContextFactory extends DefaultSecurityContextFactory
 			final SessionStore sessionStore,
 			final SessionIdManager sessionIdManager)
 	{
-		return super.createSecurityContextFor( exchange, rule, sessionStore, sessionIdManager );
+		return super.createSecurityContextFor( exchange, rule, this.sessionStore, sessionIdManager );
 	}
 }

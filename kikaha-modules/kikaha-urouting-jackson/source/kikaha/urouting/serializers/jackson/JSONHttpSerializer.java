@@ -1,6 +1,7 @@
 package kikaha.urouting.serializers.jackson;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import javax.inject.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.undertow.server.HttpServerExchange;
@@ -16,12 +17,12 @@ public class JSONHttpSerializer implements Serializer, Unserializer {
 
 	@Override
 	public <T> void serialize(T object, HttpServerExchange exchange, String encoding) throws IOException {
-		final String string = jackson.objectMapper().writeValueAsString( object );
-		send(exchange, string);
+		final byte[] bytes = jackson.objectMapper().writeValueAsBytes(object);
+		send(exchange, ByteBuffer.wrap(bytes));
 	}
 
-	public void send(final HttpServerExchange exchange, final String string) {
-		exchange.getResponseSender().send( string );
+	public void send(final HttpServerExchange exchange, final ByteBuffer buffer) {
+		exchange.getResponseSender().send( buffer );
 	}
 
 	@Override

@@ -6,6 +6,8 @@ server:
     content-type-priority: "REQUEST"
 
   smart-routes:
+    auth:
+      enabled: true
     cors:
       enabled: true
       always-allow-origin: true

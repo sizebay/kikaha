@@ -1,10 +1,10 @@
 package kikaha.urouting.it.responses;
 
-import javax.inject.Singleton;
 import java.io.IOException;
+import javax.inject.Singleton;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.modules.http.ContentType;
-import kikaha.urouting.api.*;
+import kikaha.urouting.api.Serializer;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -23,6 +23,5 @@ public class YmlSerializer implements Serializer {
 		final String dumped = yaml.dump( object );
 		output.setStatusCode( 200 );
 		output.getResponseSender().send( dumped );
-		output.endExchange();
 	}
 }

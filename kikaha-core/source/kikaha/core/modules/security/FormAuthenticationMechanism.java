@@ -53,6 +53,9 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	}
 
 	private Credential readCredentialFromRequest(HttpServerExchange exchange) throws IOException {
+		if ( !exchange.isBlocking() )
+			exchange.startBlocking();
+
 		Credential credential = null;
 		final FormDataParser parser = formParserFactory.createParser(exchange);
 		final FormData data = parser.parseBlocking();
@@ -84,12 +87,22 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	}
 
 	private static void sendRedirect(HttpServerExchange exchange, final String location) {
-		if ( !exchange.isResponseStarted() ) {
-			exchange.setStatusCode(StatusCodes.FOUND);
-			exchange.getResponseHeaders().put(Headers.LOCATION, location);
-			exchange.endExchange();
-		} else {
-			log.error("Could not redirect. Response already started.");
-		}
+		exchange.addDefaultResponseListener( RedirectBack.to(location) );
+		exchange.endExchange();
+	}
+}
+
+@Slf4j
+@RequiredArgsConstructor(staticName="to")
+class RedirectBack implements DefaultResponseListener {
+
+	final String location;
+
+	@Override
+	public boolean handleDefaultResponse(HttpServerExchange exchange) {
+		exchange.setStatusCode(StatusCodes.FOUND);
+		exchange.getResponseHeaders().put(Headers.LOCATION, location);
+		exchange.endExchange();
+		return true;
 	}
 }

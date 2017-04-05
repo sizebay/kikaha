@@ -8,11 +8,12 @@ import io.undertow.util.*;
 import kikaha.config.Config;
 import kikaha.urouting.api.*;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * A helper class to write responses to the HTTP Client.
  */
-@Singleton
+@Singleton @Slf4j
 public class RoutingMethodResponseWriter {
 
 	@Inject
@@ -112,7 +113,6 @@ public class RoutingMethodResponseWriter {
 	{
 		final Serializer serializer = getSerializer( contentType );
 		serializer.serialize( serializable, exchange, encoding );
-		exchange.endExchange();
 	}
 
 	private Serializer getSerializer( final String contentType ) throws IOException {
@@ -134,6 +134,6 @@ public class RoutingMethodResponseWriter {
 	void sendContentTypeHeader( final HttpServerExchange exchange, final String contentType ) {
 		final HeaderMap responseHeaders = exchange.getResponseHeaders();
 		if ( !responseHeaders.contains( Headers.CONTENT_TYPE_STRING ) && contentType != null )
-			responseHeaders.add( new HttpString( Headers.CONTENT_TYPE_STRING ), contentType );
+			responseHeaders.add( Headers.CONTENT_TYPE, contentType );
 	}
 }
