@@ -1,22 +1,22 @@
 package kikaha.uworkers.core;
 
-import kikaha.urouting.SimpleExchange;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+import java.util.concurrent.atomic.AtomicReference;
+import io.undertow.server.HttpServerExchange;
+import kikaha.core.test.HttpServerExchangeStub;
+import kikaha.urouting.*;
 import kikaha.urouting.SimpleExchange.ContentReceiver;
-import kikaha.urouting.UndertowHelper;
-import kikaha.uworkers.api.Exchange;
-import org.junit.Before;
-import org.junit.Test;
+import kikaha.uworkers.api.WorkerRef;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link RESTFulMicroWorkersHttpHandler}.
@@ -24,45 +24,38 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class RESTFulMicroWorkersHttpHandlerTest {
 
+    final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
     final byte[] helloWorld = "Hello World".getBytes();
 
+    @Mock WorkerRef workerRef;
     @Mock Object response;
     @Mock UndertowHelper helper;
     @Mock SimpleExchange httpExchange;
     @Mock EndpointInboxSupplier wrappedSupplier;
-    RESTFulEndpointInboxSupplier supplier;
     RESTFulMicroWorkersHttpHandler handler;
 
     @Before
     public void setup(){
         doReturn( httpExchange ).when( helper ).simplify( any() );
         doAnswer( this::simulateReceiveBytes ).when( httpExchange ).receiveRequest( any() );
-        supplier = RESTFulEndpointInboxSupplier.wrap( wrappedSupplier, 1 );
-        handler = RESTFulMicroWorkersHttpHandler.with( helper, supplier );
+        handler = RESTFulMicroWorkersHttpHandler.with( helper, workerRef );
     }
 
     @Test
     public void ensureSendHttpExchangeWasPolledWhenAMessageWasReceived() throws Exception {
-        handler.handleRequest( null );
-        final Exchange polledExchange = supplier.receiveMessage();
-        assertNotNull( polledExchange );
-        assertTrue( polledExchange instanceof RESTFulExchange );
+        handler.handleRequest( exchange );
+        verify( workerRef ).send( any( RESTFulExchange.class ) );
     }
 
     @Test
     public void ensureSendAResponseWhenTheMicroWorkerExchangeReceiveAReply() throws Exception {
-        handler.handleRequest( null );
-        supplier.receiveMessage().reply( response );
-        verify( httpExchange ).sendResponse( eq( response ) );
-    }
+        final CaptureArg<RESTFulExchange> arg = CaptureArg.capture(0, RESTFulExchange.class);
+        doAnswer( arg ).when( workerRef ).send( any(RESTFulExchange.class) );
 
-    @Test
-    public void ensureSendAFailureResponseWhenTheMicroWorkerInboxIsFull() throws Exception {
-        handler.handleRequest( null );
-        handler.handleRequest( null );
-        verify( httpExchange ).sendResponse( eq( RESTFulMicroWorkersHttpHandler.TOO_MANY_REQUESTS ) );
+        handler.handleRequest( exchange );
+        final RESTFulExchange restFulExchange = arg.get();
+        restFulExchange.reply( response );
 
-        supplier.receiveMessage().reply( response );
         verify( httpExchange ).sendResponse( eq( response ) );
     }
 
@@ -73,6 +66,22 @@ public class RESTFulMicroWorkersHttpHandlerTest {
                 invocationOnMock.getArgumentAt(0 , ContentReceiver.class );
             receiver.accept( httpExchange, helloWorld );
         } catch ( Throwable t ) { t.printStackTrace(); }
+        return null;
+    }
+}
+
+@RequiredArgsConstructor(staticName = "capture")
+class CaptureArg<T> implements Answer<Void> {
+
+    @Delegate
+    final AtomicReference<T> holder = new AtomicReference<>();
+    final int index;
+    final Class<T> clazz;
+
+    @Override
+    public Void answer(InvocationOnMock invocation) throws Throwable {
+        final T argumentAt = invocation.getArgumentAt(index, clazz);
+        holder.set( argumentAt );
         return null;
     }
 }

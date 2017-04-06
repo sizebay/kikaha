@@ -22,8 +22,8 @@ public abstract class HttpServerExchangeStub {
 	}
 
 	public static HttpServerExchange createHttpExchange() {
-		final HttpServerExchange httpExchange = newHttpExchange();
-
+		final ServerConnection serverConnection = createServerConnection();
+		final HttpServerExchange httpExchange = newHttpExchange( serverConnection );
 		final Sender sender = mock( Sender.class );
 		final Exposed exposed = new Exposed( httpExchange );
 		exposed.setFieldValue( "sender", sender );
@@ -31,8 +31,8 @@ public abstract class HttpServerExchangeStub {
 		return httpExchange;
 	}
 
-	private static HttpServerExchange newHttpExchange() {
-		final HttpServerExchange httpServerExchange = new HttpServerExchange( createServerConnection(), new HeaderMap(), new HeaderMap(), 200 );
+	private static HttpServerExchange newHttpExchange( final ServerConnection serverConnection ) {
+		final HttpServerExchange httpServerExchange = new HttpServerExchange( serverConnection, new HeaderMap(), new HeaderMap(), 200 );
 		httpServerExchange.setRequestMethod( new HttpString( "GET" ) );
 		httpServerExchange.setProtocol( Protocols.HTTP_1_1 );
 		httpServerExchange.setRelativePath("/test");

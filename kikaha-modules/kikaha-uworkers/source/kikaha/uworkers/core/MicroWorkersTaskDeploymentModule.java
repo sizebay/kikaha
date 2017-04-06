@@ -1,19 +1,18 @@
 package kikaha.uworkers.core;
 
-import io.undertow.Undertow;
-import kikaha.core.DeploymentContext;
-import kikaha.core.modules.Module;
-import kikaha.urouting.UndertowHelper;
-import kikaha.uworkers.api.Worker;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-
-import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.enterprise.inject.Typed;
+import javax.inject.*;
+import io.undertow.Undertow;
+import io.undertow.server.HttpHandler;
+import kikaha.core.DeploymentContext;
+import kikaha.core.modules.Module;
+import kikaha.urouting.UndertowHelper;
+import kikaha.uworkers.api.*;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -50,11 +49,11 @@ public class MicroWorkersTaskDeploymentModule implements Module {
 		final String listenerName = getListenerName(listener);
 		final EndpointConfig endpointConfig = microWorkersContext.getEndpointConfig( listenerName );
 		final EndpointFactory endpointFactory = endpointConfig.getEndpointFactory();
-		EndpointInboxSupplier inbox = endpointFactory.createSupplier( endpointConfig );
+		final EndpointInboxSupplier inbox = endpointFactory.createSupplier( endpointConfig );
 		if ( microWorkersContext.isRestEnabled ) {
-			final RESTFulEndpointInboxSupplier restSupplier = RESTFulEndpointInboxSupplier.wrap( inbox, microWorkersContext.maxTaskPoolSize );
-			context.register( microWorkersContext.restApiPrefix + "/" + listenerName, "POST", RESTFulMicroWorkersHttpHandler.with( undertowHelper, restSupplier ) );
-			inbox = restSupplier;
+			final WorkerRef workerRef = endpointFactory.createWorkerRef(endpointConfig);
+			final HttpHandler restEndpoint = RESTFulMicroWorkersHttpHandler.with( undertowHelper, workerRef );
+			context.register( microWorkersContext.restApiPrefix + "/" + listenerName, "POST", restEndpoint );
 		}
 		final EndpointInboxConsumer consumer = new EndpointInboxConsumer( isShutdown, inbox, listener, listenerName );
 		runInBackgroundWithParallelism( consumer, endpointConfig.getParallelism() );
