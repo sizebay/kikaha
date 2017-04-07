@@ -9,9 +9,18 @@ import kikaha.uworkers.api.Exchange;
 public interface WorkerEndpointMessageListener {
 
 	/**
-	 * Notifies the Worker value of a just received message.
+	 * Send to the Worker a just received message.
 	 *
 	 * @param exchange
 	 */
 	void onMessage( Exchange exchange ) throws Throwable;
+
+	/**
+	 * Return the HTTP URI that would allow external access to this endpoint.
+	 *
+	 * @return
+	 */
+	default String getHttpEndpoint() {
+		return toString();
+	}
 }

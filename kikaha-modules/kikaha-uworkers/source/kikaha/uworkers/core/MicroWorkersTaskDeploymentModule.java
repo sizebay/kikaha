@@ -1,6 +1,6 @@
 package kikaha.uworkers.core;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.enterprise.inject.Typed;
@@ -46,24 +46,30 @@ public class MicroWorkersTaskDeploymentModule implements Module {
 	}
 
 	void deploy( final DeploymentContext context, final WorkerEndpointMessageListener listener ) throws IOException {
-		final String listenerName = getListenerName(listener);
+		final Worker annotation = listener.getClass().getAnnotation( Worker.class );
+		if ( annotation == null )
+			throw new IOException( "Can't instantiate " + listener.getClass() + ": no @Worker value found." );
+
+		final String listenerName = annotation.value();
 		final EndpointConfig endpointConfig = microWorkersContext.getEndpointConfig( listenerName );
 		final EndpointFactory endpointFactory = endpointConfig.getEndpointFactory();
 		final EndpointInboxSupplier inbox = endpointFactory.createSupplier( endpointConfig );
-		if ( microWorkersContext.isRestEnabled ) {
-			final WorkerRef workerRef = endpointFactory.createWorkerRef(endpointConfig);
-			final HttpHandler restEndpoint = RESTFulMicroWorkersHttpHandler.with( undertowHelper, workerRef );
-			context.register( microWorkersContext.restApiPrefix + "/" + listenerName, "POST", restEndpoint );
-		}
+
+		if ( microWorkersContext.isRestEnabled )
+			deployHttpEndpoint( context, listener, endpointFactory, endpointConfig, annotation );
+
 		final EndpointInboxConsumer consumer = new EndpointInboxConsumer( isShutdown, inbox, listener, listenerName );
 		runInBackgroundWithParallelism( consumer, endpointConfig.getParallelism() );
 	}
 
-	private String getListenerName( final WorkerEndpointMessageListener listener ) throws IOException {
-		final Worker annotation = listener.getClass().getAnnotation( Worker.class );
-		if ( annotation == null )
-			throw new IOException( "Can't instantiate " + listener.getClass() + ": no @Worker value found." );
-		return annotation.value();
+	void deployHttpEndpoint(
+			DeploymentContext context, WorkerEndpointMessageListener listener,
+			EndpointFactory endpointFactory, EndpointConfig endpointConfig, Worker worker )
+	{
+		final String httpListenerName = worker.useNameAsHttpURI() ? worker.value() : listener.getHttpEndpoint();
+		final WorkerRef workerRef = endpointFactory.createWorkerRef(endpointConfig);
+		final HttpHandler restEndpoint = RESTFulMicroWorkersHttpHandler.with( undertowHelper, workerRef );
+		context.register( microWorkersContext.restApiPrefix + "/" + httpListenerName, "POST", restEndpoint );
 	}
 
 	void runInBackgroundWithParallelism( final EndpointInboxConsumer consumer, final int parallelism ){

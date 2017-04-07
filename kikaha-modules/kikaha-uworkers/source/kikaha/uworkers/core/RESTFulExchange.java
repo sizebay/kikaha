@@ -2,8 +2,7 @@ package kikaha.uworkers.core;
 
 import kikaha.urouting.SimpleExchange;
 import kikaha.urouting.api.DefaultResponse;
-import kikaha.uworkers.api.Exchange;
-import kikaha.uworkers.api.Response;
+import kikaha.uworkers.api.*;
 import kikaha.uworkers.local.LocalExchange;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -78,19 +77,23 @@ class RESTFulUWorkerResponse implements BiConsumer<Response.UndefinedObject, Thr
     @Override
     public void accept(Response.UndefinedObject undefinedObject, Throwable throwable) {
         try {
-            if (throwable != null)
-                exchange.sendResponse(throwable);
-            else {
-                final Object object = undefinedObject.get();
-                if ( object == null )
-                    exchange.sendResponse( NO_CONTENT );
-                else
-                    exchange.sendResponse( object );
-            }
+            sendResponse( undefinedObject, throwable );
         } catch ( Throwable cause ) {
             log.error( "Could not send response", cause );
         } finally {
             exchange.endExchange();
+        }
+    }
+
+    private void sendResponse( Response.UndefinedObject undefinedObject, Throwable throwable ) throws IOException {
+        if (throwable != null)
+            exchange.sendResponse(throwable);
+        else {
+            final Object object = undefinedObject.get();
+            if ( object == null || object instanceof TimeStamp )
+                exchange.sendResponse( NO_CONTENT );
+            else
+                exchange.sendResponse( object );
         }
     }
 }
