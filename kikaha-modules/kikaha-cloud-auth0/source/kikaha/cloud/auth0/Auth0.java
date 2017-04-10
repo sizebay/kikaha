@@ -7,7 +7,7 @@ import javax.enterprise.inject.Produces;
 import javax.inject.*;
 import java.security.*;
 import java.util.*;
-import com.auth0.Auth0User;
+import com.auth0.*;
 import com.auth0.jwt.JWTVerifier;
 import io.undertow.security.idm.Account;
 import kikaha.config.Config;
@@ -23,17 +23,29 @@ public class Auth0 {
 
 	@Inject Config config;
 
+	@Getter(lazy = true)
+	private final AuthConfig authConfig = new AuthConfig(
+		config.getString( "server.auth.auth0.issuer" ),
+		config.getString( "server.auth.auth0.client-id" ),
+		config.getString( "server.auth.auth0.client-secret" ),
+		config.getString( "server.auth.auth0.client-domain" ),
+		config.getString( "server.auth.auth0.signing-algorithm" ),
+		config.getString( "server.auth.auth0.public-key-path" ),
+		config.getBoolean( "server.auth.auth0.base64-encoded-secret" )
+	);
+
+	@Getter(lazy = true)
+	private final Auth0Client auth0Client = new Auth0ClientImpl(
+		getAuthConfig().clientId, getAuthConfig().clientSecret, getAuthConfig().clientDomain );
+
 	@Produces
 	AuthConfig produceAuthConfig(){
-		return new AuthConfig(
-			config.getString( "server.auth.auth0.issuer" ),
-			config.getString( "server.auth.auth0.client-id" ),
-			config.getString( "server.auth.auth0.client-secret" ),
-			config.getString( "server.auth.auth0.client-domain" ),
-			config.getString( "server.auth.auth0.signing-algorithm" ),
-			config.getString( "server.auth.auth0.public-key-path" ),
-			config.getBoolean( "server.auth.auth0.base64-encoded-secret" )
-		);
+		return getAuthConfig();
+	}
+
+	@Produces
+	Auth0Client produceClient(){
+		return getAuth0Client();
 	}
 
 	@Getter

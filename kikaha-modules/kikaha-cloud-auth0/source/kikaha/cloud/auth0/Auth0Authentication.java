@@ -77,12 +77,13 @@ public class Auth0Authentication implements AuthenticationMechanism {
 
 	@Override
 	public boolean sendAuthenticationChallenge( HttpServerExchange exchange, Session session ) {
-		redirectTo( exchange, formAuthenticationConfiguration.getErrorPage() );
+		log.warn( "Not logged in. Redirecting to " + formAuthenticationConfiguration.getLoginPage() );
+		redirectTo( exchange, formAuthenticationConfiguration.getLoginPage() );
 		return true;
 	}
 
 	void redirectTo( HttpServerExchange exchange, String location ){
-		if ( exchange.isResponseStarted() ) {
+		if ( !exchange.isResponseStarted() ) {
 			exchange.setStatusCode( StatusCodes.TEMPORARY_REDIRECT );
 			exchange.getResponseHeaders().add( Headers.LOCATION, location );
 		}

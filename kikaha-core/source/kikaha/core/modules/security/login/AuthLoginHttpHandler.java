@@ -35,12 +35,8 @@ public class AuthLoginHttpHandler implements HttpHandler {
 	String readAndParseTemplate(){
 		final Map<String, Object> templateVariables = readTemplateVariables();
 		final String loginTemplatePage = config.getString( "server.auth.form-auth.login-template", "default-login.html" );
-
-		String template = SystemResource.readFileAsString( loginTemplatePage, "UTF-8" );
-		for ( final Entry<String, Object> var : templateVariables.entrySet() )
-			template = template.replace( "{{"+ var.getKey() +"}}", var.getValue().toString() );
-
-		return template;
+		final String template = SystemResource.readFileAsString( loginTemplatePage, "UTF-8" );
+		return applyVariables( template, templateVariables );
 	}
 
 	private Map<String, Object> readTemplateVariables(){
@@ -59,15 +55,23 @@ public class AuthLoginHttpHandler implements HttpHandler {
 		try {
 			final SecurityContext securityContext = (SecurityContext) exchange.getSecurityContext();
 			final Session session = securityContext.getCurrentSession();
+
+			final Map<String, Object> templateVariables = new HashMap<>();
 			for ( ConfigurationHook hook : configurationHooks )
-				hook.configure( exchange, session );
+				templateVariables.putAll( hook.configure( exchange, session ) );
 
 			exchange.setStatusCode( StatusCodes.OK );
 			exchange.getResponseHeaders().put( Headers.CONTENT_TYPE, CONTENT_HTML );
-			exchange.getResponseSender().send( getHtml() );
+			exchange.getResponseSender().send( applyVariables( getHtml(), templateVariables ) );
 		} catch ( Throwable cause ) {
 			handleFailure( exchange, cause );
 		}
+	}
+
+	private String applyVariables( String template, Map<String, Object> templateVariables ){
+		for ( final Entry<String, Object> var : templateVariables.entrySet() )
+			template = template.replace( "{{"+ var.getKey() +"}}", var.getValue().toString() );
+		return template;
 	}
 
 	private void handleFailure( HttpServerExchange exchange, Throwable cause ) {
@@ -86,6 +90,8 @@ public class AuthLoginHttpHandler implements HttpHandler {
 
 		/**
 		 * Retrieve extra parameters that should be available for injection on the template.
+		 * This parameters will be available after the application deployment.
+		 *
 		 * @return
 		 */
 		Map<String, Object> getExtraParameters();
@@ -95,7 +101,9 @@ public class AuthLoginHttpHandler implements HttpHandler {
 		 *
 		 * @param exchange
 		 * @param session
+		 * @return new parameters that should be defined on the template. Developers should return an empty map
+		 *      if no parameter should be rendered for this request.
 		 */
-		void configure( HttpServerExchange exchange, Session session );
+		Map<String, Object> configure( HttpServerExchange exchange, Session session );
 	}
 }

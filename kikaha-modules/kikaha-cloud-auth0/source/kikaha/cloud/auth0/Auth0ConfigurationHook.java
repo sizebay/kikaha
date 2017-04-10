@@ -3,7 +3,7 @@ package kikaha.cloud.auth0;
 import static kikaha.cloud.auth0.Auth0Authentication.NONCE;
 
 import javax.inject.*;
-import java.util.Map;
+import java.util.*;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.ChainedMap;
 import kikaha.core.modules.security.*;
@@ -29,7 +29,9 @@ public class Auth0ConfigurationHook implements AuthLoginHttpHandler.Configuratio
 	}
 
 	@Override
-	public void configure( HttpServerExchange exchange, Session session ) {
-		session.setAttribute( NONCE, "" );
+	public Map<String, Object> configure( HttpServerExchange exchange, Session session ) {
+		final String state = SessionIdGenerator.generate();
+		session.setAttribute( NONCE, "state=" + state );
+		return Collections.singletonMap( "state", state );
 	}
 }

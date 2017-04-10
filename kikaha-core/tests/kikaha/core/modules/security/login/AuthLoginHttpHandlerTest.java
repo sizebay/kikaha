@@ -3,7 +3,8 @@ package kikaha.core.modules.security.login;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
-import java.util.Map;
+
+import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import io.undertow.server.HttpServerExchange;
@@ -62,7 +63,8 @@ class CustomConfigurationHook implements AuthLoginHttpHandler.ConfigurationHook 
 	}
 
 	@Override
-	public void configure( HttpServerExchange exchange, Session session ) {
+	public Map<String, Object> configure( HttpServerExchange exchange, Session session ) {
 		session.setAttribute( KEY, VALUE );
+		return Collections.emptyMap();
 	}
 }

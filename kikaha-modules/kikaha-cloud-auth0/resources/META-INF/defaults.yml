@@ -13,7 +13,7 @@ server:
       client-secret: "bad-client-secret"
 
       issuer: "https://unknown.auth0.com"
-      signing-algorithm: "RS512"
+      signing-algorithm: "HS512"
       public-key-path: "/not/configured/path"
 
       base64-encoded-secret: true
