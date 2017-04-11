@@ -14,6 +14,7 @@ import kikaha.config.Config;
 import kikaha.core.modules.security.*;
 import lombok.*;
 import lombok.experimental.Delegate;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -21,11 +22,12 @@ import lombok.experimental.Delegate;
 @Singleton
 public class Auth0 {
 
+	static final String STATE = "state", TOKEN = "token", CODE = "code", HTTPS = "https://";
+
 	@Inject Config config;
 
 	@Getter(lazy = true)
 	private final AuthConfig authConfig = new AuthConfig(
-		config.getString( "server.auth.auth0.issuer" ),
 		config.getString( "server.auth.auth0.client-id" ),
 		config.getString( "server.auth.auth0.client-secret" ),
 		config.getString( "server.auth.auth0.client-domain" ),
@@ -38,6 +40,9 @@ public class Auth0 {
 	private final Auth0Client auth0Client = new Auth0ClientImpl(
 		getAuthConfig().clientId, getAuthConfig().clientSecret, getAuthConfig().clientDomain );
 
+	@Getter(lazy = true)
+	private final JWTVerifier verifier = getAuthConfig().loadVerifier();
+
 	@Produces
 	AuthConfig produceAuthConfig(){
 		return getAuthConfig();
@@ -48,10 +53,15 @@ public class Auth0 {
 		return getAuth0Client();
 	}
 
+	@Produces
+	JWTVerifier produceVerifier(){
+		return getVerifier();
+	}
+
+	@Slf4j
 	@Getter
 	@RequiredArgsConstructor
 	static public class AuthConfig {
-		final String issuer;
 		final String clientId;
 		final String clientSecret;
 		final String clientDomain;
@@ -78,13 +88,13 @@ public class Auth0 {
 				secret = new String( decoder.decode( secret ) );
 			}
 
-			return new JWTVerifier( secret, clientId, issuer );
+			return new JWTVerifier( secret, clientId, HTTPS + clientDomain + "/" );
 		}
 
 		JWTVerifier loadRSVerifier() {
 			try {
 				final PublicKey publicKey = readPublicKey(publicKeyPath);
-				return new JWTVerifier( publicKey, clientId, issuer );
+				return new JWTVerifier( publicKey, clientId, HTTPS + clientDomain + "/" );
 			} catch (Exception e) {
 				throw new IllegalStateException(e);
 			}
@@ -99,7 +109,7 @@ public class Auth0 {
 
 		@Override
 		public Principal getPrincipal() {
-			return user::getName;
+			return user;
 		}
 
 		@Override

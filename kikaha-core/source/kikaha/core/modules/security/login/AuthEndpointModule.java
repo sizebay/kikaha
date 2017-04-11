@@ -24,7 +24,9 @@ public class AuthEndpointModule implements Module {
 		final boolean defaultEnabledState = config.getBoolean( "server.smart-routes.auth.enabled" );
 		if ( config.getBoolean( "server.smart-routes.auth.login-form-enabled", defaultEnabledState ) )
 			context.register( formAuthConfiguration.getLoginPage(), "GET", loginHttpHandler );
-		if ( config.getBoolean( "server.smart-routes.auth.logout-url-enabled", defaultEnabledState ) )
-			context.register( formAuthConfiguration.getLogoutUrl(), "POST", logoutHttpHandler );
+		if ( config.getBoolean( "server.smart-routes.auth.logout-url-enabled", defaultEnabledState ) ) {
+			final String method = config.getString( "server.smart-routes.auth.logout-http-method", "POST" );
+			context.register( formAuthConfiguration.getLogoutUrl(), method, logoutHttpHandler );
+		}
 	}
 }

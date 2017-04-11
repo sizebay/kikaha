@@ -18,6 +18,7 @@ server:
       - https
       - cors
       - security
+      - post-security
       - undertow-basic-configuration
       - metrics
       - unnamed

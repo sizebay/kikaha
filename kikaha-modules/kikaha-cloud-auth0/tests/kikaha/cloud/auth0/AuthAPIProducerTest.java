@@ -22,12 +22,11 @@ public class AuthAPIProducerTest {
 	@Test
 	public void ensureThatIsAbleToCreateAValidAuthAPIFromConfigurationFile(){
 		//assertEquals( "https://localhost/",  );
-		assertEquals( "https://unknown.auth0.com", injectedAuthAPI.issuer );
+		assertEquals( "unknown.auth0.com", injectedAuthAPI.clientDomain );
 		assertEquals( "bad-client-id", injectedAuthAPI.clientId );
 		assertEquals( "bad-client-secret", injectedAuthAPI.clientSecret );
 		assertEquals( "/not/configured/path", injectedAuthAPI.publicKeyPath );
-		assertEquals( "RS512", injectedAuthAPI.signingAlgorithm );
-		assertTrue ( injectedAuthAPI.base64EncodedSecret );
+		assertEquals( "HS512", injectedAuthAPI.signingAlgorithm );
+		assertFalse( injectedAuthAPI.base64EncodedSecret );
 	}
-
 }

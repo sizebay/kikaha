@@ -11,7 +11,6 @@
     <script src="https://cdn.auth0.com/js/lock/10.12.1/lock.min.js"></script>
     <script type="text/javascript">
       $(function () {
-        var rootURI = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
         var lock = new Auth0Lock('{{clientId}}', '{{clientDomain}}', {
           auth: {
             params: {
@@ -21,7 +20,7 @@
               scope: 'openid user_id name nickname email picture'
             },
             responseType: 'code',
-            redirectUrl: rootURI + '{{authenticationCallbackUrl}}'
+            redirectUrl: '{{authenticationCallbackUrl}}'
           }
         })
         lock.show()

@@ -23,7 +23,7 @@ public interface SessionIdManager {
 	 * @return
 	 */
 	default String retrieveSessionIdFrom(HttpServerExchange exchange ) {
-		return retrieveSessionIdFrom( exchange, this::createNewSessionId );
+		return retrieveSessionIdFrom( exchange, () -> createNewSessionId(exchange) );
 	}
 
 	/**
@@ -39,9 +39,11 @@ public interface SessionIdManager {
 	 * Generate a new session identifier. The default implementation relies on {@link SessionIdGenerator#generate}
 	 * implementation.
 	 *
+	 * @param exchange
 	 * @return
 	 */
-	default String createNewSessionId() {
+	@SuppressWarnings( "unused" )
+	default String createNewSessionId(HttpServerExchange exchange) {
 		return SessionIdGenerator.generate();
 	}
 }

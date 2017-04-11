@@ -2,6 +2,7 @@ package kikaha.core.test;
 
 import static org.mockito.Mockito.*;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import io.undertow.io.Sender;
 import io.undertow.server.*;
@@ -75,6 +76,11 @@ public abstract class HttpServerExchangeStub {
 		final StreamSourceConduit sourceConduit = Mockito.mock( StreamSourceConduit.class );
 		final ConduitStreamSourceChannel sourceChannel = new ConduitStreamSourceChannel( null, sourceConduit );
 		return sourceChannel;
+	}
+
+	public static void setRequestHost( HttpServerExchange exchange, String host, int port ) {
+		exchange.getRequestHeaders().put( Headers.HOST, host );
+		exchange.setDestinationAddress( new InetSocketAddress( host, port ) );
 	}
 }
 

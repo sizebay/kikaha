@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import io.undertow.server.*;
 import io.undertow.util.*;
 import kikaha.core.modules.security.*;
+import kikaha.core.util.Redirect;
 
 /**
  *
@@ -22,8 +23,10 @@ public class AuthLogoutHttpHandler implements HttpHandler {
 			exchange.getResponseSender().send( NOT_LOGGED_IN );
 		} else {
 			securityContext.logout();
-			exchange.setStatusCode( StatusCodes.SEE_OTHER );
-			exchange.getResponseHeaders().put( Headers.LOCATION, formAuthenticationConfiguration.getLoginPage() );
+			if ( Methods.GET.equals( exchange.getRequestMethod() ) )
+				Redirect.to( exchange, formAuthenticationConfiguration.getLoginPage() );
+			else
+				exchange.endExchange();
 		}
 	}
 }

@@ -19,7 +19,7 @@ public class AuthenticationRunner implements Runnable {
 	@Override
 	public void run() {
 		try {
-			if ( !context.isAuthenticationRequired() || (context.authenticate() && context.isAuthenticated()) ) {
+			if ( !context.isAuthenticationRequired() || ( context.authenticate() && context.isAuthenticated() ) ) {
 				if ( !exchange.isResponseStarted() )
 					tryExecuteChain();
 			} else

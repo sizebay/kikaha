@@ -7,6 +7,7 @@ import io.undertow.server.*;
 import io.undertow.server.handlers.form.*;
 import io.undertow.util.*;
 import kikaha.config.Config;
+import kikaha.core.util.Redirect;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,7 +50,7 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	}
 
 	private void sendRedirectBack(HttpServerExchange exchange) {
-		sendRedirect(exchange, formAuthenticationConfiguration.getSuccessPage() );
+		Redirect.to(exchange, formAuthenticationConfiguration.getSuccessPage() );
 	}
 
 	private Credential readCredentialFromRequest(HttpServerExchange exchange) throws IOException {
@@ -74,7 +75,7 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 		final String newLocation = isCurrentRequestTryingToAuthenticate(exchange)
 				? formAuthenticationConfiguration.getErrorPage()
 				: formAuthenticationConfiguration.getLoginPage();
-		sendRedirect(exchange, newLocation);
+		Redirect.to(exchange, newLocation);
 		return true;
 	}
 
@@ -84,25 +85,5 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 
 	private boolean isPostLocation(HttpServerExchange exchange) {
 		return exchange.getRelativePath().equals( formAuthenticationConfiguration.getCallbackUrl() );
-	}
-
-	private static void sendRedirect(HttpServerExchange exchange, final String location) {
-		exchange.addDefaultResponseListener( RedirectBack.to(location) );
-		exchange.endExchange();
-	}
-}
-
-@Slf4j
-@RequiredArgsConstructor(staticName="to")
-class RedirectBack implements DefaultResponseListener {
-
-	final String location;
-
-	@Override
-	public boolean handleDefaultResponse(HttpServerExchange exchange) {
-		exchange.setStatusCode(StatusCodes.FOUND);
-		exchange.getResponseHeaders().put(Headers.LOCATION, location);
-		exchange.endExchange();
-		return true;
 	}
 }
