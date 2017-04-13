@@ -8,8 +8,8 @@
 		<artifactId>kikaha-modules</artifactId>
 	</parent>
 
-	<artifactId>kikaha-hazelcast</artifactId>
-	<name>Kikaha: Hazelcast Integration</name>
+	<artifactId>kikaha-cloud-hazelcast</artifactId>
+	<name>Kikaha: Cloud Providers: Hazelcast</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
@@ -20,6 +20,7 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>kikaha-urouting</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.hazelcast</groupId>

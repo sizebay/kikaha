@@ -176,7 +176,7 @@
             <dependency>
                 <groupId>io.skullabs.kikaha</groupId>
                 <version>2.1.0-alpha12</version>
-                <artifactId>kikaha-hazelcast</artifactId>
+                <artifactId>kikaha-cloud-hazelcast</artifactId>
                 <scope>compile</scope>
             </dependency>
             <dependency>
