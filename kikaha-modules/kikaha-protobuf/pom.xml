@@ -8,14 +8,15 @@
 		<artifactId>kikaha-modules</artifactId>
 	</parent>
 
-	<artifactId>kikaha-urouting-protobuf</artifactId>
-	<name>Kikaha: micro Routing: Protobuf Support</name>
+	<artifactId>kikaha-protobuf</artifactId>
+	<name>Kikaha: Protobuf</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>kikaha-urouting</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.protobuf</groupId>

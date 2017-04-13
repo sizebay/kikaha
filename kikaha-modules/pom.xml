@@ -23,7 +23,7 @@
     <module>kikaha-uworkers</module>
     <module>kikaha-urouting</module>
     <module>kikaha-urouting-mustache</module>
-    <module>kikaha-urouting-protobuf</module>
+    <module>kikaha-protobuf</module>
     <module>kikaha-jackson</module>
     <module>kikaha-db</module>
   </modules>
