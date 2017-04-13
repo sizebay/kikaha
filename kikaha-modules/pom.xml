@@ -21,12 +21,10 @@
     <module>kikaha-cloud-consul</module>
     <module>kikaha-uworkers</module>
     <module>kikaha-urouting</module>
-    <module>kikaha-urouting-jaxb</module>
     <module>kikaha-urouting-mustache</module>
     <module>kikaha-urouting-protobuf</module>
     <module>kikaha-jackson</module>
     <module>kikaha-db</module>
-    <module>kikaha-java-mail</module>
     <module>kikaha-hazelcast</module>
   </modules>
 
