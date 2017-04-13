@@ -1,0 +1,4 @@
+server:
+  auth:
+    auth-mechanisms:
+      json: kikaha.urouting.serializers.jackson.JSONAuthenticatoinMechanism
