@@ -10,7 +10,7 @@ import io.undertow.server.HttpServerExchange;
 import kikaha.core.test.HttpServerExchangeStub;
 import org.junit.*;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -19,16 +19,18 @@ public class UpdateCurrentSessionBehaviorTest {
 	final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
 	final Session session = new DefaultSession("1");
 
-	@Mock
-	AuthenticationMechanism mechanism;
-	@Mock
-	IdentityManager identityManager;
-	@Mock
-	AuthenticationRule rule;
-	@Mock
-	SessionStore store;
-	@Mock
-	Account account;
+	@Mock AuthenticationMechanism mechanism;
+	@Mock AuthenticationRule rule;
+	@Mock Account account;
+
+	@Mock IdentityManager identityManager;
+	@Mock SessionStore store;
+
+	@Mock AuthenticationSuccessListener authenticationSuccessListener;
+	AuthenticationFailureListener authenticationFailureListener = spy( new SendChallengeFailureListener() );
+
+	@Spy @InjectMocks
+	SecurityConfiguration securityConfiguration;
 
 	@Before
 	public void configureRule(){
@@ -36,6 +38,8 @@ public class UpdateCurrentSessionBehaviorTest {
 			.when(mechanism).authenticate( any(), any(), any() );
 		doReturn( Arrays.asList(mechanism)).when( rule ).mechanisms();
 		doReturn( Arrays.asList(identityManager)).when( rule ).identityManagers();
+
+		securityConfiguration.setAuthenticationFailureListener( authenticationFailureListener );
 	}
 
 	@Before
@@ -71,7 +75,7 @@ public class UpdateCurrentSessionBehaviorTest {
 
 	private SecurityContext getAuthenticatedSecurityContext() {
 		doReturn( account ).when( mechanism ).authenticate( any(), any(), any() );
-		final SecurityContext context = new DefaultSecurityContext(rule, exchange, store, new SessionCookie(), true);
+		final SecurityContext context = new DefaultSecurityContext(rule, exchange, securityConfiguration, true);
 		assertTrue( context.authenticate() );
 		verify( mechanism, never() ).sendAuthenticationChallenge( any(), any() );
 		verify( store, times( 1 ) ).flush( any() );

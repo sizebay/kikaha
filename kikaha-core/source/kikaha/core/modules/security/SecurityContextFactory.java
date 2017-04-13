@@ -23,7 +23,6 @@ public interface SecurityContextFactory {
 	SecurityContext createSecurityContextFor(
 		HttpServerExchange exchange,
 		AuthenticationRule rule,
-	    SessionStore sessionStore,
-	    SessionIdManager sessionIdManager
+	    SecurityConfiguration securityConfiguration
 	);
 }

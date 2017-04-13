@@ -1,7 +1,6 @@
 package kikaha.core.modules.security;
 
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
+import io.undertow.server.*;
 import io.undertow.util.Headers;
 import lombok.*;
 
@@ -11,9 +10,7 @@ class AuthenticationHttpHandler implements HttpHandler {
 	@NonNull final AuthenticationRuleMatcher authenticationRuleMatcher;
 	@NonNull final String permissionDeniedPage;
 	@NonNull final HttpHandler next;
-	@NonNull final SecurityContextFactory securityContextFactory;
-	@NonNull final SessionStore sessionStore;
-	@NonNull final SessionIdManager sessionIdManager;
+	@NonNull final SecurityConfiguration securityConfiguration;
 
 	@Override
 	public void handleRequest(final HttpServerExchange exchange) throws Exception {
@@ -36,7 +33,7 @@ class AuthenticationHttpHandler implements HttpHandler {
 	private SecurityContext getOrCreateSecurityContext( final HttpServerExchange exchange, final AuthenticationRule rule ) {
 		SecurityContext securityContext = (SecurityContext)exchange.getSecurityContext();
 		if ( securityContext == null ) {
-			securityContext = securityContextFactory.createSecurityContextFor(exchange, rule, sessionStore, sessionIdManager);
+			securityContext = securityConfiguration.getFactory().createSecurityContextFor(exchange, rule, securityConfiguration);
 			exchange.setSecurityContext( securityContext );
 		}
 		exchange.addExchangeCompleteListener( new SecurityContextAutoUpdater( securityContext ) );

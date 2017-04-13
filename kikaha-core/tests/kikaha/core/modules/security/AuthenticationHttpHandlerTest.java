@@ -23,7 +23,7 @@ public class AuthenticationHttpHandlerTest {
 	@Mock HttpHandler rootHandler;
 	@Mock SecurityContextFactory factory;
 
-	@Inject AuthenticationModule deployment;
+	@Inject SecurityConfiguration securityConfiguration;
 	@Inject ServiceProvider provider;
 	@Inject Config config;
 	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
@@ -34,8 +34,10 @@ public class AuthenticationHttpHandlerTest {
 	public void initializeMocks() {
 		MockitoAnnotations.initMocks( this );
 		AuthenticationRuleMatcher authenticationRuleMatcher = new AuthenticationRuleMatcher( provider, config.getConfig("server.auth"), formAuthenticationConfiguration );
-		authenticationHook = spy( new AuthenticationHttpHandler( authenticationRuleMatcher, "",
-				rootHandler, factory, deployment.sessionStore, deployment.sessionIdManager ) );
+		authenticationHook = spy( new AuthenticationHttpHandler(
+				authenticationRuleMatcher, formAuthenticationConfiguration.getPermissionDeniedPage(),
+				rootHandler, securityConfiguration ) );
+		securityConfiguration.setFactory( factory );
 	}
 
 	@Test
@@ -44,8 +46,7 @@ public class AuthenticationHttpHandlerTest {
 		doNothing().when(authenticationHook).runAuthenticationInIOThread( any(), any(), any());
 		exchange.setRelativePath( "/valid-authenticated-url/" );
 		doReturn( securityContext ).when( factory ).createSecurityContextFor(
-				any( HttpServerExchange.class ), any( AuthenticationRule.class ),
-				any(SessionStore.class), any(SessionIdManager.class) );
+				eq(exchange), any( AuthenticationRule.class ), eq(securityConfiguration) );
 		authenticationHook.handleRequest(exchange);
 		verify( authenticationHook ).runAuthenticationInIOThread( eq(exchange), any( AuthenticationRule.class ), eq(securityContext) );
 		assertNotNull( exchange.getSecurityContext() );
@@ -56,8 +57,7 @@ public class AuthenticationHttpHandlerTest {
 	public void ensureThatCallTheHookInSameThreadWhenThereWasRuleThatMatchesTheRelativePath() {
 		doNothing().when(authenticationHook).runAuthenticationInIOThread( any(), any(), any());
 		doReturn(securityContext).when(factory).createSecurityContextFor(
-				eq(exchange), any( AuthenticationRule.class ),
-				eq(deployment.sessionStore), eq(deployment.sessionIdManager) );
+				eq(exchange), any( AuthenticationRule.class ), eq( securityConfiguration ) );
 		exchange.setRelativePath( "invalid-authenticated-url/" );
 		authenticationHook.handleRequest(exchange);
 		verify( authenticationHook ).runAuthenticationInIOThread( eq(exchange), eq(AuthenticationRule.EMPTY), eq(securityContext) );

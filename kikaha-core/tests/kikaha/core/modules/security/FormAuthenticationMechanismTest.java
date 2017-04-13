@@ -75,7 +75,7 @@ public class FormAuthenticationMechanismTest {
 	}
 
 	private void assertHaveBeingRedirectedTo(String expectedLocation) {
-		assertEquals(exchange.getStatusCode(), StatusCodes.FOUND);
+		assertEquals(exchange.getStatusCode(),  StatusCodes.SEE_OTHER);
 		assertEquals(exchange.getResponseHeaders().get(Headers.LOCATION).getFirst(), expectedLocation);
 	}
 
@@ -83,7 +83,7 @@ public class FormAuthenticationMechanismTest {
 	public void ensureThatSendRedirectionToLoginErrorWhenNoCorrectCredentialsArePresentOnFormPost(){
 		final AuthenticationMechanism mechanism = simulateLoginPost();
 		assertTrue( mechanism.sendAuthenticationChallenge(exchange, session) );
-		assertEquals(exchange.getStatusCode(), StatusCodes.FOUND);
+		assertEquals(exchange.getStatusCode(),  StatusCodes.SEE_OTHER);
 		assertEquals(exchange.getResponseHeaders().get(Headers.LOCATION).getFirst(), "/auth/error/");
 	}
 

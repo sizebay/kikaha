@@ -12,10 +12,8 @@ public class DefaultSecurityContextFactory implements SecurityContextFactory {
 	public DefaultSecurityContext createSecurityContextFor(
 			final HttpServerExchange exchange,
 			final AuthenticationRule rule,
-			final SessionStore sessionStore,
-			final SessionIdManager sessionIdManager)
+			final SecurityConfiguration securityConfiguration )
 	{
-		return new DefaultSecurityContext(rule, exchange, sessionStore,
-				sessionIdManager, rule != AuthenticationRule.EMPTY);
+		return new DefaultSecurityContext(rule, exchange, securityConfiguration, rule != AuthenticationRule.EMPTY);
 	}
 }

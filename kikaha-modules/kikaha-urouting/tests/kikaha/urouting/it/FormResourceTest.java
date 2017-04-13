@@ -16,7 +16,7 @@ public class FormResourceTest {
 	public void ensureWillRedirectToLoginPageWhenNotCorrectlyAuthenticated(){
 		final Request.Builder request = Http.url( "http://localhost:19999/it/form-auth/authenticated-only" );
 		final Response response = Http.send( request );
-		assertEquals( 302, response.code() );
+		assertEquals( 303, response.code() );
 		assertEquals( "/auth/", response.header("Location") );
 	}
 
@@ -27,7 +27,7 @@ public class FormResourceTest {
 				.add( "j_password", "admin" ).build();
 		final Request.Builder request = Http.url( "http://localhost:19999/it/form-auth/callback" ).post( form );
 		final Response response = Http.send( request );
-		assertEquals( 302, response.code() );
+		assertEquals( 303, response.code() );
 		assertEquals( "/", response.header("Location") );
 	}
 }

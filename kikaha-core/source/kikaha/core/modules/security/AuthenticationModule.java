@@ -1,6 +1,5 @@
 package kikaha.core.modules.security;
 
-import javax.annotation.PostConstruct;
 import javax.inject.*;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
@@ -21,17 +20,7 @@ public class AuthenticationModule implements Module {
 	@Inject ServiceProvider provider;
 	@Inject Config config;
 	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
-
-	SecurityContextFactory factory;
-	SessionIdManager sessionIdManager;
-	SessionStore sessionStore;
-
-	@PostConstruct
-	public void loadSecurityContextFactory(){
-		factory = (SecurityContextFactory) provider.load( config.getClass("server.auth.security-context-factory") );
-		sessionIdManager = (SessionIdManager) provider.load( config.getClass("server.auth.session-id-manager") );
-		sessionStore = (SessionStore) provider.load( config.getClass("server.auth.session-store") );
-	}
+	@Inject SecurityConfiguration securityConfiguration;
 
 	@Override
 	public void load(Undertow.Builder builder, final DeploymentContext context ) {
@@ -39,9 +28,9 @@ public class AuthenticationModule implements Module {
 		if ( !ruleMatcher.rules().isEmpty() ) {
 			log.info( "Configuring authentication rules..." );
 			final HttpHandler rootHandler = context.rootHandler();
-			final String permissionDeniedPage = config.getString("server.auth.form-auth.permission-denied-page");
 			final AuthenticationHttpHandler authenticationHandler = new AuthenticationHttpHandler(
-					ruleMatcher, permissionDeniedPage, rootHandler, factory, sessionStore, sessionIdManager );
+					ruleMatcher, formAuthenticationConfiguration.getPermissionDeniedPage(),
+					rootHandler, securityConfiguration );
 			context.rootHandler(authenticationHandler);
 		}
 	}

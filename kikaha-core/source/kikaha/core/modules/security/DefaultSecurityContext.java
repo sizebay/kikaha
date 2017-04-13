@@ -24,18 +24,20 @@ public class DefaultSecurityContext implements SecurityContext {
 
 	@NonNull private final AuthenticationRule rule;
 	@NonNull private final HttpServerExchange exchange;
-	@NonNull private final SessionStore store;
-	@NonNull private final SessionIdManager sessionIdManager;
+	@NonNull private final SecurityConfiguration configuration;
 	@NonNull private final boolean authenticationRequired;
 
 	@Override
 	public boolean authenticate() {
 		authenticated = true;
+
 		final Account account = performAuthentication();
 		if ( account == null ){
 			authenticated = false;
-			sendAuthenticationChallenge();
-		}
+			configuration.getAuthenticationFailureListener().onAuthenticationFailure( exchange, getCurrentSession(), currentAuthMechanism );
+		} else
+			configuration.getAuthenticationSuccessListener().onAuthenticationSuccess( exchange, getCurrentSession(), currentAuthMechanism );
+
 		getCurrentSession().setAuthenticatedAccount( account );
 		updateCurrentSession();
 		return authenticated;
@@ -51,28 +53,23 @@ public class DefaultSecurityContext implements SecurityContext {
 		return account;
 	}
 
-	private void sendAuthenticationChallenge() {
-		if ( currentAuthMechanism != null && !currentAuthMechanism.sendAuthenticationChallenge( exchange, getCurrentSession() ) )
-			throw new IllegalStateException( "Cannot send authentication challenge" );
-	}
-
 	@Override
 	public void logout() {
 		if ( currentSession != null )
-			store.invalidateSession(currentSession);
+			configuration.getSessionStore().invalidateSession(currentSession);
 	}
 
 	@Override
 	public void updateCurrentSession() {
 		if ( currentSession != null && currentSession.hasChanged() ) {
-			try { store.flush( currentSession ); }
+			try { configuration.getSessionStore().flush( currentSession ); }
 			finally { currentSession.flush(); }
 		}
 	}
 
 	public Session getCurrentSession(){
 		if ( currentSession == null )
-			currentSession = store.createOrRetrieveSession(exchange, sessionIdManager);
+			currentSession = configuration.getSessionStore().createOrRetrieveSession(exchange, configuration.getSessionIdManager());
 		return currentSession;
 	}
 
