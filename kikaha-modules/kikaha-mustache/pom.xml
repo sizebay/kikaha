@@ -8,8 +8,8 @@
 		<artifactId>kikaha-modules</artifactId>
 	</parent>
 
-	<artifactId>kikaha-urouting-mustache</artifactId>
-	<name>Kikaha: micro Routing: Java Mustache Support</name>
+	<artifactId>kikaha-mustache</artifactId>
+	<name>Kikaha: Java Mustache</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
@@ -20,11 +20,8 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>kikaha-urouting</artifactId>
+			<scope>provided</scope>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.samskivert</groupId> -->
-<!-- 			<artifactId>jmustache</artifactId> -->
-<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.github.spullara.mustache.java</groupId>
 			<artifactId>compiler</artifactId>

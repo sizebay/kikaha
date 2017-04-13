@@ -164,13 +164,13 @@
             <dependency>
                 <groupId>io.skullabs.kikaha</groupId>
                 <version>2.1.0-alpha12</version>
-                <artifactId>kikaha-urouting-mustache</artifactId>
+                <artifactId>kikaha-mustache</artifactId>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>io.skullabs.kikaha</groupId>
                 <version>2.1.0-alpha12</version>
-                <artifactId>kikaha-urouting-protobuf</artifactId>
+                <artifactId>kikaha-protobuf</artifactId>
                 <scope>compile</scope>
             </dependency>
             <dependency>
