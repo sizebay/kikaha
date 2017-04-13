@@ -8,8 +8,8 @@
 		<artifactId>kikaha-modules</artifactId>
 	</parent>
 
-	<artifactId>kikaha-urouting-jackson</artifactId>
-	<name>Kikaha: micro Routing: Jackson Support</name>
+	<artifactId>kikaha-jackson</artifactId>
+	<name>Kikaha: Jackson</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
@@ -20,16 +20,12 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>kikaha-urouting</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
-		<!--dependency>
-			<groupId>com.fasterxml.jackson.module</groupId>
-			<artifactId>jackson-module-jaxb-annotations</artifactId>
-			<scope>test</scope>
-		</dependency-->
 	</dependencies>
 
 </project>
