@@ -97,6 +97,7 @@ server:
     session-store: kikaha.core.modules.security.RESTAPISessionStore
     authentication-failure-listener: kikaha.core.modules.security.SendChallengeFailureListener
     authentication-success-listener: kikaha.core.modules.security.EmptyAuthenticationSuccessListener
+    password-encoder: kikaha.core.modules.security.PlainTextPasswordEncoder
 
     identity-managers:
       default: kikaha.core.modules.security.FixedUserAndPasswordIdentityManager

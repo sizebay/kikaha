@@ -20,6 +20,7 @@ public class SecurityConfiguration {
 	private SecurityContextFactory factory;
 	private SessionIdManager sessionIdManager;
 	private SessionStore sessionStore;
+	private PasswordEncoder passwordEncoder;
 	private AuthenticationSuccessListener authenticationSuccessListener;
 	private AuthenticationFailureListener authenticationFailureListener;
 
@@ -28,6 +29,7 @@ public class SecurityConfiguration {
 		factory = loadConfiguredClass( "server.auth.security-context-factory", SecurityContextFactory.class );
 		sessionIdManager = loadConfiguredClass( "server.auth.session-id-manager", SessionIdManager.class );
 		sessionStore = loadConfiguredClass( "server.auth.session-store", SessionStore.class );
+		passwordEncoder = loadConfiguredClass( "server.auth.password-encoder", PasswordEncoder.class );
 		authenticationSuccessListener = loadConfiguredClass( "server.auth.authentication-success-listener", AuthenticationSuccessListener.class );
 		authenticationFailureListener = loadConfiguredClass( "server.auth.authentication-failure-listener", AuthenticationFailureListener.class );
 	}
