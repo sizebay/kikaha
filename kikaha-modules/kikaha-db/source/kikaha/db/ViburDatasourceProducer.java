@@ -91,6 +91,10 @@ public class ViburDatasourceProducer {
 		final Named source = context.getAnnotation( Named.class );
 		if ( source != null )
 			name = source.value();
+		return produceViburDataSource( name );
+	}
+
+	public ViburDBCPDataSource produceViburDataSource( String name ) {
 		return getCachedDataSources().get( name );
 	}
 }

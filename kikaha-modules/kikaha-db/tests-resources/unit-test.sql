@@ -1,0 +1,12 @@
+CREATE TABLE USERS (
+	username VARCHAR(20) NOT NULL,
+	password VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE USER_ROLES (
+	username VARCHAR(20) NOT NULL,
+	role_name VARCHAR(20) NOT NULL
+);
+
+INSERT INTO USERS VALUES ( 'user', 'pass' );
+INSERT INTO USER_ROLES VALUES ( 'user', 'admin' );

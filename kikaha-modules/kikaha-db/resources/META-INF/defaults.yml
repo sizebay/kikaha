@@ -1,0 +1,9 @@
+server:
+
+  auth:
+    # default identity manager to retrieve user account from database
+    identity-managers:
+      db-auth: kikaha.db.DatabaseIdentityManager
+
+    db-auth:
+      datasource: "default"
