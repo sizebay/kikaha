@@ -101,6 +101,7 @@ server:
 
     identity-managers:
       default: kikaha.core.modules.security.FixedUserAndPasswordIdentityManager
+      fixed: kikaha.core.modules.security.FixedUserAndPasswordIdentityManager
 
     auth-mechanisms:
       basic: kikaha.core.modules.security.BasicAuthenticationMechanism
