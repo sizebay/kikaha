@@ -21,6 +21,7 @@ public class SecurityConfiguration {
 	private SessionIdManager sessionIdManager;
 	private SessionStore sessionStore;
 	private PasswordEncoder passwordEncoder;
+	private AuthenticationRequestMatcher authenticationRequestMatcher;
 	private AuthenticationSuccessListener authenticationSuccessListener;
 	private AuthenticationFailureListener authenticationFailureListener;
 
@@ -30,6 +31,7 @@ public class SecurityConfiguration {
 		sessionIdManager = loadConfiguredClass( "server.auth.session-id-manager", SessionIdManager.class );
 		sessionStore = loadConfiguredClass( "server.auth.session-store", SessionStore.class );
 		passwordEncoder = loadConfiguredClass( "server.auth.password-encoder", PasswordEncoder.class );
+		authenticationRequestMatcher = loadConfiguredClass( "server.auth.authentication-request-matcher", AuthenticationRequestMatcher.class );
 		authenticationSuccessListener = loadConfiguredClass( "server.auth.authentication-success-listener", AuthenticationSuccessListener.class );
 		authenticationFailureListener = loadConfiguredClass( "server.auth.authentication-failure-listener", AuthenticationFailureListener.class );
 	}

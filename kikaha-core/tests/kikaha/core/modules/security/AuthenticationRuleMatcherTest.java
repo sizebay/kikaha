@@ -26,7 +26,7 @@ public class AuthenticationRuleMatcherTest {
 
 	@Test
 	public void ensureThatCouldRetrieveRuleForProtectedURLAsDefinedInTestConfigurations() {
-		val rule = matcher.retrieveAuthenticationRuleForUrl( "/users/", "" );
+		val rule = matcher.retrieveAuthenticationRuleForUrl( "/users/" );
 		assertNotNull( rule );
 		AssertThat.isInstance( rule.mechanisms().get( 0 ), BasicAuthenticationMechanism.class );
 		AssertThat.isInstance( rule.mechanisms().get( 1 ), BasicAuthenticationMechanism.class );
@@ -35,7 +35,7 @@ public class AuthenticationRuleMatcherTest {
 
 	@Test
 	public void ensureThatCouldNotRetrieveRuleForUnprotectedURLAsDefinedInTestConfigurations() {
-		val rule = matcher.retrieveAuthenticationRuleForUrl( "users/", "" );
+		val rule = matcher.retrieveAuthenticationRuleForUrl( "users/" );
 		assertNull( rule );
 	}
 }

@@ -17,7 +17,7 @@ public class FormResourceTest {
 		final Request.Builder request = Http.url( "http://localhost:19999/it/form-auth/authenticated-only" );
 		final Response response = Http.send( request );
 		assertEquals( 303, response.code() );
-		assertEquals( "/auth/", response.header("Location") );
+		assertEquals( "/it/form-auth/login-page", response.header("Location") );
 	}
 
 	@Test
@@ -29,5 +29,12 @@ public class FormResourceTest {
 		final Response response = Http.send( request );
 		assertEquals( 303, response.code() );
 		assertEquals( "/", response.header("Location") );
+	}
+
+	@Test
+	public void ensureDoesNotRequiresAuthenticationWhenAccessingLoginPage(){
+		final Request.Builder request = Http.url( "http://localhost:19999/it/form-auth/login-page" ).get();
+		final Response response = Http.send( request );
+		assertEquals( 200, response.code() );
 	}
 }

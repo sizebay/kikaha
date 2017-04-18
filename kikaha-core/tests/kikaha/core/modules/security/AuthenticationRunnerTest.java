@@ -85,7 +85,7 @@ public class AuthenticationRunnerTest {
 
 	void initializeAuthHandler() {
 		AuthenticationRuleMatcher matcher = mockAuthRuleMatcher();
-		matchedRule = spy( matcher.retrieveAuthenticationRuleForUrl( "/user", "" ) );
+		matchedRule = spy( matcher.retrieveAuthenticationRuleForUrl( "/user" ) );
 		authHandler = spy( new AuthenticationRunner( exchange, rootHandler,
 			securityContext, createExpectedRoles(), "" ) );
 	}

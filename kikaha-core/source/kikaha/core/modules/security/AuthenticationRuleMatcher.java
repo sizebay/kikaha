@@ -1,13 +1,11 @@
 package kikaha.core.modules.security;
 
-import java.net.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import kikaha.config.Config;
 import kikaha.core.cdi.ServiceProvider;
 import kikaha.core.cdi.helpers.TinyList;
-import kikaha.core.url.URL;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -38,27 +36,27 @@ public class AuthenticationRuleMatcher {
 
 	private SecurityContextFactory instantiateSecurityContextFactory( final Config authConfig ) {
 		final String className = authConfig.getString( "security-context-factory" );
-		SecurityContextFactory factory = instantiate( className, SecurityContextFactory.class );
+		final SecurityContextFactory factory = instantiate( className, SecurityContextFactory.class );
 		log.debug("Found SecurityContextFactory: " + factory);
 		return factory;
 	}
 
 	private Map<String, AuthenticationMechanism> instantiateMechanismsFoundOnConfig() {
 		final Map<String, Object> values = authConfig.getConfig("auth-mechanisms").toMap();
-		Map<String, AuthenticationMechanism> mechanisms = convert( values, o->instantiate( (String)o, AuthenticationMechanism.class ) );
+		final Map<String, AuthenticationMechanism> mechanisms = convert( values, o->instantiate( (String)o, AuthenticationMechanism.class ) );
 		log.debug("Found Authentication Mechanisms: " + mechanisms);
 		return mechanisms;
 	}
 
 	private Map<String, IdentityManager> instantiateIdentityManagersFoundOnConfig() {
 		final Map<String, Object> values = authConfig.getConfig("identity-managers").toMap();
-		Map<String, IdentityManager> identityManagers = convert( values, o->instantiate( (String)o, IdentityManager.class ) );
+		final Map<String, IdentityManager> identityManagers = convert( values, o->instantiate( (String)o, IdentityManager.class ) );
 		log.debug( "Found Identity Managers: " + identityManagers );
 		return identityManagers;
 	}
 
 	private <V,N> Map<String,N> convert( Map<String, V> original, Function<V,N> converter  ) {
-		Map<String,N> newMap = new HashMap<>();
+		final Map<String,N> newMap = new HashMap<>();
 		for ( Map.Entry<String,V> entry : original.entrySet() ) {
 			final N converted = converter.apply( entry.getValue() );
 			newMap.put( entry.getKey(), converted );
@@ -66,6 +64,7 @@ public class AuthenticationRuleMatcher {
 		return newMap;
 	}
 
+	@SuppressWarnings({"unused", "unchecked"})
 	private <T> T instantiate( String className, final Class<T> targetClazz ) {
 		try {
 			Class<T> clazz = (Class<T>) Class.forName( className );
@@ -82,8 +81,8 @@ public class AuthenticationRuleMatcher {
 	}
 
 	private AuthenticationRule convertConfToRule( final Config ruleConf ) {
-		List<IdentityManager> identityManager = getIdentityManagerFor(ruleConf.getStringList("identity-manager", Collections.singletonList( "default" )));
-		List<AuthenticationMechanism> mechanisms = extractNeededMechanisms( ruleConf.getStringList("auth-mechanisms") );
+		final List<IdentityManager> identityManager = getIdentityManagerFor(ruleConf.getStringList("identity-manager", Collections.singletonList( "default" )));
+		final List<AuthenticationMechanism> mechanisms = extractNeededMechanisms( ruleConf.getStringList("auth-mechanisms") );
 		return new AuthenticationRule(
 				ruleConf.getString( "pattern" ), identityManager,
 				mechanisms, ruleConf.getStringList( "expected-roles", Collections.emptyList() ),
@@ -107,22 +106,10 @@ public class AuthenticationRuleMatcher {
 				.collect(Collectors.toList());
 	}
 
-	public AuthenticationRule retrieveAuthenticationRuleForUrl( final String url, final String referer ) {
-		try {
-			final String refererPath = new URI( referer ).getPath();
-			if ( formAuthenticationConfiguration.getCallbackUrl().equals( url )
-					|| ( !isUrlFromAuthenticationResources( url ) && !isUrlFromAuthenticationResources( refererPath ) ) )
-				for ( final AuthenticationRule rule : rules )
-					if ( rule.matches( url ) )
-						return rule;
-		} catch ( URISyntaxException cause ) {
-			log.error( "Can't execute this AuthenticationRule", cause );
-		}
+	public AuthenticationRule retrieveAuthenticationRuleForUrl( final String url ) {
+		for ( final AuthenticationRule rule : rules )
+			if ( rule.matches( url ) )
+				return rule;
 		return null;
-	}
-
-	private boolean isUrlFromAuthenticationResources( final String url ) {
-		return  formAuthenticationConfiguration.getErrorPage().equals( url )
-			||  formAuthenticationConfiguration.getLoginPage().equals( url );
 	}
 }
