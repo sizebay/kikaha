@@ -7,7 +7,7 @@ import kikaha.core.cdi.helpers.filter.*;
  * It manages singleton and stateless instances, inject data into beans
  * and create new instance of classes that could benefits with the injection mechanism.
  */
-public interface ServiceProvider {
+public interface CDI {
 
 	/**
 	 * Load a service represented by the argument {@code serviceClazz}.
@@ -83,28 +83,27 @@ public interface ServiceProvider {
 	 * @param serviceClazz - the service interface(or class) representation
 	 * @param provider - the producer implementation
 	 */
-	<T> void providerFor(Class<T> serviceClazz, ProducerFactory<T> provider);
+	<T> void producerFor( Class<T> serviceClazz, ProducerFactory<T> provider);
 
 	/**
-	 * Defines a factory to be invoked every time a service represented with
-	 * {@code serviceClazz} is requested.
+	 * Defines a dependency for {@code serviceClazz}.
 	 *
 	 * @param serviceClazz - the service interface(or class) representation
 	 * @param object - the service implementation
 	 */
-	<T> void providerFor(Class<T> serviceClazz, T object);
+	<T> void dependencyFor( Class<T> serviceClazz, T object);
 
 	/**
 	 * Inject data into all objects present in {@code iterable}.
 	 *
 	 * @param iterable - the set of objects that will receive "injectable" services.
 	 */
-	<T> void provideOn(Iterable<T> iterable);
+	<T> void injectOn( Iterable<T> iterable);
 
 	/**
 	 * Inject data into {@code object}.
 	 *
 	 * @param object - the objects that will receive "injectable" services.
 	 */
-	void provideOn(Object object);
+	void injectOn( Object object);
 }

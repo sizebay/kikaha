@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import com.amazonaws.ClientConfiguration;
-import kikaha.core.cdi.DefaultServiceProvider;
+import kikaha.core.cdi.DefaultCDI;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -22,7 +22,7 @@ public class AmazonClientConfigurationProducerTest {
 
 	@Before
 	public void configureTest(){
-		producer = new DefaultServiceProvider().load( AmazonClientConfigurationProducer.class );
+		producer = new DefaultCDI().load( AmazonClientConfigurationProducer.class );
 		producer.listeners.add( configuration );
 	}
 

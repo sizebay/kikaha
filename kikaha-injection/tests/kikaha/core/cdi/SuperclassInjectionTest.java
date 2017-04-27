@@ -12,9 +12,9 @@ public class SuperclassInjectionTest {
 
 	@Test
 	public void ensureThatInjectedOnSuperclass() throws ServiceProviderException {
-		final ServiceProvider provider = new DefaultServiceProvider();
+		final CDI provider = new DefaultCDI();
 		final MyPrintable printable = new MyPrintable();
-		provider.provideOn( printable );
+		provider.injectOn( printable );
 		assertNotNull( printable.printableWord );
 		assertThat( printable.toString(), is( "My kikaha.core.cdi.PrintableWorld" ) );
 	}

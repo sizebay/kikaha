@@ -2,6 +2,7 @@ package kikaha.apt;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
+import java.util.function.Function;
 import javax.annotation.processing.RoundEnvironment;
 import javax.enterprise.inject.Typed;
 import javax.lang.model.element.*;
@@ -89,6 +90,14 @@ public interface APT {
 		if ( "void".equals( returnTypeAsString ) )
 			return null;
 		return returnTypeAsString.replaceAll("<[^>]+>","");
+	}
+
+	static Function<VariableElement, Boolean> isAnnotatedWith( Class<? extends Annotation> annotationClass ) {
+		return v -> isAnnotatedWith( v, annotationClass );
+	}
+
+	static Function<VariableElement, Boolean> typeIs(Class<?> clazz ) {
+		return v -> asType( v ).equals( clazz.getCanonicalName() );
 	}
 }
 

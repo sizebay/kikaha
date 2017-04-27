@@ -171,4 +171,8 @@ public class TinyList<T> implements List<T>, RandomAccess {
 	public List<T> subList(int fromIndex, int toIndex) {
 		throw new UnsupportedOperationException("method 'subList' is unavailable");
 	}
+
+	public static <T> List<T> singleElement( T t ) {
+		return new TinyList<>( t );
+	}
 }

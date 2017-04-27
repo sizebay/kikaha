@@ -13,13 +13,13 @@ import java.util.function.Function;
 
 @Slf4j
 @SuppressWarnings( { "rawtypes", "unchecked" } )
-public class DefaultServiceProvider implements ServiceProvider {
+public class DefaultCDI implements CDI {
 
 	final InjectionContext injectionContext = new InjectionContext();
 	final DependencyMap dependencies;
 	final ProducerFactoryMap producers;
 
-	public DefaultServiceProvider() {
+	public DefaultCDI() {
 		dependencies = new DependencyMap( createDefaultProvidedData() );
 		injectionContext.setQualifierExtractor( loadInjectableDataExtractor() );
 		producers = loadAllProducers();
@@ -46,7 +46,7 @@ public class DefaultServiceProvider implements ServiceProvider {
 
 	protected Map<Class<?>, Iterable<?>> createDefaultProvidedData() {
 		final Map<Class<?>, Iterable<?>> injectable = new HashMap<>();
-		injectable.put( ServiceProvider.class, new SingleObjectIterable<>( this ) );
+		injectable.put( CDI.class, new SingleObjectIterable<>( this ) );
 		return injectable;
 	}
 
@@ -75,12 +75,12 @@ public class DefaultServiceProvider implements ServiceProvider {
 	}
 
 	@Override
-	public <T> void providerFor( final Class<T> serviceClazz, final ProducerFactory<T> provider ) {
+	public <T> void producerFor( final Class<T> serviceClazz, final ProducerFactory<T> provider ) {
 		producers.memorizeProviderForClazz( provider, serviceClazz );
 	}
 
 	@Override
-	public <T> void providerFor( final Class<T> serviceClazz, final T object ) {
+	public <T> void dependencyFor( final Class<T> serviceClazz, final T object ) {
 		providerFor( serviceClazz, new SingleObjectIterable<>( object ) );
 	}
 
@@ -92,12 +92,12 @@ public class DefaultServiceProvider implements ServiceProvider {
 	}
 
 	@Override
-	public <T> void provideOn( final Iterable<T> iterable ) {
+	public <T> void injectOn( final Iterable<T> iterable ) {
 		withInjector( i->i.loadDependenciesAndInjectInto( iterable ) );
 	}
 
 	@Override
-	public void provideOn( final Object object ) {
+	public void injectOn( final Object object ) {
 		withInjector( i->i.loadDependenciesAndInjectInto( object ) );
 	}
 
@@ -116,6 +116,12 @@ public class DefaultServiceProvider implements ServiceProvider {
 		final T t = callback.apply( injector );
 		injector.flush();
 		return t;
+	}
+
+	public static CDI newInstance(){
+		final DefaultCDI cdi = new DefaultCDI();
+		cdi.loadAllCustomClassConstructors();
+		return cdi;
 	}
 
 	/**

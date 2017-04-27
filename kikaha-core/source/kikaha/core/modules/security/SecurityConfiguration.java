@@ -3,7 +3,7 @@ package kikaha.core.modules.security;
 import javax.annotation.PostConstruct;
 import javax.inject.*;
 import kikaha.config.Config;
-import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.CDI;
 import lombok.*;
 
 /**
@@ -15,7 +15,7 @@ import lombok.*;
 public class SecurityConfiguration {
 
 	@Inject private Config config;
-	@Inject private ServiceProvider provider;
+	@Inject private CDI provider;
 
 	private SecurityContextFactory factory;
 	private SessionIdManager sessionIdManager;

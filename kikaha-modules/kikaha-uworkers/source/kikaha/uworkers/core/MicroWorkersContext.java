@@ -2,7 +2,7 @@ package kikaha.uworkers.core;
 
 import kikaha.config.Config;
 import kikaha.config.MergeableConfig;
-import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.CDI;
 import kikaha.uworkers.core.EndpointConfig.DefaultEndpointConfig;
 import lombok.*;
 
@@ -17,7 +17,7 @@ import javax.inject.Singleton;
 public class MicroWorkersContext {
 
 	@Inject Config config;
-	@Inject ServiceProvider cdi;
+	@Inject CDI cdi;
 
 	@Getter EndpointConfig defaultEndpointConfig;
 	@Getter boolean isRestEnabled;

@@ -11,7 +11,7 @@ public class {{generatedClassName}}
 	extends {{{implementationCanonicalName}}} implements {{{typeCanonicalName}}} {
 {{/exposedByClass}}
 
-	@javax.inject.Inject kikaha.core.cdi.ServiceProvider provider;
+	@javax.inject.Inject kikaha.core.cdi.CDI provider;
 	{{#exposedMethods}}
 
 {{#annotations}}    @{{.}}{{/annotations}}
@@ -37,7 +37,7 @@ public class {{generatedClassName}}
 
 	private {{{implementationCanonicalName}}} newInstance() throws kikaha.core.cdi.ServiceProviderException {
 		final {{{implementationCanonicalName}}} instance = new {{{implementationCanonicalName}}}();
-		provider.provideOn( instance );
+		provider.injectOn( instance );
 		return instance;
 	}
 

@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>io.skullabs.kikaha</groupId>
+		<version>2.1.0-alpha12</version>
+		<artifactId>kikaha-modules</artifactId>
+	</parent>
+
+	<artifactId>kikaha-cloud-aws-lambda</artifactId>
+	<name>Kikaha: Cloud Providers: AWS: Lambda</name>
+	<packaging>jar</packaging>
+
+	<dependencies>
+		<!-- Main Dependencies -->
+		<!--dependency>
+			<groupId>io.skullabs.kikaha</groupId>
+			<artifactId>kikaha-cloud-aws</artifactId>
+		</dependency-->
+		<dependency>
+			<groupId>io.skullabs.kikaha</groupId>
+			<artifactId>kikaha-urouting</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-core</artifactId>
+			<version>${version.aws}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-ec2</artifactId>
+			<version>${version.aws}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-lambda-java-log4j</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${version.slf4j}</version>
+		</dependency>
+	</dependencies>
+</project>

@@ -2,7 +2,7 @@ package kikaha.core.modules.smart;
 
 import io.undertow.server.handlers.proxy.ProxyHandler;
 import kikaha.core.DeploymentContext;
-import kikaha.core.cdi.DefaultServiceProvider;
+import kikaha.core.cdi.DefaultCDI;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +36,6 @@ public class RewriteRoutesDeploymentTest {
 	@SneakyThrows
 	public void provideDependencies()
 	{
-		new DefaultServiceProvider().provideOn( this );
+		new DefaultCDI().injectOn( this );
 	}
 }

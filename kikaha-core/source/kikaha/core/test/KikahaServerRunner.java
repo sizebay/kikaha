@@ -2,7 +2,7 @@ package kikaha.core.test;
 
 import kikaha.config.*;
 import kikaha.core.KikahaUndertowServer;
-import kikaha.core.cdi.DefaultServiceProvider;
+import kikaha.core.cdi.DefaultCDI;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.*;
 import org.junit.runner.manipulation.*;
@@ -17,13 +17,13 @@ import org.junit.runners.model.*;
 public class KikahaServerRunner extends Runner implements Filterable {
 
 	private static final KikahaUndertowServer server = new KikahaUndertowServer();
-	private static final DefaultServiceProvider cdi = new DefaultServiceProvider();
+	private static final DefaultCDI cdi = new DefaultCDI();
 	private final BlockJUnit4ClassRunner runner;
 
 	static {
-		cdi.providerFor( Config.class, ConfigLoader.loadDefaults() );
+		cdi.dependencyFor( Config.class, ConfigLoader.loadDefaults() );
 		cdi.loadAllCustomClassConstructors();
-		cdi.provideOn( server );
+		cdi.injectOn( server );
 		try {
 			server.run();
 			log.info( "Unit test server started." );
@@ -69,7 +69,7 @@ public class KikahaServerRunner extends Runner implements Filterable {
 
 		@Override
 		protected Statement withBefores( FrameworkMethod method, Object target, Statement statement ) {
-			cdi.provideOn( target );
+			cdi.injectOn( target );
 			return super.withBefores( method, target, statement );
 		}
 	}

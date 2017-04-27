@@ -11,7 +11,7 @@ import io.undertow.security.idm.*;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.*;
 import io.undertow.util.*;
-import kikaha.core.cdi.DefaultServiceProvider;
+import kikaha.core.cdi.DefaultCDI;
 import kikaha.core.test.HttpServerExchangeStub;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -23,7 +23,7 @@ public class FormAuthenticationMechanismTest {
 
 	static final Credential CREDENTIAL = new UsernameAndPasswordCredential("username","password");
 	final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
-	final FormAuthenticationConfiguration configuration = new DefaultServiceProvider().load(FormAuthenticationConfiguration.class);
+	final FormAuthenticationConfiguration configuration = new DefaultCDI().load(FormAuthenticationConfiguration.class);
 	final FormData data = new FormData(2);
 
 	@Mock IdentityManager identityManager;

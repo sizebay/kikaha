@@ -1,7 +1,7 @@
 package kikaha.core.test;
 
 import kikaha.config.*;
-import kikaha.core.cdi.DefaultServiceProvider;
+import kikaha.core.cdi.DefaultCDI;
 import org.junit.runner.*;
 import org.junit.runner.manipulation.*;
 import org.junit.runner.notification.RunNotifier;
@@ -13,18 +13,18 @@ import org.junit.runners.model.*;
  */
 public class KikahaRunner extends Runner implements Filterable {
 
-	private final DefaultServiceProvider cdi;
+	private final DefaultCDI cdi;
 	private final BlockJUnit4ClassRunner runner;
 
 	public KikahaRunner( Class<?> clazz ) throws InitializationError {
-		cdi = new DefaultServiceProvider();
-		cdi.providerFor( Config.class, ConfigLoader.loadDefaults() );
+		cdi = new DefaultCDI();
+		cdi.dependencyFor( Config.class, ConfigLoader.loadDefaults() );
 		cdi.loadAllCustomClassConstructors();
 
 		runner = new BlockJUnit4ClassRunner( clazz ) {
 			@Override
 			protected Statement withBefores( FrameworkMethod method, Object target, Statement statement ) {
-				cdi.provideOn( target );
+				cdi.injectOn( target );
 				return super.withBefores( method, target, statement );
 			}
 		};

@@ -5,7 +5,7 @@ import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
-import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.CDI;
 import kikaha.core.modules.Module;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ public class AuthenticationModule implements Module {
 
 	final String name = "security";
 
-	@Inject ServiceProvider provider;
+	@Inject CDI provider;
 	@Inject Config config;
 	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
 	@Inject SecurityConfiguration securityConfiguration;

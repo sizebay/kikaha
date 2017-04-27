@@ -1,7 +1,8 @@
 package kikaha.urouting.apt;
 
 import static java.lang.String.format;
-import static kikaha.apt.APT.asType;
+import static kikaha.apt.APT.*;
+
 import java.lang.annotation.Annotation;
 import java.util.function.*;
 import javax.lang.model.element.*;
@@ -30,17 +31,32 @@ public class MicroRoutingParameterParser extends MethodParametersExtractor {
 		return rules;
 	}
 
-	static Function<VariableElement, Boolean> isAnnotatedWith( Class<? extends Annotation> annotationClass ) {
-		return v -> APT.isAnnotatedWith( v, annotationClass );
-	}
-
-	static Function<VariableElement, Boolean> typeIs(Class<?> clazz ) {
-		return v -> APT.asType( v ).equals( clazz.getCanonicalName() );
-	}
-
 	static String getParam( final Class<?> targetAnnotation, final String param, final VariableElement parameter ) {
 		final String targetType = asType( parameter );
 		return format( "methodDataProvider.get%s( exchange, \"%s\", %s.class )",
 				targetAnnotation.getSimpleName(), param, targetType );
+	}
+
+	public static String extractHttpPathFrom( final ExecutableElement method ) {
+		final Element classElement = method.getEnclosingElement();
+		final Path pathAnnotationOfClass = classElement.getAnnotation( Path.class );
+		final String rootPath = pathAnnotationOfClass != null ? pathAnnotationOfClass.value() : "/";
+		final Path pathAnnotationOfMethod = method.getAnnotation( Path.class );
+		final String methodPath = pathAnnotationOfMethod != null ? pathAnnotationOfMethod.value() : "/";
+		return generateHttpPath( rootPath, methodPath );
+	}
+
+	public static String generateHttpPath( final String rootPath, final String methodPath ) {
+		return String.format( "/%s/%s/", rootPath, methodPath )
+				.replaceAll( "//+", "/" );
+	}
+
+	public static String extractResponseContentTypeFrom( final ExecutableElement method ) {
+		Produces producesAnnotation = method.getAnnotation( Produces.class );
+		if ( producesAnnotation == null )
+			producesAnnotation = method.getEnclosingElement().getAnnotation( Produces.class );
+		if ( producesAnnotation != null )
+			return producesAnnotation.value();
+		return null;
 	}
 }

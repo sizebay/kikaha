@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import javax.enterprise.inject.Typed;
-import kikaha.core.cdi.DefaultServiceProvider.DependencyInjector;
+import kikaha.core.cdi.DefaultCDI.DependencyInjector;
 import kikaha.core.cdi.*;
 import kikaha.core.cdi.helpers.filter.*;
 import lombok.Value;

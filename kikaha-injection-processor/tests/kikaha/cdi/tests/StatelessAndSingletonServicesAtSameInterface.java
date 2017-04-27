@@ -5,15 +5,15 @@ import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 
-import kikaha.core.cdi.DefaultServiceProvider;
-import kikaha.core.cdi.ServiceProviderException;
+import kikaha.core.cdi.*;
+import kikaha.core.cdi.DefaultCDI;
 import lombok.val;
 
 import org.junit.Test;
 
 public class StatelessAndSingletonServicesAtSameInterface {
 
-	final DefaultServiceProvider provider = new DefaultServiceProvider();
+	final DefaultCDI provider = new DefaultCDI();
 
 	@Test
 	public void ensureThatCouldFoundBothImplementations() throws ServiceProviderException {

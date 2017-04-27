@@ -3,14 +3,14 @@ package kikaha.cdi.tests;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import kikaha.core.cdi.DefaultServiceProvider;
+import kikaha.core.cdi.DefaultCDI;
 import kikaha.core.cdi.ServiceProviderException;
 
 import org.junit.Test;
 
 public class SingletonsAndStatelessProducerTest {
 
-	final DefaultServiceProvider provider = new DefaultServiceProvider();
+	final DefaultCDI provider = new DefaultCDI();
 
 	@Test
 	public void ensureThatProduceThreeDifferentNumbers() throws ServiceProviderException {

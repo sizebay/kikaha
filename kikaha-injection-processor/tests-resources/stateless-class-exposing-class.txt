@@ -6,7 +6,7 @@ package sample.project;
 public class GeneratedServiceFromInterface3407109653
 	extends sample.project.ServiceFromInterface {
 
-	@javax.inject.Inject kikaha.core.cdi.ServiceProvider provider;
+	@javax.inject.Inject kikaha.core.cdi.CDI provider;
 
 
 	public void voidMethod(  ) {
@@ -39,7 +39,7 @@ public class GeneratedServiceFromInterface3407109653
 
 	private sample.project.ServiceFromInterface newInstance() throws kikaha.core.cdi.ServiceProviderException {
 		final sample.project.ServiceFromInterface instance = new sample.project.ServiceFromInterface();
-		provider.provideOn( instance );
+		provider.injectOn( instance );
 		return instance;
 	}
 

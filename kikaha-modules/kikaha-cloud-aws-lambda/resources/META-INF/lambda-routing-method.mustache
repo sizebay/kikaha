@@ -1,0 +1,33 @@
+package {{packageName}};
+
+import javax.inject.*;
+import javax.inject.Singleton;
+import javax.enterprise.inject.Typed;
+import kikaha.core.modules.http.WebResource;
+import kikaha.cloud.lambda.*;
+import kikaha.urouting.*;
+import kikaha.urouting.api.*;
+
+@Singleton
+@Typed( AmazonHttpHandler.class )
+@WebResource( path="{{httpPath}}", method="{{httpMethod}}" )
+final public class {{generatedClassName}} implements AmazonHttpHandler {
+
+    @Inject AmazonLambdaFunctionParameterReader methodDataProvider;
+    @Inject {{{type}}} instance;
+
+    public AmazonLambdaResponse handle( AmazonLambdaRequest request ) {
+    {{#returnType}}
+        final {{{returnType}}} response = instance.{{methodName}}( {{{methodParams}}} );
+        return AmazonLambdaResponse.with( response );
+    {{/returnType}}
+    {{^returnType}}
+        instance.{{methodName}}( {{{methodParams}}} );
+        return AmazonLambdaResponse.noContent();
+    {{/returnType}}
+    }
+
+    public String toString(){
+        return "{{{type}}}.{{methodName}}";
+    }
+}

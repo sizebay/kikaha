@@ -7,7 +7,7 @@ import static org.mockito.Mockito.*;
 import javax.inject.Inject;
 import io.undertow.server.*;
 import kikaha.config.Config;
-import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.CDI;
 import kikaha.core.test.*;
 import lombok.SneakyThrows;
 import org.junit.*;
@@ -24,7 +24,7 @@ public class AuthenticationHttpHandlerTest {
 	@Mock SecurityContextFactory factory;
 
 	@Inject SecurityConfiguration securityConfiguration;
-	@Inject ServiceProvider provider;
+	@Inject CDI provider;
 	@Inject Config config;
 	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
 

@@ -1,7 +1,7 @@
 package kikaha.urouting.apt;
 
 import static java.lang.String.format;
-import static kikaha.apt.APT.asType;
+import static kikaha.apt.APT.*;
 
 import javax.lang.model.element.*;
 import java.lang.annotation.Annotation;
@@ -22,19 +22,11 @@ public class WebSocketParameterParser extends MethodParametersExtractor {
 		rules
 		   .with( isAnnotatedWith( PathParam.class ), v -> getParam( PathParam.class, v.getAnnotation( PathParam.class ).value(), v ) )
 			.and( isAnnotatedWith( HeaderParam.class ), v -> getParam( HeaderParam.class, v.getAnnotation( HeaderParam.class ).value(), v ) )
-			.and( whichTypeIs( String.class ), v -> "message" )
-			.and( whichTypeIs( CloseMessage.class ), v -> "cm" )
-			.and( whichTypeIs( WebSocketSession.class ), v -> "session" )
-			.and( whichTypeIs( Throwable.class ), v -> "cause" );
+			.and( typeIs( String.class ), v -> "message" )
+			.and( typeIs( CloseMessage.class ), v -> "cm" )
+			.and( typeIs( WebSocketSession.class ), v -> "session" )
+			.and( typeIs( Throwable.class ), v -> "cause" );
 		return rules;
-	}
-
-	static Function<VariableElement, Boolean> isAnnotatedWith( Class<? extends Annotation> annotationClass ) {
-		return v -> APT.isAnnotatedWith( v, annotationClass );
-	}
-
-	static Function<VariableElement, Boolean> whichTypeIs( Class<?> clazz ) {
-		return v -> v.asType().toString().equals( clazz.getCanonicalName() );
 	}
 
 	static String getParam( final Class<?> targetAnnotation, final String param, final VariableElement parameter ) {

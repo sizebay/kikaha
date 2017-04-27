@@ -1,6 +1,6 @@
 package kikaha.core.modules.http.ssl;
 
-import kikaha.core.cdi.DefaultServiceProvider;
+import kikaha.core.cdi.DefaultCDI;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -15,7 +15,7 @@ public class KeystoreTester {
     @Inject SSLContextFactory factory;
 
     public static void main( String[] args ) throws IOException {
-        final DefaultServiceProvider serviceProvider = new DefaultServiceProvider();
+        final DefaultCDI serviceProvider = new DefaultCDI();
         final KeystoreTester tester = serviceProvider.load(KeystoreTester.class);
         tester.loadCertificate( args[0], args[1] );
     }

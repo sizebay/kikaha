@@ -4,7 +4,7 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import kikaha.cloud.smart.ServiceRegistry.ApplicationData;
 import kikaha.config.Config;
-import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.CDI;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -20,7 +20,7 @@ public class SmartServerModuleTest {
 
 	@Mock Config config;
 	@Mock ServiceRegistry serviceRegistry;
-	@Mock ServiceProvider serviceProvider;
+	@Mock CDI cdi;
 	@Mock LocalMachineIdentification localMachineIdentification;
 
 	@InjectMocks
@@ -29,9 +29,9 @@ public class SmartServerModuleTest {
 	@Before
 	public void configureMocks() throws IOException {
 		doReturn( localMachineIdentification.getClass() ).when( config ).getClass( eq("server.smart-server.local-address.identification") );
-		doReturn( localMachineIdentification ).when( serviceProvider ).load( eq( localMachineIdentification.getClass()) );
+		doReturn( localMachineIdentification ).when( cdi ).load( eq( localMachineIdentification.getClass()) );
 		doReturn( "10.0.0.1" ).when( localMachineIdentification ).getLocalAddress();
-		doReturn( serviceRegistry ).when( serviceProvider ).load( eq(serviceRegistry.getClass()) );
+		doReturn( serviceRegistry ).when( cdi ).load( eq(serviceRegistry.getClass()) );
 		doReturn( true ).when( config ).getBoolean( eq("server.http.enabled") );
 		doReturn( 9000 ).when( config ).getInteger( eq("server.http.port") );
 		doAnswer(this::registerIntoCluster).when( serviceRegistry ).registerIntoCluster( any() );

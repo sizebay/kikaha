@@ -61,7 +61,7 @@
         <version.slf4j>1.7.21</version.slf4j>
         <version.logback>1.1.8</version.logback>
         <version.junit>4.12</version.junit>
-        <version.lombok>1.16.14</version.lombok>
+        <version.lombok>1.16.16</version.lombok>
         <version.mockito>1.10.19</version.mockito>
         <version.jmustache>1.13</version.jmustache>
         <version.vibur>16.2</version.vibur>
@@ -193,6 +193,12 @@
             <dependency>
                 <groupId>io.skullabs.kikaha</groupId>
                 <artifactId>kikaha-cloud-aws</artifactId>
+                <version>2.1.0-alpha12</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.skullabs.kikaha</groupId>
+                <artifactId>kikaha-cloud-aws-lambda</artifactId>
                 <version>2.1.0-alpha12</version>
                 <scope>compile</scope>
             </dependency>

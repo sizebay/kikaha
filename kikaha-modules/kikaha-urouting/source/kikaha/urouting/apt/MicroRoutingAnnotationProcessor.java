@@ -2,6 +2,9 @@ package kikaha.urouting.apt;
 
 import static java.lang.String.format;
 import static kikaha.apt.APT.*;
+import static kikaha.urouting.apt.MicroRoutingParameterParser.extractHttpPathFrom;
+import static kikaha.urouting.apt.MicroRoutingParameterParser.extractResponseContentTypeFrom;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -59,7 +62,7 @@ public class MicroRoutingAnnotationProcessor extends AbstractAnnotatedMethodProc
 		return new RoutingMethodData(
 				extractTypeName( type ), extractPackageName( type ), method.getSimpleName().toString(),
 				methodParams, returnType, extractResponseContentTypeFrom( method ),
-				measureHttpPathFrom( method ), httpMethod, extractServiceInterfaceFrom( method ),
+				extractHttpPathFrom( method ), httpMethod, extractServiceInterfaceFrom( method ),
 				requiresBodyData, isMultiPart, isAsyncMode );
 	}
 
@@ -80,29 +83,6 @@ public class MicroRoutingAnnotationProcessor extends AbstractAnnotatedMethodProc
 		if ( consumesAnnotation != null )
 			return consumesAnnotation.value();
 		return null;
-	}
-
-	static String extractResponseContentTypeFrom( final ExecutableElement method ) {
-		Produces producesAnnotation = method.getAnnotation( Produces.class );
-		if ( producesAnnotation == null )
-			producesAnnotation = method.getEnclosingElement().getAnnotation( Produces.class );
-		if ( producesAnnotation != null )
-			return producesAnnotation.value();
-		return null;
-	}
-
-	static String measureHttpPathFrom( final ExecutableElement method ) {
-		final Element classElement = method.getEnclosingElement();
-		final Path pathAnnotationOfClass = classElement.getAnnotation( Path.class );
-		final String rootPath = pathAnnotationOfClass != null ? pathAnnotationOfClass.value() : "/";
-		final Path pathAnnotationOfMethod = method.getAnnotation( Path.class );
-		final String methodPath = pathAnnotationOfMethod != null ? pathAnnotationOfMethod.value() : "/";
-		return generateHttpPath( rootPath, methodPath );
-	}
-
-	public static String generateHttpPath( final String rootPath, final String methodPath ) {
-		return String.format( "/%s/%s/", rootPath, methodPath )
-				.replaceAll( "//+", "/" );
 	}
 
 	static String extractServiceInterfaceFrom( final ExecutableElement method ) {

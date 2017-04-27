@@ -10,17 +10,15 @@ import javax.enterprise.inject.Produces;
 
 import kikaha.cdi.tests.ann.Ajax;
 import kikaha.cdi.tests.ann.DarkKnight;
-import kikaha.cdi.tests.ann.Foo;
-import kikaha.core.cdi.DefaultServiceProvider;
-import kikaha.core.cdi.ProviderContext;
-import kikaha.core.cdi.ServiceProviderException;
+import kikaha.core.cdi.*;
+import kikaha.core.cdi.DefaultCDI;
 import kikaha.core.cdi.helpers.filter.QualifierCondition;
 
 import org.junit.Test;
 
 public class GeneratedCodeAndMetaINFTest {
 
-	final DefaultServiceProvider provider = new DefaultServiceProvider();
+	final DefaultCDI provider = new DefaultCDI();
 
 	@Test
 	public void grantThatCouldRetrieveAjaxFromMars() throws ServiceProviderException {

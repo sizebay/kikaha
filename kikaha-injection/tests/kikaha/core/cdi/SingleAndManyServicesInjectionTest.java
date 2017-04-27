@@ -7,7 +7,7 @@ import org.junit.*;
 
 public class SingleAndManyServicesInjectionTest {
 
-	final ServiceProvider provider = new DefaultServiceProvider();
+	final CDI provider = new DefaultCDI();
 
 	@Before
 	public void applySomeGC(){
@@ -25,7 +25,7 @@ public class SingleAndManyServicesInjectionTest {
 			throws ServiceProviderException
 	{
 		val injectable = new InjectableClass();
-		provider.provideOn( injectable );
+		provider.injectOn( injectable );
 		assertThat( injectable.getPrintableWord(), instanceOf( PrintableWorld.class ) );
 		assertPrintablesArePopulatedAsExpected( injectable );
 		assertPrintableFoosArePopulatedAsExpected( injectable );

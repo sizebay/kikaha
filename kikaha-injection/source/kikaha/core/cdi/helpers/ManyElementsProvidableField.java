@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import javax.enterprise.inject.Typed;
 
-import kikaha.core.cdi.DefaultServiceProvider.DependencyInjector;
+import kikaha.core.cdi.DefaultCDI.DependencyInjector;
 import kikaha.core.cdi.ProviderContext;
 import kikaha.core.cdi.helpers.filter.Condition;
 import kikaha.core.cdi.helpers.filter.QualifierCondition;

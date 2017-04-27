@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import javax.inject.Inject;
 
-import kikaha.core.cdi.DefaultServiceProvider;
-import kikaha.core.cdi.ServiceProviderException;
+import kikaha.core.cdi.*;
+import kikaha.core.cdi.DefaultCDI;
 import lombok.val;
 
 import org.junit.Before;
@@ -21,9 +21,9 @@ public class PostConstructAndPreDestroyStatelessServiceTest {
 
 	@Before
 	public void provideDependencies() throws ServiceProviderException {
-		final DefaultServiceProvider provider = new DefaultServiceProvider();
+		final DefaultCDI provider = new DefaultCDI();
 		stateless = provider.load( PostConstructAndPreDestroyStatelessService.class );
-		provider.provideOn( this );
+		provider.injectOn( this );
 	}
 
 	@Test

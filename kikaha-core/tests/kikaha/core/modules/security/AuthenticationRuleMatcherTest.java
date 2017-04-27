@@ -3,7 +3,7 @@ package kikaha.core.modules.security;
 import static org.junit.Assert.*;
 import javax.inject.Inject;
 import kikaha.config.Config;
-import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.CDI;
 import kikaha.core.test.KikahaRunner;
 import lombok.val;
 import org.junit.*;
@@ -15,7 +15,7 @@ public class AuthenticationRuleMatcherTest {
 
 	AuthenticationRuleMatcher matcher;
 
-	@Inject ServiceProvider provider;
+	@Inject CDI provider;
 	@Inject Config config;
 	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
 

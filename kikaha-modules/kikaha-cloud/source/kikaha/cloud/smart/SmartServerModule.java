@@ -8,7 +8,7 @@ import io.undertow.Undertow.Builder;
 import kikaha.cloud.smart.ServiceRegistry.ApplicationData;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
-import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.CDI;
 import kikaha.core.modules.Module;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SmartServerModule implements Module {
 
 	@Inject Config config;
-	@Inject ServiceProvider serviceProvider;
+	@Inject CDI cdi;
 	boolean isModuleEnabled;
 
 	ApplicationData applicationData;
@@ -50,14 +50,14 @@ public class SmartServerModule implements Module {
 		final Class<?> serviceRegistryClass = config.getClass( "server.smart-server.service-registry" );
 		if ( serviceRegistryClass == null )
 			throw new InstantiationError( "No ServiceRegistry defined" );
-		return (ServiceRegistry)serviceProvider.load( serviceRegistryClass );
+		return (ServiceRegistry) cdi.load( serviceRegistryClass );
 	}
 
 	LocalMachineIdentification loadLocalMachineIdentification(){
 		final Class<?> localMachineIdentification = config.getClass( "server.smart-server.local-address.identification" );
 		if ( localMachineIdentification == null )
 			throw new InstantiationError( "No LocalMachineIdentification defined" );
-		return (LocalMachineIdentification)serviceProvider.load( localMachineIdentification );
+		return (LocalMachineIdentification) cdi.load( localMachineIdentification );
 	}
 
 	public int getLocalPort(){

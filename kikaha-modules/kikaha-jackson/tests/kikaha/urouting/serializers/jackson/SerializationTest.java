@@ -26,7 +26,7 @@ import org.xnio.conduits.StreamSinkConduit;
 @RunWith( MockitoJUnitRunner.class )
 public class SerializationTest {
 
-	final ServiceProvider provider = new DefaultServiceProvider();
+	final CDI provider = new DefaultCDI();
 	final User user = new User( "gerolasdiwn",
 			new Address( "Madison Avenue", 10 ) );
 

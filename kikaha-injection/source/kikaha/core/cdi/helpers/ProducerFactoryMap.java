@@ -37,14 +37,14 @@ public class ProducerFactoryMap {
 		iterable.add( provider );
 	}
 
-	public ProducerFactory<?> get( final Class<?> clazz, final DefaultServiceProvider.DependencyInjector injector ) {
+	public ProducerFactory<?> get( final Class<?> clazz, final DefaultCDI.DependencyInjector injector ) {
 		final List<ProducerFactory<?>> list = getAll( clazz, injector );
 		if ( list == null || list.isEmpty() )
 			return null;
 		return list.get(0);
 	}
 
-	private List<ProducerFactory<?>> getAll( final Class<?> clazz, DefaultServiceProvider.DependencyInjector injector ) {
+	private List<ProducerFactory<?>> getAll( final Class<?> clazz, DefaultCDI.DependencyInjector injector ) {
 		List<ProducerFactory<?>> list = map.get( clazz );
 		if ( list == null )
 			synchronized ( map ) {
@@ -57,7 +57,7 @@ public class ProducerFactoryMap {
 		return list;
 	}
 
-	private List<ProducerFactory<?>> loadAll( Class<?> clazz, DefaultServiceProvider.DependencyInjector injector ) {
+	private List<ProducerFactory<?>> loadAll( Class<?> clazz, DefaultCDI.DependencyInjector injector ) {
 		final List<ProducerFactory<?>> list = new TinyList<>();
 		final List<Class<ProducerFactory>> factories = producerImplementationClasses.get( clazz );
 		if ( factories != null )

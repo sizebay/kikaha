@@ -7,7 +7,7 @@ import java.util.*;
 import javax.inject.Inject;
 import io.undertow.server.*;
 import kikaha.config.Config;
-import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.CDI;
 import kikaha.core.test.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -17,7 +17,7 @@ import org.mockito.*;
 public class AuthenticationRunnerTest {
 
 	@Inject Config config;
-	@Inject ServiceProvider provider;
+	@Inject CDI provider;
 	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
 
 	@Mock SecurityContext securityContext;

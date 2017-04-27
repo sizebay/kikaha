@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ApplicationRunner {
 
-	final DefaultServiceProvider provider = new DefaultServiceProvider();
+	final DefaultCDI provider = new DefaultCDI();
 
 	public void run() throws Exception {
 		provider.loadAllCustomClassConstructors();

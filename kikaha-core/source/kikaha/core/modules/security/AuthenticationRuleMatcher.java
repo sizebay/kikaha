@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import kikaha.config.Config;
-import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.CDI;
 import kikaha.core.cdi.helpers.TinyList;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthenticationRuleMatcher {
 
 	final Config authConfig;
-	final ServiceProvider provider;
+	final CDI provider;
 
 	final SecurityContextFactory securityContextFactory;
 	final Map<String, AuthenticationMechanism> mechanisms;
@@ -24,7 +24,7 @@ public class AuthenticationRuleMatcher {
 	final List<AuthenticationRule> rules;
 	final FormAuthenticationConfiguration formAuthenticationConfiguration;
 
-	public AuthenticationRuleMatcher( final ServiceProvider provider, final Config authConfig, final FormAuthenticationConfiguration formAuthenticationConfiguration ) {
+	public AuthenticationRuleMatcher( final CDI provider, final Config authConfig, final FormAuthenticationConfiguration formAuthenticationConfiguration ) {
 		this.authConfig = authConfig;
 		this.provider = provider;
 		mechanisms = instantiateMechanismsFoundOnConfig();
