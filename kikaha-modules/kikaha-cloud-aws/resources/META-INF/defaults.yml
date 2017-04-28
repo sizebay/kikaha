@@ -1,7 +1,0 @@
-server:
-  aws:
-    ec2:
-      iam-policy: "ec2"
-    elb:
-      auto-join-to: "default-load-balancer"
-      iam-policy: "elb"
