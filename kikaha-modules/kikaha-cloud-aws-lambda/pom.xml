@@ -9,28 +9,18 @@
 	</parent>
 
 	<artifactId>kikaha-cloud-aws-lambda</artifactId>
-	<name>Kikaha: Cloud Providers: AWS: Lambda</name>
+	<name>Kikaha: Cloud Providers: AWS Lambda</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
 		<!-- Main Dependencies -->
-		<!--dependency>
-			<groupId>io.skullabs.kikaha</groupId>
-			<artifactId>kikaha-cloud-aws</artifactId>
-		</dependency-->
 		<dependency>
 			<groupId>io.skullabs.kikaha</groupId>
 			<artifactId>kikaha-urouting</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-core</artifactId>
-			<version>${version.aws}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-ec2</artifactId>
-			<version>${version.aws}</version>
+			<groupId>io.skullabs.kikaha</groupId>
+			<artifactId>kikaha-cloud-aws-iam</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.amazonaws</groupId>

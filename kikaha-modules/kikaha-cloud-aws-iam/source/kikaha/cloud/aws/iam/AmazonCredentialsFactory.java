@@ -23,22 +23,15 @@ public interface AmazonCredentialsFactory {
 	AWSCredentials loadCredentialFor( String profileName );
 
 	/**
-	 * Retrieve Credentials from environment variables.
+	 * Retrieve Credentials from the default Credential Provider Chain.
 	 */
-	class Default extends AWSCredentialsProviderChain implements AmazonCredentialsFactory {
+	class Default implements AmazonCredentialsFactory {
 
-		final EnvironmentVariableCredentialsProvider provider = new EnvironmentVariableCredentialsProvider();
-
-		public Default(){
-			super(new EnvironmentVariableCredentialsProvider(),
-					new SystemPropertiesCredentialsProvider(),
-					new ProfileCredentialsProvider(),
-					new EC2ContainerCredentialsProviderWrapper());
-		}
+		final AWSCredentialsProviderChain chain = DefaultAWSCredentialsProviderChain.getInstance();
 
 		@Override
 		public AWSCredentials loadCredentialFor( String profileName ) {
-			return provider.getCredentials();
+			return chain.getCredentials();
 		}
 	}
 

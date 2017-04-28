@@ -24,6 +24,15 @@
         <config.dir.output>${project.basedir}/target</config.dir.output>
         <config.dir.web>${project.basedir}/src/main/webapp</config.dir.web>
         <config.encoding>UTF-8</config.encoding>
+        <!-- Kikaha Maven Plugins -->
+        <config.plugins.aws.lambda.deploy.force>false</config.plugins.aws.lambda.deploy.force>
+        <config.plugins.aws.lambda.deploy.enabled>false</config.plugins.aws.lambda.deploy.enabled>
+        <config.plugins.aws.s3.deploy.enabled>${config.plugins.aws.lambda.deploy.enabled}</config.plugins.aws.s3.deploy.enabled>
+        <config.plugins.jar.enabled>${config.plugins.aws.lambda.deploy.enabled}</config.plugins.jar.enabled>
+        <config.plugins.package.enabled>false</config.plugins.package.enabled>
+        <config.plugins.maven.deploy.skip>${config.plugins.aws.s3.deploy.enabled}</config.plugins.maven.deploy.skip>
+        <!--config.plugins.aws.s3.bucket></config.plugins.aws.s3.bucket-->
+        <!--config.plugins.aws.lambda.role></config.plugins.aws.lambda.role-->
     </properties>
 
     <dependencies>
@@ -41,27 +50,70 @@
             <plugin>
                 <groupId>io.skullabs.kikaha</groupId>
                 <artifactId>kikaha-maven-plugin</artifactId>
+                <version>2.1.0-alpha12</version>
+                <inherited>true</inherited>
                 <executions>
                     <execution>
-                        <id>kikaha-install</id>
+                        <id>kikaha-install-jar</id>
                         <phase>install</phase>
                         <goals><goal>jar</goal></goals>
+                        <configuration>
+                            <enabled>${config.plugins.jar.enabled}</enabled>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>kikaha-install-package</id>
+                        <phase>install</phase>
+                        <goals><goal>package</goal></goals>
+                        <configuration>
+                            <enabled>${config.plugins.package.enabled}</enabled>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>kikaha-deploy-aws-s3</id>
+                        <phase>deploy</phase>
+                        <goals><goal>deploy-on-aws-s3</goal></goals>
+                        <configuration>
+                            <enabled>${config.plugins.aws.s3.deploy.enabled}</enabled>
+                            <s3Bucket>${config.plugins.aws.s3.bucket}</s3Bucket>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>kikaha-deploy-aws-lambda</id>
+                        <phase>deploy</phase>
+                        <goals><goal>deploy-on-aws-lambda</goal></goals>
+                        <configuration>
+                            <enabled>${config.plugins.aws.lambda.deploy.enabled}</enabled>
+                            <s3Bucket>${config.plugins.aws.s3.bucket}</s3Bucket>
+                            <lambdaRole>${config.plugins.aws.lambda.role}</lambdaRole>
+                            <force>${config.plugins.aws.lambda.deploy.force}</force>
+                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <jvmArgs>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArgs>
+                    <webResourcesPath>${config.dir.web}</webResourcesPath>
+                </configuration>
             </plugin>
         </plugins>
 
         <pluginManagement>
             <plugins>
-                <!-- configure kikaha-maven-plugin -->
                 <plugin>
-                    <groupId>io.skullabs.kikaha</groupId>
-                    <version>2.1.0-alpha12</version>
-                    <artifactId>kikaha-maven-plugin</artifactId>
-                    <configuration>
-                        <jvmArgs>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArgs>
-                        <webResourcesPath>${config.dir.web}</webResourcesPath>
-                    </configuration>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.7</version>
+                    <executions>
+                        <execution>
+                            <id>default-deploy</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>deploy</goal>
+                            </goals>
+                            <configuration>
+                                <skip>${config.plugins.maven.deploy.skip}</skip>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

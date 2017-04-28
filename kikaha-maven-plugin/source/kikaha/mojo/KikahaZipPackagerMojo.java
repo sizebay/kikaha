@@ -37,7 +37,10 @@ public class KikahaZipPackagerMojo extends AbstractMojo {
 	String finalName;
 
 	@Parameter( defaultValue = "false", required = true)
-	public boolean force;
+	boolean force;
+
+	@Parameter( defaultValue = "false", required = true)
+	boolean enabled;
 
 	@Component
 	ArtifactResolver resolver;
@@ -47,6 +50,7 @@ public class KikahaZipPackagerMojo extends AbstractMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if ( !enabled ) return;
 		if ( !project.getPackaging().equals( "jar" ) && !force ) return;
 
 		ensureTargetDirectoryExists();

@@ -41,6 +41,9 @@ public class KikahaJarPackagerMojo extends AbstractMojo {
     String jarFileName;
 
     @Parameter( defaultValue = "false", required = true)
+    boolean enabled;
+
+    @Parameter( defaultValue = "false", required = true)
     boolean force;
 
     @Component
@@ -51,6 +54,7 @@ public class KikahaJarPackagerMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if ( !enabled ) return;
         if ( !project.getPackaging().equals( "jar" ) && !force ) return;
 
         ensureTargetDirectoryExists();
