@@ -1,5 +1,6 @@
 server:
   aws:
+    credentials-factory: kikaha.cloud.aws.iam.AmazonCredentialsFactory$Yml
 
     hypothetical-ec2:
       iam-policy: "alternative"

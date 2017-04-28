@@ -1,11 +1,12 @@
 package kikaha.cloud.aws.iam;
 
 import java.util.*;
+import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Produces;
 import javax.inject.*;
 import com.amazonaws.auth.*;
 import kikaha.config.Config;
-import kikaha.core.cdi.ProviderContext;
+import kikaha.core.cdi.*;
 import lombok.NonNull;
 
 /**
@@ -14,9 +15,15 @@ import lombok.NonNull;
 @Singleton
 public class AmazonCredentialsProducer {
 
-	final Map<String, AWSCredentials> cache = new HashMap<>();
-
 	@Inject Config config;
+	@Inject CDI cdi;
+	AmazonCredentialsFactory factory;
+
+	@PostConstruct
+	public void loadCredentialFactory(){
+		final Class<?> aClass = config.getClass( "server.aws.credentials-factory" );
+		factory = (AmazonCredentialsFactory)cdi.load( aClass );
+	}
 
 	@Produces
 	public AWSCredentials produceCredentials( final ProviderContext context ){
@@ -30,17 +37,8 @@ public class AmazonCredentialsProducer {
 		return new AWSStaticCredentialsProvider( credentials );
 	}
 
-	public AWSCredentials getCredentials( @NonNull final String configurationName ) {
-		return cache.computeIfAbsent( configurationName, this::createCredential );
+	private AWSCredentials getCredentials( String profileName ) {
+		return factory.loadCredentialFor( profileName );
 	}
 
-	BasicAWSCredentials createCredential( String name ) {
-		final Config config = this.config.getConfig("server.aws.iam-policies." + name);
-		if ( config == null )
-			throw new IllegalStateException( "No AWS Configuration available for '"+ name +"'" );
-		return new BasicAWSCredentials(
-			config.getString( "access-key-id" ),
-			config.getString( "secret-access-key" )
-		);
-	}
 }
