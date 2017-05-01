@@ -1,31 +1,21 @@
 package kikaha.db;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-
-import javax.inject.Inject;
-import javax.inject.Named;
+import static org.junit.Assert.*;
+import javax.inject.*;
 import javax.sql.DataSource;
-
 import kikaha.core.test.KikahaRunner;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.vibur.dbcp.ViburDBCPDataSource;
 
 @RunWith( KikahaRunner.class )
 public class DataSourceProducerTest {
 
 	@Inject
-	ViburDBCPDataSource viburDatasource;
+	DataSource unnamedDatasource;
 
 	@Inject
 	@Named( "h2" )
-	ViburDBCPDataSource viburH2Datasource;
-
-	@Inject
-	@Named( "default" )
-	ViburDBCPDataSource defaultViburDatasource;
+	DataSource viburH2Datasource;
 
 	@Inject
 	@Named( "default" )
@@ -33,7 +23,7 @@ public class DataSourceProducerTest {
 
 	@Test
 	public void ensureThatDatasourceHaveReadAllConfigurationOptions() {
-		assertNotNull( viburDatasource );
+		assertNotNull(unnamedDatasource);
 	}
 
 	@Test
@@ -43,16 +33,11 @@ public class DataSourceProducerTest {
 
 	@Test
 	public void ensureThatCanInjectedNonNamedDatasources() {
-		assertNotNull( viburDatasource );
+		assertNotNull(unnamedDatasource);
 	}
 
 	@Test
 	public void ensureThatInjectedNonNamedDatasourceIsTheDefaultDatasource() {
-		assertSame( defaultViburDatasource, viburDatasource );
-	}
-
-	@Test
-	public void ensureThatInjectedDataSourceIsTheSameInjectedViburDataSource() {
-		assertSame( defaultViburDatasource, defaultDatasource );
+		assertSame( defaultDatasource, unnamedDatasource);
 	}
 }

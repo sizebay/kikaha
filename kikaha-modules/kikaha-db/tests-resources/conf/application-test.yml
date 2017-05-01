@@ -45,6 +45,7 @@ server:
       driver-class-name: "org.apache.derby.jdbc.EmbeddedDriver"
       jdbc-url: "jdbc:derby:tests-resources/unit-test.db"
       username: "admin"
+      user: "admin"
       password: "admin"
 
   auth:
