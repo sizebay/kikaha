@@ -2,15 +2,21 @@ package kikaha.cloud.aws.lambda;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 
 import java.util.*;
 import kikaha.core.modules.http.WebResource;
 import lombok.Getter;
 import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  * Unit tests for AmazonHttpApplication.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class AmazonHttpApplicationTest {
 
 	final AmazonHttpApplication application = new AmazonHttpApplication();
@@ -19,9 +25,12 @@ public class AmazonHttpApplicationTest {
 	MockHandler handler2 = new GetUser();
 	MockHandler handler3 = new IncludeUser();
 
+	@Mock AmazonHttpResponseHook responseHook;
+
 	@Before
 	public void loadHandlers(){
 		application.loadHandlers( asList( handler1, handler2, handler3 ) );
+		application.responseHooks = asList( responseHook );
 	}
 
 	@Test
@@ -60,6 +69,13 @@ public class AmazonHttpApplicationTest {
 		assertFalse( handler1.isInvoked() );
 		assertFalse( handler2.isInvoked() );
 		assertTrue( handler3.isInvoked() );
+	}
+
+	@Test
+	public void ensureCanInvokeResponseHook() {
+		final AmazonLambdaRequest request = newRequest("GET", "/users");
+		final AmazonLambdaResponse response = application.handleRequest(request, null);
+		verify( responseHook ).apply( eq(request), eq(response) );
 	}
 
 	static AmazonLambdaRequest newRequest( String method, String path ) {

@@ -1,6 +1,8 @@
 package kikaha.cloud.aws.lambda;
 
 import java.util.*;
+import javax.enterprise.inject.Typed;
+import javax.inject.Inject;
 import com.amazonaws.services.lambda.runtime.*;
 import kikaha.core.cdi.*;
 import kikaha.core.modules.http.WebResource;
@@ -13,21 +15,29 @@ import lombok.Value;
 public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest, AmazonLambdaResponse> {
 
 	final CDI cdi = DefaultCDI.newInstance();
+
+	@Inject @Typed( AmazonHttpHandler.class )
+	Iterable<AmazonHttpHandler> amazonHttpHandlers;
+
+	@Inject @Typed( AmazonHttpHandler.class )
+	Iterable<AmazonHttpResponseHook> responseHooks;
+
 	Map<String, List<Entry>> entriesMatcher;
 
 	public AmazonHttpApplication() {
-		final Iterable<AmazonHttpHandler> amazonHttpHandlers = cdi.loadAll(AmazonHttpHandler.class);
+		cdi.injectOn( this );
 		loadHandlers(amazonHttpHandlers);
 	}
 
 	@Override
 	public AmazonLambdaResponse handleRequest( AmazonLambdaRequest request, Context context ) {
-		System.out.println( "this: " + this );
-		System.out.println( "request: " + request );
 		final AmazonHttpHandler httpHandler = retrieveHttpHandler( request );
 		if ( httpHandler == null )
 			return AmazonLambdaResponse.notFound();
-		return httpHandler.handle( request );
+		final AmazonLambdaResponse response = httpHandler.handle(request);
+		for ( AmazonHttpResponseHook hook : responseHooks )
+			hook.apply( request, response );
+		return response;
 	}
 
 	AmazonHttpHandler retrieveHttpHandler( AmazonLambdaRequest request ) {
