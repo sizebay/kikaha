@@ -12,30 +12,18 @@ import lombok.Value;
  */
 public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest, AmazonLambdaResponse> {
 
-	private static final CDI cdi = DefaultCDI.newInstance();
-	private static Map<String, List<Entry>> entriesMatcher;
+	final CDI cdi = DefaultCDI.newInstance();
+	Map<String, List<Entry>> entriesMatcher;
 
-	static {
-		final Iterable<AmazonHttpHandler> amazonHttpHandlers = cdi.loadAll( AmazonHttpHandler.class );
-		loadHandlers( amazonHttpHandlers );
-	}
-
-	static Map<String, List<Entry>> getEntriesMatcher(){
-		return Collections.unmodifiableMap( entriesMatcher );
-	}
-
-	static void loadHandlers( Iterable<AmazonHttpHandler> handlers ) {
-		entriesMatcher = new HashMap<>();
-
-		for ( AmazonHttpHandler handler : handlers ) {
-			final WebResource webResource = handler.getClass().getAnnotation( WebResource.class );
-			final List<Entry> entries = entriesMatcher.computeIfAbsent( webResource.method(), k -> new ArrayList<>() );
-			entries.add( new Entry( webResource.path().replaceFirst( "/$", "" ), handler ) );
-		}
+	public AmazonHttpApplication() {
+		final Iterable<AmazonHttpHandler> amazonHttpHandlers = cdi.loadAll(AmazonHttpHandler.class);
+		loadHandlers(amazonHttpHandlers);
 	}
 
 	@Override
 	public AmazonLambdaResponse handleRequest( AmazonLambdaRequest request, Context context ) {
+		System.out.println( "this: " + this );
+		System.out.println( "request: " + request );
 		final AmazonHttpHandler httpHandler = retrieveHttpHandler( request );
 		if ( httpHandler == null )
 			return AmazonLambdaResponse.notFound();
@@ -49,6 +37,20 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
 			if ( entry.getMatcher().matches( path, request.pathParameters ) )
 				return entry.getHandler();
 		return null;
+	}
+
+	Map<String, List<Entry>> getEntriesMatcher(){
+		return Collections.unmodifiableMap( entriesMatcher );
+	}
+
+	void loadHandlers( Iterable<AmazonHttpHandler> handlers ) {
+		entriesMatcher = new HashMap<>();
+
+		for ( AmazonHttpHandler handler : handlers ) {
+			final WebResource webResource = handler.getClass().getAnnotation( WebResource.class );
+			final List<Entry> entries = entriesMatcher.computeIfAbsent( webResource.method(), k -> new ArrayList<>() );
+			entries.add( new Entry( webResource.path().replaceFirst( "/$", "" ), handler ) );
+		}
 	}
 }
 

@@ -32,7 +32,7 @@ public class MicroRoutingAnnotationProcessor extends AbstractAnnotatedMethodProc
 	public void generateMethod( final ExecutableElement method, final RoundEnvironment roundEnv,
 			final Class<? extends Annotation> httpMethodAnnotation ) throws IOException {
 		final RoutingMethodData routingMethodData = toRoutingMethodData( method, httpMethodAnnotation );
-		info( "  > " + routingMethodData );
+		info( "  Ф " + routingMethodData );
 		generator.generate( routingMethodData );
 	}
 

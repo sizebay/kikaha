@@ -21,12 +21,12 @@ public class AmazonHttpApplicationTest {
 
 	@Before
 	public void loadHandlers(){
-		AmazonHttpApplication.loadHandlers( asList( handler1, handler2, handler3 ) );
+		application.loadHandlers( asList( handler1, handler2, handler3 ) );
 	}
 
 	@Test
 	public void ensureCanDeployAllHandlers(){
-		final Map<String, List<Entry>> entriesMatcher = AmazonHttpApplication.getEntriesMatcher();
+		final Map<String, List<Entry>> entriesMatcher = application.getEntriesMatcher();
 		assertEquals( 2, entriesMatcher.size() );
 		assertEquals( 2, entriesMatcher.get( "GET" ).size() );
 		assertEquals( 1, entriesMatcher.get( "POST" ).size() );

@@ -65,7 +65,7 @@
         <version.mockito>1.10.19</version.mockito>
         <version.jmustache>1.13</version.jmustache>
         <version.vibur>17.0</version.vibur>
-        <version.aws>1.11.91</version.aws>
+        <version.aws>1.11.125</version.aws>
         <version.metrics>3.1.2</version.metrics>
         <version.protobuf>3.2.0</version.protobuf>
         <!-- Plugin's Versions -->

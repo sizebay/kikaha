@@ -1,7 +1,6 @@
 package kikaha.cloud.aws.lambda;
 
 import java.util.*;
-import com.amazonaws.util.json.Jackson;
 import io.undertow.util.Headers;
 import kikaha.urouting.api.*;
 import lombok.*;

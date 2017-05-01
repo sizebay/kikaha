@@ -2,10 +2,11 @@ package kikaha.mojo;
 
 import com.amazonaws.auth.*;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.apigateway.*;
-import com.amazonaws.services.apigateway.model.*;
-import com.amazonaws.services.lambda.*;
+import com.amazonaws.services.apigateway.AmazonApiGatewayClient;
+import com.amazonaws.services.apigateway.model.RestApi;
+import com.amazonaws.services.lambda.AWSLambdaClient;
 import com.amazonaws.services.lambda.model.*;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClient;
 import org.apache.maven.plugin.*;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.*;
@@ -17,9 +18,13 @@ import org.apache.maven.plugins.annotations.*;
 public class KikahaLambdaDeployerMojo extends AbstractMojo {
 
 	final AWSCredentialsProviderChain credentials = DefaultAWSCredentialsProviderChain.getInstance();
+	final AWS aws = new AWS();
 
 	@Parameter( defaultValue = "false", required = true )
 	Boolean enabled;
+
+	@Parameter( defaultValue = "true", required = true )
+	Boolean createRestAPI;
 
 	@Parameter( defaultValue = "false", required = true )
 	Boolean force;
@@ -49,64 +54,69 @@ public class KikahaLambdaDeployerMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if ( !enabled ) return;
 
-		getLog().info( "Setting up lambda function " + projectName );
+		configureAWS();
 
 		final String parsedProjectName = projectName.replaceAll( "[._]", "-" );
 		final String lambdaFunction = setupLambdaFunction( parsedProjectName );
 
-		getLog().warn( "Lambda Function: " + lambdaFunction );
+		if ( createRestAPI )
+			createRestAPI( parsedProjectName, lambdaFunction );
+	}
 
-		final AmazonApiGateway apiGateway = AmazonApiGatewayClient.builder().withCredentials( credentials ).withRegion( Regions.fromName( regionName ) ).build();
-		RestApi result = AWS.first(apiGateway.getRestApis( new GetRestApisRequest() ).getItems(), api->api.getName().equals( parsedProjectName ) );
+	private void configureAWS() {
+		aws.lambda = AWSLambdaClient.builder().withCredentials( credentials ).withRegion( Regions.fromName( regionName ) ).build();
+		aws.sts = AWSSecurityTokenServiceClient.builder().withCredentials( credentials ).withRegion( Regions.fromName( regionName ) ).build();
+		aws.apiGateway = AmazonApiGatewayClient.builder().withCredentials( credentials ).withRegion( Regions.fromName( regionName ) ).build();
+	}
 
+	String setupLambdaFunction(String projectName) {
+		try {
+			return updateLambdaFunction( projectName );
+		} catch ( ResourceNotFoundException cause ) {
+			return createLambdaFunction( projectName );
+		}
+	}
+
+	String updateLambdaFunction( final String projectName ){
+		final GetFunctionResult result = aws.getFunction( projectName );
+		final String functionArn = result.getConfiguration().getFunctionArn();
+		getLog().info( "Updating AWS Lambda Function '"+projectName+"'..." );
+		aws.updateFunction( functionArn, s3Bucket, s3Key + ".jar" );
+		return functionArn;
+	}
+
+	String createLambdaFunction( final String projectName ){
+		getLog().info( "Creating AWS Lambda Function '"+projectName+"'..." );
+		final CreateFunctionResult result = aws.createFunction(
+				projectName, s3Bucket, s3Key + ".jar", lambdaTimeout, lambdaMemory, lambdaRole );
+		return result.getFunctionArn();
+	}
+
+	void createRestAPI(String parsedProjectName, String lambdaFunction){
+		RestApi result = aws.getRestApi( parsedProjectName );
 		if ( result != null && force ) {
-			getLog().warn( "Cleaning up former REST API on API Gateway..." );
-			apiGateway.deleteRestApi( AWS.deleteRestApi( result.getId() ) );
+			getLog().warn( "Removing REST API '" + parsedProjectName + "' API Gateway. Reason: force=true." );
+			aws.deleteRestApi( result.getId() );
 			result = null;
 		}
 
 		if ( result == null ) {
-			getLog().info( "Configuring REST API on API Gateway..." );
-			setupApiGateway( apiGateway, lambdaFunction, parsedProjectName );
+			final String accountId = aws.getMyAccountId();
+			setupApiGateway(accountId, lambdaFunction, parsedProjectName);
 		}
 	}
 
-	String setupLambdaFunction( String projectName ) {
-		final AWSLambda lambda = AWSLambdaClient.builder().withCredentials( credentials ).withRegion( Regions.fromName( regionName ) ).build();
-		try {
-			return updateLambdaFunction( lambda, projectName );
-		} catch ( ResourceNotFoundException cause ) {
-			return createLambdaFunction( lambda, projectName );
-		}
-	}
-
-	String updateLambdaFunction( final AWSLambda lambda, final String projectName ){
-		final GetFunctionResult result = lambda.getFunction( AWS.getFunction( projectName ) );
-		AWS.await();
-		final String functionArn = result.getConfiguration().getFunctionArn();
-		getLog().info( "Updating AWS Lambda Function..." );
-		lambda.updateFunctionCode( AWS.updateFunction( functionArn, s3Bucket, s3Key + ".jar" ) );
-		return functionArn;
-	}
-
-	String createLambdaFunction( final AWSLambda lambda, final String projectName ){
-		final CreateFunctionResult result = lambda.createFunction( AWS.createFunction(
-				projectName, s3Bucket, s3Key + ".jar", lambdaTimeout, lambdaMemory, lambdaRole ) );
-		AWS.await();
-		return result.getFunctionArn();
-	}
-
-	void setupApiGateway( final AmazonApiGateway apiGateway, String functionArn, String projectName ) {
-		getLog().info( "Creating AWS Lambda Function..." );
-		final String restApiID = apiGateway.createRestApi( AWS.createRestApi( projectName ) ).getId();
-		AWS.await();
-		String resourceId = AWS.first( apiGateway.getResources( AWS.getResources( restApiID ) ).getItems() ).getId();
-		AWS.await();
-		resourceId = apiGateway.createResource( new CreateResourceRequest().withParentId( resourceId ).withRestApiId( restApiID ).withPathPart( "{proxy+}" ) ).getId();
-		AWS.await();
-		apiGateway.putMethod( AWS.putMethod( restApiID, resourceId ) );
-		AWS.await();
-		apiGateway.putIntegration( AWS.putIntegration( restApiID, resourceId, functionArn ) );
+	void setupApiGateway( String accountId, String functionArn, String projectName ) {
+		getLog().info( "Creating REST API '"+ projectName +"'..." );
+		final String restApiID = aws.createRestApi(projectName).getId();
+		String resourceId = aws.getRootResourceId( restApiID );
+		getLog().info( "Pointing the all requests to lambda function '"+ functionArn +"'" );
+		resourceId = aws.createProxyResource(resourceId, restApiID).getId();
+		aws.putMethod(restApiID, resourceId);
+		aws.assignLambdaToResource(restApiID, resourceId, functionArn);
+		aws.deployFunction(restApiID);
+		final String sourceArn = "arn:aws:execute-api:"+regionName+":"+accountId+":"+restApiID+"/*/*/*";
+		aws.addPermissionToInvokeLambdaFunctions(projectName, sourceArn);
 	}
 }
 

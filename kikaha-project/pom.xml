@@ -25,13 +25,17 @@
         <config.dir.web>${project.basedir}/src/main/webapp</config.dir.web>
         <config.encoding>UTF-8</config.encoding>
         <!-- Kikaha Maven Plugins -->
-        <config.plugins.aws.lambda.deploy.force>false</config.plugins.aws.lambda.deploy.force>
-        <config.plugins.aws.lambda.deploy.enabled>false</config.plugins.aws.lambda.deploy.enabled>
-        <config.plugins.aws.s3.deploy.enabled>${config.plugins.aws.lambda.deploy.enabled}</config.plugins.aws.s3.deploy.enabled>
-        <config.plugins.jar.enabled>${config.plugins.aws.lambda.deploy.enabled}</config.plugins.jar.enabled>
+        <config.plugins.aws.lambda.force>false</config.plugins.aws.lambda.force>
+        <config.plugins.aws.lambda.enabled>false</config.plugins.aws.lambda.enabled>
+        <config.plugins.aws.lambda.create-rest-api>true</config.plugins.aws.lambda.create-rest-api>
+        <config.plugins.aws.lambda.bucket>${config.plugins.aws.s3.bucket}</config.plugins.aws.lambda.bucket>
+        <config.plugins.aws.lambda.region>us-east-1</config.plugins.aws.lambda.region>
+        <config.plugins.aws.s3.enabled>${config.plugins.aws.lambda.enabled}</config.plugins.aws.s3.enabled>
+        <config.plugins.aws.s3.region>${config.plugins.aws.lambda.region}</config.plugins.aws.s3.region>
+        <config.plugins.aws.s3.bucket></config.plugins.aws.s3.bucket>
+        <config.plugins.jar.enabled>${config.plugins.aws.s3.enabled}</config.plugins.jar.enabled>
         <config.plugins.package.enabled>false</config.plugins.package.enabled>
-        <config.plugins.maven.deploy.skip>${config.plugins.aws.s3.deploy.enabled}</config.plugins.maven.deploy.skip>
-        <!--config.plugins.aws.s3.bucket></config.plugins.aws.s3.bucket-->
+        <config.plugins.maven.deploy.skip>true</config.plugins.maven.deploy.skip>
         <!--config.plugins.aws.lambda.role></config.plugins.aws.lambda.role-->
     </properties>
 
@@ -74,8 +78,9 @@
                         <phase>deploy</phase>
                         <goals><goal>deploy-on-aws-s3</goal></goals>
                         <configuration>
-                            <enabled>${config.plugins.aws.s3.deploy.enabled}</enabled>
+                            <enabled>${config.plugins.aws.s3.enabled}</enabled>
                             <s3Bucket>${config.plugins.aws.s3.bucket}</s3Bucket>
+                            <regionName>${config.plugins.aws.s3.region}</regionName>
                         </configuration>
                     </execution>
                     <execution>
@@ -83,10 +88,12 @@
                         <phase>deploy</phase>
                         <goals><goal>deploy-on-aws-lambda</goal></goals>
                         <configuration>
-                            <enabled>${config.plugins.aws.lambda.deploy.enabled}</enabled>
-                            <s3Bucket>${config.plugins.aws.s3.bucket}</s3Bucket>
+                            <enabled>${config.plugins.aws.lambda.enabled}</enabled>
+                            <s3Bucket>${config.plugins.aws.lambda.bucket}</s3Bucket>
                             <lambdaRole>${config.plugins.aws.lambda.role}</lambdaRole>
-                            <force>${config.plugins.aws.lambda.deploy.force}</force>
+                            <createRestAPI>${config.plugins.aws.lambda.create-rest-api}</createRestAPI>
+                            <force>${config.plugins.aws.lambda.force}</force>
+                            <regionName>${config.plugins.aws.lambda.region}</regionName>
                         </configuration>
                     </execution>
                 </executions>

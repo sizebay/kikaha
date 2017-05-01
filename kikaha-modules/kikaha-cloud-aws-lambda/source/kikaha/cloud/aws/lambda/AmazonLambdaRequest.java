@@ -13,6 +13,7 @@ import lombok.*;
  */
 @Getter
 @Setter
+@ToString(exclude = "cookies")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AmazonLambdaRequest {
 
@@ -40,6 +41,7 @@ public class AmazonLambdaRequest {
 
 	@Getter
 	@Setter
+	@ToString
 	public static class RequestContext {
 		String accountId;
 		String resourceId;
@@ -53,6 +55,7 @@ public class AmazonLambdaRequest {
 
 	@Getter
 	@Setter
+	@ToString
 	public static class RequestContextIdentity {
 		String cognitoIdentityPoolId;
 		String accountId;

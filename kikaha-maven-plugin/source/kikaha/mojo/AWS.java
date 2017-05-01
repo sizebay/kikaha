@@ -2,49 +2,161 @@ package kikaha.mojo;
 
 import java.util.List;
 import java.util.function.Function;
+import com.amazonaws.services.apigateway.AmazonApiGateway;
 import com.amazonaws.services.apigateway.model.*;
+import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.model.*;
 import com.amazonaws.services.lambda.model.Runtime;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
+import com.amazonaws.services.securitytoken.model.*;
 
-interface AWS {
+class AWS {
 
-	static DeleteRestApiRequest deleteRestApi( String id ) {
-		return new DeleteRestApiRequest().withRestApiId( id );
+	AWSLambda lambda;
+	AmazonApiGateway apiGateway;
+	AWSSecurityTokenService sts;
+
+	String getMyAccountId(){
+		try {
+			final GetCallerIdentityResult identity = sts.getCallerIdentity(new GetCallerIdentityRequest());
+			return identity.getAccount();
+		} finally {
+			await();
+		}
 	}
 
-	static PutIntegrationRequest putIntegration( String restApiID, String resourceId, String functionArn ) {
-		return new PutIntegrationRequest().withRestApiId( restApiID ).withResourceId( resourceId )
-				.withUri( "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/" + functionArn + "/invocations" )
-				.withHttpMethod( "ANY" ).withType( IntegrationType.AWS )
-				.withIntegrationHttpMethod( "POST" );
+	RestApi getRestApi(String name ){
+		try {
+			final List<RestApi> items = apiGateway.getRestApis(new GetRestApisRequest()).getItems();
+			return first( items, i-> name.equals(i.getName()) );
+		} finally {
+			await();
+		}
 	}
 
-	static GetResourcesRequest getResources( String restApiID ) {
-		return new GetResourcesRequest().withRestApiId( restApiID ).withLimit( 1 );
+	AddPermissionResult addPermissionToInvokeLambdaFunctions(String functionName, String sourceArn) {
+		removePermissionToInvokeLambdaFunction( functionName );
+		try {
+			final AddPermissionRequest request = new AddPermissionRequest().withPrincipal("apigateway.amazonaws.com")
+				.withFunctionName(functionName).withStatementId(functionName + "-lambda-InvokeFunction")
+				.withAction("lambda:InvokeFunction").withSourceArn(sourceArn);
+			return lambda.addPermission( request );
+		} finally {
+			await();
+		}
 	}
 
-	static GetFunctionRequest getFunction( String name ) {
-		return new GetFunctionRequest().withFunctionName( name );
+	private boolean removePermissionToInvokeLambdaFunction(String functionName ) {
+		try {
+			final RemovePermissionRequest request = new RemovePermissionRequest()
+					.withFunctionName(functionName).withStatementId(functionName + "-lambda-InvokeFunction");
+			lambda.removePermission(request);
+			return true;
+		} catch ( ResourceNotFoundException cause ) {
+			return false;
+		} finally {
+			await();
+		}
 	}
 
-	static CreateFunctionRequest createFunction( String name, String s3Bucket, String s3Key, int timeout, int memory, String lambdaRole ) {
-		final FunctionCode functionCode = new FunctionCode().withS3Bucket( s3Bucket ).withS3Key( s3Key );
-		return new CreateFunctionRequest().withFunctionName( name ).withCode( functionCode ).withRole( lambdaRole )
-				.withRuntime( Runtime.Java8 ).withHandler( "kikaha.cloud.aws.lambda.AmazonLambdaMethodData" )
-				.withTimeout( timeout ).withMemorySize( memory );
+	DeleteRestApiResult deleteRestApi(String id) {
+		try {
+			final DeleteRestApiRequest request = new DeleteRestApiRequest().withRestApiId(id);
+			return apiGateway.deleteRestApi( request );
+		} finally {
+			await();
+		}
 	}
 
-	static UpdateFunctionCodeRequest updateFunction( String name, String s3Bucket, String s3Key ) {
-		return new UpdateFunctionCodeRequest().withFunctionName( name ).withS3Bucket( s3Bucket ).withS3Key( s3Key );
+	PutIntegrationResult assignLambdaToResource( String restApiID, String resourceId, String functionArn ) {
+		try {
+			final PutIntegrationRequest request = new PutIntegrationRequest()
+				.withRestApiId(restApiID).withResourceId(resourceId)
+				.withUri("arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/" + functionArn + "/invocations")
+				.withHttpMethod("ANY").withType(IntegrationType.AWS_PROXY)
+				.withIntegrationHttpMethod("POST");
+			return apiGateway.putIntegration( request );
+		} finally {
+			await();
+		}
 	}
 
-	static CreateRestApiRequest createRestApi( String name ){
-		return new CreateRestApiRequest().withName( name );
+	String getRootResourceId(String restApiID ) {
+		try {
+			final GetResourcesRequest request = new GetResourcesRequest().withRestApiId(restApiID).withLimit(1);
+			return first( apiGateway.getResources( request ).getItems() ).getId();
+		} finally {
+			await();
+		}
 	}
 
-	static PutMethodRequest putMethod( String restApiId, String resourceId ){
-		return new PutMethodRequest().withHttpMethod( "ANY" ).withAuthorizationType( "NONE" )
-				.withRestApiId( restApiId ).withResourceId( resourceId );
+	GetFunctionResult getFunction(String name ) {
+		try {
+			final GetFunctionRequest request = new GetFunctionRequest().withFunctionName(name);
+			return lambda.getFunction( request );
+		} finally {
+			await();
+		}
+	}
+
+	CreateFunctionResult createFunction( String name, String s3Bucket, String s3Key, int timeout, int memory, String lambdaRole ) {
+		try {
+			final FunctionCode functionCode = new FunctionCode().withS3Bucket( s3Bucket ).withS3Key( s3Key );
+			final CreateFunctionRequest request = new CreateFunctionRequest().withFunctionName(name).withCode(functionCode).withRole(lambdaRole)
+				.withRuntime(Runtime.Java8).withHandler("kikaha.cloud.aws.lambda.AmazonHttpApplication")
+				.withTimeout(timeout).withMemorySize(memory);
+			return lambda.createFunction( request );
+		} finally {
+			await();
+		}
+	}
+
+	UpdateFunctionCodeResult updateFunction( String name, String s3Bucket, String s3Key ) {
+		try {
+			final UpdateFunctionCodeRequest request = new UpdateFunctionCodeRequest().withFunctionName(name).withS3Bucket(s3Bucket).withS3Key(s3Key);
+			return lambda.updateFunctionCode( request );
+		} finally {
+			await();
+		}
+	}
+
+	CreateRestApiResult createRestApi( String name ){
+		try {
+			final CreateRestApiRequest request = new CreateRestApiRequest().withName(name);
+			return apiGateway.createRestApi( request );
+		} finally {
+			await();
+		}
+	}
+
+	PutMethodResult putMethod( String restApiId, String resourceId ){
+		try {
+			final PutMethodRequest request = new PutMethodRequest()
+					.withHttpMethod("ANY").withAuthorizationType("NONE")
+					.withRestApiId(restApiId).withResourceId(resourceId);
+			return apiGateway.putMethod( request );
+		} finally {
+			await();
+		}
+	}
+
+	public CreateResourceResult createProxyResource(String resourceId, String restApiID) {
+		try {
+			final CreateResourceRequest request = new CreateResourceRequest()
+					.withParentId(resourceId).withRestApiId(restApiID).withPathPart("{proxy+}");
+			return apiGateway.createResource( request );
+		} finally {
+			await();
+		}
+	}
+
+	public CreateDeploymentResult deployFunction(String restApiID) {
+		try {
+			final CreateDeploymentRequest request = new CreateDeploymentRequest().withRestApiId(restApiID).withStageName("Production");
+			return apiGateway.createDeployment(request);
+		} finally {
+			await();
+		}
 	}
 
 	static <T> T first( List<T> list ) {
@@ -60,7 +172,7 @@ interface AWS {
 
 	static void await() {
 		try {
-			Thread.sleep( 1000 );
+			Thread.sleep( 700 );
 		} catch ( InterruptedException e ) {
 			throw new IllegalStateException( e );
 		}

@@ -1,8 +1,7 @@
 package kikaha.cloud.aws.lambda;
 
-import javax.inject.*;
 import java.util.Map;
-import com.amazonaws.util.json.Jackson;
+import javax.inject.*;
 import io.undertow.server.handlers.Cookie;
 import kikaha.urouting.api.ConverterFactory;
 import lombok.extern.slf4j.Slf4j;

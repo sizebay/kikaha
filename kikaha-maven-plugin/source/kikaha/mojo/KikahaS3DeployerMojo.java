@@ -2,6 +2,7 @@ package kikaha.mojo;
 
 import java.io.File;
 import com.amazonaws.auth.*;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.*;
 import org.apache.maven.plugin.*;
 import org.apache.maven.plugins.annotations.*;
@@ -24,6 +25,9 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 	@Parameter( defaultValue = "${project.build.directory}", required = true )
 	File targetDirectory;
 
+	@Parameter( defaultValue = "us-east-1", required = true )
+	String regionName;
+
 	@Parameter( required = true )
 	String s3Bucket;
 
@@ -38,13 +42,13 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 		if ( !packageFile.exists() )
 			throw new MojoFailureException( "Package not found: " + packageFile.getName() + ". Try execute kikaha:jar and try again." );
 
-		getLog().info( "Deploying " + packageFile + " into AWS S3(" + s3Bucket + "/" + s3Key + ".jar)" );
+		getLog().info( "Deploying package on AWS S3: " + s3Bucket + "/" + s3Key + ".jar" );
 		uploadPackage( packageFile );
 	}
 
 	void uploadPackage( File packageFile ) {
-		final AmazonS3 s3 = AmazonS3Client.builder().withCredentials( credentials ).build();
+		final AmazonS3 s3 = AmazonS3Client.builder().withCredentials( credentials )
+				.withRegion( Regions.fromName(regionName) ).build();
 		s3.putObject( s3Bucket, s3Key + ".jar", packageFile );
-		AWS.await();
 	}
 }

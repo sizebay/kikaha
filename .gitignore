@@ -12,4 +12,4 @@ faces-defaultConfig.xml
 *.iml
 pom.xml.*
 derby.log
-
+unit-test.db
