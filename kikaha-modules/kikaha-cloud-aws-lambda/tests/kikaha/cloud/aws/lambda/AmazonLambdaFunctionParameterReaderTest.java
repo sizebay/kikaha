@@ -1,11 +1,12 @@
 package kikaha.cloud.aws.lambda;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-
-import javax.inject.Inject;
 import java.util.*;
+import javax.inject.Inject;
 import kikaha.core.test.KikahaRunner;
-import org.junit.Test;
+import lombok.RequiredArgsConstructor;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 /**
@@ -21,6 +22,10 @@ public class AmazonLambdaFunctionParameterReaderTest {
 	final AmazonLambdaRequest request = new AmazonLambdaRequest();
 
 	@Inject AmazonLambdaFunctionParameterReader reader;
+
+	@Before
+	public void configMocks(){
+	}
 
 	@Test
 	public void ensureGetCookieParam() throws Exception {
@@ -44,10 +49,37 @@ public class AmazonLambdaFunctionParameterReaderTest {
 	}
 
 	@Test
+	public void ensureGetQueryParam(){
+		request.queryStringParameters = Collections.singletonMap( "id", "12356" );
+		final int id = reader.getQueryParam( request, "id", int.class );
+		assertEquals( 12356, id );
+	}
+
+	@Test
+	public void ensureProduceStringFromRequestContext(){
+		request.headers = Collections.singletonMap( "Cookie", HUGE_COOKIE );
+		reader.availableProducers = asList( new ProducerThatReadsACookie("aws-business-metrics-last-visit") );
+		reader.loadProducers();
+
+		final String param = reader.getContextParam(request, String.class);
+		assertEquals( "1484930233913", param );
+	}
+
+	@Test
 	public void ensureGetBody() throws Exception {
 		request.body = USER_JSON;
 		final Map body = reader.getBody( request, Map.class );
 		assertEquals( USER, body );
 	}
+}
 
+@RequiredArgsConstructor
+class ProducerThatReadsACookie implements AmazonLambdaContextProducer<String> {
+
+	final String cookieName;
+
+	@Override
+	public String produce(AmazonLambdaRequest request) {
+		return request.getCookies().get( cookieName ).getValue();
+	}
 }
