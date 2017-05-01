@@ -1,8 +1,8 @@
 package kikaha.config;
 
+import java.util.Collection;
 import javax.enterprise.inject.*;
 import javax.inject.*;
-import java.util.Collection;
 import lombok.Getter;
 
 /**
@@ -18,7 +18,7 @@ public class KikahaConfigurationProducer {
 	private final Config config = loadConfiguration();
 
 	private Config loadConfiguration() {
-		MergeableConfig mergeableConfig = ConfigLoader.loadDefaults();
+		Config mergeableConfig = ConfigLoader.loadDefaults();
 		for ( final ConfigEnrichment enrichment : listOfEnrichment )
 			mergeableConfig = enrichment.enrich( mergeableConfig );
 		return mergeableConfig;

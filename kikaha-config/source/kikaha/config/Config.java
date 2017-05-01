@@ -18,7 +18,9 @@ public interface Config {
 
 	String getString(String path, String defaultValue);
 
-	byte[] getBytes(String path);
+	default byte[] getBytes(String path) {
+		return getBytes( path, null );
+	}
 
 	byte[] getBytes(String path, String defaultValue);
 
@@ -52,7 +54,9 @@ public interface Config {
 	 * @param path which configuration should be read
 	 * @return a Boolean parameter from configuration
 	 */
-	boolean getBoolean(String path);
+	default boolean getBoolean(String path) {
+		return getBoolean( path, false );
+	}
 
 	boolean getBoolean(String path, boolean defaultValue);
 

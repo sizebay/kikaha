@@ -1,19 +1,14 @@
 package kikaha.config;
 
-import lombok.*;
-import org.yaml.snakeyaml.Yaml;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import static java.lang.String.format;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static java.lang.String.format;
+import lombok.*;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  *
@@ -94,11 +89,6 @@ public class MergeableConfig implements Config {
 	}
 
 	@Override
-	public byte[] getBytes(String path) {
-		return getBytes( path, null );
-	}
-
-	@Override
 	public byte[] getBytes(String path, String defaultValue ){
 		String value = getString(path);
 		if ( value == null )
@@ -120,11 +110,6 @@ public class MergeableConfig implements Config {
 		if ( propertyValue != null )
 			return propertyValue;
 		return read( path, o->(String)o );
-	}
-
-	@Override
-	public boolean getBoolean(String path) {
-		return getBoolean( path, false );
 	}
 
 	@Override

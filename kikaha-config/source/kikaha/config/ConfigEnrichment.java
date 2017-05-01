@@ -10,7 +10,7 @@ public interface ConfigEnrichment {
 	 * Enrich the current configuration with data from another sources.
 	 *
 	 * @param mergeableConfig
-	 * @return a new {@link MergeableConfig} enriched with more data.
+	 * @return the enriched {@link Config}.
 	 */
-	MergeableConfig enrich( MergeableConfig mergeableConfig );
+	Config enrich( Config mergeableConfig );
 }
