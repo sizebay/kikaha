@@ -16,7 +16,8 @@ import lombok.Getter;
 public class DatabaseIdentityManager extends AbstractPasswordBasedIdentityManager {
 
 	@Inject SecurityConfiguration securityConfiguration;
-	@Inject ViburDatasourceProducer viburDatasourceProducer;
+	@Inject
+	DataSourceProducer datasourceProducer;
 	@Inject Config config;
 
 	@Getter(lazy = true)
@@ -29,7 +30,7 @@ public class DatabaseIdentityManager extends AbstractPasswordBasedIdentityManage
 	private final String dataSourceName = config.getString( "server.auth.db-auth.datasource" );
 
 	@Getter(lazy = true)
-	private final DataSource dataSource = viburDatasourceProducer.produceViburDataSource( getDataSourceName() );
+	private final DataSource dataSource = datasourceProducer.produceViburDataSource( getDataSourceName() );
 
 	@PostConstruct
 	public void checkConfiguration(){

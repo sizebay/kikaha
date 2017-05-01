@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.vibur.dbcp.ViburDBCPDataSource;
 
 @RunWith( KikahaRunner.class )
-public class ViburDatasourceProducerTest {
+public class DataSourceProducerTest {
 
 	@Inject
 	ViburDBCPDataSource viburDatasource;
