@@ -1,25 +1,57 @@
 package kikaha.cloud.aws.ec2;
 
+import static kikaha.core.test.Exposed.expose;
 import static org.junit.Assert.assertEquals;
-import javax.inject.Inject;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
+
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.*;
 import com.amazonaws.services.ec2.AmazonEC2;
-import kikaha.core.test.*;
-import org.junit.Test;
+import kikaha.cloud.aws.iam.*;
+import kikaha.cloud.aws.iam.AmazonCredentialsFactory.Yml;
+import kikaha.config.*;
+import kikaha.core.cdi.CDI;
+import kikaha.core.test.Exposed;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  * Unit tests for AmazonEC2ClientProducer.
  */
-@RunWith( KikahaRunner.class )
+@RunWith( MockitoJUnitRunner.class )
 public class AmazonEC2ClientProducerTest {
 
-	@Inject
-	AmazonEC2ClientProducer producer;
+	final Config defaultConfiguration = ConfigLoader.loadDefaults();
+	final Yml yml = new Yml().setConfig( defaultConfiguration );
+
+	@Mock CDI cdi;
+
+	ClientConfiguration clientConfiguration = new ClientConfiguration();
+	AmazonCredentialsProducer credentialsProducer = new AmazonCredentialsProducer();
+	AmazonConfigurationProducer configurationProducer = new AmazonConfigurationProducer();
+	AmazonEC2ClientProducer ec2ClientProducer = new AmazonEC2ClientProducer();
+
+	@Before
+	public void configureMocks(){
+		doReturn( defaultConfiguration ).when( cdi ).load( eq(Config.class) );
+		doReturn( yml ).when( cdi ).load( eq( Yml.class ) );
+
+		expose( credentialsProducer ).setFieldValue( "cdi", cdi );
+
+		expose( configurationProducer )
+			.setFieldValue( "cdi", cdi )
+			.setFieldValue( "credentialsProducer", credentialsProducer );
+
+		ec2ClientProducer.configurationProducer = configurationProducer;
+		ec2ClientProducer.configuration = clientConfiguration;
+	}
 
 	@Test
 	public void ensureCanRetrieveTheEC2ClientWithTheRightCredential(){
-		final AmazonEC2 client = producer.produceAmazonEC2Client( "ec2" );
+		final AmazonEC2 client = ec2ClientProducer.produceAmazonEC2Client( "ec2" );
 		final Exposed exposed = new Exposed( client );
 		final AWSCredentialsProvider credentialsProvider = exposed.getFieldValue( "awsCredentialsProvider", AWSCredentialsProvider.class );
 		final AWSCredentials credentials = credentialsProvider.getCredentials();

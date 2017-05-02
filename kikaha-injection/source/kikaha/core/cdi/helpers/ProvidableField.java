@@ -4,5 +4,5 @@ import kikaha.core.cdi.DefaultCDI;
 
 public interface ProvidableField {
 
-	public void provide( final Object instance, final DefaultCDI.DependencyInjector provider ) throws Throwable;
+	void provide( final Object instance, final DefaultCDI.DependencyInjector provider ) throws Throwable;
 }

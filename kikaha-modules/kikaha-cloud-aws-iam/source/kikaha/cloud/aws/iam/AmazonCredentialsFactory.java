@@ -3,8 +3,9 @@ package kikaha.cloud.aws.iam;
 import javax.inject.Inject;
 import java.util.*;
 import com.amazonaws.auth.*;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import kikaha.config.Config;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 /**
  * A factory to load {@link AWSCredentials}. It is useful to customize the way credentials will be
@@ -35,6 +36,8 @@ public interface AmazonCredentialsFactory {
 		}
 	}
 
+	@Setter
+	@Accessors( chain = true )
 	class Yml implements AmazonCredentialsFactory, AWSCredentialsProvider {
 
 		final Map<String, AWSCredentials> cache = new HashMap<>();

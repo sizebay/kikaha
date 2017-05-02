@@ -26,10 +26,11 @@ public class Exposed {
 	}
 
 	@SneakyThrows
-	public void setFieldValue( String name, Object value ) {
+	public Exposed setFieldValue( String name, Object value ) {
 		final Field field = object.getClass().getDeclaredField(name);
 		field.setAccessible(true);
 		field.set(object, value);
+		return this;
 	}
 
 	public <T> T runMethodSilently(String name, Object...args ) {
@@ -56,5 +57,9 @@ public class Exposed {
 		for ( Object obj : objs )
 			classes[ i++ ] = obj.getClass();
 		return classes;
+	}
+
+	public static Exposed expose( Object object ) {
+		return new Exposed( object );
 	}
 }

@@ -4,7 +4,8 @@ import javax.inject.*;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.regions.*;
 import kikaha.config.Config;
-import lombok.Value;
+import kikaha.core.cdi.CDI;
+import lombok.*;
 
 /**
  *
@@ -12,12 +13,15 @@ import lombok.Value;
 @Singleton
 public class AmazonConfigurationProducer {
 
-	@Inject Config config;
-	@Inject
-	AmazonCredentialsProducer credentialsProducer;
+	@Inject CDI cdi;
+
+	@Getter( lazy = true )
+	private final Config config = cdi.load( Config.class );
+
+	@Inject AmazonCredentialsProducer credentialsProducer;
 
 	public AmazonWebServiceConfiguration configForService(String serviceAlias ){
-		final Config config = this.config.getConfig("server.aws." + serviceAlias);
+		final Config config = getConfig().getConfig("server.aws." + serviceAlias);
 		if ( config == null )
 			throw new IllegalStateException( "No configuration for Amazon Web Service found with name '" + serviceAlias + "'" );
 
@@ -30,7 +34,7 @@ public class AmazonConfigurationProducer {
 	}
 
 	@Value
-	public static final class AmazonWebServiceConfiguration {
+	public static class AmazonWebServiceConfiguration {
 		final AWSCredentialsProvider iamPolicy;
 		final Regions region;
 	}

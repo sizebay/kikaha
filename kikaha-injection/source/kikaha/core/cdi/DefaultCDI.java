@@ -274,8 +274,7 @@ public class DefaultCDI implements CDI {
 		}
 
 		private void handleFieldInjectionError( final InjectableField field, final Throwable e ) {
-			System.err.println( "Failed to provide data on " + field.structure + ":" + e.getMessage() );
-			e.printStackTrace();
+			log.error( "Failed to provide data on " + field.structure, e );
 		}
 	}
 

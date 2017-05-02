@@ -1,13 +1,11 @@
 package kikaha.cloud.aws.iam;
 
-import java.util.*;
-import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Produces;
 import javax.inject.*;
 import com.amazonaws.auth.*;
 import kikaha.config.Config;
 import kikaha.core.cdi.*;
-import lombok.NonNull;
+import lombok.*;
 
 /**
  * A producer of {@link AWSCredentials}.
@@ -15,14 +13,17 @@ import lombok.NonNull;
 @Singleton
 public class AmazonCredentialsProducer {
 
-	@Inject Config config;
 	@Inject CDI cdi;
-	AmazonCredentialsFactory factory;
 
-	@PostConstruct
-	public void loadCredentialFactory(){
-		final Class<?> aClass = config.getClass( "server.aws.credentials-factory" );
-		factory = (AmazonCredentialsFactory)cdi.load( aClass );
+	@Getter( lazy = true )
+	private final Config config = cdi.load( Config.class );
+
+	@Getter( lazy = true )
+	private final AmazonCredentialsFactory factory = loadCredentialFactory();
+
+	private AmazonCredentialsFactory loadCredentialFactory(){
+		final Class<?> aClass = getConfig().getClass( "server.aws.credentials-factory" );
+		return  (AmazonCredentialsFactory)cdi.load( aClass );
 	}
 
 	@Produces
@@ -38,7 +39,7 @@ public class AmazonCredentialsProducer {
 	}
 
 	private AWSCredentials getCredentials( String profileName ) {
-		return factory.loadCredentialFor( profileName );
+		return getFactory().loadCredentialFor( profileName );
 	}
 
 }

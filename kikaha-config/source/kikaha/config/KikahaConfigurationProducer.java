@@ -11,6 +11,8 @@ import lombok.Getter;
 @Singleton
 public class KikahaConfigurationProducer {
 
+	final Config defaultConfiguration = ConfigLoader.loadDefaults();
+
 	@Inject @Typed( ConfigEnrichment.class )
 	Collection<ConfigEnrichment> listOfEnrichment;
 
@@ -18,10 +20,10 @@ public class KikahaConfigurationProducer {
 	private final Config config = loadConfiguration();
 
 	private Config loadConfiguration() {
-		Config mergeableConfig = ConfigLoader.loadDefaults();
+		Config config = defaultConfiguration;
 		for ( final ConfigEnrichment enrichment : listOfEnrichment )
-			mergeableConfig = enrichment.enrich( mergeableConfig );
-		return mergeableConfig;
+			config = enrichment.enrich( config );
+		return config;
 	}
 
 	@Produces

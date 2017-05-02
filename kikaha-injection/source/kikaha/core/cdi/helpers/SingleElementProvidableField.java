@@ -38,7 +38,7 @@ public class SingleElementProvidableField<T> implements ProvidableField {
 
 	@Override
 	public String toString() {
-		return field.toString();
+		return field.toString().split( " " )[1];
 	}
 
 	public static <T> ProvidableField from( Collection<Class<? extends Annotation>> qualifiers, final Field field ) {
