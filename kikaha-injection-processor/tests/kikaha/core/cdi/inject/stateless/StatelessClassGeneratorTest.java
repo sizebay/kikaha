@@ -31,7 +31,7 @@ public class StatelessClassGeneratorTest {
 
 	StatelessClass createStatelessImplementationOfInterface() {
 		return new StatelessClass(
-				"important.api.Interface", "sample.project.ServiceFromInterface", false,
+				"important.api.Interface", "sample.project.ServiceFromInterface", "important.api.Interface.class", false,
 				list( voidMethod(), returnableMethod() ),
 				list( returnableMethod() ),
 				list( voidMethod() ) );
@@ -40,7 +40,8 @@ public class StatelessClassGeneratorTest {
 	StatelessClass createStatelessImplementationOfClass() {
 		return new StatelessClass(
 				"sample.project.ServiceFromInterface",
-				"sample.project.ServiceFromInterface", true,
+				"sample.project.ServiceFromInterface",
+				"sample.project.ServiceFromInterface.class", true,
 				list( voidMethod(), returnableMethod() ),
 				list( returnableMethod() ),
 				list( voidMethod() ) );

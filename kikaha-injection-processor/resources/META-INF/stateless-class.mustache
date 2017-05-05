@@ -1,7 +1,9 @@
 package {{packageName}};
 
 @javax.inject.Singleton
-@javax.enterprise.inject.Typed( {{typeCanonicalName}}.class )
+{{#implementations}}
+@javax.enterprise.inject.Typed( {{.}} )
+{{/implementations}}
 @kikaha.core.cdi.GeneratedFromStatelessService
 public class {{generatedClassName}}
 {{#exposedByClass}}

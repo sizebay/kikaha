@@ -2,8 +2,11 @@ package kikaha.core.cdi.processor;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Set;
+
 import javax.lang.model.element.*;
 import javax.lang.model.type.*;
+
 import kikaha.core.cdi.helpers.TinyList;
 import kikaha.apt.GenerableClass;
 
@@ -23,6 +26,11 @@ public class StatelessClass implements GenerableClass {
 	 * The exposed type simple name.
 	 */
 	final String typeName;
+	
+	/**
+	 * Superclass/Superinterface this class exposes.
+	 */
+	final String implementations;
 
 	/**
 	 * The implementation type as Canonical Name notation.
@@ -58,13 +66,14 @@ public class StatelessClass implements GenerableClass {
 	 * @param preDestroyMethods
 	 */
 	public StatelessClass( final String typeCanonicalName,
-	                       final String implementationCanonicalName, final boolean exposedByClass,
+	                       final String implementationCanonicalName, final String implementations, final boolean exposedByClass,
 	                       final List<StatelessClassExposedMethod> exposedMethods, final List<StatelessClassExposedMethod> postConstructMethods,
 	                       final List<StatelessClassExposedMethod> preDestroyMethods ) {
 		this.packageName = extractPackageNameFrom( implementationCanonicalName );
 		this.typeCanonicalName = typeCanonicalName;
 		this.typeName = extractClassNameFrom( typeCanonicalName );
 		this.implementationCanonicalName = implementationCanonicalName;
+		this.implementations = implementations;
 		this.exposedByClass = exposedByClass;
 		this.exposedMethods = exposedMethods;
 		this.postConstructMethods = postConstructMethods;
@@ -120,20 +129,17 @@ public class StatelessClass implements GenerableClass {
 		return exposedMethods;
 	}
 
-	@Override
-	public String getGeneratedClassCanonicalName() {
-		return String.format( "%s.%sStateless%s",
-				packageName,
-				typeName, getIdentifier() );
-	}
-
 	public static StatelessClass from( final TypeElement type ) {
-		final String typeCanonicalName = SingletonImplementation.getProvidedServiceClassAsString( type );
+		final Set<String> implementationList = SingletonImplementation.getExposedTypes( type );
+		final String implementations = 
+				implementationList.isEmpty() ? "" 	
+				: "{ " + String.join( ",", implementationList) + " }";
+		final String typeCanonicalName =  SingletonImplementation.getProvidedServiceClassAsString( type );
 		final String implementationCanonicalName = type.asType().toString();
 		final boolean exposedByClass = isImplementingClass( typeCanonicalName, type );
 		final List<StatelessClassExposedMethod> exposedMethods = retrieveExposedMethods( type );
 		return new StatelessClass( typeCanonicalName,
-			implementationCanonicalName, exposedByClass, exposedMethods,
+			implementationCanonicalName, implementations, exposedByClass, exposedMethods,
 			retrieveMethodsAnnotatedWith( type, javax.annotation.PostConstruct.class ),
 			retrieveMethodsAnnotatedWith( type, javax.annotation.PreDestroy.class ) );
 	}
@@ -141,7 +147,7 @@ public class StatelessClass implements GenerableClass {
 	public static boolean isImplementingClass( final String typeCanonicalName, TypeElement type ) {
 		while ( !Object.class.getCanonicalName().equals( type.asType().toString() ) ) {
 			for ( final TypeMirror interfaceType : type.getInterfaces() )
-				if ( typeCanonicalName.equals( interfaceType.toString() ) )
+				if ( typeCanonicalName.contains( interfaceType.toString() ) )
 					return false;
 			type = (TypeElement)( (DeclaredType)type.getSuperclass() ).asElement();
 		}
