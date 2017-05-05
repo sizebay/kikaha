@@ -1,7 +1,10 @@
 package kikaha.core.cdi.processor;
 
+import static javax.lang.model.type.TypeKind.TYPEVAR;
+
 import javax.lang.model.element.*;
-import java.util.List;
+import javax.lang.model.type.*;
+import java.util.*;
 import kikaha.core.cdi.helpers.TinyList;
 
 public class StatelessClassExposedMethod {
@@ -16,6 +19,8 @@ public class StatelessClassExposedMethod {
 	 */
 	final String returnType;
 
+	final String generics;
+
 	/**
 	 * List of parameter types in Canonical Name notation.
 	 */
@@ -23,11 +28,14 @@ public class StatelessClassExposedMethod {
 
 	final List<String> annotations;
 
-	public StatelessClassExposedMethod( String name, String returnType, List<String> parameterTypes, List<String> annotations ) {
+	public StatelessClassExposedMethod(
+			String name, String returnType,
+			List<String> parameterTypes, List<String> annotations, Collection<String> generics ) {
 		this.name = name;
 		this.returnType = returnType;
 		this.parameterTypes = parameterTypes;
 		this.annotations = annotations;
+		this.generics = generics.isEmpty() ? "" : "<" + String.join( ",", generics ) + ">";
 	}
 
 	/**
@@ -63,7 +71,8 @@ public class StatelessClassExposedMethod {
 		final String returnType = method.getReturnType().toString();
 		final List<String> parameterTypes = extractParameters( method );
 		final List<String> annotations = extractAnnotations( method );
-		return new StatelessClassExposedMethod( name, returnType, parameterTypes, annotations );
+		final Collection<String> generics = extractTypeParameters( method );
+		return new StatelessClassExposedMethod( name, returnType, parameterTypes, annotations, generics );
 	}
 
 	private static List<String> extractAnnotations( ExecutableElement method ) {
@@ -80,6 +89,20 @@ public class StatelessClassExposedMethod {
 		final List<String> list = new TinyList<>();
 		for ( final VariableElement parameter : parameters )
 			list.add( parameter.asType().toString() );
+		return list;
+	}
+
+	static Collection<String> extractTypeParameters( ExecutableElement method ) {
+		final Set<String> list = new HashSet<>();
+		for ( final VariableElement parameter : method.getParameters() ) {
+			if ( parameter.asType() instanceof DeclaredType ) {
+				final DeclaredType declaredType = (DeclaredType)parameter.asType();
+				for( final TypeMirror mirror : declaredType.getTypeArguments() ) {
+					if ( TYPEVAR.equals( mirror.getKind() ) )
+						list.add( mirror.toString() );
+				}
+			}
+		}
 		return list;
 	}
 }

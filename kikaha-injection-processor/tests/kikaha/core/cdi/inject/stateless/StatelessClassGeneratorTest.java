@@ -1,5 +1,6 @@
 package kikaha.core.cdi.inject.stateless;
 
+import static java.util.Collections.EMPTY_SET;
 import static org.junit.Assert.assertEquals;
 
 import java.io.*;
@@ -46,11 +47,11 @@ public class StatelessClassGeneratorTest {
 	}
 
 	StatelessClassExposedMethod returnableMethod() {
-		return new StatelessClassExposedMethod( "sum", "Long", list( "Double", "Integer" ), list("sample.Annotation") );
+		return new StatelessClassExposedMethod( "sum", "Long", list( "Double", "Integer" ), list("sample.Annotation"), EMPTY_SET );
 	}
 
 	StatelessClassExposedMethod voidMethod() {
-		return new StatelessClassExposedMethod( "voidMethod", "void", emptyStringList(), emptyStringList() );
+		return new StatelessClassExposedMethod( "voidMethod", "void", emptyStringList(), emptyStringList(), EMPTY_SET );
 	}
 
 	@SuppressWarnings( "unchecked" )

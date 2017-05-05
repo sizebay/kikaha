@@ -15,7 +15,7 @@ public class {{generatedClassName}}
 	{{#exposedMethods}}
 
 {{#annotations}}    @{{.}}{{/annotations}}
-	public {{{returnType}}} {{name}}( {{{parametersWithTypesAsString}}} ) {
+	public {{{generics}}}{{{returnType}}} {{name}}( {{{parametersWithTypesAsString}}} ) {
 		try {
 			final {{{implementationCanonicalName}}} instance = newInstance();
 			try {
