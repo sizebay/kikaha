@@ -32,11 +32,7 @@ public class SmartServerModule implements Module {
 
 	@PostConstruct
 	public void loadApplicationData() throws IOException {
-		isModuleEnabled = config.getBoolean( "server.smart-server.enabled" );
-		if ( !isModuleEnabled ) return;
-
 		localMachineIdentification = loadLocalMachineIdentification();
-		serviceRegistry = loadServiceRegistry();
 		applicationData = new ApplicationData(
 			() -> localMachineIdentification.generateTheMachineId(),
 			() -> localMachineIdentification.getLocalAddress(),
@@ -44,6 +40,10 @@ public class SmartServerModule implements Module {
 			config.getString( "server.smart-server.application.version" ),
 			getLocalPort(), isLocalProtocolHttps()
 		);
+
+		isModuleEnabled = config.getBoolean( "server.smart-server.enabled" );
+		if ( isModuleEnabled )
+			serviceRegistry = loadServiceRegistry();
 	}
 
 	ServiceRegistry loadServiceRegistry(){
