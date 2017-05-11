@@ -9,10 +9,12 @@ import io.undertow.security.idm.Account;
 import kikaha.config.Config;
 import kikaha.core.modules.security.*;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  */
+@Slf4j
 public class DatabaseIdentityManager extends AbstractPasswordBasedIdentityManager {
 
 	@Inject SecurityConfiguration securityConfiguration;
@@ -36,8 +38,13 @@ public class DatabaseIdentityManager extends AbstractPasswordBasedIdentityManage
 	public void checkConfiguration(){
 		final String retrieveUserPassword = getQueryRetrieveUserPassword();
 		final String retrieveUserRoles = getQueryRetrieveUserRoles();
-		if ( retrieveUserPassword == null || retrieveUserRoles == null )
-			throw new UnsupportedOperationException( "No configuration defined for 'db-auth' IdentityManager" );
+		if ( retrieveUserPassword != null && retrieveUserRoles != null )
+			log.info( "Database IdentityManager configured and started." );
+		else {
+			log.debug(
+				"Database IdentityManager not configured. This can lead you to errors " +
+				"if you use it on your authentication process." );
+		}
 	}
 
 	@Override
