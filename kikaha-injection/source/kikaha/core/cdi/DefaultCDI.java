@@ -1,15 +1,12 @@
 package kikaha.core.cdi;
 
-import kikaha.core.cdi.helpers.*;
-import kikaha.core.cdi.helpers.filter.Condition;
-import kikaha.core.cdi.helpers.filter.Filter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.*;
 import java.util.concurrent.locks.LockSupport;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.*;
+import kikaha.core.cdi.helpers.*;
+import kikaha.core.cdi.helpers.filter.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings( { "rawtypes", "unchecked" } )
@@ -98,6 +95,7 @@ public class DefaultCDI implements CDI {
 
 	@Override
 	public void injectOn( final Object object ) {
+		log.debug("Injecting on " + (object != null ? object.getClass().getCanonicalName() : "null"));
 		withInjector( i->i.loadDependenciesAndInjectInto( object ) );
 	}
 
@@ -190,6 +188,7 @@ public class DefaultCDI implements CDI {
 		}
 
 		public void loadDependenciesAndInjectInto( Object obj ) {
+			log.debug("Loading dependencies for " + (obj != null ? obj.getClass().getCanonicalName() : "null"));
 			final ProvidableClass<?> providableClass = injectionContext.retrieveProvidableClass( obj.getClass() );
 			tryInjectFields( obj, providableClass );
 			tryPostConstructClass( obj, providableClass );
