@@ -5,6 +5,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.model.*;
+import kikaha.cloud.aws.iam.AmazonCredentialsFactory;
 import kikaha.config.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -19,15 +20,15 @@ public class AmazonEC2ConfigEnrichmentTest {
 
 	final Config config = ConfigLoader.loadDefaults();
 
-	@InjectMocks @Spy
-	AmazonEC2ConfigEnrichment enrichment;
+	@InjectMocks @Spy AmazonEC2ConfigEnrichment enrichment;
 
 	@Mock AmazonEC2 ec2;
-	@Mock AmazonLocalMachineIdentification identification;
+	@Mock AmazonCredentialsFactory.Default defaultCredentialFactory;
+	@Mock AmazonEC2MachineIdentification identification;
 
 	@Before
 	public void configureInstanceTagsOnMocks(){
-		MockitoAnnotations.initMocks(this);
+		doReturn( ec2 ).when(enrichment).loadEC2Client();
 
 		final Instance instance = new Instance().withTags(
 			new Tag().withKey("tag.from.ec2").withValue("true"),
