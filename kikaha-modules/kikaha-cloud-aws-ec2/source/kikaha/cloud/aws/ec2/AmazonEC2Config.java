@@ -1,8 +1,9 @@
 package kikaha.cloud.aws.ec2;
 
 import java.util.*;
+import java.util.function.Supplier;
 import kikaha.config.Config;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 /**
  *
@@ -10,12 +11,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AmazonEC2Config implements Config {
 
-	final Map<String, String> tags;
+	final Supplier<Map<String, String>> tagProducer;
 	final Config fallback;
+
+	@Getter(lazy = true)
+	private final Map<String, String> tags = tagProducer.get();
 
 	@Override
 	public String getString(String path) {
-		final String value = tags.get(path);
+		final String value = getTags().get(path);
 		if ( value == null )
 			return fallback.getString(path);
 		return value;
@@ -23,7 +27,7 @@ public class AmazonEC2Config implements Config {
 
 	@Override
 	public String getString(String path, String defaultValue) {
-		final String value = tags.get(path);
+		final String value = getTags().get(path);
 		if ( value == null )
 			return fallback.getString(path, defaultValue);
 		return value;
@@ -31,7 +35,7 @@ public class AmazonEC2Config implements Config {
 
 	@Override
 	public byte[] getBytes(String path, String defaultValue) {
-		final String value = tags.get(path);
+		final String value = getTags().get(path);
 		if ( value == null )
 			return fallback.getBytes(path, defaultValue);
 		return value.getBytes();
@@ -39,7 +43,7 @@ public class AmazonEC2Config implements Config {
 
 	@Override
 	public int getInteger(String path, int defaultValue) {
-		final String value = tags.get(path);
+		final String value = getTags().get(path);
 		if ( value == null )
 			return fallback.getInteger(path, defaultValue);
 		return Integer.valueOf(value);
@@ -47,7 +51,7 @@ public class AmazonEC2Config implements Config {
 
 	@Override
 	public long getLong(String path, long defaultValue) {
-		final String value = tags.get(path);
+		final String value = getTags().get(path);
 		if ( value == null )
 			return fallback.getLong(path, defaultValue);
 		return Long.valueOf(value);
@@ -55,7 +59,7 @@ public class AmazonEC2Config implements Config {
 
 	@Override
 	public boolean getBoolean(String path, boolean defaultValue) {
-		final String value = tags.get(path);
+		final String value = getTags().get(path);
 		if ( value == null )
 			return fallback.getBoolean(path, defaultValue);
 		return Boolean.valueOf(value);
@@ -81,12 +85,18 @@ public class AmazonEC2Config implements Config {
 		final Config config = fallback.getConfig(path);
 		if ( config == null )
 			return null;
-		return new AmazonEC2Config( tags, config );
+
+		final Map<String, String> newTags = new HashMap<>();
+		for ( String key : getTags().keySet() )
+			if ( key.startsWith( path ) )
+				newTags.put( key.replace( path + ".", "" ), getTags().get(key) );
+
+		return new AmazonEC2Config( ()->newTags, config );
 	}
 
 	@Override
 	public Object getObject(String path) {
-		final String value = tags.get(path);
+		final String value = getTags().get(path);
 		if ( value == null )
 			return fallback.getObject( path );
 		return value;
@@ -94,7 +104,7 @@ public class AmazonEC2Config implements Config {
 
 	@Override
 	public Class<?> getClass(String path, Class<?> defaultClass) {
-		final String value = tags.get(path);
+		final String value = getTags().get(path);
 		if ( value == null )
 			return fallback.getClass( path, defaultClass );
 		return instantiate( value );
@@ -111,7 +121,7 @@ public class AmazonEC2Config implements Config {
 	@Override
 	public Map<String, Object> toMap() {
 		final Map<String, Object> map = fallback.toMap();
-		map.putAll( tags );
+		map.putAll( getTags() );
 		return map;
 	}
 }
