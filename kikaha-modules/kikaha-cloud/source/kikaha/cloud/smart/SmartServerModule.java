@@ -24,7 +24,6 @@ public class SmartServerModule implements Module {
 
 	@Inject Config config;
 	@Inject CDI cdi;
-	boolean isModuleEnabled;
 
 	ApplicationData applicationData;
 	ServiceRegistry serviceRegistry;
@@ -41,15 +40,15 @@ public class SmartServerModule implements Module {
 			getLocalPort(), isLocalProtocolHttps()
 		);
 
-		isModuleEnabled = config.getBoolean( "server.smart-server.enabled" );
-		if ( isModuleEnabled )
-			serviceRegistry = loadServiceRegistry();
+		serviceRegistry = loadServiceRegistry();
 	}
 
 	ServiceRegistry loadServiceRegistry(){
 		final Class<?> serviceRegistryClass = config.getClass( "server.smart-server.service-registry" );
-		if ( serviceRegistryClass == null )
-			throw new InstantiationError( "No ServiceRegistry defined" );
+		if ( serviceRegistryClass == null ) {
+			log.debug("No ServiceRegistry defined");
+			return null;
+		}
 		return (ServiceRegistry) cdi.load( serviceRegistryClass );
 	}
 
@@ -74,16 +73,16 @@ public class SmartServerModule implements Module {
 
 	@Override
 	public void load( final Builder server, final DeploymentContext context ) throws IOException {
-		if ( isModuleEnabled ) {
-			log.info("Starting SmartServer cloud module");
+		if ( serviceRegistry != null ) {
+			log.info("Registering application into cluster...");
 			serviceRegistry.registerIntoCluster(applicationData);
 		}
 	}
 
 	@Override
 	public void unload() throws IOException {
-		if ( isModuleEnabled ) {
-			log.info("Stopping SmartServer cloud module");
+		if ( serviceRegistry != null ) {
+			log.info("Leaving cluster...");
 			serviceRegistry.deregisterFromCluster(applicationData);
 		}
 	}

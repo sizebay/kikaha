@@ -65,23 +65,6 @@ public class SmartServerModuleTest {
 		doReturn( serviceRegistry.getClass() ).when( config ).getClass( eq("server.smart-server.service-registry") );
 	}
 
-	@Test
-	public void ensureWillNotStartModuleIfItIsNotEnabled() throws IOException {
-		doReturn( false ).when( config ).getBoolean( "server.smart-server.enabled" );
-		module.loadApplicationData();
-		module.load( null, null );
-		verify( localMachineIdentification, never() ).generateTheMachineId();
-		verify( localMachineIdentification, never() ).getLocalAddress();
-		verify( serviceRegistry, never() ).registerIntoCluster( any( ApplicationData.class ) );
-	}
-
-	@Test( expected = InstantiationError.class )
-	public void ensureWillFailIfNoServiceRegistryIsAvailable() throws IOException {
-		doReturn( true ).when( config ).getBoolean( "server.smart-server.enabled" );
-		module.loadApplicationData();
-		module.load( null, null );
-	}
-
 	Answer registerIntoCluster(InvocationOnMock i) {
 		try {
 			final ApplicationData applicationData = i.getArgumentAt(0, ApplicationData.class);
