@@ -20,6 +20,7 @@
     <module>kikaha-cloud-aws-alb</module>
     <module>kikaha-cloud-aws-lambda</module>
     <module>kikaha-cloud-aws-sqs</module>
+    <module>kikaha-cloud-aws-xray</module>
     <module>kikaha-cloud-auth0</module>
     <module>kikaha-cloud-consul</module>
     <module>kikaha-cloud-hazelcast</module>
