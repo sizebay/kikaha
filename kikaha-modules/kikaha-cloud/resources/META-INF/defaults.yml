@@ -2,7 +2,9 @@ server:
 
   # Configure how does the application should behave at the cloud
   smart-server:
-    enabled: false
+
+    # Once you define a ServiceRegistry implementation, the server will
+    # automatically perform the service registration into a cluster.
     service-registry:
 
     # Configure how the server should infer its local address
@@ -21,7 +23,7 @@ server:
     enabled: false
     url: "/api/internal/health-check"
 
-  # Cloud Metrics module
+  # Codahale Metrics module
   metrics:
     enabled: false
     reporter-configuration: kikaha.cloud.metrics.JMXReporterConfiguration
