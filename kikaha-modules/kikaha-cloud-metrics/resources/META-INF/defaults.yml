@@ -1,0 +1,24 @@
+server:
+
+  # Configure how does the Health-Check should behave
+  health-check:
+    enabled: false
+    url: "/api/internal/health-check"
+
+  # Codahale Metrics module
+  metrics:
+    enabled: false
+    reporter-configuration: kikaha.cloud.metrics.JMXReporterConfiguration
+
+    # Metrics for web transactions
+    web-transactions:
+      store-individual-metrics: true
+      store-summarized-metrics: true
+
+    # Metrics for JVM
+    jvm:
+      memory-usage: false
+      buffer-pool-usage: false
+      thread-usage: false
+      gc-usage: false
+      fd-usage: false

@@ -1,4 +1,4 @@
-package kikaha.cloud.healthcheck;
+package kikaha.cloud.metrics;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;

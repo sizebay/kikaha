@@ -24,6 +24,7 @@
     <module>kikaha-cloud-auth0</module>
     <module>kikaha-cloud-consul</module>
     <module>kikaha-cloud-hazelcast</module>
+    <module>kikaha-cloud-metrics</module>
     <module>kikaha-uworkers</module>
     <module>kikaha-urouting</module>
     <module>kikaha-mustache</module>

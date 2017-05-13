@@ -1,4 +1,4 @@
-package kikaha.cloud.healthcheck;
+package kikaha.cloud.metrics;
 
 import java.io.IOException;
 import java.util.Collection;

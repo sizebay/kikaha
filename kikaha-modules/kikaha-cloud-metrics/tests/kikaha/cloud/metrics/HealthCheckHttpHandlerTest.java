@@ -1,4 +1,4 @@
-package kikaha.cloud.healthcheck;
+package kikaha.cloud.metrics;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
@@ -27,29 +27,29 @@ public class HealthCheckHttpHandlerTest {
 	@Before
 	public void configureMocks(){
 		MockitoAnnotations.initMocks( this );
-		doReturn( true ).when( successResult ).isHealthy();
-		doReturn( false ).when( failureResult ).isHealthy();
+		Mockito.doReturn( true ).when( successResult ).isHealthy();
+		Mockito.doReturn( false ).when( failureResult ).isHealthy();
 		httpHandler.registry.unregister( "SampleDatabaseService" );
 	}
 
 	@Test
 	public void ensureSendOKStatusWhenServicesAreHealthy() throws Exception {
-		doReturn( successResult ).when( healthCheck ).execute();
+		Mockito.doReturn( successResult ).when( healthCheck ).execute();
 		simulateHealthCheckDeployment();
 
 		final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
 		run( () -> httpHandler.handleRequest( exchange ) );
-		assertEquals( StatusCodes.OK, exchange.getStatusCode() );
+		Assert.assertEquals( StatusCodes.OK, exchange.getStatusCode() );
 	}
 
 	@Test
 	public void ensureSendUnavailableStatusWhenServicesAreNotHealthy() throws Exception {
-		doReturn( failureResult ).when( healthCheck ).execute();
+		Mockito.doReturn( failureResult ).when( healthCheck ).execute();
 		simulateHealthCheckDeployment();
 
 		final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
 		run( () -> httpHandler.handleRequest( exchange ) );
-		assertEquals( StatusCodes.SERVICE_UNAVAILABLE, exchange.getStatusCode() );
+		Assert.assertEquals( StatusCodes.SERVICE_UNAVAILABLE, exchange.getStatusCode() );
 	}
 
 	private void simulateHealthCheckDeployment(){

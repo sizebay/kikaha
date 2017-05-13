@@ -8,8 +8,8 @@
         <artifactId>kikaha-modules</artifactId>
     </parent>
 
-    <artifactId>kikaha-cloud</artifactId>
-    <name>Kikaha: Cloud</name>
+    <artifactId>kikaha-cloud-metrics</artifactId>
+    <name>Kikaha: Cloud: Codahale Metrics </name>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -17,6 +17,18 @@
         <dependency>
             <groupId>io.skullabs.kikaha</groupId>
             <artifactId>kikaha-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-jvm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-healthchecks</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -26,5 +26,9 @@
             <groupId>io.skullabs.kikaha</groupId>
             <artifactId>kikaha-urouting</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.skullabs.kikaha</groupId>
+            <artifactId>kikaha-cloud-metrics</artifactId>
+        </dependency>
     </dependencies>
 </project>

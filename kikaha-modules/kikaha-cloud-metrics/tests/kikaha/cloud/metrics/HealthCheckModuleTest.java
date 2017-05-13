@@ -1,9 +1,6 @@
-package kikaha.cloud.healthcheck;
+package kikaha.cloud.metrics;
 
-import static java.util.Arrays.asList;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
-
+import java.util.Arrays;
 import com.codahale.metrics.health.*;
 import io.undertow.server.HttpHandler;
 import kikaha.config.Config;
@@ -31,33 +28,33 @@ public class HealthCheckModuleTest {
 	@Before
 	public void configureMocks() {
 		MockitoAnnotations.initMocks( this );
-		module.healthChecks = asList( healthCheck );
-		doReturn( "/sample" ).when( config ).getString( eq( "server.health-check.url" ) );
+		module.healthChecks = Arrays.asList( healthCheck );
+		Mockito.doReturn( "/sample" ).when( config ).getString( Matchers.eq( "server.health-check.url" ) );
 	}
 
 	@Test
 	@SneakyThrows
 	public void ensureCanDeployHealthChecks(){
-		doReturn( true ).when( config ).getBoolean( eq( "server.health-check.enabled" ) );
+		Mockito.doReturn( true ).when( config ).getBoolean( Matchers.eq( "server.health-check.enabled" ) );
 		module.load( null, context );
-		verify( registry ).register( anyString(), eq( healthCheck ) );
-		verify( context ).register( eq("/sample"), eq("GET"), any( HealthCheckHttpHandler.class ) );
+		Mockito.verify( registry ).register( Matchers.anyString(), Matchers.eq( healthCheck ) );
+		Mockito.verify( context ).register( Matchers.eq("/sample"), Matchers.eq("GET"), Matchers.any( HealthCheckHttpHandler.class ) );
 	}
 
 	@Test
 	@SneakyThrows
 	public void ensureWillNotDeployHealthChecksWhenTheModuleIsDisabled(){
-		doReturn( false ).when( config ).getBoolean( eq( "server.health-check.enabled" ) );
+		Mockito.doReturn( false ).when( config ).getBoolean( Matchers.eq( "server.health-check.enabled" ) );
 		module.load( null, context );
-		verify( registry, never() ).register( anyString(), any( HealthCheck.class ) );
-		verify( context, never() ).register( anyString(), anyString(), any( HttpHandler.class ) );
+		Mockito.verify( registry, Mockito.never() ).register( Matchers.anyString(), Matchers.any( HealthCheck.class ) );
+		Mockito.verify( context, Mockito.never() ).register( Matchers.anyString(), Matchers.anyString(), Matchers.any( HttpHandler.class ) );
 	}
 
 	@Test( expected = UnsupportedOperationException.class )
 	@SneakyThrows
 	public void ensureWillFailToDeployHealthChecksWhenTheNoHealthChecksWasFound(){
-		doReturn( true ).when( config ).getBoolean( eq( "server.health-check.enabled" ) );
-		module.healthChecks = asList();
+		Mockito.doReturn( true ).when( config ).getBoolean( Matchers.eq( "server.health-check.enabled" ) );
+		module.healthChecks = Arrays.asList();
 		module.load( null, context );
 	}
 }
