@@ -12,6 +12,6 @@ public class AllowEveryThingTest {
 	@Test
 	public void matchesWillAlwaysReturnTrue() throws Exception {
 		final Timer timer = new Timer();
-		assertTrue( new DefaultRegistryConfiguration.AllowEveryThing().matches( "any", timer ) );
+		assertTrue( new DefaultReporterConfiguration.AllowEveryThing().matches( "any", timer ) );
 	}
 }

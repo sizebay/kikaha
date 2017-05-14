@@ -22,12 +22,12 @@ public class DefaultMetricConfigurationTest {
 	@Mock MetricFilter filter;
 
 	@Spy @InjectMocks
-	DefaultRegistryConfiguration defaultRegistryConfiguration;
+	DefaultReporterConfiguration defaultReporterConfiguration;
 
 	@Before
 	public void injectConfiguration(){
-		defaultRegistryConfiguration.configuration = new MetricConfiguration(
-			DefaultRegistryConfiguration.class,
+		defaultReporterConfiguration.configuration = new MetricConfiguration(
+			DefaultReporterConfiguration.class,
 			MetricRegistryListener.class, MetricFilter.class,
 			true, true,
 			true, cdi
@@ -39,7 +39,7 @@ public class DefaultMetricConfigurationTest {
 
 	@Test
 	public void ensureCanCreateAListenerThatWrapsOriginalListenerAndFilter(){
-		final MetricRegistryListener listener = defaultRegistryConfiguration.wrapListenerAndFilter();
+		final MetricRegistryListener listener = defaultReporterConfiguration.wrapListenerAndFilter();
 		assertEquals( WrapperMetricRegistryListener.class, listener.getClass() );
 
 		final WrapperMetricRegistryListener wrapper = (WrapperMetricRegistryListener)listener;
@@ -49,8 +49,8 @@ public class DefaultMetricConfigurationTest {
 
 	@Test
 	public void ensureCanRegisterWrapperListener(){
-		doReturn( listener ).when(defaultRegistryConfiguration).wrapListenerAndFilter();
-		defaultRegistryConfiguration.configureAndStartReportFor( registry );
+		doReturn( listener ).when(defaultReporterConfiguration).wrapListenerAndFilter();
+		defaultReporterConfiguration.configureAndStartReportFor( registry );
 		verify( registry ).addListener( eq( listener ) );
 	}
 }

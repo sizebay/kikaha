@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-public class DefaultRegistryConfiguration implements ReporterConfiguration {
+public class DefaultReporterConfiguration implements ReporterConfiguration {
 
 	@Inject MetricConfiguration configuration;
 

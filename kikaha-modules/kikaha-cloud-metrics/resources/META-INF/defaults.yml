@@ -8,8 +8,8 @@ server:
   # Codahale Metrics module
   metrics:
     enabled: false
-    reporter-configuration: kikaha.cloud.metrics.DefaultRegistryConfiguration
-    reporter-metric-filter: kikaha.cloud.metrics.DefaultRegistryConfiguration$AllowEveryThing
+    reporter-configuration: kikaha.cloud.metrics.DefaultReporterConfiguration
+    reporter-metric-filter: kikaha.cloud.metrics.DefaultReporterConfiguration$AllowEveryThing
     # reporter-metric-listener:
 
     # Metrics for web transactions
