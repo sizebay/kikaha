@@ -38,9 +38,9 @@ public class MetricsModuleTest {
     public void injectConfiguration(){
         module.configuration = new MetricConfiguration(
             ReporterConfiguration.class,
-            MetricRegistryListener.class, MetricFilter.class,
+            MetricRegistryListener.class, MetricFilter.class, MetricStore.class,
             true, true,
-            true, cdi
+            true, 1000, cdi
         );
 
         doReturn( reporterConfiguration ).when( cdi ).load( eq(ReporterConfiguration.class) );

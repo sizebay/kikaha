@@ -28,9 +28,9 @@ public class DefaultMetricConfigurationTest {
 	public void injectConfiguration(){
 		defaultReporterConfiguration.configuration = new MetricConfiguration(
 			DefaultReporterConfiguration.class,
-			MetricRegistryListener.class, MetricFilter.class,
+			MetricRegistryListener.class, MetricFilter.class, MetricStore.class,
 			true, true,
-			true, cdi
+			true, 1000, cdi
 		);
 
 		doReturn( listener ).when( cdi ).load( eq(MetricRegistryListener.class) );
