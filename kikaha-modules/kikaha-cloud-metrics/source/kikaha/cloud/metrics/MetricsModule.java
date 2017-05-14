@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * The Cloud Metric {@link Module}.
  */
+@Getter
 @Slf4j
 @Singleton
 public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDeploymentCustomizer, Module {
@@ -29,40 +30,23 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
     final static String
         NAMESPACE_WEB = "kikaha.transactions", NAMESPACE_JVM = "kikaha.jvm",
         SUMMARIZED = "summarized",
-        IS_MODULE_ENABLED = "server.metrics.enabled",
-        SHOULD_STORE_INDIVIDUAL_WEB_METRICS = "server.metrics.web-transactions.store-individual-metrics",
-        SHOULD_STORE_SUMMARIZED_WEB_METRICS = "server.metrics.web-transactions.store-summarized-metrics",
-        JVM_METRICS = "server.metrics.jvm",
-        REPORTER_CONFIGURATION_CLASS = "server.metrics.reporter-configuration"
+        JVM_METRICS = "server.metrics.jvm"
     ;
 
-    @Getter final String name = "metrics";
+    final String name = "metrics";
     final Map<String, Consumer<String>> jvmMetrics = new HashMap<>();
 
     @Inject MetricRegistry metricRegistry;
     @Inject MBeanServer mBeanServer;
     @Inject Config config;
+
     @Inject @Typed( MetricRegistryConfiguration.class )
     Iterable<MetricRegistryConfiguration> metricConfigurations;
 
-    Class<? extends ReporterConfiguration> reporterConfigurationClass;
-    boolean
-        isEnabled = false,
-        shouldStoreIndividualWebMetrics = false,
-        shouldStoreSummarizedWebMetrics = false
-    ;
+    @Inject MetricConfiguration configuration;
 
     @PostConstruct
-    @SuppressWarnings("unchecked")
-    public void loadConfig(){
-        isEnabled = config.getBoolean( IS_MODULE_ENABLED );
-        shouldStoreIndividualWebMetrics = config.getBoolean( SHOULD_STORE_INDIVIDUAL_WEB_METRICS );
-        shouldStoreSummarizedWebMetrics = config.getBoolean( SHOULD_STORE_SUMMARIZED_WEB_METRICS );
-        reporterConfigurationClass = (Class<? extends ReporterConfiguration>) config.getClass( REPORTER_CONFIGURATION_CLASS );
-        registerAvailableJvmMetrics();
-    }
-
-    private void registerAvailableJvmMetrics(){
+    public void registerAvailableJvmMetrics(){
         jvmMetrics.put( "memory-usage", k -> registerJvmMetrics( "memory", new MemoryUsageGaugeSet()) );
         jvmMetrics.put( "buffer-pool-usage", k -> registerJvmMetrics( "buffer-pool", new BufferPoolMetricSet( mBeanServer )) );
         jvmMetrics.put( "thread-usage", k -> registerJvmMetrics( "threads", new ThreadStatesGaugeSet() ));
@@ -72,18 +56,18 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
 
     @Override
     public HttpHandler customize( HttpHandler httpHandler, final WebResource webResource) {
-        if ( !isEnabled) return httpHandler;
+        if ( !configuration.isEnabled) return httpHandler;
         log.debug( "Extracting metrics for " + httpHandler.toString() + " ..." );
 
         final String name = webResource.method() + " " + webResource.path();
 
-        if (shouldStoreIndividualWebMetrics) {
+        if (configuration.shouldStoreIndividualWebMetrics) {
             final Timer meter = metricRegistry.timer( MetricRegistry.name(NAMESPACE_WEB, name) );
             httpHandler = new MetricHttpHandler( httpHandler, meter );
             log.debug( "  Registered individual metric for " + name );
         }
 
-        if ( shouldStoreSummarizedWebMetrics ) {
+        if ( configuration.shouldStoreSummarizedWebMetrics ) {
             final Timer meter = metricRegistry.timer( MetricRegistry.name(NAMESPACE_WEB, SUMMARIZED) );
             httpHandler = new MetricHttpHandler( httpHandler, meter );
             log.debug( "  Registered summarized metric for " + name );
@@ -94,12 +78,12 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
 
     @Override
     public void load( final Undertow.Builder server, final DeploymentContext context ) throws IOException {
-        if ( !isEnabled ) return;
+        if ( !configuration.isEnabled ) return;
         log.info( "Initializing the Cloud Metric module..." );
         runExternalMetricConfigurations();
         loadJvmMetrics();
 
-        final ReporterConfiguration reporterConfiguration = initializeReporter();
+        final ReporterConfiguration reporterConfiguration = configuration.reporterConfiguration();
         reporterConfiguration.configureAndStartReportFor( metricRegistry );
     }
 
@@ -128,14 +112,6 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
         final String metricName = MetricRegistry.name(NAMESPACE_JVM, key);
         metricRegistry.register( metricName, metric );
         log.debug( "  Registered JVM metric " + metricName );
-    }
-
-    ReporterConfiguration initializeReporter() {
-        try {
-            return this.reporterConfigurationClass.newInstance();
-        } catch (IllegalAccessException | InstantiationException e) {
-            throw new UnsupportedOperationException( e );
-        }
     }
 }
 
