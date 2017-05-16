@@ -181,12 +181,6 @@
             </dependency>
             <dependency>
                 <groupId>io.skullabs.kikaha</groupId>
-                <version>2.1.0-alpha14</version>
-                <artifactId>kikaha-cloud-metrics</artifactId>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.skullabs.kikaha</groupId>
                 <artifactId>kikaha-db</artifactId>
                 <version>2.1.0-alpha14</version>
             </dependency>
@@ -216,6 +210,12 @@
             </dependency>
             <dependency>
                 <groupId>io.skullabs.kikaha</groupId>
+                <artifactId>kikaha-cloud-aws-cloudwatch</artifactId>
+                <version>2.1.0-alpha14</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.skullabs.kikaha</groupId>
                 <artifactId>kikaha-cloud-aws-lambda</artifactId>
                 <version>2.1.0-alpha14</version>
                 <scope>compile</scope>
@@ -235,6 +235,12 @@
             <dependency>
                 <groupId>io.skullabs.kikaha</groupId>
                 <artifactId>kikaha-cloud-consul</artifactId>
+                <version>2.1.0-alpha14</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.skullabs.kikaha</groupId>
+                <artifactId>kikaha-cloud-metrics</artifactId>
                 <version>2.1.0-alpha14</version>
                 <scope>compile</scope>
             </dependency>

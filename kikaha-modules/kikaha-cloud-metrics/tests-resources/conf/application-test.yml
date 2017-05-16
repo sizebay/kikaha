@@ -2,6 +2,9 @@ server:
 
   metrics:
 
+    reporter:
+      metric-store: kikaha.cloud.metrics.DummyStore
+
     # Metrics for JVM
     jvm:
       memory-usage: true

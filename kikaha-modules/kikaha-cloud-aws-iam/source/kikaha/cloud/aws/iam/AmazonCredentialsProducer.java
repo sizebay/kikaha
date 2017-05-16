@@ -28,7 +28,7 @@ public class AmazonCredentialsProducer {
 
 	@Produces
 	public AWSCredentials produceCredentials( final ProviderContext context ){
-		final IAM annotation = context.getAnnotation(IAM.class);
+		final Named annotation = context.getAnnotation(Named.class);
 		final String configurationName = annotation != null ? annotation.value() : "default";
 		return getCredentials( configurationName );
 	}

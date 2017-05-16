@@ -20,6 +20,7 @@ public class DefaultMetricConfigurationTest {
 	@Mock MetricRegistry registry;
 	@Mock MetricRegistryListener listener;
 	@Mock MetricFilter filter;
+	@Mock MetricStore store;
 
 	@Spy @InjectMocks
 	DefaultReporterConfiguration defaultReporterConfiguration;
@@ -35,6 +36,7 @@ public class DefaultMetricConfigurationTest {
 
 		doReturn( listener ).when( cdi ).load( eq(MetricRegistryListener.class) );
 		doReturn( filter ).when( cdi ).load( eq(MetricFilter.class) );
+		doReturn( store ).when( cdi ).load( eq(MetricStore.class) );
 	}
 
 	@Test

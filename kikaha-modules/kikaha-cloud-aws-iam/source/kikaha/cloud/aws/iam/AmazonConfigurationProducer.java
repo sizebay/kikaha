@@ -1,10 +1,11 @@
 package kikaha.cloud.aws.iam;
 
+import javax.enterprise.inject.Produces;
 import javax.inject.*;
 import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.regions.*;
+import com.amazonaws.regions.Regions;
 import kikaha.config.Config;
-import kikaha.core.cdi.CDI;
+import kikaha.core.cdi.*;
 import lombok.*;
 
 /**
@@ -18,18 +19,29 @@ public class AmazonConfigurationProducer {
 	@Getter( lazy = true )
 	private final Config config = cdi.load( Config.class );
 
+	@Getter( lazy = true )
+	private final String defaultRegion = getConfig().getString( "server.aws.default.region" );
+
 	@Inject AmazonCredentialsProducer credentialsProducer;
+
+	@Produces public AmazonWebServiceConfiguration produceConfig(ProviderContext context){
+		final Named annotation = context.getAnnotation(Named.class);
+		if ( annotation == null )
+			throw new UnsupportedOperationException( "You must inform which configuration should be used. Use @Named('service')." );
+		final String name = annotation.value();
+		return configForService( name );
+	}
 
 	public AmazonWebServiceConfiguration configForService(String serviceAlias ){
 		final Config config = getConfig().getConfig("server.aws." + serviceAlias);
 		if ( config == null )
 			throw new IllegalStateException( "No configuration for Amazon Web Service found with name '" + serviceAlias + "'" );
 
-		final String regionName = config.getString("region", "us-west-2");
+		final String regionName = config.getString("region", getDefaultRegion() );
 		final AWSCredentialsProvider credentialProvider = credentialsProducer.getCredentialProvider(config.getString("iam-policy", serviceAlias));
 		return new AmazonWebServiceConfiguration(
 			credentialProvider,
-			Regions.fromName( regionName )
+			Regions.fromName( regionName ), config
 		);
 	}
 
@@ -37,5 +49,7 @@ public class AmazonConfigurationProducer {
 	public static class AmazonWebServiceConfiguration {
 		final AWSCredentialsProvider iamPolicy;
 		final Regions region;
+		@lombok.experimental.Delegate
+		final Config config;
 	}
 }

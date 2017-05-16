@@ -15,10 +15,10 @@ public class AmazonCredentialsProducerTest {
 
 	@Inject AWSCredentials producedCredentials;
 
-	@IAM( "alternative" )
+	@Named( "alternative" )
 	@Inject AWSCredentials alternativeProducedCredentials;
 
-	@IAM( "default" )
+	@Named( "default" )
 	@Inject AWSCredentials defaultProducedCredentials;
 
 	@Test

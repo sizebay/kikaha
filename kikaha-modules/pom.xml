@@ -17,6 +17,7 @@
     <module>kikaha-cloud</module>
     <module>kikaha-cloud-aws-iam</module>
     <module>kikaha-cloud-aws-ec2</module>
+    <module>kikaha-cloud-aws-cloudwatch</module>
     <module>kikaha-cloud-aws-alb</module>
     <module>kikaha-cloud-aws-lambda</module>
     <module>kikaha-cloud-aws-sqs</module>

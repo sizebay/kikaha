@@ -1,8 +1,7 @@
 package kikaha.core.test;
 
-import kikaha.config.*;
 import kikaha.core.KikahaUndertowServer;
-import kikaha.core.cdi.DefaultCDI;
+import kikaha.core.cdi.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.*;
 import org.junit.runner.manipulation.*;
@@ -17,12 +16,10 @@ import org.junit.runners.model.*;
 public class KikahaServerRunner extends Runner implements Filterable {
 
 	private static final KikahaUndertowServer server = new KikahaUndertowServer();
-	private static final DefaultCDI cdi = new DefaultCDI();
+	private static final CDI cdi = DefaultCDI.newInstance();
 	private final BlockJUnit4ClassRunner runner;
 
 	static {
-		cdi.dependencyFor( Config.class, ConfigLoader.loadDefaults() );
-		cdi.loadAllCustomClassConstructors();
 		cdi.injectOn( server );
 		try {
 			server.run();

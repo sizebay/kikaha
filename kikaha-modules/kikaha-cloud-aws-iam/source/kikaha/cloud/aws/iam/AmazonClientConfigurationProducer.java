@@ -20,8 +20,8 @@ public class AmazonClientConfigurationProducer {
 
 	private ClientConfiguration createClientConfiguration() {
 		final ClientConfiguration configuration = new ClientConfiguration();
-		configuration.setConnectionTimeout(60000);
-		configuration.setRequestTimeout(60000);
+		configuration.setConnectionTimeout(6000);
+		configuration.setRequestTimeout(30000);
 		listeners.forEach( c->c.configure( configuration ) );
 		return configuration;
 	}

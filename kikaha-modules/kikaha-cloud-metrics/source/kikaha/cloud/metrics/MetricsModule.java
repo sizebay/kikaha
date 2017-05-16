@@ -95,8 +95,10 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
     void loadJvmMetrics(){
         final Config config = this.config.getConfig(JVM_METRICS);
         for (String key : config.getKeys()) {
-            if ( config.getBoolean( key ) )
-                jvmMetrics.get( key ).accept( key );
+            if ( config.getBoolean( key ) ) {
+
+                jvmMetrics.get(key).accept(key);
+            }
         }
     }
 

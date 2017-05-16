@@ -1,7 +1,6 @@
 package kikaha.core.test;
 
-import kikaha.config.*;
-import kikaha.core.cdi.DefaultCDI;
+import kikaha.core.cdi.*;
 import org.junit.runner.*;
 import org.junit.runner.manipulation.*;
 import org.junit.runner.notification.RunNotifier;
@@ -13,13 +12,11 @@ import org.junit.runners.model.*;
  */
 public class KikahaRunner extends Runner implements Filterable {
 
-	private final DefaultCDI cdi;
+	private final CDI cdi;
 	private final BlockJUnit4ClassRunner runner;
 
 	public KikahaRunner( Class<?> clazz ) throws InitializationError {
-		cdi = new DefaultCDI();
-		cdi.dependencyFor( Config.class, ConfigLoader.loadDefaults() );
-		cdi.loadAllCustomClassConstructors();
+		cdi = DefaultCDI.newInstance();
 
 		runner = new BlockJUnit4ClassRunner( clazz ) {
 			@Override

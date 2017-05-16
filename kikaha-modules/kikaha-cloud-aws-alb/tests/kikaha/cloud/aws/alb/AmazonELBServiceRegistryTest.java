@@ -3,15 +3,18 @@ package kikaha.cloud.aws.alb;
 import static kikaha.core.test.Exposed.expose;
 import static org.mockito.Mockito.*;
 import java.io.IOException;
+import javax.inject.Named;
 import com.amazonaws.*;
+import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.http.SdkHttpMetadata;
 import com.amazonaws.services.elasticloadbalancingv2.AmazonElasticLoadBalancing;
 import com.amazonaws.services.elasticloadbalancingv2.model.*;
 import kikaha.cloud.aws.ec2.AmazonEC2ClientProducer;
 import kikaha.cloud.aws.iam.*;
+import kikaha.cloud.aws.iam.AmazonConfigurationProducer.AmazonWebServiceConfiguration;
 import kikaha.cloud.smart.ServiceRegistry.ApplicationData;
-import kikaha.config.*;
-import kikaha.core.cdi.CDI;
+import kikaha.config.Config;
+import kikaha.core.cdi.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -24,16 +27,21 @@ import org.mockito.runners.MockitoJUnitRunner;
 public class AmazonELBServiceRegistryTest {
 
 	final ApplicationData applicationData = new ApplicationData( () -> "unit01", () -> "localhost", "unit01", "1.0", 9000, false);
-	final Config defaultConfiguration = ConfigLoader.loadDefaults();
-	final AmazonCredentialsFactory.Yml yml = new AmazonCredentialsFactory.Yml().setConfig( defaultConfiguration );
 
 	@Mock CDI cdi;
 	@Mock Config config;
+	@Mock Config elbConfig;
 	@Mock AmazonElasticLoadBalancing client;
 	@Mock RegisterTargetsResult registerTargetsResult;
 	@Mock DeregisterTargetsResult deregisterTargetsResult;
 	@Mock ResponseMetadata sdkResponseMetadata;
 	@Mock SdkHttpMetadata sdkHttpMetadata;
+	@Mock ProviderContext providerContext;
+	@Mock AmazonCredentialsFactory amazonCredentialsFactory;
+	@Mock AWSCredentials awsCredentials;
+	@Mock Named named;
+
+	AmazonWebServiceConfiguration amazonWebServiceConfiguration;
 
 	AmazonELBServiceRegistry registry = new AmazonELBServiceRegistry();
 	ClientConfiguration clientConfiguration = new ClientConfiguration();
@@ -42,9 +50,19 @@ public class AmazonELBServiceRegistryTest {
 	AmazonEC2ClientProducer ec2ClientProducer = new AmazonEC2ClientProducer();
 
 	@Before
+	//FIXME: worst mock setup ever! Use integration test instead.
 	public void configureMocks(){
-		doReturn( defaultConfiguration ).when( cdi ).load( eq(Config.class) );
-		doReturn( yml ).when( cdi ).load( eq( AmazonCredentialsFactory.Yml.class ) );
+		doReturn( elbConfig ).when( config ).getConfig( "server.aws.elb" );
+		doAnswer( a -> a.getArgumentAt(1, String.class) ).when( elbConfig ).getString( anyString(), anyString() );
+		doReturn( config ).when( cdi ).load( eq(Config.class) );
+		doReturn( "us-east-1" ).when( config ).getString( eq("server.aws.default.region") );
+		doReturn( "target-group" ).when( elbConfig ).getString( eq("target-group") );
+		doReturn( AmazonCredentialsFactory.class ).when( config ).getClass( eq("server.aws.credentials-factory") );
+		doReturn( amazonCredentialsFactory ).when( cdi ).load( eq( AmazonCredentialsFactory.class ) );
+		doReturn( awsCredentials ).when( amazonCredentialsFactory ).loadCredentialFor( eq("elb") );
+
+		doReturn( "elb" ).when( named ).value();
+		doReturn( named ).when( providerContext ).getAnnotation( eq(Named.class) );
 
 		expose( credentialsProducer ).setFieldValue( "cdi", cdi );
 
@@ -52,35 +70,32 @@ public class AmazonELBServiceRegistryTest {
 			.setFieldValue( "cdi", cdi )
 			.setFieldValue( "credentialsProducer", credentialsProducer );
 
+		amazonWebServiceConfiguration = configurationProducer.produceConfig( providerContext );
+
 		expose( ec2ClientProducer )
-			.setFieldValue("configurationProducer", configurationProducer)
-			.setFieldValue("configuration", clientConfiguration);
+			.setFieldValue("configuration", amazonWebServiceConfiguration )
+			.setFieldValue("clientConfiguration", clientConfiguration);
 
-
-		doReturn( client ).when( registry ).elbClient();
 		doReturn( registerTargetsResult ).when(client).registerTargets( any() );
 		doReturn( deregisterTargetsResult ).when(client).deregisterTargets( any() );
 		doReturn( sdkResponseMetadata ).when(registerTargetsResult).getSdkResponseMetadata();
 		doReturn( sdkResponseMetadata ).when(deregisterTargetsResult).getSdkResponseMetadata();
 		doReturn( sdkHttpMetadata ).when(registerTargetsResult).getSdkHttpMetadata();
 		doReturn( sdkHttpMetadata ).when(deregisterTargetsResult).getSdkHttpMetadata();
-	}
 
-	@Before
-	public void setupMocks(){
-		registry.config = config;
+		registry.amazonWebServiceConfiguration = amazonWebServiceConfiguration;
+		registry.elasticLoadBalancing = client;
 		registry = Mockito.spy( registry );
 	}
 
 	@Test( expected = IOException.class )
 	public void ensureThatCannotJoinELBWhenNoTargetGroupIsDefined() throws IOException {
-		doReturn( null ).when( config ).getString( "server.aws.elb.target-group" );
 		registry.registerIntoCluster( applicationData );
 	}
 
 	@Test
 	public void ensureThatCanJoinELBWhenTheTargetGroupIsDefined() throws IOException {
-		doReturn( "targetGroup" ).when( config ).getString( "server.aws.elb.target-group" );
+		doReturn( "targetGroup" ).when( elbConfig ).getString( "target-group" );
 		doReturn( 200 ).when( sdkHttpMetadata ).getHttpStatusCode();
 		registry.registerIntoCluster( applicationData );
 		verify( client ).registerTargets( any() );
@@ -88,13 +103,13 @@ public class AmazonELBServiceRegistryTest {
 
 	@Test( expected = IOException.class )
 	public void ensureThatCannotLeaveELBWhenNoTargetGroupIsDefined() throws IOException {
-		doReturn( null ).when( config ).getString( "server.aws.elb.target-group" );
+		doReturn( "targetGroup" ).when( elbConfig ).getString( "target-group" );
 		registry.deregisterFromCluster( applicationData );
 	}
 
 	@Test
 	public void ensureThatCanLeaveELBWhenTheTargetGroupIsDefined() throws IOException {
-		doReturn( "targetGroup" ).when( config ).getString( "server.aws.elb.target-group" );
+		doReturn( "targetGroup" ).when( elbConfig ).getString( "target-group" );
 		doReturn( 200 ).when( sdkHttpMetadata ).getHttpStatusCode();
 		registry.deregisterFromCluster( applicationData );
 		verify( client ).deregisterTargets( any() );

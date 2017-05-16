@@ -4,10 +4,8 @@ import javax.enterprise.inject.Produces;
 import javax.inject.*;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.services.ec2.*;
-import kikaha.cloud.aws.iam.*;
 import kikaha.cloud.aws.iam.AmazonConfigurationProducer.AmazonWebServiceConfiguration;
-import kikaha.core.cdi.ProviderContext;
-import lombok.NonNull;
+import lombok.Getter;
 
 /**
  * @author: miere.teixeira
@@ -15,20 +13,22 @@ import lombok.NonNull;
 @Singleton
 public class AmazonEC2ClientProducer {
 
-	@Inject ClientConfiguration configuration;
-	@Inject AmazonConfigurationProducer configurationProducer;
+	@Inject ClientConfiguration clientConfiguration;
+
+	@Inject @Named("ec2")
+	AmazonWebServiceConfiguration configuration;
+
+	@Getter(lazy = true)
+	private final AmazonEC2 amazonEC2 = createAmazonEC2Client();
 
 	@Produces
-	public AmazonEC2 produceAmazonEC2Client( final ProviderContext context ) {
-		final IAM annotation = context.getAnnotation(IAM.class);
-		final String configurationName = annotation != null ? annotation.value() : "default";
-		return produceAmazonEC2Client( configurationName );
+	public AmazonEC2 produceAmazonEC2Client() {
+		return getAmazonEC2();
 	}
 
-	public AmazonEC2 produceAmazonEC2Client( @NonNull final String alias ){
-		final AmazonWebServiceConfiguration configuration = configurationProducer.configForService(alias);
+	AmazonEC2 createAmazonEC2Client(){
 		return AmazonEC2ClientBuilder.standard()
-			.withClientConfiguration(this.configuration)
+			.withClientConfiguration( clientConfiguration )
 			.withCredentials( configuration.getIamPolicy() )
 			.withRegion( configuration.getRegion() )
 				.build();

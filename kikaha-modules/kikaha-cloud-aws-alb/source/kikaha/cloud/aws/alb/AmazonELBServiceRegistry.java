@@ -2,13 +2,11 @@ package kikaha.cloud.aws.alb;
 
 import java.io.IOException;
 import javax.inject.*;
-import com.amazonaws.*;
-import com.amazonaws.services.elasticloadbalancingv2.*;
+import com.amazonaws.ResponseMetadata;
+import com.amazonaws.services.elasticloadbalancingv2.AmazonElasticLoadBalancing;
 import com.amazonaws.services.elasticloadbalancingv2.model.*;
-import kikaha.cloud.aws.iam.AmazonConfigurationProducer;
 import kikaha.cloud.aws.iam.AmazonConfigurationProducer.AmazonWebServiceConfiguration;
 import kikaha.cloud.smart.ServiceRegistry;
-import kikaha.config.Config;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -18,13 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 public class AmazonELBServiceRegistry implements ServiceRegistry {
 
-	@Inject Config config;
-	@Inject ClientConfiguration configuration;
-	@Inject AmazonConfigurationProducer configurationProducer;
+	@Inject AmazonElasticLoadBalancing elasticLoadBalancing;
+
+	@Inject @Named( "elb" )
+	AmazonWebServiceConfiguration amazonWebServiceConfiguration;
 
 	@Override
 	public void registerIntoCluster(ApplicationData applicationData) throws IOException {
-		final String elbName = config.getString("server.aws.elb.target-group");
+		final String elbName = amazonWebServiceConfiguration.getString("target-group");
 		if ( elbName == null )
 			throw new IOException( "Could not automatically join to the AWS Load Balancer named 'null'" );
 
@@ -33,7 +32,7 @@ public class AmazonELBServiceRegistry implements ServiceRegistry {
 				.withTargetGroupArn(elbName)
 				.withTargets(createTargetDescription(applicationData));
 
-		final RegisterTargetsResult result = elbClient().registerTargets(request);
+		final RegisterTargetsResult result = elasticLoadBalancing.registerTargets(request);
 		logResult( "Registering into Load Balancer " + elbName, result.getSdkResponseMetadata() );
 		if (result.getSdkHttpMetadata().getHttpStatusCode() != 200)
 			throw new IOException("Could not automatically join to AWS Load Balancer named '"+elbName+"'");
@@ -41,7 +40,7 @@ public class AmazonELBServiceRegistry implements ServiceRegistry {
 
 	@Override
 	public void deregisterFromCluster( ApplicationData applicationData ) throws IOException {
-		final String elbName = config.getString("server.aws.elb.target-group");
+		final String elbName = amazonWebServiceConfiguration.getString("target-group");
 		if ( elbName == null )
 			throw new IOException( "Could not automatically join to the AWS Load Balancer named 'null'" );
 
@@ -53,7 +52,7 @@ public class AmazonELBServiceRegistry implements ServiceRegistry {
 				.withTargetGroupArn( elbName )
 				.withTargets( createTargetDescription( applicationData ) );
 
-		final DeregisterTargetsResult result = elbClient().deregisterTargets(request);
+		final DeregisterTargetsResult result = elasticLoadBalancing.deregisterTargets(request);
 		logResult( "Deregistering from Load Balancer " + elbName, result.getSdkResponseMetadata() );
 		if (result.getSdkHttpMetadata().getHttpStatusCode() != 200)
 			throw new IOException("Could not leave the AWS Load Balancer named '"+elbName+"'");
@@ -69,12 +68,4 @@ public class AmazonELBServiceRegistry implements ServiceRegistry {
 		log.debug( event + ". Request id: " + sdkResponseMetadata.getRequestId() + ": " + sdkResponseMetadata.toString() );
 	}
 
-	AmazonElasticLoadBalancing elbClient(){
-		final AmazonWebServiceConfiguration configuration = configurationProducer.configForService("elb");
-		return AmazonElasticLoadBalancingClientBuilder.standard()
-			.withCredentials( configuration.getIamPolicy() )
-			.withRegion( configuration.getRegion() )
-			.withClientConfiguration( this.configuration )
-				.build();
-	}
 }

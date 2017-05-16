@@ -26,13 +26,13 @@ public class AmazonEC2MachineIdentification implements LocalMachineIdentificatio
 
 	@Override
 	public String generateTheMachineId() throws IOException {
-		log.info("Retrieving EC2 machine id...");
+		log.debug("Retrieving EC2 machine id...");
 		return getMachineId();
 	}
 
 	@Override
 	public String getLocalAddress() throws IOException {
-		log.info("Retrieving EC2 machine IP address...");
+		log.debug("Retrieving EC2 machine IP address...");
 		return getIpAddress();
 	}
 }
