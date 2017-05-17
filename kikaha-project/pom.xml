@@ -31,6 +31,10 @@
         <config.plugins.aws.lambda.bucket>${config.plugins.aws.s3.bucket}</config.plugins.aws.lambda.bucket>
         <config.plugins.aws.lambda.region>us-east-1</config.plugins.aws.lambda.region>
         <config.plugins.aws.s3.enabled>${config.plugins.aws.lambda.enabled}</config.plugins.aws.s3.enabled>
+        <config.plugins.aws.s3.useCodeDeploy>false</config.plugins.aws.s3.useCodeDeploy>
+        <config.plugins.aws.s3.codeDeployFolder>META-INF/aws-code-deploy/</config.plugins.aws.s3.codeDeployFolder>
+        <config.plugins.aws.s3.codeDeployApplicationName>${project.groupId}-${project.artifactId}</config.plugins.aws.s3.codeDeployApplicationName>
+        <config.plugins.aws.s3.codeDeployDeploymentGroupName>production</config.plugins.aws.s3.codeDeployDeploymentGroupName>
         <config.plugins.aws.s3.region>${config.plugins.aws.lambda.region}</config.plugins.aws.s3.region>
         <config.plugins.aws.s3.bucket>default-bucket</config.plugins.aws.s3.bucket>
         <config.plugins.jar.enabled>${config.plugins.aws.s3.enabled}</config.plugins.jar.enabled>
@@ -81,6 +85,10 @@
                             <enabled>${config.plugins.aws.s3.enabled}</enabled>
                             <s3Bucket>${config.plugins.aws.s3.bucket}</s3Bucket>
                             <regionName>${config.plugins.aws.s3.region}</regionName>
+                            <useCodeDeploy>${config.plugins.aws.s3.useCodeDeploy}</useCodeDeploy>
+                            <codeDeployFolder>${config.plugins.aws.s3.codeDeployFolder}</codeDeployFolder>
+                            <codeDeployDeploymentGroupName>${config.plugins.aws.s3.codeDeployDeploymentGroupName}</codeDeployDeploymentGroupName>
+                            <codeDeployApplicationName>${config.plugins.aws.s3.codeDeployApplicationName}</codeDeployApplicationName>
                         </configuration>
                     </execution>
                     <execution>

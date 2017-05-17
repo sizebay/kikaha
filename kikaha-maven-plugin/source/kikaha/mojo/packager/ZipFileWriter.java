@@ -15,6 +15,10 @@ public class ZipFileWriter {
 	final String fileName;
 	final String rootDirectory;
 
+	public ZipFileWriter( final String fileName ) throws MojoExecutionException {
+		this( fileName, "" );
+	}
+
 	public ZipFileWriter( final String fileName, final String rootDirectory ) throws MojoExecutionException {
 		try {
 			this.fileName = fileName;
@@ -25,16 +29,24 @@ public class ZipFileWriter {
 		}
 	}
 
+	public void add( final String name ){
+		add( name, null );
+	}
+
 	public void add( final String name, final InputStream content ) {
 		try {
-			output.putNextEntry( new ZipEntry( fixEntryName( name ) ) );
+			final String fixedName = fixEntryName( name );
+			if ( fixedName.isEmpty() ) return;
 
-			final byte[] bytes = new byte[1024];
-			int length;
-			while ( ( length = content.read( bytes ) ) >= 0 )
-				output.write( bytes, 0, length );
+			output.putNextEntry( new ZipEntry( fixedName ) );
 
-			output.closeEntry();
+			if ( content != null ) {
+				final byte[] bytes = new byte[1024];
+				int length;
+				while ((length = content.read(bytes)) >= 0)
+					output.write(bytes, 0, length);
+				output.closeEntry();
+			}
 		} catch ( final IOException e ) {
 			throw new RuntimeException( MESSAGE_CANT_ADD_TO_ZIP, e );
 		}
@@ -44,7 +56,7 @@ public class ZipFileWriter {
 		for ( final String prefix : prefixesToStripOutFromName )
 			entryName = entryName.replaceFirst( prefix, "" );
 		final String finalEntryName = rootDirectory + "/" + entryName;
-		return finalEntryName;
+		return finalEntryName.replaceFirst( "^/", "" );
 	}
 
 	public void close() throws MojoExecutionException {

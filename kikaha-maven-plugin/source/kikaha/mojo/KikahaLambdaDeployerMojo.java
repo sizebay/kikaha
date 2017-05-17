@@ -81,14 +81,14 @@ public class KikahaLambdaDeployerMojo extends AbstractMojo {
 		final GetFunctionResult result = aws.getFunction( projectName );
 		final String functionArn = result.getConfiguration().getFunctionArn();
 		getLog().info( "Updating AWS Lambda Function '"+projectName+"'..." );
-		aws.updateFunction( functionArn, s3Bucket, s3Key + ".jar" );
+		aws.updateFunction( functionArn, s3Bucket, s3Key  );
 		return functionArn;
 	}
 
 	String createLambdaFunction( final String projectName ){
 		getLog().info( "Creating AWS Lambda Function '"+projectName+"'..." );
 		final CreateFunctionResult result = aws.createFunction(
-				projectName, s3Bucket, s3Key + ".jar", lambdaTimeout, lambdaMemory, lambdaRole );
+				projectName, s3Bucket, s3Key, lambdaTimeout, lambdaMemory, lambdaRole );
 		return result.getFunctionArn();
 	}
 

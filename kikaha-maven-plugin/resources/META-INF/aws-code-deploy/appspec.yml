@@ -1,0 +1,20 @@
+version: 0.0
+os: linux
+
+# files that should be deployed
+files:
+  # mandatory, in order to deployment work correctly
+  - source: lib
+    destination: /opt/application/lib
+  # mandatory, in order to deployment work correctly
+  - source: bin
+    destination: /opt/application/bin
+
+# mandatory hooks
+hooks:
+  BeforeInstall:
+    - location: bin/stop.sh
+      timeout: 3600
+  ApplicationStart:
+    - location: bin/start.sh
+      timeout: 3600
