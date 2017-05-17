@@ -43,7 +43,7 @@ case "$1" in
 	"restart" ) stop_server && start_server ;;
 	"is_running" )
 		pid=$(retrieve_server_pid)
-		if [ ! "$pid" = "" ]; then
+		if [ "$pid" = "" ]; then
 			exit 1
 		else
 			exit 0
