@@ -44,9 +44,11 @@ case "$1" in
 	"is_running" )
 		pid=$(retrieve_server_pid)
 		if [ "$pid" = "" ]; then
-			exit 1
-		else
+			info "Server is not running. [0]"
 			exit 0
+		else
+			info "Server is running... [1]"
+			exit 1
 		fi
 	;;
 	"version" )
