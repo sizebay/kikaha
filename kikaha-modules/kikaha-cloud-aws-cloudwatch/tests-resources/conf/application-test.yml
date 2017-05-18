@@ -1,3 +1,8 @@
 server:
   aws:
     credentials-factory: kikaha.cloud.aws.iam.AmazonCredentialsFactory$Yml
+
+    iam-policies:
+      cloudwatch:
+        access-key-id: "123"
+        secret-access-key: "456"
