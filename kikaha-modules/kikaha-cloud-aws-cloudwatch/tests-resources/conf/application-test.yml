@@ -1,0 +1,3 @@
+server:
+  aws:
+    credentials-factory: kikaha.cloud.aws.iam.AmazonCredentialsFactory$Yml
