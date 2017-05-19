@@ -68,6 +68,7 @@
         <version.aws>1.11.125</version.aws>
         <version.metrics>3.1.2</version.metrics>
         <version.protobuf>3.2.0</version.protobuf>
+        <versions.rocker>0.20.0</versions.rocker>
         <!-- Plugin's Versions -->
         <version.compiler.plugin>3.3</version.compiler.plugin>
         <version.resources.plugin>2.6</version.resources.plugin>
@@ -87,6 +88,7 @@
         <config.dir.output>${project.basedir}/output</config.dir.output>
         <config.dir.web>${project.basedir}/webapp</config.dir.web>
         <config.dir.protobuf>${project.basedir}/src/main/protobuf</config.dir.protobuf>
+        <config.dir.rocker.source>${config.dir.source}</config.dir.rocker.source>
         <config.skip.tests>false</config.skip.tests>
         <config.skip.tests.unit>${config.skip.tests}</config.skip.tests.unit>
         <config.skip.tests.integration>${config.skip.tests}</config.skip.tests.integration>
@@ -321,6 +323,17 @@
                 <artifactId>protobuf-java</artifactId>
                 <version>${version.protobuf}</version>
             </dependency>
+            <dependency>
+                <groupId>com.fizzed</groupId>
+                <artifactId>rocker-runtime</artifactId>
+                <version>${versions.rocker}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fizzed</groupId>
+                <artifactId>rocker-compiler</artifactId>
+                <version>${versions.rocker}</version>
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -481,6 +494,17 @@
                     </executions>
                 </plugin>
 
+                <!-- Rocker Template Engine -->
+                <plugin>
+                    <groupId>com.fizzed</groupId>
+                    <artifactId>rocker-maven-plugin</artifactId>
+                    <version>${versions.rocker}</version>
+                    <configuration>
+                        <templateDirectory>${config.dir.rocker.source}</templateDirectory>
+                        <outputDirectory>${config.dir.source.generated}</outputDirectory>
+                        <classDirectory>${project.build.outputDirectory}</classDirectory>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 

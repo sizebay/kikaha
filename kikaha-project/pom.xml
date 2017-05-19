@@ -40,6 +40,7 @@
         <config.plugins.jar.enabled>${config.plugins.aws.s3.enabled}</config.plugins.jar.enabled>
         <config.plugins.package.enabled>false</config.plugins.package.enabled>
         <config.plugins.maven.deploy.skip>true</config.plugins.maven.deploy.skip>
+        <config.plugins.rocker.skip>true</config.plugins.rocker.skip>
         <config.plugins.aws.lambda.role>arn:invalid</config.plugins.aws.lambda.role>
     </properties>
 
@@ -109,6 +110,22 @@
                     <jvmArgs>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArgs>
                     <webResourcesPath>${config.dir.web}</webResourcesPath>
                 </configuration>
+            </plugin>
+
+            <!-- Rocker Plugin -->
+            <plugin>
+                <groupId>com.fizzed</groupId>
+                <artifactId>rocker-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-rocker-templates</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <skip>${config.plugins.rocker.skip}</skip>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
 
