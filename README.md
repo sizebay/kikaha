@@ -23,10 +23,10 @@ Be a contributor and join our team. Kikaha need your help to provide the best to
 * [Google Group](https://groups.google.com/forum/#!forum/kikaha)
 
 ## Guides
-[Guide to deploy Kikaha apps at Amazon](https://gist.github.com/miere/346c6f44f4544cacd018e7c55baca4ee) - early draft
-Guide to deploy Kikaha with Docker, Consul and NGINX - todo
-Creating smart server applications - todo
-A JWT guide to Kikaha developers - todo
+* [Guide to deploy Kikaha apps at Amazon](https://gist.github.com/miere/346c6f44f4544cacd018e7c55baca4ee) - early draft
+* Guide to deploy Kikaha with Docker, Consul and NGINX - todo
+* Creating smart server applications - todo
+* A JWT guide to Kikaha developers - todo
 
 ### License
 Kikaha is released under [Apache 2.0 licensed](http://www.apache.org/licenses/LICENSE-2.0.html).
