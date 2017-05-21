@@ -17,7 +17,9 @@ public class DefaultHttpRequestHandler implements HttpHandler {
 	}
 
 	void fixRelativePath( final HttpServerExchange exchange ) {
-		final String relativePath = URL.removeTrailingCharacter( exchange.getRelativePath() );
+		final String relativePath = exchange.getRelativePath().equals("/")
+			? exchange.getRelativePath()
+			: URL.removeTrailingCharacter( exchange.getRelativePath() );
 		exchange.setRelativePath( relativePath );
 	}
 }

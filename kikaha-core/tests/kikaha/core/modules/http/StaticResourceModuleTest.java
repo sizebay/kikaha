@@ -1,19 +1,13 @@
 package kikaha.core.modules.http;
 
+import static org.mockito.Mockito.*;
+import java.io.IOException;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
-import kikaha.core.modules.http.StaticResourceModule;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.io.File;
-import java.io.IOException;
-
-import static org.mockito.Mockito.*;
 
 /**
  *
@@ -42,12 +36,12 @@ public class StaticResourceModuleTest {
 	@Test
 	public void ensureThatCanEnableStaticRouting() throws IOException {
 		doReturn(true).when(staticConfig).getBoolean( eq("enabled") );
+		doReturn( "" ).when(staticConfig).getString( eq("location") );
 		doNothing().when( module ).setStaticRoutingAsFallbackHandler( anyObject(), eq(context) );
-		doReturn( new File("") ).when( module ).retrieveWebAppFolder( eq(staticConfig) );
 
 		module.load( null, context );
 		verify( module ).setStaticRoutingAsFallbackHandler( anyObject(), eq(context) );
-		verify( module ).retrieveWebAppFolder( eq(staticConfig) );
+		verify( staticConfig).getString( eq("location") );
 	}
 
 	@Test
@@ -56,6 +50,6 @@ public class StaticResourceModuleTest {
 
 		module.load( null, context );
 		verify( module, never() ).setStaticRoutingAsFallbackHandler( anyObject(), eq(context) );
-		verify( module, never() ).retrieveWebAppFolder( eq(staticConfig) );
+		verify( staticConfig, never() ).getString( eq("location") );
 	}
 }

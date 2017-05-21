@@ -1,19 +1,15 @@
 package kikaha.core.modules.http;
 
+import java.io.*;
+import javax.inject.*;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.resource.FileResourceManager;
-import io.undertow.server.handlers.resource.ResourceHandler;
+import io.undertow.server.handlers.resource.*;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.io.File;
-import java.io.IOException;
 
 /**
  *
@@ -30,21 +26,22 @@ public class StaticResourceModule implements Module {
 	public void load(Undertow.Builder server, DeploymentContext context) throws IOException {
 		final Config staticConfig = config.getConfig("server.static");
 		if ( staticConfig.getBoolean("enabled") ) {
-			final File location = retrieveWebAppFolder(staticConfig);
-			log.info( "Enabling static routing at folder: " + location.getAbsolutePath() );
-			setStaticRoutingAsFallbackHandler(location, context);
+			final String location = staticConfig.getString("location");
+			log.info( "Enabling static routing at folder: " + location );
+			final ResourceManager resourceManager = loadResourceManagerFor( location );
+			setStaticRoutingAsFallbackHandler(resourceManager, context);
 		}
 	}
 
-	File retrieveWebAppFolder( Config staticConfig ) {
-		final File location = new File( staticConfig.getString("location") );
-		if (!location.exists())
-			log.error( "Folder not found: " + location.getAbsolutePath() );
-		return location;
+	private ResourceManager loadResourceManagerFor(String location) {
+		final File locationAsFile = new File(location);
+		if ( locationAsFile.exists() )
+			return new FileResourceManager( locationAsFile, 100 );
+		final ClassLoader classLoader = StaticResourceModule.class.getClassLoader();
+		return new ClassPathResourceManager( classLoader, location );
 	}
 
-	void setStaticRoutingAsFallbackHandler( File location, DeploymentContext context ){
-		final FileResourceManager resourceManager = new FileResourceManager(location, 100);
+	void setStaticRoutingAsFallbackHandler( ResourceManager resourceManager, DeploymentContext context ){
 		final HttpHandler fallbackHandler = context.fallbackHandler();
 		final ResourceHandler handler = new ResourceHandler(resourceManager, fallbackHandler);
 		context.fallbackHandler( handler );
