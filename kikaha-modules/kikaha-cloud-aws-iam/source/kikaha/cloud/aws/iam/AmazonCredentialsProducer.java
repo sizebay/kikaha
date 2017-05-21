@@ -27,19 +27,11 @@ public class AmazonCredentialsProducer {
 	}
 
 	@Produces
-	public AWSCredentials produceCredentials( final ProviderContext context ){
-		final Named annotation = context.getAnnotation(Named.class);
-		final String configurationName = annotation != null ? annotation.value() : "default";
-		return getCredentials( configurationName );
+	public AWSCredentials produceCredentials(){
+		return getFactory().loadCredentialProvider().getCredentials();
 	}
 
-	public AWSCredentialsProvider getCredentialProvider( @NonNull final String configurationName  ) {
-		final AWSCredentials credentials = getCredentials( configurationName );
-		return new AWSStaticCredentialsProvider( credentials );
+	public AWSCredentialsProvider getCredentialProvider() {
+		return getFactory().loadCredentialProvider();
 	}
-
-	private AWSCredentials getCredentials( String profileName ) {
-		return getFactory().loadCredentialFor( profileName );
-	}
-
 }

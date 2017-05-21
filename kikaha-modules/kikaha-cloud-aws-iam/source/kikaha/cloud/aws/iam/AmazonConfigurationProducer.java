@@ -32,13 +32,13 @@ public class AmazonConfigurationProducer {
 		return configForService( name );
 	}
 
-	public AmazonWebServiceConfiguration configForService(String serviceAlias ){
+	public AmazonWebServiceConfiguration configForService( String serviceAlias ){
 		final Config config = getConfig().getConfig("server.aws." + serviceAlias);
 		if ( config == null )
 			throw new IllegalStateException( "No configuration for Amazon Web Service found with name '" + serviceAlias + "'" );
 
 		final String regionName = config.getString("region", getDefaultRegion() );
-		final AWSCredentialsProvider credentialProvider = credentialsProducer.getCredentialProvider(config.getString("iam-policy", serviceAlias));
+		final AWSCredentialsProvider credentialProvider = credentialsProducer.getCredentialProvider();
 		return new AmazonWebServiceConfiguration(
 			credentialProvider,
 			Regions.fromName( regionName ), config

@@ -1,7 +1,6 @@
 package kikaha.cloud.aws.iam;
 
 import javax.inject.Inject;
-import java.util.*;
 import com.amazonaws.auth.*;
 import kikaha.config.Config;
 import lombok.Setter;
@@ -17,11 +16,9 @@ public interface AmazonCredentialsFactory {
 
 	/**
 	 * Retrieve the {@link AWSCredentials} for a given {@code profileName}.
-	 *
-	 * @param profileName
 	 * @return
 	 */
-	AWSCredentials loadCredentialFor( String profileName );
+	AWSCredentialsProvider loadCredentialProvider();
 
 	/**
 	 * Retrieve Credentials from the default Credential Provider Chain.
@@ -31,8 +28,8 @@ public interface AmazonCredentialsFactory {
 		final AWSCredentialsProviderChain chain = DefaultAWSCredentialsProviderChain.getInstance();
 
 		@Override
-		public AWSCredentials loadCredentialFor( String profileName ) {
-			return chain.getCredentials();
+		public AWSCredentialsProvider loadCredentialProvider() {
+			return chain;
 		}
 	}
 
@@ -40,24 +37,25 @@ public interface AmazonCredentialsFactory {
 	@Accessors( chain = true )
 	class Yml implements AmazonCredentialsFactory, AWSCredentialsProvider {
 
-		final Map<String, AWSCredentials> cache = new HashMap<>();
+		//FIXME: it doesn't really need to be thread-safe, does it?
+		volatile BasicAWSCredentials lastCredential;
 
 		@Inject Config config;
 
 		@Override
-		public AWSCredentials getCredentials() {
-			return loadCredentialFor( "default" );
+		public BasicAWSCredentials getCredentials() {
+			if ( lastCredential == null )
+				synchronized ( this ) {
+					if ( lastCredential == null )
+						lastCredential = loadCredentialFromConfig();
+				}
+			return lastCredential;
 		}
 
-		@Override
-		public AWSCredentials loadCredentialFor( String profileName ) {
-			return cache.computeIfAbsent( profileName, this::createCredential );
-		}
-
-		BasicAWSCredentials createCredential( String name ) {
-			final Config config = this.config.getConfig("server.aws.iam-policies." + name);
+		BasicAWSCredentials loadCredentialFromConfig(){
+			final Config config = this.config.getConfig("server.aws.iam-policy");
 			if ( config == null )
-				throw new IllegalStateException( "No AWS Configuration available for '"+ name +"'" );
+				throw new IllegalStateException( "No IAM Policy found" );
 			return new BasicAWSCredentials(
 					config.getString( "access-key-id" ),
 					config.getString( "secret-access-key" )
@@ -65,8 +63,13 @@ public interface AmazonCredentialsFactory {
 		}
 
 		@Override
+		public AWSCredentialsProvider loadCredentialProvider() {
+			return this;
+		}
+
+		@Override
 		public void refresh() {
-			cache.clear();
+			lastCredential = null;
 		}
 	}
 }

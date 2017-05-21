@@ -4,7 +4,6 @@ import static java.util.Collections.singletonList;
 import java.util.*;
 import java.util.function.Function;
 import javax.inject.*;
-import com.amazonaws.auth.*;
 import com.amazonaws.services.ec2.*;
 import com.amazonaws.services.ec2.model.*;
 import kikaha.cloud.aws.iam.AmazonCredentialsFactory;
@@ -26,9 +25,8 @@ public class AmazonEC2ConfigEnrichment implements ConfigEnrichment {
 	private final AmazonEC2 ec2 = loadEC2Client();
 
 	AmazonEC2 loadEC2Client() {
-		final AWSCredentials awsCredentials = defaultCredentialFactory.loadCredentialFor(null);
 		return AmazonEC2ClientBuilder.standard()
-			.withCredentials( new AWSStaticCredentialsProvider(awsCredentials) )
+			.withCredentials( defaultCredentialFactory.loadCredentialProvider() )
 			.withRegion( identification.getRegion() )
 			.build();
 	}

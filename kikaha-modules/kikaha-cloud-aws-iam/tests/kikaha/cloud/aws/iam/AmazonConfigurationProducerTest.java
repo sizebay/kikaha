@@ -20,7 +20,7 @@ public class AmazonConfigurationProducerTest {
 
 	@Test
 	public void ensureThatCanRetrieveConfigurationForHypotheticalEC2Service(){
-		final BasicAWSCredentials credentials = new BasicAWSCredentials("2345", "5432");
+		final BasicAWSCredentials credentials = new BasicAWSCredentials("1234", "4321");
 		final AWSStaticCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(credentials);
 		final AmazonWebServiceConfiguration expected = new AmazonWebServiceConfiguration( credentialsProvider, Regions.SA_EAST_1, ConfigLoader.loadDefaults());
 		final AmazonWebServiceConfiguration configuration = producer.configForService("hypothetical-ec2");
