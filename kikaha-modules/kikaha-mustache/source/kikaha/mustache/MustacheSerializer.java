@@ -8,15 +8,13 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.github.mustachejava.*;
+import com.github.mustachejava.resolver.*;
 import kikaha.config.Config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.Delegate;
-
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.github.mustachejava.MustacheFactory;
 
 @Singleton
 @Getter
@@ -56,19 +54,24 @@ public class MustacheSerializer {
 
 	private MustacheFactory createMustacheFactory() {
 		final String resourcePath = config.getString("server.static.location");
+		final File resource = new File(resourcePath);
+		final MustacheResolver mustacheResolver = resource.exists()
+				? new DefaultResolver( resource )
+				: new ClasspathResolver( resourcePath );
+
 		if ( shouldCacheTemplates() )
-			return new DefaultMustacheFactory( new File( resourcePath ) );
-		return new NotCachedMustacheFactory( new File( resourcePath ) );
+			return new DefaultMustacheFactory( mustacheResolver );
+		return new NotCachedMustacheFactory(mustacheResolver);
 	}
 }
 
 @RequiredArgsConstructor
 class NotCachedMustacheFactory implements MustacheFactory {
 
-	final File rootDir;
+	final MustacheResolver mustacheResolver;
 
 	@Delegate
 	public MustacheFactory createNewInstance() {
-		return new DefaultMustacheFactory( rootDir );
+		return new DefaultMustacheFactory( mustacheResolver );
 	}
 }
