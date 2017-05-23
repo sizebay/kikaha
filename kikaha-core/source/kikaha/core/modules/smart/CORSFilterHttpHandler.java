@@ -1,16 +1,11 @@
 package kikaha.core.modules.smart;
 
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
+import java.net.*;
+import java.util.*;
+import io.undertow.server.*;
 import io.undertow.util.*;
 import kikaha.core.url.URLMatcher;
 import lombok.RequiredArgsConstructor;
-
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -42,7 +37,7 @@ public class CORSFilterHttpHandler implements HttpHandler {
 		else if ( !isAllowedHttpMethod( method ) || !isHostAllowed( originHost ) )
 			notFound.handleRequest(exchange);
 		else
-			sendRequiredHeaders( exchange, originHost, method );
+			sendRequiredHeaders(exchange, originHost, method);
 	}
 
 	private void allowOrigin( HttpServerExchange exchange, String originHost, String method ) throws Exception {

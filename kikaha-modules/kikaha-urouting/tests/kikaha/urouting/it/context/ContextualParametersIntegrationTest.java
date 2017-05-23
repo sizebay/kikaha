@@ -1,5 +1,6 @@
 package kikaha.urouting.it.context;
 
+import static io.undertow.util.Headers.ORIGIN_STRING;
 import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import kikaha.core.test.KikahaServerRunner;
@@ -58,10 +59,11 @@ public class ContextualParametersIntegrationTest {
 	public void ensureUnauthenticatedRequestShouldRespectCORSFilter(){
 		final Request.Builder request = Http.url( "http://localhost:19999/it/parameters/contextual/exchange" )
 				.method( "OPTIONS", null)
-				.addHeader( "Access-Control-Request-Method", "GET" );
+				.addHeader( "Access-Control-Request-Method", "GET" )
+				.addHeader( ORIGIN_STRING, "http://localhost" );
 		final Response response = Http.send(request);
 		assertEquals( 200, response.code() );
-		assertEquals( "*", response.header("Access-Control-Allow-Origin") );
+		assertEquals( "http://localhost", response.header("Access-Control-Allow-Origin") );
 	}
 
 	static Request.Builder url( String url ){
