@@ -48,13 +48,17 @@ public class KikahaRunnerMojo extends AbstractMojo {
 			val classpath = memorizeClassPathWithRunnableJar();
 			val log = getLog();
 			val service = new MainClassService( compiledClassesDir, ApplicationRunner.class.getCanonicalName(), classpath,
-					asList( "-Dserver.static.location=" + absolutePath(webResourcesPath) ), jvmArgs, log );
+					asList( "-Dserver.static.location=" + absolutePath(webResourcesPath) ), getJvmArgs(), log );
 			val process = service.start();
 			if ( process.waitFor() > 0 )
 				throw new RuntimeException( "Kikaha has unexpectedly finished." );
 		} catch ( final Exception e ) {
 			throw new MojoExecutionException( "Can't initialize Kikaha.", e );
 		}
+	}
+
+	String getJvmArgs(){
+		return jvmArgs.replaceAll("[\\n\\r]+", "").replaceAll("[\\t ]+"," ").trim();
 	}
 
 	String absolutePath( String str ) {

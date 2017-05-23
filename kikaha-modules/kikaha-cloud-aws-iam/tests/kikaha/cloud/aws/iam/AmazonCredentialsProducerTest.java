@@ -15,10 +15,6 @@ public class AmazonCredentialsProducerTest {
 
 	@Inject AWSCredentials producedCredentials;
 
-	@Named( "alternative" )
-	@Inject AWSCredentials alternativeProducedCredentials;
-
-	@Named( "default" )
 	@Inject AWSCredentials defaultProducedCredentials;
 
 	@Test
@@ -45,15 +41,5 @@ public class AmazonCredentialsProducerTest {
 	public void ensureInjectedUnnamedCredentialsAreEqualsToDefaultOne(){
 		assertEquals( producedCredentials, defaultProducedCredentials );
 		assertSame( producedCredentials, defaultProducedCredentials );
-	}
-
-	@Test
-	public void canInjectAlternativeAWSCredentialsWithCredentialsFoundAtConfiguration(){
-		assertNotNull( alternativeProducedCredentials );
-		assertTrue( BasicAWSCredentials.class.isInstance( alternativeProducedCredentials ));
-
-		final BasicAWSCredentials basicAWSCredentials = (BasicAWSCredentials)alternativeProducedCredentials;
-		assertEquals( "2345", basicAWSCredentials.getAWSAccessKeyId() );
-		assertEquals( "5432", basicAWSCredentials.getAWSSecretKey() );
 	}
 }

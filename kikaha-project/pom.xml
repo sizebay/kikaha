@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>io.skullabs.kikaha</groupId>
-        <version>2.1.0-alpha16</version>
+        <version>2.1.0-alpha18</version>
         <artifactId>kikaha-parent</artifactId>
     </parent>
 
@@ -40,13 +40,14 @@
         <config.plugins.jar.enabled>${config.plugins.aws.s3.enabled}</config.plugins.jar.enabled>
         <config.plugins.package.enabled>false</config.plugins.package.enabled>
         <config.plugins.maven.deploy.skip>true</config.plugins.maven.deploy.skip>
+        <config.plugins.rocker.skip>true</config.plugins.rocker.skip>
         <config.plugins.aws.lambda.role>arn:invalid</config.plugins.aws.lambda.role>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.skullabs.kikaha</groupId>
-            <version>2.1.0-alpha16</version>
+            <version>2.1.0-alpha18</version>
             <artifactId>kikaha-injection-processor</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -58,7 +59,7 @@
             <plugin>
                 <groupId>io.skullabs.kikaha</groupId>
                 <artifactId>kikaha-maven-plugin</artifactId>
-                <version>2.1.0-alpha16</version>
+                <version>2.1.0-alpha18</version>
                 <inherited>true</inherited>
                 <executions>
                     <execution>
@@ -110,6 +111,22 @@
                     <webResourcesPath>${config.dir.web}</webResourcesPath>
                 </configuration>
             </plugin>
+
+            <!-- Rocker Plugin -->
+            <plugin>
+                <groupId>com.fizzed</groupId>
+                <artifactId>rocker-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-rocker-templates</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <skip>${config.plugins.rocker.skip}</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
         <pluginManagement>
@@ -133,5 +150,14 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <profiles>
+      <profile>
+        <id>maven-deploy</id>
+        <properties>
+          <config.plugins.maven.deploy.skip>false</config.plugins.maven.deploy.skip>
+        </properties>
+      </profile>
+    </profiles>
 
 </project>

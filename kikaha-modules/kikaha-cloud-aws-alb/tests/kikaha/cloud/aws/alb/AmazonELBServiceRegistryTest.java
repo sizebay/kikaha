@@ -5,7 +5,7 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import javax.inject.Named;
 import com.amazonaws.*;
-import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.*;
 import com.amazonaws.http.SdkHttpMetadata;
 import com.amazonaws.services.elasticloadbalancingv2.AmazonElasticLoadBalancing;
 import com.amazonaws.services.elasticloadbalancingv2.model.*;
@@ -38,6 +38,7 @@ public class AmazonELBServiceRegistryTest {
 	@Mock SdkHttpMetadata sdkHttpMetadata;
 	@Mock ProviderContext providerContext;
 	@Mock AmazonCredentialsFactory amazonCredentialsFactory;
+	@Mock AWSCredentialsProvider awsCredentialsProvider;
 	@Mock AWSCredentials awsCredentials;
 	@Mock Named named;
 
@@ -59,7 +60,8 @@ public class AmazonELBServiceRegistryTest {
 		doReturn( "target-group" ).when( elbConfig ).getString( eq("target-group") );
 		doReturn( AmazonCredentialsFactory.class ).when( config ).getClass( eq("server.aws.credentials-factory") );
 		doReturn( amazonCredentialsFactory ).when( cdi ).load( eq( AmazonCredentialsFactory.class ) );
-		doReturn( awsCredentials ).when( amazonCredentialsFactory ).loadCredentialFor( eq("elb") );
+		doReturn( awsCredentialsProvider ).when( amazonCredentialsFactory ).loadCredentialProvider();
+		doReturn( awsCredentials ).when( awsCredentialsProvider ).getCredentials();
 
 		doReturn( "elb" ).when( named ).value();
 		doReturn( named ).when( providerContext ).getAnnotation( eq(Named.class) );

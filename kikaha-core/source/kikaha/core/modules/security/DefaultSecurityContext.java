@@ -34,11 +34,13 @@ public class DefaultSecurityContext implements SecurityContext {
 		final Account account = performAuthentication();
 		if ( account == null ){
 			authenticated = false;
+			getCurrentSession().setAuthenticatedAccount( account );
 			configuration.getAuthenticationFailureListener().onAuthenticationFailure( exchange, getCurrentSession(), currentAuthMechanism );
-		} else
-			configuration.getAuthenticationSuccessListener().onAuthenticationSuccess( exchange, getCurrentSession(), currentAuthMechanism );
+		} else {
+			getCurrentSession().setAuthenticatedAccount( account );
+			configuration.getAuthenticationSuccessListener().onAuthenticationSuccess(exchange, getCurrentSession(), currentAuthMechanism);
+		}
 
-		getCurrentSession().setAuthenticatedAccount( account );
 		updateCurrentSession();
 		return authenticated;
 	}

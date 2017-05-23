@@ -14,7 +14,7 @@ public class SingleAndManyServicesInjectionTest {
 		System.gc();
 	}
 
-	@Test( timeout = 6000 )
+	@Test( timeout = 16000 )
 	public void applyStressTestOnMyAssertion() throws ServiceProviderException {
 		for ( int i = 0; i < 1000000; i++ )
 			ensureThatHaveInjectedBothSingleAndManyElementsIntoInjectedClass();
