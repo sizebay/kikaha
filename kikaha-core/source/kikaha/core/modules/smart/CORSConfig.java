@@ -13,7 +13,8 @@ public class CORSConfig {
 	boolean alwaysAllowOrigin;
 	boolean allowCredentials;
 	Set<String> allowedMethods;
-	Set<URLMatcher> allowedOrigins;
+	Set<String> allowedOrigins;
+	Set<URLMatcher> allowedOriginMatchers;
 
 	public String toString(){
 		return "alwaysAllowOrigin: " + alwaysAllowOrigin + "; "

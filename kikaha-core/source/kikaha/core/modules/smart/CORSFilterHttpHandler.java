@@ -56,7 +56,7 @@ public class CORSFilterHttpHandler implements HttpHandler {
 	private boolean isHostAllowed( String originHost ) throws MalformedURLException {
 		if ( config.alwaysAllowOrigin) return true;
 		else
-			for (URLMatcher matcher : config.allowedOrigins )
+			for (URLMatcher matcher : config.allowedOriginMatchers)
 				if ( matcher.matches( originHost, EMPTY_URL_PARAMS ) )
 					return true;
 		return false;
@@ -93,7 +93,7 @@ public class CORSFilterHttpHandler implements HttpHandler {
 	}
 
 	private void sendBasicNeededHeadersToAllowRequest(final HeaderMap responseHeaders, String originHost, String method ){
-		responseHeaders.put( ALLOWED_ORIGIN, config.alwaysAllowOrigin ? "*" : originHost );
+		responseHeaders.put( ALLOWED_ORIGIN, originHost );
 		responseHeaders.put( ALLOWED_METHOD, method );
 		if ( config.allowCredentials )
 			responseHeaders.put( ALLOWED_CREDENTIALS, TRUE );
