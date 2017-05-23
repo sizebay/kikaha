@@ -34,9 +34,18 @@ final public class {{generatedClassName}} implements HttpHandler {
 	@Override
 	public void handleRequest( final HttpServerExchange exchange ) throws Exception {
         try {
+        {{#requiresFormData}}
+			if ( exchange.isInIoThread() ) {
+				exchange.dispatch( this );
+				return;
+			}
+		{{/requiresFormData}}
 		{{#requiresFormData}}
+		    if ( !exchange.isBlocking() )
+                exchange.startBlocking();
 			/* Requires to parse form data. */
 			final FormDataParser parser = FormParserFactory.builder().build().createParser(exchange);
+			parser.parseBlocking();
 			parser.parse( this::runMethod );
 		{{/requiresFormData}}
 		{{^requiresFormData}}
@@ -62,9 +71,10 @@ final public class {{generatedClassName}} implements HttpHandler {
 
 	{{^asyncMode}}
 	private void runMethod( final HttpServerExchange exchange, final byte[] bodyData ){
+		{{^requiresFormData}}
 		if ( exchange.isInIoThread() )
 			exchange.dispatch( ()-> this.runMethod( exchange, bodyData ) );
-		else try {
+		else {{/requiresFormData}} try {
 			{{#returnType}}
 				final {{{returnType}}} response = instance.{{methodName}}( {{{methodParams}}} );
 				{{#responseContentType}}
