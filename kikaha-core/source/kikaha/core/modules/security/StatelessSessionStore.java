@@ -11,11 +11,11 @@ import lombok.extern.slf4j.Slf4j;
  * {@link AuthenticationMechanism}.
  */
 @Slf4j
-public class RESTAPISessionStore implements SessionStore {
+public class StatelessSessionStore implements SessionStore {
 
 	private static final String SESSION_ID = UUID.randomUUID().toString();
 
-	public RESTAPISessionStore(){
+	public StatelessSessionStore(){
 		log.info( "REST API Session Store: no session will be persisted on server." );
 	}
 
