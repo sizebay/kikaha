@@ -13,14 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Singleton
 @Getter
-public class AuthenticationModule implements Module {
+public class SecurityModule implements Module {
 
 	final String name = "security";
 
 	@Inject CDI provider;
 	@Inject Config config;
-	@Inject
-    DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
+	@Inject DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
 	@Inject SecurityConfiguration securityConfiguration;
 
 	@Override
@@ -28,6 +27,7 @@ public class AuthenticationModule implements Module {
 		final AuthenticationRuleMatcher ruleMatcher = createRuleMatcher();
 		if ( !ruleMatcher.rules().isEmpty() ) {
 			log.info( "Configuring authentication rules..." );
+			defaultAuthenticationConfiguration.logDetailedInformationAboutThisConfig();
 			final HttpHandler rootHandler = context.rootHandler();
 			final AuthenticationHttpHandler authenticationHandler = new AuthenticationHttpHandler(
 					ruleMatcher, defaultAuthenticationConfiguration.getPermissionDeniedPage(),

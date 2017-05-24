@@ -15,7 +15,7 @@ import org.mockito.*;
 public class AuthenticationRulesDeploymentTest {
 
 	@Inject
-	AuthenticationModule deployment;
+    SecurityModule deployment;
 
 	@Mock
 	DeploymentContext deploymentContext;
