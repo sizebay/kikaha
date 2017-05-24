@@ -60,7 +60,7 @@ public class ModuleLoader {
 			final List<Module> modules = modulesIndexedByName.remove( moduleName );
 			if ( modules != null )
 				for ( final Module module : modules ) {
-					log.debug( "  Deploying module " + module.getClass().getCanonicalName() + "(name=" + moduleName + ")..." );
+					log.debug( "Deploying module " + module.getClass().getCanonicalName() + "(name=" + moduleName + ")..." );
 					module.load(builder, context);
 				}
 		}

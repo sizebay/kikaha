@@ -36,7 +36,7 @@ public class DefaultAuthenticationConfiguration {
 	}
 
 	public void logDetailedInformationAboutThisConfig() {
-		log.info( "Defined authentication endpoints:" );
+		log.info( "Defined authentication endpoints (not all endpoints are in use):" );
 		log.info( "  login-page: " + loginPage );
 		log.info( "  error-page: " + errorPage );
 		log.info( "  success-page: " + successPage );
