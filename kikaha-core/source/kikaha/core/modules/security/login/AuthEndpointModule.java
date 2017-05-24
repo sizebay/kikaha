@@ -6,7 +6,7 @@ import io.undertow.Undertow.Builder;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
-import kikaha.core.modules.security.FormAuthenticationConfiguration;
+import kikaha.core.modules.security.DefaultAuthenticationConfiguration;
 
 /**
  * A module that easily deploy configurable endpoints for 'login' and 'logout' process.
@@ -15,7 +15,8 @@ import kikaha.core.modules.security.FormAuthenticationConfiguration;
 public class AuthEndpointModule implements Module {
 
 	@Inject Config config;
-	@Inject FormAuthenticationConfiguration formAuthConfiguration;
+	@Inject
+    DefaultAuthenticationConfiguration formAuthConfiguration;
 	@Inject AuthLoginHttpHandler loginHttpHandler;
 	@Inject AuthLogoutHttpHandler logoutHttpHandler;
 

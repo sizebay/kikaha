@@ -23,7 +23,7 @@ public class FormAuthenticationMechanismTest {
 
 	static final Credential CREDENTIAL = new UsernameAndPasswordCredential("username","password");
 	final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
-	final FormAuthenticationConfiguration configuration = new DefaultCDI().load(FormAuthenticationConfiguration.class);
+	final DefaultAuthenticationConfiguration configuration = new DefaultCDI().load(DefaultAuthenticationConfiguration.class);
 	final FormData data = new FormData(2);
 
 	@Mock IdentityManager identityManager;
@@ -101,7 +101,7 @@ public class FormAuthenticationMechanismTest {
 		exchange.setRequestURI(defaultPostLocation);
 		exchange.setRequestMethod(Methods.POST);
 		final FormAuthenticationMechanism mechanism = new FormAuthenticationMechanism(formParserFactory);
-		mechanism.formAuthenticationConfiguration = configuration;
+		mechanism.defaultAuthenticationConfiguration = configuration;
 		mechanism.authenticate( exchange, asList(identityManager), session );
 		return mechanism;
 	}

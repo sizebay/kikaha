@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Singleton
 @ToString
-public class FormAuthenticationConfiguration {
+public class DefaultAuthenticationConfiguration {
 
 	@Inject Config config;
 

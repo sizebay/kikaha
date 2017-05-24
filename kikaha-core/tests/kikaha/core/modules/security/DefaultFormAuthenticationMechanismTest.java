@@ -11,7 +11,8 @@ import org.junit.runner.RunWith;
 @RunWith(KikahaRunner.class)
 public class DefaultFormAuthenticationMechanismTest {
 
-	@Inject FormAuthenticationConfiguration mechanism;
+	@Inject
+    DefaultAuthenticationConfiguration mechanism;
 
 	@Test
 	public void ensureThatWrappedUpAndFillUpFormAuthenticationMechanismFieldsAsExpected() {

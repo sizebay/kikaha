@@ -19,7 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 public class Auth0ConfigurationHook implements AuthLoginHttpHandler.ConfigurationHook {
 
 	@Inject Auth0.AuthConfig authConfig;
-	@Inject FormAuthenticationConfiguration formConfig;
+	@Inject
+    DefaultAuthenticationConfiguration formConfig;
 
 	@Override
 	public Map<String, Object> getExtraParameters() {

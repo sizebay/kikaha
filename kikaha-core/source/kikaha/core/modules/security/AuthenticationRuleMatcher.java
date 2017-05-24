@@ -22,16 +22,16 @@ public class AuthenticationRuleMatcher {
 	final Map<String, AuthenticationMechanism> mechanisms;
 	final Map<String, IdentityManager> identityManagers;
 	final List<AuthenticationRule> rules;
-	final FormAuthenticationConfiguration formAuthenticationConfiguration;
+	final DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
 
-	public AuthenticationRuleMatcher( final CDI provider, final Config authConfig, final FormAuthenticationConfiguration formAuthenticationConfiguration ) {
+	public AuthenticationRuleMatcher( final CDI provider, final Config authConfig, final DefaultAuthenticationConfiguration defaultAuthenticationConfiguration) {
 		this.authConfig = authConfig;
 		this.provider = provider;
 		mechanisms = instantiateMechanismsFoundOnConfig();
 		identityManagers = instantiateIdentityManagersFoundOnConfig();
 		securityContextFactory = instantiateSecurityContextFactory( authConfig );
 		rules = readRulesFromConfig();
-		this.formAuthenticationConfiguration = formAuthenticationConfiguration;
+		this.defaultAuthenticationConfiguration = defaultAuthenticationConfiguration;
 	}
 
 	private SecurityContextFactory instantiateSecurityContextFactory( final Config authConfig ) {

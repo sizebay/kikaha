@@ -17,11 +17,12 @@ public class AuthenticationRuleMatcherTest {
 
 	@Inject CDI provider;
 	@Inject Config config;
-	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
+	@Inject
+    DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
 
 	@Before
 	public void initializeConfigurationAndMatcher() {
-		matcher = new AuthenticationRuleMatcher( provider, config.getConfig( "server.auth" ), formAuthenticationConfiguration );
+		matcher = new AuthenticationRuleMatcher( provider, config.getConfig( "server.auth" ), defaultAuthenticationConfiguration);
 	}
 
 	@Test

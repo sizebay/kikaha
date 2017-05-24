@@ -13,7 +13,8 @@ public class AuthLogoutHttpHandler implements HttpHandler {
 
 	final static String NOT_LOGGED_IN = "Not logged in";
 
-	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
+	@Inject
+    DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
 
 	@Override
 	public void handleRequest( HttpServerExchange exchange ) throws Exception {
@@ -24,7 +25,7 @@ public class AuthLogoutHttpHandler implements HttpHandler {
 		} else {
 			securityContext.logout();
 			if ( Methods.GET.equals( exchange.getRequestMethod() ) )
-				Redirect.to( exchange, formAuthenticationConfiguration.getLoginPage() );
+				Redirect.to( exchange, defaultAuthenticationConfiguration.getLoginPage() );
 			else
 				exchange.endExchange();
 		}

@@ -20,7 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 public class Auth0Authentication implements AuthenticationMechanism {
 
-	@Inject FormAuthenticationConfiguration formAuthConfig;
+	@Inject
+    DefaultAuthenticationConfiguration formAuthConfig;
 	@Inject Auth0Client auth0Client;
 
 	@Override

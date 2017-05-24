@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 public class FormAuthenticationRequestMatcher implements AuthenticationRequestMatcher {
 
-	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
+	@Inject DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
 
 	@Override
 	public boolean matches( HttpServerExchange exchange ) {
@@ -23,7 +23,7 @@ public class FormAuthenticationRequestMatcher implements AuthenticationRequestMa
 			final String url = exchange.getRelativePath();
 			final String referer = exchange.getRequestHeaders().getFirst( Headers.REFERER );
 			final String refererPath = referer != null ? new URI( referer ).getPath() : "";
-			matched = ( formAuthenticationConfiguration.getCallbackUrl().equals( url )
+			matched = ( defaultAuthenticationConfiguration.getCallbackUrl().equals( url )
 				   || ( !isUrlFromAuthenticationResources( url )
 				   &&   !isUrlFromAuthenticationResources( refererPath ) ) );
 		} catch ( URISyntaxException cause ) {
@@ -33,7 +33,7 @@ public class FormAuthenticationRequestMatcher implements AuthenticationRequestMa
 	}
 
 	private boolean isUrlFromAuthenticationResources( final String url ) {
-		return  formAuthenticationConfiguration.getErrorPage().equals( url )
-			||  formAuthenticationConfiguration.getLoginPage().equals( url );
+		return  defaultAuthenticationConfiguration.getErrorPage().equals( url )
+			||  defaultAuthenticationConfiguration.getLoginPage().equals( url );
 	}
 }

@@ -19,7 +19,8 @@ public class AuthenticationModule implements Module {
 
 	@Inject CDI provider;
 	@Inject Config config;
-	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
+	@Inject
+    DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
 	@Inject SecurityConfiguration securityConfiguration;
 
 	@Override
@@ -29,7 +30,7 @@ public class AuthenticationModule implements Module {
 			log.info( "Configuring authentication rules..." );
 			final HttpHandler rootHandler = context.rootHandler();
 			final AuthenticationHttpHandler authenticationHandler = new AuthenticationHttpHandler(
-					ruleMatcher, formAuthenticationConfiguration.getPermissionDeniedPage(),
+					ruleMatcher, defaultAuthenticationConfiguration.getPermissionDeniedPage(),
 					rootHandler, securityConfiguration );
 			context.rootHandler(authenticationHandler);
 		}
@@ -38,6 +39,6 @@ public class AuthenticationModule implements Module {
 	AuthenticationRuleMatcher createRuleMatcher() {
 		return new AuthenticationRuleMatcher(
 			provider, config.getConfig("server.auth"),
-			formAuthenticationConfiguration );
+                defaultAuthenticationConfiguration);
 	}
 }

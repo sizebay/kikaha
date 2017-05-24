@@ -20,7 +20,8 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	public static final String LOCATION_ATTRIBUTE = FormAuthenticationMechanism.class.getName() + ".LOCATION";
 	private final FormParserFactory formParserFactory;
 
-	@Inject FormAuthenticationConfiguration formAuthenticationConfiguration;
+	@Inject
+    DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
 	@Inject Config config;
 
 	public FormAuthenticationMechanism(){
@@ -50,7 +51,7 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	}
 
 	private void sendRedirectBack(HttpServerExchange exchange) {
-		Redirect.to(exchange, formAuthenticationConfiguration.getSuccessPage() );
+		Redirect.to(exchange, defaultAuthenticationConfiguration.getSuccessPage() );
 	}
 
 	private Credential readCredentialFromRequest(HttpServerExchange exchange) throws IOException {
@@ -73,8 +74,8 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	@Override
 	public boolean sendAuthenticationChallenge(HttpServerExchange exchange, Session session) {
 		final String newLocation = isCurrentRequestTryingToAuthenticate(exchange)
-				? formAuthenticationConfiguration.getErrorPage()
-				: formAuthenticationConfiguration.getLoginPage();
+				? defaultAuthenticationConfiguration.getErrorPage()
+				: defaultAuthenticationConfiguration.getLoginPage();
 		Redirect.to(exchange, newLocation);
 		return true;
 	}
@@ -84,6 +85,6 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	}
 
 	private boolean isPostLocation(HttpServerExchange exchange) {
-		return exchange.getRelativePath().equals( formAuthenticationConfiguration.getCallbackUrl() );
+		return exchange.getRelativePath().equals( defaultAuthenticationConfiguration.getCallbackUrl() );
 	}
 }
