@@ -84,7 +84,7 @@ server:
       password: "admin"
       role: "admin"
 
-    form-auth:
+    endpoints:
       login-page: "/auth/"
       error-page: "/auth/error/"
       success-page: "/"

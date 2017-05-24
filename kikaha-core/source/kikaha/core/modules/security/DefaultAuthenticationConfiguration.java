@@ -26,18 +26,17 @@ public class DefaultAuthenticationConfiguration {
 
 	@PostConstruct
 	public void readConfiguration(){
-		final Config authConfig = this.config.getConfig( "server.auth.form-auth" );
+		final Config authConfig = this.config.getConfig( "server.auth.endpoints" );
 		loginPage = authConfig.getString( "login-page" );
 		errorPage = authConfig.getString( "error-page" );
 		successPage = authConfig.getString( "success-page" );
 		callbackUrl = authConfig.getString( "callback-url" );
 		logoutUrl = authConfig.getString( "logout-url" );
 		permissionDeniedPage = authConfig.getString( "permission-denied-page" );
-		logDetailedInformationAboutThisConfig();
 	}
 
-	private void logDetailedInformationAboutThisConfig() {
-		log.info( "Form Authentication configuration:" );
+	public void logDetailedInformationAboutThisConfig() {
+		log.info( "Defined authentication endpoints:" );
 		log.info( "  login-page: " + loginPage );
 		log.info( "  error-page: " + errorPage );
 		log.info( "  success-page: " + successPage );
