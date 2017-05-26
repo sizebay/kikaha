@@ -7,6 +7,9 @@ import kikaha.core.cdi.CDI;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents all user defined configuration that should be available on the application.
  */
@@ -26,6 +29,8 @@ public class SecurityConfiguration {
 	private AuthenticationRequestMatcher authenticationRequestMatcher;
 	private AuthenticationSuccessListener authenticationSuccessListener;
 	private AuthenticationFailureListener authenticationFailureListener;
+
+	private List<SecurityEventListener> eventListeners = new ArrayList<>();
 
 	@PostConstruct
 	public void readConfiguration(){

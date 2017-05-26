@@ -7,6 +7,10 @@ import io.undertow.security.idm.IdentityManager;
 import io.undertow.server.HttpServerExchange;
 import lombok.*;
 
+import static kikaha.core.modules.security.SecurityEventListener.SecurityEventType.LOGIN;
+import static kikaha.core.modules.security.SecurityEventListener.SecurityEventType.LOGOUT;
+import static kikaha.core.modules.security.SecurityEventListener.SecurityEventType.PROFILE_UPDATED;
+
 /**
  * A per-request object that groups security-related information.
  */
@@ -39,6 +43,7 @@ public class DefaultSecurityContext implements SecurityContext {
 		} else {
 			getCurrentSession().setAuthenticatedAccount( account );
 			configuration.getAuthenticationSuccessListener().onAuthenticationSuccess(exchange, getCurrentSession(), currentAuthMechanism);
+			notifySecurityEvent( LOGIN );
 		}
 
 		updateCurrentSession();
@@ -57,8 +62,10 @@ public class DefaultSecurityContext implements SecurityContext {
 
 	@Override
 	public void logout() {
-		if ( currentSession != null )
-			configuration.getSessionStore().invalidateSession(currentSession);
+		if ( getCurrentSession() != null ) {
+			configuration.getSessionStore().invalidateSession( getCurrentSession() );
+			notifySecurityEvent( LOGOUT );
+		}
 	}
 
 	@Override
@@ -86,8 +93,16 @@ public class DefaultSecurityContext implements SecurityContext {
 
 	@Override
 	public void setAuthenticatedAccount(Account account){
-		if ( currentSession != null )
-			currentSession.setAuthenticatedAccount(account);
+		if ( getCurrentSession() != null ) {
+			getCurrentSession().setAuthenticatedAccount(account);
+			notifySecurityEvent( PROFILE_UPDATED );
+		}
+	}
+
+	void notifySecurityEvent(SecurityEventListener.SecurityEventType profileUpdated) {
+		for ( SecurityEventListener eventListener : configuration.getEventListeners() ) {
+			eventListener.onEvent( profileUpdated, exchange, getCurrentSession() );
+		}
 	}
 
 	@Override
