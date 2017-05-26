@@ -94,7 +94,7 @@ server:
 
     security-context-factory: kikaha.core.modules.security.DefaultSecurityContextFactory
     session-id-manager: kikaha.core.modules.security.SessionCookie
-    session-store: kikaha.core.modules.security.StatelessSessionStorere
+    session-store: kikaha.core.modules.security.StatelessSessionStore
     authentication-request-matcher: kikaha.core.modules.security.FormAuthenticationRequestMatcher
     authentication-failure-listener: kikaha.core.modules.security.SendChallengeFailureListener
     authentication-success-listener: kikaha.core.modules.security.EmptyAuthenticationSuccessListener

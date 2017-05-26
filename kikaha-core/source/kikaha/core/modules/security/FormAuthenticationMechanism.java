@@ -1,28 +1,31 @@
 package kikaha.core.modules.security;
 
-import java.io.IOException;
-import javax.inject.*;
-import io.undertow.security.idm.*;
-import io.undertow.server.*;
-import io.undertow.server.handlers.form.*;
-import io.undertow.util.*;
-import kikaha.config.Config;
+import io.undertow.security.idm.Account;
+import io.undertow.security.idm.Credential;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.form.FormData;
+import io.undertow.server.handlers.form.FormDataParser;
+import io.undertow.server.handlers.form.FormParserFactory;
+import io.undertow.util.Methods;
 import kikaha.core.util.Redirect;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
 
 @Getter
 @Slf4j
 @Singleton
 @RequiredArgsConstructor
-public class FormAuthenticationMechanism implements AuthenticationMechanism {
+public class FormAuthenticationMechanism implements SimplifiedAuthenticationMechanism {
 
 	public static final String LOCATION_ATTRIBUTE = FormAuthenticationMechanism.class.getName() + ".LOCATION";
 	private final FormParserFactory formParserFactory;
 
-	@Inject
-    DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
-	@Inject Config config;
+	@Inject DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
 
 	public FormAuthenticationMechanism(){
 		formParserFactory = FormParserFactory.builder().build();
@@ -33,15 +36,15 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 		Account account = null;
 		try {
 			if ( isCurrentRequestTryingToAuthenticate(exchange) )
-				account = doAuthentication(exchange, identityManagers, session);
+				account = doAuthentication(exchange, identityManagers);
 		} catch (final IOException e) {
 			log.error("Failed to authenticate. Skipping form authentication...", e);
 		}
 		return account;
 	}
 
-	private Account doAuthentication( HttpServerExchange exchange, Iterable<IdentityManager> identityManagers, Session session) throws IOException {
-		final Credential credential = readCredentialFromRequest(exchange);
+	private Account doAuthentication(HttpServerExchange exchange, Iterable<IdentityManager> identityManagers) throws IOException {
+		final Credential credential = readCredential(exchange);
 		Account account = null;
 		if ( credential != null )
 			account = verify( identityManagers, credential );
@@ -54,7 +57,8 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 		Redirect.to(exchange, defaultAuthenticationConfiguration.getSuccessPage() );
 	}
 
-	private Credential readCredentialFromRequest(HttpServerExchange exchange) throws IOException {
+	@Override
+	public Credential readCredential(HttpServerExchange exchange) throws IOException {
 		if ( !exchange.isBlocking() )
 			exchange.startBlocking();
 

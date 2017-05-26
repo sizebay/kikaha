@@ -41,4 +41,39 @@ public class SecurityConfiguration {
 		expectedType = (Class<T>)config.getClass( path );
 		return provider.load( expectedType );
 	}
+
+	/**
+	 * Defines a new {@link AuthenticationRequestMatcher} if not previously defined.
+	 * @param authenticationRequestMatcher
+	 * @return
+	 */
+	public SecurityConfiguration setRequestMatcherIfAbsent( AuthenticationRequestMatcher authenticationRequestMatcher ) {
+		if ( this.authenticationRequestMatcher == null )
+			this.authenticationRequestMatcher = authenticationRequestMatcher;
+		return this;
+	}
+
+	/**
+	 * Defines a new {@link AuthenticationSuccessListener} if not previously defined.
+	 *
+	 * @param authenticationSuccessListener
+	 * @return
+	 */
+	public SecurityConfiguration setSuccessListenerIfAbsent( AuthenticationSuccessListener authenticationSuccessListener ) {
+		if ( this.authenticationSuccessListener == null )
+			this.authenticationSuccessListener = authenticationSuccessListener;
+		return this;
+	}
+
+	/**
+	 * Defines a new {@link AuthenticationFailureListener} if not previously defined.
+	 *
+	 * @param authenticationFailureListener
+	 * @return
+	 */
+	public SecurityConfiguration setFailureListenerIfAbsent( AuthenticationFailureListener authenticationFailureListener ) {
+		if ( this.authenticationFailureListener == null )
+			this.authenticationFailureListener = authenticationFailureListener;
+		return this;
+	}
 }

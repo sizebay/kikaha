@@ -25,7 +25,7 @@ public class AuthenticationBehaviorTest {
 	final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
 	final Session session = new DefaultSession("1");
 
-	@Mock AuthenticationMechanism mechanism;
+	@Mock SimplifiedAuthenticationMechanism mechanism;
 	@Mock IdentityManager identityManager;
 	@Mock AuthenticationRule rule;
 	@Mock SessionStore store;
@@ -93,7 +93,7 @@ class SendDefaultUsernameAndPasswordAsCredential implements Answer<Account> {
 
 	@Override
 	public Account answer(InvocationOnMock invocation) throws Throwable {
-		final AuthenticationMechanism mechanism = (AuthenticationMechanism)invocation.getMock();
+		final SimplifiedAuthenticationMechanism mechanism = (SimplifiedAuthenticationMechanism)invocation.getMock();
 		final Iterable<IdentityManager> managers = invocation.getArgumentAt(1, Iterable.class);
 		return mechanism.verify(managers, AuthenticationBehaviorTest.CREDENTIAL);
 	}

@@ -1,6 +1,7 @@
 package kikaha.core.modules.security;
 
 import io.undertow.security.idm.Account;
+import io.undertow.security.idm.Credential;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.FlexBase64;
 import io.undertow.util.HeaderValues;
@@ -11,35 +12,38 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+import kikaha.config.Config;
 import kikaha.core.url.StringCursor;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Slf4j
 @Singleton
-public class BasicAuthenticationMechanism implements AuthenticationMechanism {
+public class BasicAuthenticationMechanism implements SimplifiedAuthenticationMechanism {
 
 	private static final String BASIC_PREFIX = Headers.BASIC + " ";
 	private static final int PREFIX_LENGTH = BASIC_PREFIX.length();
 	private static final char COLON = ':';
-	private final String challenge;
 
-	public BasicAuthenticationMechanism() {
-		this( "default" );
-	}
+	private String challenge;
 
-	public BasicAuthenticationMechanism( String realmName ) {
-		this.challenge = BASIC_PREFIX + "realm=\"" + realmName + "\"";
+	@Inject Config config;
+
+	@PostConstruct
+	public void defineARealm() {
+		final String applicationName = config.getString("server.smart-server.application.name");
+		this.challenge = BASIC_PREFIX + "realm=\"" + applicationName + "\"";
 	}
 
 	@Override
-	public Account authenticate( HttpServerExchange exchange, Iterable<IdentityManager> identityManagers, Session session ) {
+	public Credential readCredential(HttpServerExchange exchange) throws IOException {
 		final StringCursor decodedCredentials = getDecodedCredentialsFromHeader( exchange );
 		if ( decodedCredentials == null )
 			return null;
-		final UsernameAndPasswordCredential credential = convertToCredential( decodedCredentials );
-		return verify( identityManagers, credential );
+		return convertToCredential( decodedCredentials );
 	}
 
 	private UsernameAndPasswordCredential convertToCredential( StringCursor decodedCredentials ) {
@@ -65,8 +69,7 @@ public class BasicAuthenticationMechanism implements AuthenticationMechanism {
 		try {
 			final ByteBuffer decode = FlexBase64.decode( authString );
 			final String string = new String( decode.array(), decode.arrayOffset(), decode.limit(), StandardCharsets.UTF_8 );
-			final StringCursor decodedCredentials = new StringCursor( string );
-			return decodedCredentials;
+			return new StringCursor( string );
 		} catch ( final IOException cause ) {
 			log.warn( "Ignoring exception during Base64 decoding.", cause );
 			return null;
