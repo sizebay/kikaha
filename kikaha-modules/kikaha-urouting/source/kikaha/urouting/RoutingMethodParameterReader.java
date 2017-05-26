@@ -1,21 +1,28 @@
 package kikaha.urouting;
 
-import static kikaha.urouting.ContentTypePriority.CONFIG;
-
-import java.io.IOException;
-import java.util.*;
-import javax.annotation.PostConstruct;
-import javax.inject.*;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormData.FormValue;
 import io.undertow.server.handlers.form.FormDataParser;
-import io.undertow.util.*;
+import io.undertow.util.HeaderMap;
+import io.undertow.util.Headers;
+import io.undertow.util.PathTemplateMatch;
 import kikaha.config.Config;
 import kikaha.urouting.api.*;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Queue;
+import java.util.function.Function;
+
+import static kikaha.urouting.RoutingMethodParameterReader.ContentTypePriority.CONFIG;
 
 /**
  * Provides data to a routing method.
@@ -31,19 +38,32 @@ public class RoutingMethodParameterReader {
 
 	@Getter String defaultEncoding;
 	@Getter String defaultContentType;
-	@Getter boolean configContentTypeHasPriorityOverRequestHeaders;
+
+	Function<HeaderMap, String> contentTypeSupplier;
 
 	@PostConstruct
 	public void readConfig() {
 		defaultEncoding = kikahaConf.getString("server.urouting.default-encoding");
 		defaultContentType = kikahaConf.getString("server.urouting.default-content-type");
 		final String contentTypePriority = kikahaConf.getString( "server.urouting.content-type-priority" );
-		configContentTypeHasPriorityOverRequestHeaders = ContentTypePriority.valueOf( contentTypePriority ).equals( CONFIG );
+
+		contentTypeSupplier = ContentTypePriority.from( contentTypePriority ).equals( CONFIG )
+			? this::getDefaultContentType
+			: this::getContentFromRequest;
 
 		log.info( "Micro Routing API" );
 		log.info( "  default-encoding: " + defaultEncoding );
 		log.info( "  default-content-type: " + defaultContentType );
 		log.info( "  content-type-priority: " + contentTypePriority );
+	}
+
+	String getContentFromRequest( HeaderMap headerMap ){
+		final String contentType = headerMap.getFirst(Headers.CONTENT_TYPE_STRING);
+		return headerMap == null ? getDefaultContentType() : contentType;
+	}
+
+	String getDefaultContentType( HeaderMap headerMap ){
+		return getDefaultContentType();
 	}
 
 	/**
@@ -191,9 +211,7 @@ public class RoutingMethodParameterReader {
 		String contentEncoding = requestHeaders.getFirst(Headers.CONTENT_ENCODING_STRING);
 		if (contentEncoding == null)
 			contentEncoding = getDefaultEncoding();
-		String contentType = requestHeaders.getFirst(Headers.CONTENT_TYPE_STRING);
-		if (contentType == null || configContentTypeHasPriorityOverRequestHeaders )
-			contentType = fallbackConsumingContentType;
+		final String contentType = contentTypeSupplier.apply( requestHeaders );
 		return unserializeReceivedBodyStream(exchange, clazz, bodyData, contentEncoding, contentType);
 	}
 
@@ -221,8 +239,18 @@ public class RoutingMethodParameterReader {
 			return producerFor.produce(exchange);
 		throw new RoutingException("No context provider for " + clazz.getCanonicalName());
 	}
-}
 
-enum ContentTypePriority {
-	CONFIG, REQUEST
+	enum ContentTypePriority {
+		CONFIG, REQUEST;
+
+		static ContentTypePriority from( String contentTypePriority ) {
+			try {
+				if ( contentTypePriority != null && !contentTypePriority.isEmpty() )
+					return valueOf( contentTypePriority );
+			} catch ( Throwable cause ) {
+				log.error( "Can't identify Content-Type priority", cause );
+			}
+			return REQUEST;
+		}
+	}
 }

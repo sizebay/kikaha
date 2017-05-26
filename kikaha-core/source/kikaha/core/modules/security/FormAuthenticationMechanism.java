@@ -11,6 +11,7 @@ import kikaha.core.util.Redirect;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mockito.InjectMocks;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -26,6 +27,7 @@ public class FormAuthenticationMechanism implements SimplifiedAuthenticationMech
 	private final FormParserFactory formParserFactory;
 
 	@Inject DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
+	@Inject FormAuthenticationRequestMatcher matcher;
 
 	public FormAuthenticationMechanism(){
 		formParserFactory = FormParserFactory.builder().build();
@@ -90,5 +92,10 @@ public class FormAuthenticationMechanism implements SimplifiedAuthenticationMech
 
 	private boolean isPostLocation(HttpServerExchange exchange) {
 		return exchange.getRelativePath().equals( defaultAuthenticationConfiguration.getCallbackUrl() );
+	}
+
+	@Override
+	public void configure(SecurityConfiguration securityConfiguration, DefaultAuthenticationConfiguration authenticationConfiguration) {
+		securityConfiguration.setRequestMatcherIfAbsent( matcher );
 	}
 }

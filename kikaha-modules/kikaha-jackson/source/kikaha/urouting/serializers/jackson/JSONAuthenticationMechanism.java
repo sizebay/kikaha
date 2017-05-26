@@ -12,25 +12,9 @@ import lombok.Data;
 /**
  *
  */
-public class JSONAuthenticationMechanism implements AuthenticationMechanism {
+public class JSONAuthenticationMechanism implements SimplifiedAuthenticationMechanism {
 
 	@Inject Jackson jackson;
-
-	@Override
-	public Account authenticate( HttpServerExchange exchange, Iterable<IdentityManager> identityManagers, Session session ) {
-		try {
-			exchange.startBlocking();
-			return authenticate( exchange, identityManagers );
-		} catch ( IOException e ) {
-			throw new IllegalStateException( e );
-		}
-	}
-
-	Account authenticate( HttpServerExchange exchange, Iterable<IdentityManager> identityManagers ) throws IOException {
-		final JSONCredentials json = jackson.objectMapper().readValue( exchange.getInputStream(), JSONCredentials.class );
-		final Credential credential = new UsernameAndPasswordCredential( json.username, json.password );
-		return verify( identityManagers, credential );
-	}
 
 	@Override
 	public boolean sendAuthenticationChallenge( HttpServerExchange exchange, Session session ) {
@@ -38,6 +22,12 @@ public class JSONAuthenticationMechanism implements AuthenticationMechanism {
 		exchange.getResponseSender().send( "UNAUTHORIZED" );
 		exchange.endExchange();
 		return true;
+	}
+
+	@Override
+	public Credential readCredential(HttpServerExchange exchange) throws IOException {
+		final JSONCredentials json = jackson.objectMapper().readValue( exchange.getInputStream(), JSONCredentials.class );
+		return new UsernameAndPasswordCredential( json.username, json.password );
 	}
 
 	@Data

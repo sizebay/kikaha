@@ -5,12 +5,14 @@ import javax.inject.*;
 import kikaha.config.Config;
 import kikaha.core.cdi.CDI;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Represents all user defined configuration that should be available on the application.
  */
 @Getter
-@Setter( AccessLevel.PACKAGE )
+@Setter
+@Slf4j
 @Singleton
 public class SecurityConfiguration {
 
@@ -39,6 +41,8 @@ public class SecurityConfiguration {
 	@SuppressWarnings( "all" )
 	public <T> T loadConfiguredClass( String path, Class<T> expectedType ) {
 		expectedType = (Class<T>)config.getClass( path );
+		if ( expectedType == null )
+			return null;
 		return provider.load( expectedType );
 	}
 
@@ -75,5 +79,21 @@ public class SecurityConfiguration {
 		if ( this.authenticationFailureListener == null )
 			this.authenticationFailureListener = authenticationFailureListener;
 		return this;
+	}
+
+	void logDetailedInformationAboutThisConfig(){
+		log.info( "Defined security parameters (depending on the modules you've loaded, not all then are actually in use):" );
+		log.info( "  security-context-factory: " + getClassName(factory) );
+		log.info( "  session-id-manager: " + getClassName(sessionIdManager) );
+		log.info( "  session-store: " + getClassName(sessionStore) );
+		log.info( "  password-encoder: " + getClassName(passwordEncoder) );
+		log.info( "  authentication-request-matcher: " + getClassName(authenticationRequestMatcher) );
+		log.info( "  authentication-success-listener: " + getClassName(authenticationSuccessListener) );
+		log.info( "  authentication-failure-listener: " + getClassName(authenticationFailureListener) );
+	}
+
+	String getClassName( Object obj ) {
+		return obj == null ? "null"
+				: obj.getClass().getCanonicalName();
 	}
 }

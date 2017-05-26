@@ -1,10 +1,7 @@
 package kikaha.core.modules.security;
 
 import io.undertow.security.idm.Account;
-import io.undertow.security.idm.Credential;
 import io.undertow.server.HttpServerExchange;
-
-import java.util.Iterator;
 
 /**
  * Authentication mechanism interface based on {@code io.undertow.security.api.AuthenticationMechanism}
@@ -30,4 +27,17 @@ public interface AuthenticationMechanism {
 	default void configure(
 		SecurityConfiguration securityConfiguration,
 		DefaultAuthenticationConfiguration authenticationConfiguration ) {}
+
+	/**
+	 * Defines the priority for this {@link AuthenticationMechanism}. This value is used to define
+	 * the order {@link AuthenticationMechanism}s will call {@link #configure} method. The mechanism
+	 * with higher priority will be the first one, second higher will be second one, etc...
+	 *
+	 * By default, mechanisms have {@code Integer.MIN_VALUE} as default priority.
+	 *
+	 * @return
+	 */
+	default int priority(){
+		return Integer.MIN_VALUE;
+	}
 }

@@ -81,12 +81,14 @@ public class AuthenticationRuleMatcher {
 	}
 
 	private AuthenticationRule convertConfToRule( final Config ruleConf ) {
-		final List<IdentityManager> identityManager = getIdentityManagerFor(ruleConf.getStringList("identity-manager", Collections.singletonList( "default" )));
-		final List<AuthenticationMechanism> mechanisms = extractNeededMechanisms( ruleConf.getStringList("auth-mechanisms") );
+		final List<String> defaultIdentityManagersAndAuthMechanisms = Collections.singletonList("default");
+		final List<String> defaultExcludedPatterns = authConfig.getStringList("default-excluded-patterns");
+		final List<IdentityManager> identityManager = getIdentityManagerFor(ruleConf.getStringList("identity-manager", defaultIdentityManagersAndAuthMechanisms));
+		final List<AuthenticationMechanism> mechanisms = extractNeededMechanisms( ruleConf.getStringList("auth-mechanisms", defaultIdentityManagersAndAuthMechanisms) );
 		return new AuthenticationRule(
 				ruleConf.getString( "pattern" ), identityManager,
 				mechanisms, ruleConf.getStringList( "expected-roles", Collections.emptyList() ),
-			ruleConf.getStringList( "exclude-patterns" ) );
+			ruleConf.getStringList( "exclude-patterns", defaultExcludedPatterns ) );
 	}
 
 	private List<IdentityManager> getIdentityManagerFor( final List<String> identityManagers ) {

@@ -33,6 +33,7 @@ public class JSONAuthenticationMechanismTest {
 	@Mock BlockingHttpExchange blockingHttpExchange;
 	@Mock IdentityManager identityManager;
 	@Mock Account account;
+	@Mock Session session;
 
 	@Before
 	public void configureMocks(){
@@ -44,14 +45,14 @@ public class JSONAuthenticationMechanismTest {
 
 	@Test
 	public void ensureCanReadRequestAndSendUsernameAndPasswordToIdentityManager() throws IOException {
-		mechanism.authenticate( exchange, singletonList( identityManager ) );
+		mechanism.authenticate( exchange, singletonList( identityManager ), session );
 		verify( identityManager ).verify( Matchers.eq( expectedCredential ) );
 	}
 
 	@Test
 	public void ensureCanReturnTheAccountOfAuthenticatedUser() throws IOException {
 		doReturn( account ).when( identityManager ).verify( Matchers.eq( expectedCredential ) );
-		final Account account = mechanism.authenticate( exchange, singletonList( identityManager ) );
+		final Account account = mechanism.authenticate( exchange, singletonList( identityManager ), session );
 		assertNotNull( account );
 		assertEquals( account, this.account );
 	}

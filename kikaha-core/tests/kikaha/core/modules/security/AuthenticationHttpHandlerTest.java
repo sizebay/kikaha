@@ -26,8 +26,7 @@ public class AuthenticationHttpHandlerTest {
 	@Inject SecurityConfiguration securityConfiguration;
 	@Inject CDI provider;
 	@Inject Config config;
-	@Inject
-    DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
+	@Inject DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
 
 	AuthenticationHttpHandler authenticationHook;
 
@@ -45,6 +44,7 @@ public class AuthenticationHttpHandlerTest {
 	@SneakyThrows
 	public void ensureThatCallTheHookInIOThreadWhenHasRuleThatMatchesTheRelativePath() {
 		doNothing().when(authenticationHook).runAuthenticationInIOThread( any(), any(), any());
+		securityConfiguration.setRequestMatcherIfAbsent( e -> true );
 		exchange.setRelativePath( "/valid-authenticated-url/" );
 		doReturn( securityContext ).when( factory ).createSecurityContextFor(
 				eq(exchange), any( AuthenticationRule.class ), eq(securityConfiguration) );

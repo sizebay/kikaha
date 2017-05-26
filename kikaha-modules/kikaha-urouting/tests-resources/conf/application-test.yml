@@ -22,10 +22,13 @@ server:
   auth:
     auth-mechanisms:
       default: kikaha.urouting.it.context.FixedAuthenticationMechanism
-    form-auth:
+
+    endpoints:
       login-page: "/it/form-auth/login-page"
       callback-url: "/it/form-auth/callback"
-    #authentication-request-matcher: kikaha.core.modules.security.ByPassAuthenticationRequestMatcher
+
     rules:
-      - { pattern: "/it/parameters/contextual/*", auth-mechanisms: ["default"] }
+      # Using 'default' as AuthenticationMechanism and IdentityManager
+      - { pattern: "/it/parameters/contextual/*" }
+      # Using 'default' as IdentityManager
       - { pattern: "/it/form-auth/*", auth-mechanisms: ["form"] }

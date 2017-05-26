@@ -26,7 +26,7 @@ class AuthenticationHttpHandler implements HttpHandler {
 
 	private AuthenticationRule retrieveRuleThatEnsureRequestShouldBeAuthenticated( final HttpServerExchange exchange ) {
 		final AuthenticationRequestMatcher authRequestMatcher = securityConfiguration.getAuthenticationRequestMatcher();
-		return !authRequestMatcher.matches( exchange ) ? null
+		return authRequestMatcher != null && !authRequestMatcher.matches( exchange ) ? null
 			   : authenticationRuleMatcher.retrieveAuthenticationRuleForUrl( exchange.getRelativePath() );
 	}
 

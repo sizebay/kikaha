@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Getter
+@Setter
 @Singleton
 @ToString
 public class DefaultAuthenticationConfiguration {
@@ -36,7 +37,7 @@ public class DefaultAuthenticationConfiguration {
 	}
 
 	public void logDetailedInformationAboutThisConfig() {
-		log.info( "Defined authentication endpoints (not all endpoints are in use):" );
+		log.info( "Defined authentication endpoints (depending on the modules you've loaded, not all endpoints are actually in use):" );
 		log.info( "  login-page: " + loginPage );
 		log.info( "  error-page: " + errorPage );
 		log.info( "  success-page: " + successPage );
