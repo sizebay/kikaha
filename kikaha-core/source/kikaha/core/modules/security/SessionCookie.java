@@ -1,5 +1,7 @@
 package kikaha.core.modules.security;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.function.Supplier;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.*;
@@ -42,5 +44,13 @@ public class SessionCookie implements SessionIdManager {
 	public String retrieveSessionIdFrom(HttpServerExchange exchange, Supplier<String> sessionIdCreator ) {
 		final Cookie cookie = exchange.getRequestCookies().get( cookieName );
 		return cookie != null ? cookie.getValue() : sessionIdCreator.get();
+	}
+
+	@Override
+	public void expiresSessionId(HttpServerExchange exchange) {
+		final String sessionId = retrieveSessionIdFrom(exchange);
+		final Cookie cookie = new CookieImpl( this.cookieName, sessionId )
+			.setPath( "/" ).setHttpOnly( true ).setExpires( Date.from( Instant.EPOCH ) );
+		exchange.setResponseCookie( cookie );
 	}
 }

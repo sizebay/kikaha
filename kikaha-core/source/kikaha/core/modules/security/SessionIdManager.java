@@ -46,4 +46,11 @@ public interface SessionIdManager {
 	default String createNewSessionId(HttpServerExchange exchange) {
 		return SessionIdGenerator.generate();
 	}
+
+	/**
+	 * Ensure the current session identification will be expired for further requests.
+	 *
+	 * @param exchange
+	 */
+	default void expiresSessionId(HttpServerExchange exchange) {}
 }

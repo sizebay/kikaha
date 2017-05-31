@@ -1,15 +1,12 @@
 package kikaha.core.modules.security;
 
+import static kikaha.core.modules.security.SecurityEventListener.SecurityEventType.*;
 import java.util.*;
 import io.undertow.security.api.NotificationReceiver;
 import io.undertow.security.idm.*;
 import io.undertow.security.idm.IdentityManager;
 import io.undertow.server.HttpServerExchange;
 import lombok.*;
-
-import static kikaha.core.modules.security.SecurityEventListener.SecurityEventType.LOGIN;
-import static kikaha.core.modules.security.SecurityEventListener.SecurityEventType.LOGOUT;
-import static kikaha.core.modules.security.SecurityEventListener.SecurityEventType.PROFILE_UPDATED;
 
 /**
  * A per-request object that groups security-related information.
@@ -62,8 +59,10 @@ public class DefaultSecurityContext implements SecurityContext {
 
 	@Override
 	public void logout() {
-		if ( getCurrentSession() != null ) {
-			configuration.getSessionStore().invalidateSession( getCurrentSession() );
+		final Session currentSession = getCurrentSession();
+		if ( currentSession != null ) {
+			configuration.getSessionStore().invalidateSession( currentSession );
+			configuration.getSessionIdManager().expiresSessionId( exchange );
 			notifySecurityEvent( LOGOUT );
 		}
 	}
