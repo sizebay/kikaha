@@ -1,16 +1,16 @@
 package kikaha.cloud.aws.xray;
 
 import static com.amazonaws.xray.entities.TraceHeader.SampleDecision.*;
-import static io.undertow.util.Headers.USER_AGENT;
-import static io.undertow.util.Headers.X_FORWARDED_FOR;
-import java.util.*;
+import static io.undertow.util.Headers.*;
+import java.util.HashMap;
 import javax.inject.*;
 import com.amazonaws.xray.AWSXRayRecorder;
 import com.amazonaws.xray.entities.*;
 import com.amazonaws.xray.entities.TraceHeader.SampleDecision;
 import com.amazonaws.xray.strategy.sampling.SamplingStrategy;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.*;
+import io.undertow.util.HttpString;
+import kikaha.cloud.smart.ServiceRegistry.ApplicationData;
 
 /**
  *
@@ -22,13 +22,14 @@ public class SegmentFactory {
 
 	@Inject AWSXRayRecorder recorder;
 	@Inject SegmentNamingStrategy segmentNamingStrategy;
+	@Inject ApplicationData applicationData;
 
 	public Segment createSegment(HttpServerExchange exchange) throws Exception {
 		final String traceHeaderString = exchange.getRequestHeaders().getFirst( TraceHeader.HEADER_KEY );
 		final TraceHeader traceHeader = traceHeaderString != null ? TraceHeader.fromString( traceHeaderString ) : null;
 		final SampleDecision decision = getSampleDecision(traceHeader, exchange);
 
-		final Segment segment = createSegment(exchange.getHostName(), decision, traceHeader);
+		final Segment segment = createSegment(applicationData.getName(), decision, traceHeader);
 		attachTraceId( exchange, traceHeader, segment );
 
 		final HashMap<String, Object> requestAttributes = createRequestAttributes(exchange);

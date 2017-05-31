@@ -11,6 +11,7 @@ import com.amazonaws.xray.entities.*;
 import com.amazonaws.xray.strategy.sampling.SamplingStrategy;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
+import kikaha.cloud.smart.ServiceRegistry;
 import kikaha.core.test.HttpServerExchangeStub;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -28,6 +29,7 @@ public class SegmentFactoryTest {
 	@Mock SamplingStrategy samplingStrategy;
 	@Spy AWSXRayRecorder recorder;
 	@Mock SegmentNamingStrategy namingStrategy;
+	@Mock ServiceRegistry.ApplicationData applicationData;
 
 	@InjectMocks
 	@Spy SegmentFactory segmentFactory;
@@ -36,6 +38,7 @@ public class SegmentFactoryTest {
 	public void configureMocks(){
 		doReturn( samplingStrategy ).when( recorder ).getSamplingStrategy();
 		doAnswer( c-> c.getArgumentAt(0, String.class) ).when( namingStrategy ).nameForRequest( anyString() );
+		doReturn( "localhost" ).when( applicationData ).getName();
 	}
 
 	@Test

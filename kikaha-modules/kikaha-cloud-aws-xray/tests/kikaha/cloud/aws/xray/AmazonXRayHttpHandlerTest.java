@@ -12,6 +12,7 @@ import com.amazonaws.xray.entities.Segment;
 import com.amazonaws.xray.strategy.sampling.SamplingStrategy;
 import io.undertow.server.*;
 import io.undertow.util.Headers;
+import kikaha.cloud.smart.ServiceRegistry.ApplicationData;
 import kikaha.core.test.HttpServerExchangeStub;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -31,6 +32,7 @@ public class AmazonXRayHttpHandlerTest {
 	@Mock SegmentNamingStrategy namingStrategy;
 	@Mock HttpHandler handler;
 	@Mock Segment segment;
+	@Mock ApplicationData applicationData;
 
 	@InjectMocks
 	@Spy SegmentFactory segmentFactory;
@@ -41,6 +43,7 @@ public class AmazonXRayHttpHandlerTest {
 		doAnswer( c-> c.getArgumentAt(0, String.class) ).when( namingStrategy ).nameForRequest( anyString() );
 		doReturn( segment ).when( segmentFactory ).beginDummySegment( anyString(), any() );
 		doReturn( true ).when( segment ).end();
+		doReturn( "sample.app.local" ).when( applicationData ).getName();
 	}
 
 	@Test
