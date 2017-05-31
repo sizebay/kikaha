@@ -8,7 +8,7 @@ Kikaha is a micro container writen over the fast Undertow core. It was developed
 - provides a lightweight micro container (written over the powerful undertow core), as alternative environment to to run web applications
 - provide a set of undertow extensions to structure and initialize your application without writing a bunch of bootstraping lines of code, making easier to develop embedded applications
 
-> *Note* that you are seeing a preview version of Kikaha (planned to be released on June 1st, 2017). Please check out the 2.0.x branch for a stable version.
+> *Note* that you are seeing a preview version of Kikaha (planned to be released on June, 2017). Please check out the 2.0.x branch for a stable version.
 
 ## Contributors
 - [Cesar Selonke](https://github.com/selonke)
