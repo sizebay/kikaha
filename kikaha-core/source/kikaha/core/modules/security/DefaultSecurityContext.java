@@ -1,10 +1,8 @@
 package kikaha.core.modules.security;
 
 import static kikaha.core.modules.security.SecurityEventListener.SecurityEventType.*;
-import java.util.*;
-import io.undertow.security.api.NotificationReceiver;
-import io.undertow.security.idm.*;
-import io.undertow.security.idm.IdentityManager;
+import java.util.Iterator;
+import io.undertow.security.idm.Account;
 import io.undertow.server.HttpServerExchange;
 import lombok.*;
 
@@ -14,10 +12,6 @@ import lombok.*;
 @Getter
 @RequiredArgsConstructor
 public class DefaultSecurityContext implements SecurityContext {
-
-	private static final String MSG_IMMUTABLE = "You can't change this immutable SecurityContext. See SecurityContextFactory for more details.";
-	private static final String MSG_NO_MANUAL_LOGIN = "You can't perform a manual login.";
-	private static final String MSG_NOT_SUPPORTED_BY_DEFAULT = "This operation is not supported by default.";
 
 	private AuthenticationMechanism currentAuthMechanism = null;
 	private Session currentSession = null;
@@ -98,58 +92,9 @@ public class DefaultSecurityContext implements SecurityContext {
 		}
 	}
 
-	void notifySecurityEvent(SecurityEventListener.SecurityEventType profileUpdated) {
+	void notifySecurityEvent(SecurityEventListener.SecurityEventType eventType) {
 		for ( SecurityEventListener eventListener : configuration.getEventListeners() ) {
-			eventListener.onEvent( profileUpdated, exchange, getCurrentSession() );
+			eventListener.onEvent( eventType, exchange, getCurrentSession() );
 		}
-	}
-
-	@Override
-	public void setAuthenticationRequired() {}
-
-	@Override
-	public void authenticationComplete( Account account, String mechanismName, boolean cachingRequired ) {
-		throw new UnsupportedOperationException(MSG_NOT_SUPPORTED_BY_DEFAULT);
-	}
-
-	@Override
-	public void authenticationFailed( String message, String mechanismName ) {
-		throw new UnsupportedOperationException(MSG_NOT_SUPPORTED_BY_DEFAULT);
-	}
-
-	@Override
-	public boolean login(String username, String password) {
-		throw new UnsupportedOperationException(MSG_NO_MANUAL_LOGIN);
-	}
-
-	@Override
-	public void registerNotificationReceiver(NotificationReceiver receiver) {
-		throw new UnsupportedOperationException(MSG_IMMUTABLE);
-	}
-
-	@Override
-	public void removeNotificationReceiver(NotificationReceiver receiver) {
-		throw new UnsupportedOperationException(MSG_IMMUTABLE);
-	}
-
-	@Override
-	public String getMechanismName() {
-		throw new UnsupportedOperationException(MSG_NOT_SUPPORTED_BY_DEFAULT);
-	}
-
-	@Override
-	public IdentityManager getIdentityManager() {
-		throw new UnsupportedOperationException(MSG_NOT_SUPPORTED_BY_DEFAULT);
-	}
-
-	@Override
-	public void addAuthenticationMechanism(
-			io.undertow.security.api.AuthenticationMechanism mechanism) {
-		throw new UnsupportedOperationException(MSG_IMMUTABLE);
-	}
-
-	@Override
-	public List<io.undertow.security.api.AuthenticationMechanism> getAuthenticationMechanisms() {
-		throw new UnsupportedOperationException(MSG_NOT_SUPPORTED_BY_DEFAULT);
 	}
 }

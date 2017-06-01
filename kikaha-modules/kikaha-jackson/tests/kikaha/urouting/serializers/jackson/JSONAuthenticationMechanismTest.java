@@ -1,17 +1,15 @@
 package kikaha.urouting.serializers.jackson;
 
-import static java.util.Collections.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-
-import javax.inject.Inject;
+import static java.util.Collections.singletonList;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import java.io.*;
+import javax.inject.Inject;
 import io.undertow.security.idm.*;
 import io.undertow.server.*;
-import kikaha.core.modules.security.*;
+import io.undertow.util.Methods;
 import kikaha.core.modules.security.IdentityManager;
+import kikaha.core.modules.security.*;
 import kikaha.core.test.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -39,6 +37,8 @@ public class JSONAuthenticationMechanismTest {
 	public void configureMocks(){
 		MockitoAnnotations.initMocks( this );
 
+		exchange.setRequestMethod( Methods.POST );
+		exchange.setRelativePath( mechanism.formAuthConfiguration.getCallbackUrl() );
 		exchange.startBlocking( blockingHttpExchange );
 		doReturn(new ByteArrayInputStream( JSON.getBytes() )).when( blockingHttpExchange ).getInputStream();
 	}

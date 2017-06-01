@@ -83,12 +83,22 @@ public class AuthenticationRuleMatcher {
 	private AuthenticationRule convertConfToRule( final Config ruleConf ) {
 		final List<String> defaultIdentityManagersAndAuthMechanisms = Collections.singletonList("default");
 		final List<String> defaultExcludedPatterns = authConfig.getStringList("default-excluded-patterns");
-		final List<IdentityManager> identityManager = getIdentityManagerFor(ruleConf.getStringList("identity-manager", defaultIdentityManagersAndAuthMechanisms));
+		final List<IdentityManager> identityManager = getIdentityManagerFor( ruleConf, defaultIdentityManagersAndAuthMechanisms );
 		final List<AuthenticationMechanism> mechanisms = extractNeededMechanisms( ruleConf.getStringList("auth-mechanisms", defaultIdentityManagersAndAuthMechanisms) );
 		return new AuthenticationRule(
 				ruleConf.getString( "pattern" ), identityManager,
 				mechanisms, ruleConf.getStringList( "expected-roles", Collections.emptyList() ),
 			ruleConf.getStringList( "exclude-patterns", defaultExcludedPatterns ) );
+	}
+
+	private List<IdentityManager> getIdentityManagerFor( Config ruleConf, List<String> defaultIdentityManagersAndAuthMechanisms ) {
+		List<String> identityManagers = ruleConf.getStringList("identity-manager");
+		if ( identityManagers != null ) {
+			log.warn("The 'identity-manager' entry is deprecated.");
+			log.warn("Consider use 'identity-managers'.");
+		} else
+			identityManagers = ruleConf.getStringList("identity-managers", defaultIdentityManagersAndAuthMechanisms );
+		return getIdentityManagerFor( identityManagers );
 	}
 
 	private List<IdentityManager> getIdentityManagerFor( final List<String> identityManagers ) {

@@ -1,12 +1,11 @@
 package kikaha.urouting.serializers.jackson;
 
-import javax.inject.Inject;
 import java.io.IOException;
-import io.undertow.security.idm.*;
+import javax.inject.Inject;
+import io.undertow.security.idm.Credential;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
+import io.undertow.util.*;
 import kikaha.core.modules.security.*;
-import kikaha.core.modules.security.IdentityManager;
 import lombok.Data;
 
 /**
@@ -15,6 +14,7 @@ import lombok.Data;
 public class JSONAuthenticationMechanism implements SimplifiedAuthenticationMechanism {
 
 	@Inject Jackson jackson;
+	@Inject DefaultAuthenticationConfiguration formAuthConfiguration;
 
 	@Override
 	public boolean sendAuthenticationChallenge( HttpServerExchange exchange, Session session ) {
@@ -26,8 +26,11 @@ public class JSONAuthenticationMechanism implements SimplifiedAuthenticationMech
 
 	@Override
 	public Credential readCredential(HttpServerExchange exchange) throws IOException {
-		final JSONCredentials json = jackson.objectMapper().readValue( exchange.getInputStream(), JSONCredentials.class );
-		return new UsernameAndPasswordCredential( json.username, json.password );
+		if ( formAuthConfiguration.isTryingToLogin( exchange ) ) {
+			final JSONCredentials json = jackson.objectMapper().readValue(exchange.getInputStream(), JSONCredentials.class);
+			return new UsernameAndPasswordCredential(json.username, json.password);
+		}
+		return null;
 	}
 
 	@Data

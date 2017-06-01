@@ -2,6 +2,8 @@ package kikaha.core.modules.security;
 
 import javax.annotation.PostConstruct;
 import javax.inject.*;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Methods;
 import kikaha.config.Config;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -43,5 +45,10 @@ public class DefaultAuthenticationConfiguration {
 		log.info( "  success-page: " + successPage );
 		log.info( "  callback-url: " + callbackUrl );
 		log.info( "  logout-url: " + logoutUrl );
+	}
+
+	public boolean isTryingToLogin(HttpServerExchange exchange) {
+		return Methods.POST.equals( exchange.getRequestMethod() )
+				&& getCallbackUrl().equals( exchange.getRelativePath() );
 	}
 }
