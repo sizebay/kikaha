@@ -34,12 +34,13 @@ public class InjectableClassConstructor implements CustomClassConstructor {
 	}
 
 	private Optional<Constructor<?>> getInjectableConstructor(Class<?> clazz ) {
-		while( !Object.class.equals(clazz)) {
-			for (Constructor<?> constructor : clazz.getDeclaredConstructors())
-				if ( constructor.isAnnotationPresent(Inject.class) )
-					return Optional.of( constructor );
-			clazz = clazz.getSuperclass();
-		}
+		if ( !clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers()) )
+			while( !Object.class.equals(clazz) ) {
+				for (Constructor<?> constructor : clazz.getDeclaredConstructors())
+					if ( constructor.isAnnotationPresent(Inject.class) )
+						return Optional.of( constructor );
+				clazz = clazz.getSuperclass();
+			}
 		return Optional.empty();
 	}
 
