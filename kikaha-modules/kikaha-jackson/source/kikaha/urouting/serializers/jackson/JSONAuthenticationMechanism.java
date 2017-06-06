@@ -4,8 +4,10 @@ import java.io.IOException;
 import javax.inject.Inject;
 import io.undertow.security.idm.Credential;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.*;
+import io.undertow.util.Headers;
+import io.undertow.util.StatusCodes;
 import kikaha.core.modules.security.*;
+import kikaha.urouting.api.Mimes;
 import lombok.Data;
 
 /**
@@ -26,11 +28,13 @@ public class JSONAuthenticationMechanism implements SimplifiedAuthenticationMech
 
 	@Override
 	public Credential readCredential(HttpServerExchange exchange) throws IOException {
-		if ( formAuthConfiguration.isTryingToLogin( exchange ) ) {
+		if ( Mimes.JSON.equals( exchange.getRequestHeaders().getFirst(Headers.CONTENT_TYPE ) )
+		&&   formAuthConfiguration.isTryingToLogin( exchange ) ) {
 			final JSONCredentials json = jackson.objectMapper().readValue(exchange.getInputStream(), JSONCredentials.class);
 			return new UsernameAndPasswordCredential(json.username, json.password);
 		}
 		return null;
+
 	}
 
 	@Data
