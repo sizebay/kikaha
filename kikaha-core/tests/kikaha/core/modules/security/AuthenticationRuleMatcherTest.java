@@ -35,6 +35,18 @@ public class AuthenticationRuleMatcherTest {
 	}
 
 	@Test
+	public void ensureWillNotRetrieveRuleForExcludedURLAsDefinedInTestConfigurations() {
+		val rule = matcher.retrieveAuthenticationRuleForUrl( "/ignore1/" );
+		assertNull( rule );
+		val secondRule = matcher.retrieveAuthenticationRuleForUrl( "/ignore2/" );
+		assertNull( secondRule );
+		val thirdRule = matcher.retrieveAuthenticationRuleForUrl( "/ignore1" );
+		assertNotNull( thirdRule );
+		val fourthRule = matcher.retrieveAuthenticationRuleForUrl( "/ignore3" );
+		assertNull( fourthRule  );
+	}
+
+	@Test
 	public void ensureThatCouldNotRetrieveRuleForUnprotectedURLAsDefinedInTestConfigurations() {
 		val rule = matcher.retrieveAuthenticationRuleForUrl( "users/" );
 		assertNull( rule );

@@ -67,6 +67,9 @@ server:
       password: "t357"
       role: "testable-role"
 
+    default-excluded-patterns:
+      - "/ignore1/*"
+
     rules:
       - pattern: "/*"
         identity-manager:
@@ -77,3 +80,5 @@ server:
         expected-roles:
           - "minimum-access-role"
         exclude-patterns:
+          - "/ignore2/*"
+          - "/ignore3*"
