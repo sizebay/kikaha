@@ -18,18 +18,9 @@ public class FormAuthenticationRequestMatcher implements AuthenticationRequestMa
 
 	@Override
 	public boolean matches( HttpServerExchange exchange ) {
-		boolean matched = false;
-		try {
-			final String url = exchange.getRelativePath();
-			final String referer = exchange.getRequestHeaders().getFirst( Headers.REFERER );
-			final String refererPath = referer != null ? new URI( referer ).getPath() : "";
-			matched = ( defaultAuthenticationConfiguration.getCallbackUrl().equals( url )
-				   || ( !isUrlFromAuthenticationResources( url )
-				   &&   !isUrlFromAuthenticationResources( refererPath ) ) );
-		} catch ( URISyntaxException cause ) {
-			log.error( "Can't execute FormAuthenticationRequestMatcher", cause );
-		}
-		return matched;
+		final String url = exchange.getRelativePath();
+		return  ( defaultAuthenticationConfiguration.getCallbackUrl().equals( url )
+			   || ( !isUrlFromAuthenticationResources( url ) ) );
 	}
 
 	private boolean isUrlFromAuthenticationResources( final String url ) {
