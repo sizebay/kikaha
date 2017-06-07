@@ -6,7 +6,6 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import javax.enterprise.inject.Model;
 import javax.inject.Inject;
 import io.undertow.server.HttpHandler;
 import kikaha.core.DeploymentContext;

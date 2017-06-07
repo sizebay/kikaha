@@ -22,7 +22,13 @@ public interface AuthenticationMechanism {
 			final HttpServerExchange exchange,
 			final Iterable<IdentityManager> identityManagers, Session session );
 
-	boolean sendAuthenticationChallenge( final HttpServerExchange exchange, Session session );
+	default boolean sendAuthenticationChallenge( final HttpServerExchange exchange, Session session ) {
+		return true;
+	}
+
+	default boolean sendAuthenticationSuccess( final HttpServerExchange exchange, Session session ) {
+		return true;
+	}
 
 	default void configure(
 		SecurityConfiguration securityConfiguration,

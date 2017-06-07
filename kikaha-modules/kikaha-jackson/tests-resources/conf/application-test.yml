@@ -1,0 +1,13 @@
+server:
+  http: { port: 9999 }
+
+  auth:
+    fixed-auth:
+      username: "username"
+      password: "password"
+
+    endpoints:
+      callback-url: "/auth/verify"
+
+    rules:
+      - { pattern: "/*", auth-mechanisms: ["json"], identity-managers: [ "fixed" ] }
