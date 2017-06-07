@@ -65,9 +65,10 @@ server:
   # Smart routes
   smart-routes:
     auth:
-      enabled: false
+      enabled: true
       #login-form-enabled: false
       #logout-url-enabled: false
+      #logout-http-method: "POST"
     rewrite:
     reverse:
     filter:
@@ -85,10 +86,10 @@ server:
       role: "admin"
 
     endpoints:
-      login-page: "/auth/"
+      #login-page: "/auth/"
+      #logout-url: "/auth/logout"
       error-page: "/auth/error/"
       success-page: "/"
-      logout-url: "/auth/logout"
       callback-url: "/auth/callback"
       permission-denied-page: "/auth/permission-denied"
 

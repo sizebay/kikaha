@@ -23,11 +23,20 @@ public class AuthEndpointModule implements Module {
 	@Override
 	public void load( Builder server, DeploymentContext context ) throws IOException {
 		final boolean defaultEnabledState = config.getBoolean( "server.smart-routes.auth.enabled" );
-		if ( config.getBoolean( "server.smart-routes.auth.login-form-enabled", defaultEnabledState ) )
+
+		if ( !isEmpty( formAuthConfiguration.getLoginPage() )
+		&&    config.getBoolean( "server.smart-routes.auth.login-form-enabled", defaultEnabledState ) )
 			context.register( formAuthConfiguration.getLoginPage(), "GET", loginHttpHandler );
-		if ( config.getBoolean( "server.smart-routes.auth.logout-url-enabled", defaultEnabledState ) ) {
+
+		if ( !isEmpty( formAuthConfiguration.getLogoutUrl() )
+		&&   config.getBoolean( "server.smart-routes.auth.logout-url-enabled", defaultEnabledState ) )
+		{
 			final String method = config.getString( "server.smart-routes.auth.logout-http-method", "POST" );
 			context.register( formAuthConfiguration.getLogoutUrl(), method, logoutHttpHandler );
 		}
+	}
+
+	private boolean isEmpty(String logoutUrl) {
+		return logoutUrl == null || logoutUrl.isEmpty();
 	}
 }

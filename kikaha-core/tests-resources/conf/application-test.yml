@@ -67,6 +67,10 @@ server:
       password: "t357"
       role: "testable-role"
 
+    endpoints:
+      login-page: "/auth/"
+      logout-url: "/auth/logout"
+
     default-excluded-patterns:
       - "/ignore1/*"
 
