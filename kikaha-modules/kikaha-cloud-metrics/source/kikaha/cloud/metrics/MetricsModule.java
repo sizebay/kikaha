@@ -67,12 +67,6 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
             log.debug( "  Registered individual metric for " + name );
         }
 
-        if ( configuration.shouldStoreSummarizedWebMetrics ) {
-            final Timer meter = metricRegistry.timer( MetricRegistry.name(NAMESPACE_WEB, SUMMARIZED) );
-            httpHandler = new MetricHttpHandler( httpHandler, meter );
-            log.debug( "  Registered summarized metric for " + name );
-        }
-
         return httpHandler;
     }
 
@@ -82,9 +76,20 @@ public class MetricsModule implements HttpHandlerDeploymentModule.HttpHandlerDep
         log.info( "Initializing the Cloud Metric module..." );
         runExternalMetricConfigurations();
         loadJvmMetrics();
+        registerSummarizedMetricsForWebRequests( context );
 
         final ReporterConfiguration reporterConfiguration = configuration.reporterConfiguration();
         reporterConfiguration.configureAndStartReportFor( metricRegistry );
+    }
+
+    private void registerSummarizedMetricsForWebRequests( final DeploymentContext context ){
+        HttpHandler httpHandler = context.rootHandler();
+        if ( configuration.shouldStoreSummarizedWebMetrics ) {
+            final Timer meter = metricRegistry.timer( MetricRegistry.name(NAMESPACE_WEB, SUMMARIZED) );
+            httpHandler = new MetricHttpHandler( httpHandler, meter );
+            log.debug( "  Registered summarized metric for " + name );
+        }
+        context.rootHandler( httpHandler );
     }
 
     private void runExternalMetricConfigurations() {

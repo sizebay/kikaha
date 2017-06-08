@@ -1,15 +1,14 @@
 package kikaha.cloud.metrics;
 
 import static kikaha.cloud.metrics.MetricsModule.*;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.Arrays;
 import com.codahale.metrics.*;
 import io.undertow.server.HttpHandler;
 import kikaha.config.*;
+import kikaha.core.DeploymentContext;
 import kikaha.core.cdi.CDI;
 import kikaha.core.modules.http.WebResource;
 import org.junit.*;
@@ -73,28 +72,20 @@ public class MetricsModuleTest {
     }
 
     @Test
-    public void shouldBeAbleToWrapAndStoreSummarizerMetrics(){
-        final HttpHandler customizedHandler = module.customize(httpHandler, webResource);
-        Assert.assertEquals( customizedHandler.getClass(), MetricHttpHandler.class );
+    public void shouldBeAbleToWrapAndStoreSummarizerMetrics() throws IOException {
+        final DeploymentContext deploymentContext = new DeploymentContext();
+        module.registerAvailableJvmMetrics();
+        module.load(null, deploymentContext);
+        Assert.assertEquals( deploymentContext.rootHandler().getClass(), MetricHttpHandler.class );
         verify( metricRegistry ).timer( Matchers.eq("kikaha.transactions.summarized") );
-    }
-
-    @Test
-    public void shouldBeAbleToWrapAndStoreSummarizedAndIndividualMetrics(){
-        final HttpHandler customizedHandler = module.customize(httpHandler, webResource);
-        Assert.assertEquals( customizedHandler.getClass(), MetricHttpHandler.class );
-        final MetricHttpHandler metricHttpHandler = (MetricHttpHandler)customizedHandler;
-        final MetricHttpHandler wrappedMetricHttpHandler = (MetricHttpHandler)metricHttpHandler.httpHandler;
-        assertEquals( httpHandler, wrappedMetricHttpHandler.httpHandler );
-
-        verify( metricRegistry ).timer( Matchers.eq("kikaha.transactions.summarized") );
-        verify( metricRegistry ).timer( Matchers.eq("kikaha.transactions.POST /path") );
     }
 
     @Ignore
     @Test
     public void shouldBeAbleToStartAllJVMMetrics() throws IOException {
-        module.load( null, null );
+        final DeploymentContext deploymentContext = new DeploymentContext();
+        module.registerAvailableJvmMetrics();
+        module.load(null, deploymentContext);
         verify( metricRegistry, Mockito.times( 41 ) ).register( Matchers.startsWith( NAMESPACE_JVM ), Matchers.any() );
         verify( metricRegistry, Mockito.times( 20 ) ).register( Matchers.startsWith( NAMESPACE_JVM + ".memory" ), Matchers.any() );
         verify( metricRegistry, Mockito.times( 6 ) ).register( Matchers.startsWith( NAMESPACE_JVM + ".buffer-pool" ), Matchers.any() );
@@ -106,15 +97,17 @@ public class MetricsModuleTest {
     @Test
     public void shouldBeAbleToStartTheReporterConfiguration() throws IOException {
         doReturn( MergeableConfig.create() ).when( config ).getConfig( Matchers.eq( JVM_METRICS ) );
+        final DeploymentContext deploymentContext = new DeploymentContext();
         module.registerAvailableJvmMetrics();
-        module.load( null, null );
+        module.load(null, deploymentContext);
         verify( reporterConfiguration ).configureAndStartReportFor( Matchers.eq( metricRegistry ) );
     }
 
     @Test
     public void shouldBeAbleToCallAllMetricRegistryConfigurations() throws IOException {
+        final DeploymentContext deploymentContext = new DeploymentContext();
         module.registerAvailableJvmMetrics();
-        module.load( null, null );
+        module.load(null, deploymentContext);
         verify( metricRegistryConfiguration ).configure( Matchers.eq( metricRegistry ) );
     }
 }
