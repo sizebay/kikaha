@@ -100,14 +100,14 @@ public class AWSCloudWatchMetricReporter implements MetricStore {
 	@Override
 	public void reportMeters(SortedMap<String, Meter> meters) {
 		final Set<Entry<String, Meter>> entries = meters.entrySet();
-		final List<MetricDatum> metrics = convert( entries, e -> createMetricEntry(e.getKey(), e.getValue().getCount() ) );
+		final List<MetricDatum> metrics = convert( entries, e -> createMetricEntry(e.getKey(), e.getValue().getOneMinuteRate() ) );
 		reportToCloudWatch( metrics );
 	}
 
 	@Override
 	public void reportTimers(SortedMap<String, Timer> timers) {
 		final Set<Entry<String, Timer>> entries = timers.entrySet();
-		final List<MetricDatum> metrics = convert(entries, e -> createMetricEntry(e.getKey(), e.getValue().getCount()));
+		final List<MetricDatum> metrics = convert(entries, e -> createMetricEntry(e.getKey(), e.getValue().getOneMinuteRate()));
 		reportToCloudWatch( metrics );
 	}
 
