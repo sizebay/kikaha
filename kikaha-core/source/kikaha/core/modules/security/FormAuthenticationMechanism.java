@@ -7,11 +7,10 @@ import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormParserFactory;
 import io.undertow.util.Methods;
-import kikaha.core.util.Redirect;
+import kikaha.core.modules.undertow.Redirect;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mockito.InjectMocks;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

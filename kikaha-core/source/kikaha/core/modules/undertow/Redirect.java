@@ -1,4 +1,4 @@
-package kikaha.core.util;
+package kikaha.core.modules.undertow;
 
 import io.undertow.server.*;
 import io.undertow.util.*;

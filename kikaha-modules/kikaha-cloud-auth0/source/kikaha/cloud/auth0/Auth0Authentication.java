@@ -11,7 +11,7 @@ import kikaha.core.modules.security.AuthenticationMechanism;
 import kikaha.core.modules.security.DefaultAuthenticationConfiguration;
 import kikaha.core.modules.security.IdentityManager;
 import kikaha.core.modules.security.Session;
-import kikaha.core.util.Redirect;
+import kikaha.core.modules.undertow.Redirect;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;

@@ -4,7 +4,7 @@ import javax.inject.Inject;
 import io.undertow.server.*;
 import io.undertow.util.*;
 import kikaha.core.modules.security.*;
-import kikaha.core.util.Redirect;
+import kikaha.core.modules.undertow.Redirect;
 
 /**
  *
