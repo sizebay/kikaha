@@ -5,7 +5,7 @@ import static kikaha.cloud.auth0.Auth0.STATE;
 import javax.inject.*;
 import java.util.*;
 import io.undertow.server.HttpServerExchange;
-import kikaha.core.ChainedMap;
+import kikaha.core.util.ChainedMap;
 import kikaha.core.modules.security.*;
 import kikaha.core.modules.security.login.AuthLoginHttpHandler;
 import lombok.extern.slf4j.Slf4j;

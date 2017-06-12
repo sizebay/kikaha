@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.*;
+
+import kikaha.core.util.SystemResource;
 import org.junit.Test;
 
 /**

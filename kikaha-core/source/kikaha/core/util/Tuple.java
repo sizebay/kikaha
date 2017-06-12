@@ -1,4 +1,4 @@
-package kikaha.core;
+package kikaha.core.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Value;

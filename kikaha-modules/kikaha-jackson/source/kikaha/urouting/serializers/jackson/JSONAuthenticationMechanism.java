@@ -4,7 +4,7 @@ import io.undertow.security.idm.Credential;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
-import kikaha.core.Tuple;
+import kikaha.core.util.Tuple;
 import kikaha.core.modules.security.DefaultAuthenticationConfiguration;
 import kikaha.core.modules.security.Session;
 import kikaha.core.modules.security.SimplifiedAuthenticationMechanism;

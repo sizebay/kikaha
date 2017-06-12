@@ -1,4 +1,4 @@
-package kikaha.core;
+package kikaha.core.util;
 
 import java.io.*;
 import lombok.NonNull;

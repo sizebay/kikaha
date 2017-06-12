@@ -1,6 +1,6 @@
 package kikaha.core.url;
 
-import kikaha.core.Tuple;
+import kikaha.core.util.Tuple;
 
 public interface URL {
 

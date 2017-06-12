@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import io.undertow.server.*;
 import io.undertow.util.*;
 import kikaha.config.Config;
-import kikaha.core.SystemResource;
+import kikaha.core.util.SystemResource;
 import kikaha.core.modules.security.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
