@@ -48,7 +48,6 @@ class SegmentSender implements ResponseCommitListener {
 		} catch ( final Throwable cause ) {
 			log.error( "Could not send segment " + segment, cause );
 		}
-
 	}
 
 	void attachResponseDataToSegment( HttpServerExchange exchange ){
