@@ -53,7 +53,13 @@ public class SmartServerModule implements Module {
 	}
 
 	LocalMachineIdentification loadLocalMachineIdentification(){
-		final Class<?> localMachineIdentification = config.getClass( "server.smart-server.local-address.identification" );
+		Class<?> localMachineIdentification = config.getClass( "server.smart-server.local-address.identification" );
+		if ( localMachineIdentification != null ) {
+			log.warn("The entry point 'server.smart-server.local-address.identification' is deprecated.");
+			log.warn("Use 'server.smart-server.identification' instead.");
+		}
+		if ( localMachineIdentification == null )
+			localMachineIdentification = config.getClass( "server.smart-server.identification" );
 		if ( localMachineIdentification == null )
 			throw new InstantiationError( "No LocalMachineIdentification defined" );
 		return (LocalMachineIdentification) cdi.load( localMachineIdentification );

@@ -3,7 +3,6 @@ server:
   # Configure how does the Health-Check should behave
   health-check:
     enabled: false
-    url: "/api/internal/health-check"
 
   # Codahale Metrics module
   metrics:

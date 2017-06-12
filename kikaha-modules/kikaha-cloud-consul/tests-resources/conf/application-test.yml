@@ -1,0 +1,6 @@
+server:
+
+  smart-server:
+    identification: "kikaha.cloud.smart.LocalhostMachineIdentification"
+
+  consul: {}

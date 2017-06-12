@@ -1,6 +1,7 @@
 package kikaha.cloud.aws.alb;
 
 import java.io.IOException;
+import java.util.List;
 import javax.inject.*;
 import com.amazonaws.ResponseMetadata;
 import com.amazonaws.services.elasticloadbalancingv2.AmazonElasticLoadBalancing;
@@ -45,6 +46,11 @@ public class AmazonELBServiceRegistry implements ServiceRegistry {
 			throw new IOException( "Could not automatically join to the AWS Load Balancer named 'null'" );
 
 		deregisterFromCluster( applicationData, elbName );
+	}
+
+	@Override
+	public List<String> locateSiblingNodesOnTheCluster(ApplicationData applicationData) throws IOException {
+		return null;
 	}
 
 	private void deregisterFromCluster( ApplicationData applicationData, String elbName ) throws IOException {

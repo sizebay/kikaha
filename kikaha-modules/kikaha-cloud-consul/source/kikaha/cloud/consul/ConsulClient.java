@@ -1,11 +1,23 @@
 package kikaha.cloud.consul;
 
 import static java.lang.String.format;
+import static kikaha.core.util.Lang.convert;
+import static kikaha.core.util.Lang.filter;
+import static kikaha.core.util.Lang.first;
+
 import java.io.IOException;
 import java.util.*;
 import javax.inject.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.type.MapType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import kikaha.cloud.smart.ServiceRegistry;
 import kikaha.config.Config;
+import kikaha.core.util.Tuple;
+import kikaha.urouting.serializers.jackson.Jackson;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -21,6 +33,7 @@ public class ConsulClient implements ServiceRegistry {
 			"\"Interval\": \"{health-check-interval}s\"}}";
 
 	@Inject Config config;
+	@Inject Jackson jackson;
 
 	@Override
 	public void registerIntoCluster( final ApplicationData applicationData ) throws IOException {
@@ -91,13 +104,42 @@ public class ConsulClient implements ServiceRegistry {
 			throw new IOException( "Could not register the application on consul.io." );
 	}
 
+
 	int put(String url) throws IOException {
 		return Http.sendRequest( getConsulEndpointBaseURL() + url, "PUT", null );
 	}
 
+	@Override
+	public List<String> locateSiblingNodesOnTheCluster(ApplicationData applicationData) throws IOException {
+		final Tuple<Integer, String> response = Http.get(getConsulEndpointBaseURL() + "/v1/agent/services");
+		if ( response.getFirst() != 200 )
+			throw  new IOException( "Could not retrieve data from Consul: " + response.getSecond() );
+
+		final TypeFactory typeFactory = jackson.objectMapper().getTypeFactory();
+		final MapType mapType = typeFactory.constructMapType(HashMap.class, String.class, ConsulRegisteredClient.class);
+		final Map<String, ConsulRegisteredClient> clients = jackson.objectMapper().readValue( response.getSecond(), mapType );
+		final String name = applicationData.getName() + ":" + applicationData.getVersion();
+		final String id = applicationData.getMachineId();
+		final List<ConsulRegisteredClient> found = filter( clients.values(), c -> name.equals(c.service) && !id.equals( c.id ) );
+		return convert( found, f->f.address );
+	}
+
 	String getConsulEndpointBaseURL(){
-		final String consulHost = config.getString( "server.consul.host", "localhost" );
+		final String consulHost = config.getString( "server.consul.host", "127.0.0.1" );
 		final int consulPort = config.getInteger( "server.consul.port", 8500 );
 		return "http://" + consulHost + ":" + consulPort;
 	}
+}
+
+@JsonIgnoreProperties( ignoreUnknown = true )
+class ConsulRegisteredClient {
+
+	@JsonProperty("ID")
+	String id;
+
+	@JsonProperty("Service")
+	String service;
+
+	@JsonProperty("Address")
+	String address;
 }

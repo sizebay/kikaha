@@ -22,7 +22,6 @@ public class ConsulClientTest {
 	final String EXPECTED_REGISTER_MSG = "{\"ID\": \"unit01\",\"Name\": \"unit01:1.0\",\"Address\": \"localhost\",\"Port\": 9000, \"Tags\": [],\"Check\": { \"DeregisterCriticalServiceAfter\": \"90m\", \"HTTP\": \"http://localhost:9000/api/internal/health-check\",\"Interval\": \"1s\"}}";
 
 	Config config = ConfigLoader.loadDefaults();
-	@Mock CDI cdi;
 
 	@InjectMocks
 	@Spy ConsulClient consulClient;

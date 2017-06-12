@@ -15,4 +15,18 @@ public interface Lang {
 		return newItems;
 	}
 
+	static <T> Optional<T> first( Iterable<T> list, Function<T, Boolean> matcher ) {
+		for ( T t : list )
+			if ( matcher.apply(t) )
+				return Optional.of(t);
+		return Optional.empty();
+	}
+
+	static <T> List<T> filter( Iterable<T> list, Function<T, Boolean> matcher ) {
+		final List<T> newItems = new ArrayList<>();
+		for ( T t : list )
+			if ( matcher.apply(t) )
+				newItems.add( t );
+		return newItems;
+	}
 }

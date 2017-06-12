@@ -21,6 +21,11 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>kikaha-cloud</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>kikaha-jackson</artifactId>
+		</dependency>
 	</dependencies>
 
 </project>

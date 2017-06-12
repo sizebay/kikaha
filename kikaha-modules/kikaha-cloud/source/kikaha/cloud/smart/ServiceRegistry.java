@@ -1,6 +1,8 @@
 package kikaha.cloud.smart;
 
 import java.io.IOException;
+import java.util.List;
+
 import lombok.*;
 
 /**
@@ -23,6 +25,19 @@ public interface ServiceRegistry {
 	 * @throws IOException whenever the ServiceRegistry wasn't able to deregister this application.
 	 */
 	void deregisterFromCluster( final ApplicationData applicationData ) throws IOException;
+
+	/**
+	 * Retrieves a list of FQDNS (or IP) locations representing all other nodes that
+	 * have already joined to the cluster. Although there is no listener to
+	 * be notified about application nodes that joining or leaving the cluster at real time,
+	 * you can call this method whenever you need a fresh list of node nodes that is part of
+	 * the same cluster this application.
+	 *
+	 * @return
+	 * @throws IOException
+     * @param applicationData
+	 */
+	List<String> locateSiblingNodesOnTheCluster(ApplicationData applicationData) throws IOException;
 
 	/**
 	 * Contains the basic information needed information to join a cluster.

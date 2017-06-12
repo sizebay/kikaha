@@ -1,5 +1,9 @@
 server:
 
+  # Configure how does the Health-Check should behave
+  health-check:
+    url: "/api/internal/health-check"
+
   # Configure how does the application should behave at the cloud
   smart-server:
 
@@ -7,9 +11,10 @@ server:
     # automatically perform the service registration into a cluster.
     service-registry:
 
+    identification: kikaha.cloud.smart.DefaultLocalMachineIdentification
+
     # Configure how the server should infer its local address
     local-address:
-      identification: kikaha.cloud.smart.DefaultLocalMachineIdentification
       ipv4-only: true
       default-interface: "eth0"
 

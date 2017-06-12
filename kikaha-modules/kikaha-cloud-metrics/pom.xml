@@ -19,6 +19,10 @@
             <artifactId>kikaha-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.skullabs.kikaha</groupId>
+            <artifactId>kikaha-cloud</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
         </dependency>
