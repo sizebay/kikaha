@@ -9,7 +9,7 @@ import kikaha.config.Config;
  *
  */
 @Singleton
-public class DefaultLocalMachineIdentification implements LocalMachineIdentification {
+public class DefaultMachineIdentification implements MachineIdentification {
 
 	@Inject Config config;
 

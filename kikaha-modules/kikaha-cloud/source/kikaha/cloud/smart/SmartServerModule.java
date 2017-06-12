@@ -27,14 +27,14 @@ public class SmartServerModule implements Module {
 
 	ApplicationData applicationData;
 	ServiceRegistry serviceRegistry;
-	LocalMachineIdentification localMachineIdentification;
+	MachineIdentification machineIdentification;
 
 	@PostConstruct
 	public void loadApplicationData() throws IOException {
-		localMachineIdentification = loadLocalMachineIdentification();
+		machineIdentification = loadLocalMachineIdentification();
 		applicationData = new ApplicationData(
-			() -> localMachineIdentification.generateTheMachineId(),
-			() -> localMachineIdentification.getLocalAddress(),
+			() -> machineIdentification.generateTheMachineId(),
+			() -> machineIdentification.getLocalAddress(),
 			config.getString( "server.smart-server.application.name" ),
 			config.getString( "server.smart-server.application.version" ),
 			getLocalPort(), isLocalProtocolHttps()
@@ -52,7 +52,7 @@ public class SmartServerModule implements Module {
 		return (ServiceRegistry) cdi.load( serviceRegistryClass );
 	}
 
-	LocalMachineIdentification loadLocalMachineIdentification(){
+	MachineIdentification loadLocalMachineIdentification(){
 		Class<?> localMachineIdentification = config.getClass( "server.smart-server.local-address.identification" );
 		if ( localMachineIdentification != null ) {
 			log.warn("The entry point 'server.smart-server.local-address.identification' is deprecated.");
@@ -61,8 +61,8 @@ public class SmartServerModule implements Module {
 		if ( localMachineIdentification == null )
 			localMachineIdentification = config.getClass( "server.smart-server.identification" );
 		if ( localMachineIdentification == null )
-			throw new InstantiationError( "No LocalMachineIdentification defined" );
-		return (LocalMachineIdentification) cdi.load( localMachineIdentification );
+			throw new InstantiationError( "No MachineIdentification defined" );
+		return (MachineIdentification) cdi.load( localMachineIdentification );
 	}
 
 	public int getLocalPort(){

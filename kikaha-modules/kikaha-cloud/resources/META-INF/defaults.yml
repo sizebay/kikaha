@@ -11,7 +11,7 @@ server:
     # automatically perform the service registration into a cluster.
     service-registry:
 
-    identification: kikaha.cloud.smart.DefaultLocalMachineIdentification
+    identification: kikaha.cloud.smart.DefaultMachineIdentification
 
     # Configure how the server should infer its local address
     local-address:

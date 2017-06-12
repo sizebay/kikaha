@@ -12,16 +12,16 @@ import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
 /**
- * Unit tests for {@link DefaultLocalMachineIdentification}.
+ * Unit tests for {@link DefaultMachineIdentification}.
  */
 @RunWith( MockitoJUnitRunner.class )
-public class DefaultLocalMachineIdentificationTest {
+public class DefaultMachineIdentificationTest {
 
 	@Mock Config config;
 
 	@InjectMocks
 	@Spy
-	DefaultLocalMachineIdentification identification;
+    DefaultMachineIdentification identification;
 
 	@Test
 	@Ignore

@@ -10,7 +10,7 @@ import kikaha.core.modules.security.SessionIdGenerator;
  * retrieve the required information. Thus, use this carefully in order to avoid network
  * overhead or latency-related issues.
  */
-public interface LocalMachineIdentification {
+public interface MachineIdentification {
 
 	/**
 	 * Generate an unique identifier to the current machine. Developers are encouraged to

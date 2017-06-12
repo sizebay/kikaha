@@ -4,7 +4,7 @@ import java.io.IOException;
 import javax.inject.Singleton;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.util.EC2MetadataUtils;
-import kikaha.cloud.smart.LocalMachineIdentification;
+import kikaha.cloud.smart.MachineIdentification;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Singleton
-public class AmazonEC2MachineIdentification implements LocalMachineIdentification {
+public class AmazonEC2MachineIdentification implements MachineIdentification {
 
 	@Getter(lazy = true)
 	private final String machineId = EC2MetadataUtils.getInstanceId();
