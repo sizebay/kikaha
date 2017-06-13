@@ -1,7 +1,7 @@
 package kikaha.cloud.smart;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 import lombok.*;
 
@@ -50,6 +50,7 @@ public interface ServiceRegistry {
 		@Getter @NonNull final String version;
 		@Getter final int localPort;
 		@Getter final boolean isHttps;
+		@NonNull ServiceRegistry serviceRegistry;
 
 		public final String getMachineId() throws IOException {
 			return machineId.get();
@@ -57,6 +58,12 @@ public interface ServiceRegistry {
 
 		public final String getLocalAddress() throws IOException {
 			return localAddress.get();
+		}
+
+		public final List<String> getSiblingNodesOnTheCluster() throws IOException {
+			if ( serviceRegistry != null )
+				return serviceRegistry.locateSiblingNodesOnTheCluster( this );
+			return Collections.emptyList();
 		}
 	}
 

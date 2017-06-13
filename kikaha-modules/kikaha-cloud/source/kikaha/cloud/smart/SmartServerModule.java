@@ -32,15 +32,14 @@ public class SmartServerModule implements Module {
 	@PostConstruct
 	public void loadApplicationData() throws IOException {
 		machineIdentification = loadLocalMachineIdentification();
+		serviceRegistry = loadServiceRegistry();
 		applicationData = new ApplicationData(
 			() -> machineIdentification.generateTheMachineId(),
 			() -> machineIdentification.getLocalAddress(),
 			config.getString( "server.smart-server.application.name" ),
 			config.getString( "server.smart-server.application.version" ),
-			getLocalPort(), isLocalProtocolHttps()
+			getLocalPort(), isLocalProtocolHttps(), serviceRegistry
 		);
-
-		serviceRegistry = loadServiceRegistry();
 	}
 
 	ServiceRegistry loadServiceRegistry(){
