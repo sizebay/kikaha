@@ -31,13 +31,16 @@ public interface ServiceRegistry {
 	 * have already joined to the cluster. Although there is no listener to
 	 * be notified about application nodes that joining or leaving the cluster at real time,
 	 * you can call this method whenever you need a fresh list of node nodes that is part of
-	 * the same cluster this application.
+	 * the same cluster this application.<br>
+     * <br>
+	 * In case you don't want to implement this method, please return {@link Collections#emptyList()}
+	 * in order to avoid {@link NullPointerException}.
 	 *
 	 * @return
 	 * @throws IOException
      * @param applicationData
 	 */
-	List<String> locateSiblingNodesOnTheCluster(ApplicationData applicationData) throws IOException;
+	List<ApplicationData> locateSiblingNodesOnTheCluster(ApplicationData applicationData) throws IOException;
 
 	/**
 	 * Contains the basic information needed information to join a cluster.
@@ -50,7 +53,7 @@ public interface ServiceRegistry {
 		@Getter @NonNull final String version;
 		@Getter final int localPort;
 		@Getter final boolean isHttps;
-		@NonNull ServiceRegistry serviceRegistry;
+		@Getter @NonNull final ServiceRegistry serviceRegistry;
 
 		public final String getMachineId() throws IOException {
 			return machineId.get();
@@ -60,10 +63,21 @@ public interface ServiceRegistry {
 			return localAddress.get();
 		}
 
-		public final List<String> getSiblingNodesOnTheCluster() throws IOException {
+		public final List<ApplicationData> getSiblingNodesOnTheCluster() throws IOException {
 			if ( serviceRegistry != null )
 				return serviceRegistry.locateSiblingNodesOnTheCluster( this );
 			return Collections.emptyList();
+		}
+
+		public static ApplicationData nodeOfSameApplication(
+				final ApplicationData applicationData, final String machineId,
+				final String localAddress, final int localPort)
+		{
+			return new ApplicationData(
+					() -> machineId, () -> localAddress,
+					applicationData.name, applicationData.version, localPort,
+					applicationData.isHttps, applicationData.serviceRegistry
+			);
 		}
 	}
 

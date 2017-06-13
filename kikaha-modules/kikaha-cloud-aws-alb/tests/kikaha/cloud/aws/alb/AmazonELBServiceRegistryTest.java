@@ -26,7 +26,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith( MockitoJUnitRunner.class )
 public class AmazonELBServiceRegistryTest {
 
-	final ApplicationData applicationData = new ApplicationData( () -> "unit01", () -> "localhost", "unit01", "1.0", 9000, false);
+	final ApplicationData applicationData = new ApplicationData( () -> "unit01", () -> "localhost", "unit01", "1.0", 9000, false, null);
 
 	@Mock CDI cdi;
 	@Mock Config config;

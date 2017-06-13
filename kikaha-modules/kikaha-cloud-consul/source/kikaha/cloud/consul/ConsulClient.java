@@ -1,20 +1,14 @@
 package kikaha.cloud.consul;
 
 import static java.lang.String.format;
-import static kikaha.core.util.Lang.convert;
-import static kikaha.core.util.Lang.filter;
-import static kikaha.core.util.Lang.first;
-
+import static kikaha.core.util.Lang.*;
 import java.io.IOException;
 import java.util.*;
 import javax.inject.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.type.MapType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.type.*;
 import kikaha.cloud.smart.ServiceRegistry;
+import kikaha.cloud.smart.ServiceRegistry.ApplicationData;
 import kikaha.config.Config;
 import kikaha.core.util.Tuple;
 import kikaha.urouting.serializers.jackson.Jackson;
@@ -110,7 +104,7 @@ public class ConsulClient implements ServiceRegistry {
 	}
 
 	@Override
-	public List<String> locateSiblingNodesOnTheCluster(ApplicationData applicationData) throws IOException {
+	public List<ApplicationData> locateSiblingNodesOnTheCluster(ApplicationData applicationData) throws IOException {
 		final Tuple<Integer, String> response = Http.get(getConsulEndpointBaseURL() + "/v1/agent/services");
 		if ( response.getFirst() != 200 )
 			throw  new IOException( "Could not retrieve data from Consul: " + response.getSecond() );
@@ -121,7 +115,7 @@ public class ConsulClient implements ServiceRegistry {
 		final String name = applicationData.getName() + ":" + applicationData.getVersion();
 		final String id = applicationData.getMachineId();
 		final List<ConsulRegisteredClient> found = filter( clients.values(), c -> name.equals(c.service) && !id.equals( c.id ) );
-		return convert( found, f->f.address );
+		return convert( found, f->f.toApplicationData( applicationData ) );
 	}
 
 	String getConsulEndpointBaseURL(){
@@ -142,4 +136,13 @@ class ConsulRegisteredClient {
 
 	@JsonProperty("Address")
 	String address;
+
+	@JsonProperty("Port")
+	int port;
+
+	ApplicationData toApplicationData( ApplicationData currentApplication ){
+		return ApplicationData.nodeOfSameApplication(
+				currentApplication, id, address, port
+		);
+	}
 }

@@ -49,7 +49,7 @@ public class AmazonELBServiceRegistry implements ServiceRegistry {
 	}
 
 	@Override
-	public List<String> locateSiblingNodesOnTheCluster(ApplicationData applicationData) throws IOException {
+	public List<ApplicationData> locateSiblingNodesOnTheCluster(ApplicationData applicationData) throws IOException {
 		return null;
 	}
 
