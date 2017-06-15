@@ -23,6 +23,10 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>io.skullabs.kikaha</groupId>
+			<artifactId>kikaha-cloud</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast</artifactId>
 		</dependency>

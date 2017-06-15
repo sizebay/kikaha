@@ -55,12 +55,20 @@ public interface ServiceRegistry {
 		@Getter final boolean isHttps;
 		@Getter final ServiceRegistry serviceRegistry;
 
-		public final String getMachineId() throws IOException {
-			return machineId.get();
+		public final String getMachineId() {
+			try {
+				return machineId.get();
+			} catch (IOException e) {
+				throw new IllegalStateException(e);
+			}
 		}
 
-		public final String getLocalAddress() throws IOException {
-			return localAddress.get();
+		public final String getLocalAddress() {
+			try {
+				return localAddress.get();
+			} catch (IOException e) {
+				throw new IllegalStateException(e);
+			}
 		}
 
 		public final List<ApplicationData> getSiblingNodesOnTheCluster() throws IOException {
@@ -71,11 +79,7 @@ public interface ServiceRegistry {
 
 		@Override
 		public String toString() {
-			try {
-				return "ApplicationData("+ getLocalAddress() + ":" + getLocalPort() +")";
-			} catch (IOException e) {
-				throw new IllegalStateException(e);
-			}
+			return "ApplicationData("+ getLocalAddress() + ":" + getLocalPort() +")";
 		}
 
 		public static ApplicationData nodeOfSameApplication(

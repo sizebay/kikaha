@@ -67,13 +67,9 @@ public class SmartServerModuleTest {
 	}
 
 	Answer registerIntoCluster(InvocationOnMock i) {
-		try {
-			final ApplicationData applicationData = i.getArgumentAt(0, ApplicationData.class);
-			applicationData.getMachineId();
-			applicationData.getLocalAddress();
-		} catch ( IOException e ) {
-			e.printStackTrace();
-		}
+		final ApplicationData applicationData = i.getArgumentAt(0, ApplicationData.class);
+		applicationData.getMachineId();
+		applicationData.getLocalAddress();
 		return null;
 	}
 }
