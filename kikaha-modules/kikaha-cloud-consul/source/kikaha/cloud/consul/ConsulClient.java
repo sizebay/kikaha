@@ -137,12 +137,9 @@ class ConsulRegisteredClient {
 	@JsonProperty("Address")
 	String address;
 
-	@JsonProperty("Port")
-	int port;
-
 	ApplicationData toApplicationData( ApplicationData currentApplication ){
 		return ApplicationData.nodeOfSameApplication(
-				currentApplication, id, address, port
+			currentApplication, id, address
 		);
 	}
 }

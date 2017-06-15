@@ -5,7 +5,6 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import kikaha.cloud.smart.ServiceRegistry;
 import kikaha.config.*;
-import kikaha.core.cdi.CDI;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -18,7 +17,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith( MockitoJUnitRunner.class )
 public class ConsulClientTest {
 
-	final ServiceRegistry.ApplicationData applicationData = new ServiceRegistry.ApplicationData( () -> "unit01", () -> "localhost", "unit01", "1.0", 9000, false);
+	final ServiceRegistry.ApplicationData applicationData = new ServiceRegistry.ApplicationData( () -> "unit01", () -> "localhost", "unit01", "1.0", 9000, false, null);
 	final String EXPECTED_REGISTER_MSG = "{\"ID\": \"unit01\",\"Name\": \"unit01:1.0\",\"Address\": \"localhost\",\"Port\": 9000, \"Tags\": [],\"Check\": { \"DeregisterCriticalServiceAfter\": \"90m\", \"HTTP\": \"http://localhost:9000/api/internal/health-check\",\"Interval\": \"1s\"}}";
 
 	Config config = ConfigLoader.loadDefaults();

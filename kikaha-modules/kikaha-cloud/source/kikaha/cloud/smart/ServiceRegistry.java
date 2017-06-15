@@ -53,7 +53,7 @@ public interface ServiceRegistry {
 		@Getter @NonNull final String version;
 		@Getter final int localPort;
 		@Getter final boolean isHttps;
-		@Getter @NonNull final ServiceRegistry serviceRegistry;
+		@Getter final ServiceRegistry serviceRegistry;
 
 		public final String getMachineId() throws IOException {
 			return machineId.get();
@@ -71,11 +71,11 @@ public interface ServiceRegistry {
 
 		public static ApplicationData nodeOfSameApplication(
 				final ApplicationData applicationData, final String machineId,
-				final String localAddress, final int localPort)
+				final String localAddress)
 		{
 			return new ApplicationData(
 					() -> machineId, () -> localAddress,
-					applicationData.name, applicationData.version, localPort,
+					applicationData.name, applicationData.version, applicationData.localPort,
 					applicationData.isHttps, applicationData.serviceRegistry
 			);
 		}

@@ -86,7 +86,7 @@ public class AmazonELBServiceRegistryTest {
 		doReturn( sdkHttpMetadata ).when(deregisterTargetsResult).getSdkHttpMetadata();
 
 		registry.amazonWebServiceConfiguration = amazonWebServiceConfiguration;
-		registry.elasticLoadBalancing = client;
+		registry.elb = client;
 		registry = Mockito.spy( registry );
 	}
 

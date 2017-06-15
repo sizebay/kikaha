@@ -1,20 +1,13 @@
 package kikaha.cloud.consul;
 
-import kikaha.cloud.smart.ServiceRegistry;
+import static org.junit.Assert.assertNotNull;
+import java.io.IOException;
+import java.util.List;
+import javax.inject.Inject;
 import kikaha.cloud.smart.ServiceRegistry.ApplicationData;
 import kikaha.core.test.KikahaRunner;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
-
-import javax.inject.Inject;
-import java.io.IOException;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
-import java.util.List;
-
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by miere.teixeira on 12/06/2017.
@@ -29,7 +22,7 @@ public class ConsulClientITest {
     @Ignore
     public void ensureCanJoinTheClusterDefinedOnTheConfigurationFile() throws IOException, InterruptedException {
         consulClient.registerIntoCluster( applicationData );
-        final List<String> foundAddresses = consulClient.locateSiblingNodesOnTheCluster(applicationData);
+        final List<ApplicationData> foundAddresses = consulClient.locateSiblingNodesOnTheCluster(applicationData);
         assertNotNull( foundAddresses );
         consulClient.deregisterFromCluster( applicationData );
     }
