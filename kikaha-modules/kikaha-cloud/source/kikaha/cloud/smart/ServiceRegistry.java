@@ -69,13 +69,29 @@ public interface ServiceRegistry {
 			return Collections.emptyList();
 		}
 
+		@Override
+		public String toString() {
+			try {
+				return "ApplicationData("+ getLocalAddress() + ":" + getLocalPort() +")";
+			} catch (IOException e) {
+				throw new IllegalStateException(e);
+			}
+		}
+
 		public static ApplicationData nodeOfSameApplication(
 				final ApplicationData applicationData, final String machineId,
 				final String localAddress)
 		{
+			return nodeOfSameApplication( applicationData, machineId, localAddress, applicationData.localPort );
+		}
+
+		public static ApplicationData nodeOfSameApplication(
+				final ApplicationData applicationData, final String machineId,
+				final String localAddress, int localPort)
+		{
 			return new ApplicationData(
 					() -> machineId, () -> localAddress,
-					applicationData.name, applicationData.version, applicationData.localPort,
+					applicationData.name, applicationData.version, localPort,
 					applicationData.isHttps, applicationData.serviceRegistry
 			);
 		}
