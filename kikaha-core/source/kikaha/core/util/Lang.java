@@ -29,4 +29,8 @@ public interface Lang {
 				newItems.add( t );
 		return newItems;
 	}
+
+	static boolean isUndefined(String s) {
+		return s == null || s.isEmpty();
+	}
 }

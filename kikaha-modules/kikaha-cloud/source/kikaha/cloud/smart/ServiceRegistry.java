@@ -3,6 +3,7 @@ package kikaha.cloud.smart;
 import java.io.IOException;
 import java.util.*;
 
+import kikaha.core.modules.security.SessionIdGenerator;
 import lombok.*;
 
 /**
@@ -55,7 +56,7 @@ public interface ServiceRegistry {
 		@Getter final boolean isHttps;
 		@Getter final ServiceRegistry serviceRegistry;
 
-		public final String getMachineId() {
+		public String getMachineId() {
 			try {
 				return machineId.get();
 			} catch (IOException e) {
@@ -63,7 +64,7 @@ public interface ServiceRegistry {
 			}
 		}
 
-		public final String getLocalAddress() {
+		public String getLocalAddress() {
 			try {
 				return localAddress.get();
 			} catch (IOException e) {
@@ -71,10 +72,14 @@ public interface ServiceRegistry {
 			}
 		}
 
-		public final List<ApplicationData> getSiblingNodesOnTheCluster() throws IOException {
+		public List<ApplicationData> getSiblingNodesOnTheCluster() throws IOException {
 			if ( serviceRegistry != null )
 				return serviceRegistry.locateSiblingNodesOnTheCluster( this );
 			return Collections.emptyList();
+		}
+
+		public String getCanonicalName(){
+			return getName() + ":" + getVersion();
 		}
 
 		@Override
@@ -97,6 +102,21 @@ public interface ServiceRegistry {
 					() -> machineId, () -> localAddress,
 					applicationData.name, applicationData.version, localPort,
 					applicationData.isHttps, applicationData.serviceRegistry
+			);
+		}
+
+		/**
+		 * Deprecated constructor method that should be used only for test propose.
+		 *
+		 * @param localAddress
+		 * @return
+		 */
+		@Deprecated
+		public static ApplicationData forTest( final String localAddress ) {
+			return new ApplicationData(
+				() -> SessionIdGenerator.generate(), () -> localAddress,
+				"dummy", "1.0.0", 8080,
+				false, null
 			);
 		}
 	}

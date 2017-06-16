@@ -14,4 +14,15 @@ public class ContextProducerFactory {
 		return producers.get( clazz );
 	}
 
+	/**
+	 * Will register a producer if no producer was already registered.
+	 *
+	 * @param clazz
+	 * @param producer
+	 * @param <T>
+ 	 * @return {@code true} if the producer was registered.
+	 */
+	synchronized public <T> boolean registerProducer( final Class<T> clazz, final ContextProducer<T> producer ) {
+		return producers.putIfAbsent( clazz, producer ) == null;
+	}
 }

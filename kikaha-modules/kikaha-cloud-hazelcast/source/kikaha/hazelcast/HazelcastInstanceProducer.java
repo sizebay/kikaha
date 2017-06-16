@@ -23,6 +23,9 @@ public class HazelcastInstanceProducer {
 	Config config;
 
 	@Inject
+	com.hazelcast.config.Config hazelcastConfig;
+
+	@Inject
 	@Typed( HazelcastConfigurationListener.class )
 	Iterable<HazelcastConfigurationListener> configurationListeners;
 
@@ -33,11 +36,9 @@ public class HazelcastInstanceProducer {
 	}
 
 	/**
-	 * Produce a Hazelcast Instance. It will ensure that has only one instance
-	 * of Hazelcast. You are always able to "inject"
-	 * {@code HazelcastInstanceProducer} and call
-	 * {@code createHazelcastInstance()} method manually to produce more
-	 * Hazelcast instances.
+	 * Produce a Hazelcast Instance. It will ensure that has only one instance of Hazelcast.
+	 * You are always able to inject {@code HazelcastInstanceProducer} and call
+	 * {@code createHazelcastInstance()} method manually to produce more Hazelcast instances.
 	 *
 	 * @return a HazelcastInstance
 	 * @see HazelcastInstanceProducer#createHazelcastInstance()
@@ -61,28 +62,12 @@ public class HazelcastInstanceProducer {
 	 */
 	public HazelcastInstance createHazelcastInstance() {
 		try {
-			final com.hazelcast.config.Config cfg = loadConfig();
-			for ( HazelcastConfigurationListener listener : configurationListeners )
-				listener.onConfigurationLoaded( cfg );
-			return Hazelcast.newHazelcastInstance( cfg );
+			return Hazelcast.newHazelcastInstance( hazelcastConfig );
 		// UNCHECKED: It should handle any exception thrown
 		} catch ( final Exception cause ) {
 		// CHECKED
 			log.error( "Can't initialize Hazelcast", cause );
 			throw new IllegalStateException( cause );
 		}
-	}
-
-	/**
-	 * Configure a connection as a cluster node.
-	 *
-	 * @return ClientConfig
-	 */
-	private com.hazelcast.config.Config loadConfig() throws Exception {
-		final String configFile = config.getString("server.hazelcast.config");
-		final InputStream inputStream = SystemResource.openFile( configFile );
-		final com.hazelcast.config.Config config = new XmlConfigBuilder( inputStream ).build();
-		config.setProperty( "hazelcast.logging.type", "slf4j" );
-		return config;
 	}
 }
