@@ -3,7 +3,11 @@ package kikaha.core.modules.smart;
 import java.util.*;
 import io.undertow.server.HttpServerExchange;
 import kikaha.core.cdi.helpers.TinyList;
+import kikaha.core.util.Lang;
 import lombok.*;
+
+import static java.lang.String.join;
+import static kikaha.core.util.Lang.convert;
 
 @RequiredArgsConstructor
 public class DefaultMatcher implements RequestMatcher {
@@ -19,7 +23,12 @@ public class DefaultMatcher implements RequestMatcher {
 		return true;
 	}
 
-	public static RequestMatcher from( final SmartRouteRule rule )
+	@Override
+	public String toString() {
+		return "[" + join( ",", convert( listOfMatchers, m -> m.toString() ) ) + "]";
+	}
+
+	public static RequestMatcher from(final SmartRouteRule rule )
 	{
 		final TinyList<RequestMatcher> list = new TinyList<>();
 		list.add( VirtualHostMatcher.from( rule.virtualHost() ) );

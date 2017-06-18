@@ -13,6 +13,9 @@ public class EmptyFilter implements Filter {
 
 	@Override
 	public void doFilter(HttpServerExchange exchange, FilterChainFactory.FilterChain chain) throws Exception {
-		throw new UnsupportedOperationException("doFilter not implemented yet!");
+		if ( exchange.getRelativePath().startsWith( "/assets/" ) )
+			chain.runNext();
+		else
+			throw new UnsupportedOperationException("doFilter not implemented yet!");
 	}
 }

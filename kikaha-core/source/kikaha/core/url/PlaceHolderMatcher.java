@@ -25,4 +25,9 @@ public class PlaceHolderMatcher implements Matcher {
 			buffer.append( foundParameters.get( placeholder ) )
 				.append( nextChar );
 	}
+
+	@Override
+	public String toString() {
+		return placeholder + " (*"+nextChar+")";
+	}
 }

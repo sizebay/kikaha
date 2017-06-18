@@ -61,6 +61,8 @@ server:
   static:
     enabled: false
     location: "webapp"
+    webjar-enabled: false
+    webjar-url-prefix: "/assets/"
 
   # Smart routes
   smart-routes:

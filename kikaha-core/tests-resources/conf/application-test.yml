@@ -18,6 +18,7 @@ server:
 
   static:
     enabled: true
+    webjar-enabled: true
 
   smart-routes:
 
@@ -42,17 +43,15 @@ server:
         virtual-host: "test.localdomain"
         to: "/test/{something}/admin"
       -
-        to: "/test/{something}/admin"
-      -
         path: "/{domain}-{action}.jsp?id={id}"
         to: "/{domain}/{id}/{action}/"
 
     reverse:
-      - path: "/{domain}-{action}.jsp?id={id}"
+      - path: "/reverse/{domain}-{action}.jsp?id={id}"
         to: "http://localhost:8765"
 
     filter:
-      - path: "/{action}/{id}"
+      - path: "/filter/{action}/{id}/"
         to: "http://localhost/do/{{action}}?id={{id}}"
 
     static-headers:
@@ -73,6 +72,7 @@ server:
 
     default-excluded-patterns:
       - "/ignore1/*"
+      - "/assets/*"
 
     rules:
       - pattern: "/*"

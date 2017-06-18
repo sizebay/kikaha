@@ -1,6 +1,10 @@
 package kikaha.core.util;
 
 import java.io.*;
+
+import io.undertow.server.handlers.resource.ClassPathResourceManager;
+import io.undertow.server.handlers.resource.FileResourceManager;
+import io.undertow.server.handlers.resource.ResourceManager;
 import lombok.NonNull;
 
 /**
@@ -48,7 +52,8 @@ public interface SystemResource {
 		if ( stream == null )
 			stream = ClassLoader.getSystemResourceAsStream( fileName );
 		if ( stream == null ) {
-			fileName = fileName.replaceFirst( "^/", "" );
+			if ( fileName.charAt( 0 ) == '/' )
+				fileName = fileName.substring(1);
 			stream = ClassLoader.getSystemResourceAsStream( fileName );
 		}
 		return stream;
@@ -64,5 +69,13 @@ public interface SystemResource {
 		} catch ( IOException cause ) {
 			throw new IllegalStateException( cause );
 		}
+	}
+
+	static ResourceManager loadResourceManagerFor(String location) {
+		final File locationAsFile = new File(location);
+		if ( locationAsFile.exists() )
+			return new FileResourceManager( locationAsFile, 100 );
+		final ClassLoader classLoader = SystemResource.class.getClassLoader();
+		return new ClassPathResourceManager( classLoader, location );
 	}
 }
