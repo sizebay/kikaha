@@ -1,20 +1,16 @@
 package kikaha.core.modules.http;
 
-import java.io.*;
-import java.util.Map;
+import java.io.IOException;
 import javax.inject.*;
 import io.undertow.Undertow;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
+import io.undertow.server.*;
 import io.undertow.server.handlers.resource.*;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
 import kikaha.core.url.URLMatcher;
-import kikaha.core.util.LastValueOnlyMap;
-import kikaha.core.util.SystemResource;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import kikaha.core.util.*;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -46,9 +42,9 @@ public class StaticResourceModule implements Module {
 			final String webJarInternalLocation = staticConfig.getString("webjar-location", DEFAULT_WEBJAR_LOCATION);
 			final ResourceManager resourceManager = SystemResource.loadResourceManagerFor( webJarInternalLocation );
 			final HttpHandler webjarHandler = new WebJarHttpHandler(
-				new ResourceHandler(resourceManager, context.fallbackHandler() ),
+				new ResourceHandler(resourceManager, context.rootHandler() ),
 				URLMatcher.compile( urlPrefix + "/{path}" ) );
-			context.register( urlPrefix + "/*", webjarHandler );
+			context.rootHandler( webjarHandler );
 		}
 	}
 
