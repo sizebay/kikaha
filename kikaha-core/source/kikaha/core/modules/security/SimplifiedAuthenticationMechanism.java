@@ -13,7 +13,7 @@ import java.util.Iterator;
 public interface SimplifiedAuthenticationMechanism extends AuthenticationMechanism {
 
     /**
-     * Executes a common authentication scenario. If no credentials were found, then no {@link Account}
+     * Executes a common authentication scenario. If no credentials were found, onFinish no {@link Account}
      * will be returned.
      *
      * @param exchange

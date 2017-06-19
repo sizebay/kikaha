@@ -1,9 +1,11 @@
-package kikaha.uworkers.core;
+package kikaha.core.util;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+
+import kikaha.core.cdi.helpers.TinyList;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
+@SuppressWarnings("unchecked")
 public class Threads implements AutoCloseable {
 
 	final Queue<Future<?>> asyncJobs = new ArrayDeque<>();
@@ -34,8 +37,12 @@ public class Threads implements AutoCloseable {
 		asyncJobs.add( future );
 	}
 
-	public BackgroundJob background() {
-		return new BackgroundJob();
+	public <R> BackgroundJob<R>  background() {
+		return new BackgroundJob<> ();
+	}
+
+	public <R> BackgroundJob<R>  computeInBackground( Class<R> responseType ) {
+		return new BackgroundJob<> ();
 	}
 
 	public synchronized void shutdown(){
@@ -88,59 +95,91 @@ public class Threads implements AutoCloseable {
 	/**
 	 * Represents a set of tasks that would/should be executed in background.
 	 */
-	public class BackgroundJob implements AutoCloseable {
+
+	public class BackgroundJob<R> implements AutoCloseable {
 
 		final Queue<Future<?>> asyncJobs = new ArrayDeque<>();
-		Consumer<Exception> onError = e -> e.printStackTrace();
+		Consumer<Throwable> onError = e -> e.printStackTrace();
+		Consumer<List<R>> onFinish = e -> {};
 
-		public BackgroundJob run(RunnableThatMayFail runnable ) {
+		public BackgroundJob run( RunnableThatMayFail runnable ) {
 			final ParallelJobRunner jobRunner = new ParallelJobRunner(runnable, onError);
+			return run( jobRunner );
+		}
+
+		public <T> BackgroundJob<R> compute( Callable<T> callable ) {
+			final ParallelJobRunner jobRunner = new ParallelJobRunner(callable, onError);
+			return run( jobRunner );
+		}
+
+		private BackgroundJob<R> run( final ParallelJobRunner jobRunner ) {
 			final Future<?> future = executorService.submit(jobRunner);
 			asyncJobs.add( future );
 			return this;
 		}
 
-		public BackgroundJob onError( Consumer<Exception> errorHandler ){
+		public BackgroundJob<R> onError( Consumer<Throwable> errorHandler ){
 			if ( !asyncJobs.isEmpty() )
 				throw new IllegalStateException( "Cannot handle while jobs are running..." );
 			this.onError = errorHandler;
 			return this;
 		}
 
-		public void await() {
+		public BackgroundJob<R> onFinish(Consumer<List<R>> successHandler ) {
+			if ( !asyncJobs.isEmpty() )
+				throw new IllegalStateException( "Cannot handle while jobs are running..." );
+			this.onFinish = successHandler;
+			return this;
+		}
+
+		public List<R> awaitResponses(){
+			final List<R> response = new TinyList<>();
 			try {
 				Future<?> future;
 				while ((future = asyncJobs.poll()) != null)
-					future.get();
+					response.add( (R) future.get());
+				onFinish.accept( response );
 			} catch ( ExecutionException | InterruptedException c ) {
 				throw new IllegalStateException(c);
 			}
+			return response;
 		}
 
 		@Override
 		public void close() {
 			await();
 		}
+
+		public void await() {
+			awaitResponses();
+		}
 	}
 
 	@FunctionalInterface
-	public interface RunnableThatMayFail {
+	public interface RunnableThatMayFail extends Callable {
+
+		default Object call() throws Exception {
+			run();
+			return null;
+		}
+
 		void run() throws Exception;
 	}
 }
 
 @RequiredArgsConstructor
-class ParallelJobRunner implements Runnable {
+class ParallelJobRunner implements Callable {
 
-	final Threads.RunnableThatMayFail runnable;
-	final Consumer<Exception> onErrorHandler;
+	final Callable runnable;
+	final Consumer<Throwable> onErrorHandler;
 
 	@Override
-	public void run() {
+	public Object call() {
 		try {
-			runnable.run();
+			return runnable.call();
 		} catch ( Exception e ) {
 			onErrorHandler.accept( e );
 		}
+		return null;
 	}
 }

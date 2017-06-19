@@ -1,11 +1,9 @@
 package kikaha.uworkers.local;
 
-import kikaha.uworkers.core.Threads;
+import kikaha.core.util.Threads;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.Value;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;

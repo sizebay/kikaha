@@ -87,7 +87,7 @@ public class SecurityConfiguration {
 	}
 
 	void logDetailedInformationAboutThisConfig(){
-		log.info( "Defined security parameters (depending on the modules you've loaded, not all then are actually in use):" );
+		log.info( "Defined security parameters (depending on the modules you've loaded, not all onFinish are actually in use):" );
 		log.info( "  security-context-factory: " + getClassName(factory) );
 		log.info( "  session-id-manager: " + getClassName(sessionIdManager) );
 		log.info( "  session-store: " + getClassName(sessionStore) );

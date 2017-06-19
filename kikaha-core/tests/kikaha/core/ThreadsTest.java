@@ -1,10 +1,11 @@
-package kikaha.uworkers.core;
+package kikaha.core;
 
 import static org.junit.Assert.assertEquals;
-import java.util.concurrent.CountDownLatch;
 
-import org.junit.After;
-import org.junit.Before;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import kikaha.core.util.Threads;
 import org.junit.Test;
 
 /**
@@ -55,10 +56,26 @@ public class ThreadsTest {
 	@Test( expected = IllegalStateException.class )
 	public void cannotDefineAErrorBeforeRunJobs(){
 		try ( final Threads threads = Threads.fixedPool(TEN) ) {
-			final Threads.BackgroundJob background = threads.background();
+			final Threads.BackgroundJob<?> background = threads.background();
 			for (int i = 0; i < TEN; i++)
 				background.run(() -> counter.countDown());
-			background.onError(e -> e.printStackTrace());
+			background.onError( e -> e.printStackTrace());
+		}
+	}
+
+	@Test
+	public void canAwaitForAllResponses(){
+		try ( final Threads threads = Threads.fixedPool(TEN) ) {
+			final AtomicInteger
+				counter = new AtomicInteger(0),
+				sum = new AtomicInteger(0);
+			final Threads.BackgroundJob<Integer> background = threads.computeInBackground( Integer.class )
+					.onFinish( r -> r.forEach(i -> sum.addAndGet( i ) ) )
+					.onError( e -> e.printStackTrace());
+			for (int i = 0; i < TEN; i++)
+				background.compute( () -> counter.getAndIncrement() );
+			background.awaitResponses();
+			assertEquals( 45, sum.get() );
 		}
 	}
 }

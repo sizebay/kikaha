@@ -59,6 +59,6 @@ public class SQSExchange implements Exchange {
 
 	@Override
 	public Response then(BiConsumer<UndefinedObject, Throwable> listener) {
-		throw new UnsupportedOperationException("then not available on SQS' Exchange!");
+		throw new UnsupportedOperationException("onFinish not available on SQS' Exchange!");
 	}
 }

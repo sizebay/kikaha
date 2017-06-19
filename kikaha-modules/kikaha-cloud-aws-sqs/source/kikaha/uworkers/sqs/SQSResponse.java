@@ -20,6 +20,6 @@ public class SQSResponse implements Response {
 
 	@Override
 	public Response then(BiConsumer<UndefinedObject, Throwable> listener) {
-		throw new UnsupportedOperationException("then not implemented yet!");
+		throw new UnsupportedOperationException("onFinish not implemented yet!");
 	}
 }
