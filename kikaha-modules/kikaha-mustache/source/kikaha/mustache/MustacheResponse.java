@@ -1,32 +1,23 @@
 package kikaha.mustache;
 
-import java.util.Collections;
-import java.util.Iterator;
-
-import kikaha.urouting.api.Header;
-import kikaha.urouting.api.Mimes;
-import kikaha.urouting.api.Response;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.Setter;
+import io.undertow.util.HttpString;
+import kikaha.core.cdi.helpers.TinyList;
+import kikaha.urouting.api.*;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 @Setter
 @Getter
 @Accessors( fluent = true )
 @NoArgsConstructor( staticName = "ok" )
-public class MustacheResponse implements Response {
+public class MustacheResponse implements Response, MutableResponse {
 
 	final MustacheTemplate entity = new MustacheTemplate();
-	final String encoding = "UTF-8";
-	final Iterable<Header> headers = EmptyHeaders.INSTANCE;
+	final Iterable<Header> headers = new TinyList<>();
+	final String contentType = Mimes.HTML;
 
-	@NonNull
-	String contentType = Mimes.HTML;
-
-	@NonNull
-	Integer statusCode = 200;
+	String encoding = "UTF-8";
+	int statusCode = 200;
 
 	public MustacheResponse paramObject( final Object entity ) {
 		this.entity.paramObject( entity );
@@ -37,15 +28,19 @@ public class MustacheResponse implements Response {
 		this.entity.templateName( templateName );
 		return this;
 	}
-}
-
-class EmptyHeaders implements Iterable<Header> {
-
-	static EmptyHeaders INSTANCE = new EmptyHeaders();
-	final Iterator<Header> iterator = Collections.emptyIterator();
 
 	@Override
-	public Iterator<Header> iterator() {
-		return iterator;
+	public MustacheResponse entity(Object entity) {
+		throw new UnsupportedOperationException("entity is immutable!");
+	}
+
+	@Override
+	public MustacheResponse headers(Iterable<Header> headers) {
+		throw new UnsupportedOperationException("headers is immutable!");
+	}
+
+	@Override
+	public MustacheResponse header(HttpString name, String value) {
+		throw new UnsupportedOperationException("header is immutable!");
 	}
 }

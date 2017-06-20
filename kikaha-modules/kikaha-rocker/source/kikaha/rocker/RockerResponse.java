@@ -1,24 +1,26 @@
 package kikaha.rocker;
 
-import kikaha.urouting.api.Header;
-import kikaha.urouting.api.Mimes;
-import kikaha.urouting.api.Response;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.*;
+import io.undertow.util.HttpString;
+import kikaha.core.cdi.helpers.TinyList;
+import kikaha.urouting.api.*;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 /**
  * @author <a href="mailto:j.milagroso@gmail.com">Jay Milagroso</a>
  */
-
-public class RockerResponse implements Response {
+@Getter
+@Setter
+@Accessors( fluent = true )
+public class RockerResponse implements Response, MutableResponse {
 
     final RockerTemplate entity = new RockerTemplate();
-    final String encoding = "UTF-8";
-    final Iterable<Header> headers = EmptyHeaders.INSTANCE;
+    final List<Header> headers = new TinyList<>();
+    final String contentType = Mimes.HTML;
 
-    String contentType = Mimes.HTML;
-
-    Integer statusCode = 200;
+    String encoding = "UTF-8";
+    int statusCode = 200;
 
     public RockerResponse objects( final Object entity ) {
         this.entity.setObjects( entity );
@@ -31,38 +33,17 @@ public class RockerResponse implements Response {
     }
 
     @Override
-    public Object entity() {
-        return null;
+    public RockerResponse entity(Object entity) {
+        throw new UnsupportedOperationException("entity is immutable!");
     }
 
     @Override
-    public Integer statusCode() {
-        return null;
+    public RockerResponse headers(Iterable<Header> headers) {
+        throw new UnsupportedOperationException("headers is immutable!");
     }
 
     @Override
-    public String encoding() {
-        return null;
-    }
-
-    @Override
-    public String contentType() {
-        return null;
-    }
-
-    @Override
-    public Iterable<Header> headers() {
-        return null;
-    }
-}
-
-class EmptyHeaders implements Iterable<Header> {
-
-    static EmptyHeaders INSTANCE = new EmptyHeaders();
-    final Iterator<Header> iterator = Collections.emptyIterator();
-
-    @Override
-    public Iterator<Header> iterator() {
-        return iterator;
+    public RockerResponse header(HttpString name, String value) {
+        throw new UnsupportedOperationException("header is immutable!");
     }
 }

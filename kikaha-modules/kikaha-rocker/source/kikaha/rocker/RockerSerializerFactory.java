@@ -8,6 +8,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class RockerSerializerFactory {
+
     @Inject
     RockerSerializer serializer;
 

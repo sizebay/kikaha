@@ -1,7 +1,6 @@
 package kikaha.urouting.api;
 
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 @Setter
@@ -12,7 +11,7 @@ final public class WrappedResponse implements Response {
 	final Response wrapped;
 
 	Object entity;
-	Integer statusCode;
+	int statusCode;
 	String encoding;
 	String contentType;
 
@@ -29,8 +28,8 @@ final public class WrappedResponse implements Response {
 	}
 
 	@Override
-	public Integer statusCode() {
-		if ( statusCode != null )
+	public int statusCode() {
+		if ( statusCode > 0 )
 			return statusCode;
 		return wrapped.statusCode();
 	}

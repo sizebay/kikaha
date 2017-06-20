@@ -1,53 +1,47 @@
 package kikaha.rocker;
 
-import com.fizzed.rocker.BindableRockerModel;
-import com.fizzed.rocker.RockerModel;
-import com.fizzed.rocker.TemplateBindException;
-import com.fizzed.rocker.runtime.ArrayOfByteArraysOutput;
-import com.fizzed.rocker.runtime.RockerRuntime;
-import kikaha.config.Config;
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.List;
+import javax.inject.Singleton;
+import com.fizzed.rocker.*;
+import com.fizzed.rocker.runtime.*;
+import io.undertow.server.HttpServerExchange;
+import kikaha.core.modules.http.ContentType;
+import kikaha.urouting.api.*;
 
 /**
  * @author <a href="mailto:j.milagroso@gmail.com">Jay Milagroso</a>
  */
 @Singleton
-public class RockerSerializer {
-    private boolean shouldCacheTemplates;
+@ContentType( Mimes.HTML )
+public class RockerSerializer implements Serializer {
 
-    @Inject
-    Config config;
+    final RockerRuntime runtime = RockerRuntime.getInstance();
 
-    @PostConstruct
-    public void readConfiguration() {
-        shouldCacheTemplates = config.getBoolean( "server.rocker.cache-templates" );
+    @Override
+    public <T> void serialize(T object, HttpServerExchange exchange, String encoding) throws IOException {
+        final RockerTemplate template = (RockerTemplate)object;
+        final String serialized = serialize(template);
+        exchange.getResponseSender().send(serialized);
     }
 
     public String serialize( final RockerTemplate object ) {
         final Writer writer = new StringWriter();
-
         serialize( object, writer );
         return writer.toString();
     }
 
     public void serialize( final RockerTemplate object, final Writer writer ) {
         final String templateName = object.getTemplateName();
-
-        BindableRockerModel template = this.template(templateName, (Object[]) object.getObjects());
-        ArrayOfByteArraysOutput output = template.render(ArrayOfByteArraysOutput.FACTORY);
+        final BindableRockerModel template = this.template(templateName, (Object[]) object.getObjects());
+        final ArrayOfByteArraysOutput output = template.render(ArrayOfByteArraysOutput.FACTORY);
 
         // Convert to array of byte buffers
-        List<byte[]> byteArrays = output.getArrays();
-        int size = byteArrays.size();
-        ByteBuffer[] byteBuffers = new ByteBuffer[size];
+        final List<byte[]> byteArrays = output.getArrays();
+        final int size = byteArrays.size();
+        final ByteBuffer[] byteBuffers = new ByteBuffer[size];
         for (int i = 0; i < size; i++) {
             byteBuffers[i] = ByteBuffer.wrap(byteArrays.get(i));
         }
@@ -55,27 +49,25 @@ public class RockerSerializer {
         try {
             writer.write(output.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException( e );
         }
     }
 
-    static private BindableRockerModel template(String templatePath, Object [] arguments) {
-
+    private BindableRockerModel template(String templatePath, Object [] arguments) {
         // load model from bootstrap (which may recompile if needed)
-        RockerModel model = RockerRuntime.getInstance().getBootstrap().model(templatePath);
-
-        BindableRockerModel bindableRockerModel = new BindableRockerModel(templatePath, model.getClass().getCanonicalName(), model);
+        final RockerModel model = runtime.getBootstrap().model(templatePath);
+        final BindableRockerModel bindableRockerModel = new BindableRockerModel(templatePath, model.getClass().getCanonicalName(), model);
 
         if (arguments != null && arguments.length > 0) {
-            String[] argumentNames = getModelArgumentNames(templatePath, model);
+            final String[] argumentNames = getModelArgumentNames(templatePath, model);
 
             if (arguments.length != argumentNames.length) {
                 throw new TemplateBindException(templatePath, model.getClass().getCanonicalName(), "Template requires " + argumentNames.length + " arguments but " + arguments.length + " provided");
             }
 
             for (int i = 0; i < arguments.length; i++) {
-                String name = argumentNames[i];
-                Object value = arguments[i];
+                final String name = argumentNames[i];
+                final Object value = arguments[i];
                 bindableRockerModel.bind(name, value);
             }
         }
@@ -85,7 +77,7 @@ public class RockerSerializer {
 
     static private String[] getModelArgumentNames(String templatePath, RockerModel model) {
         try {
-            Field f = model.getClass().getField("ARGUMENT_NAMES");
+            final Field f = model.getClass().getField("ARGUMENT_NAMES");
             return (String[])f.get(null);
         } catch (Exception e) {
             throw new TemplateBindException(templatePath, model.getClass().getCanonicalName(), "Unable to read ARGUMENT_NAMES static field from template");
