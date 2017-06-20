@@ -67,6 +67,7 @@ server:
       role: "testable-role"
 
     endpoints:
+      login-template: "default-login.html"
       login-page: "/auth/"
       logout-url: "/auth/logout"
 

@@ -6,9 +6,8 @@ import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
 import io.undertow.server.*;
 import io.undertow.util.*;
-import kikaha.config.Config;
-import kikaha.core.util.SystemResource;
 import kikaha.core.modules.security.*;
+import kikaha.core.util.SystemResource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,7 +22,7 @@ public class AuthLoginHttpHandler implements HttpHandler {
 		FAILURE_MSG = "Can't send message: "
 	;
 
-	@Inject Config config;
+	@Inject DefaultAuthenticationConfiguration config;
 
 	@Inject
 	@Typed( ConfigurationHook.class )
@@ -34,7 +33,7 @@ public class AuthLoginHttpHandler implements HttpHandler {
 
 	String readAndParseTemplate(){
 		final Map<String, Object> templateVariables = readTemplateVariables();
-		final String loginTemplatePage = config.getString( "server.auth.form-auth.login-template", "default-login.html" );
+		final String loginTemplatePage = config.getLoginTemplate();
 		final String template = SystemResource.readFileAsString( loginTemplatePage, "UTF-8" );
 		return applyVariables( template, templateVariables );
 	}

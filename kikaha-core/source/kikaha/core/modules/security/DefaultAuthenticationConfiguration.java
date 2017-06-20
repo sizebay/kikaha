@@ -21,6 +21,7 @@ public class DefaultAuthenticationConfiguration {
 	@Inject Config config;
 
 	private String loginPage;
+	private String loginTemplate;
 	private String errorPage;
 	private String successPage;
 	private String callbackUrl;
@@ -30,6 +31,7 @@ public class DefaultAuthenticationConfiguration {
 	@PostConstruct
 	public void readConfiguration(){
 		final Config authConfig = this.config.getConfig( "server.auth.endpoints" );
+		loginTemplate = authConfig.getString( "login-template", "login.html" );
 		loginPage = authConfig.getString( "login-page" );
 		errorPage = authConfig.getString( "error-page" );
 		successPage = authConfig.getString( "success-page" );
