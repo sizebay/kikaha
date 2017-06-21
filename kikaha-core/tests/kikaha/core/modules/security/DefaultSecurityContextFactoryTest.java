@@ -42,7 +42,15 @@ public class DefaultSecurityContextFactoryTest {
 	}
 
 	@Test
+	public void ensureAuthenticationIsNotRequiredWhenAuthenticationRuleSaysNoAuthenticationIsRequired(){
+		doReturn( false ).when( rule ).authenticationRequired();
+		final DefaultSecurityContext securityContext = factory.createSecurityContextFor(exchange, rule, securityConfiguration);
+		assertFalse( securityContext.isAuthenticationRequired() );
+	}
+
+	@Test
 	public void ensureAuthenticationIsRequiredWhenAuthenticationRuleIsNotEmpty(){
+		doReturn( true ).when( rule ).authenticationRequired();
 		final DefaultSecurityContext securityContext = factory.createSecurityContextFor(exchange, rule, securityConfiguration);
 		assertTrue( securityContext.isAuthenticationRequired() );
 	}

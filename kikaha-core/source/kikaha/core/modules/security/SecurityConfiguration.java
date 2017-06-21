@@ -57,6 +57,7 @@ public class SecurityConfiguration {
 	 * @return
 	 */
 	public SecurityConfiguration setRequestMatcherIfAbsent( AuthenticationRequestMatcher authenticationRequestMatcher ) {
+
 		if ( this.authenticationRequestMatcher == null )
 			this.authenticationRequestMatcher = authenticationRequestMatcher;
 		return this;

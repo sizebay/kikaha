@@ -16,6 +16,6 @@ public class SessionContextProducer implements ContextProducer<Session> {
 	@Override
 	public Session produce( HttpServerExchange exchange ) throws RoutingException {
 		final SecurityContext context = (SecurityContext)exchange.getSecurityContext();
-		return context.getCurrentSession();
+		return context != null ? context.getCurrentSession() : null;
 	}
 }

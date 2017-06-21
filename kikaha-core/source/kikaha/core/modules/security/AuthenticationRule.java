@@ -15,7 +15,7 @@ public class AuthenticationRule {
 	private final static String MSG_INVALID_RULE = "Invalid rule: ";
 	public final static AuthenticationRule EMPTY = new AuthenticationRule(
 			"*", Collections.emptyList(), URLMatcher.EMPTY,
-			Collections.emptyList(), Collections.emptyList(), Collections.emptyList()
+			Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), true
 		);
 
 	final String pattern;
@@ -24,6 +24,7 @@ public class AuthenticationRule {
 	final List<IdentityManager> identityManagers;
 	final List<AuthenticationMechanism> mechanisms;
 	final List<String> expectedRoles;
+	final boolean authenticationRequired;
 
 	// UNCHECKED: this constructor should not be checked
 	public AuthenticationRule(
@@ -31,7 +32,8 @@ public class AuthenticationRule {
 		@NonNull final List<IdentityManager> identityManagers,
 		@NonNull final List<AuthenticationMechanism> mechanisms,
 		@NonNull final List<String> expectedRoles,
-		@NonNull final List<String> exceptionPatterns )
+		@NonNull final List<String> exceptionPatterns,
+		final boolean authenticationRequired)
 	// CHECKED
 	{
 		this.pattern = pattern;
@@ -40,6 +42,7 @@ public class AuthenticationRule {
 		this.mechanisms = mechanisms;
 		this.expectedRoles = expectedRoles;
 		this.exceptionPatterns = convertToURLMatcher( exceptionPatterns );
+		this.authenticationRequired = authenticationRequired;
 		if ( isInvalid() )
 			throw new UnsupportedOperationException( MSG_INVALID_RULE + toString() );
 	}

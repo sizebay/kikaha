@@ -56,6 +56,15 @@ public class ContextualParametersIntegrationTest {
 	}
 
 	@Test
+	public void ensureWillNotReceiveLoggedInUserFromSessionOnceAuthenticationIsNotRequired() throws IOException {
+		final Request.Builder request = url( "http://localhost:19999/it/parameters/contextual/auth-not-required" );
+		final Response response = Http.send( request );
+		final String body = response.body().string();
+		assertEquals( 200, response.code() );
+		assertEquals( "unknown", body );
+	}
+
+	@Test
 	public void ensureUnauthenticatedRequestShouldRespectCORSFilter(){
 		final Request.Builder request = Http.url( "http://localhost:19999/it/parameters/contextual/exchange" )
 				.method( "OPTIONS", null)

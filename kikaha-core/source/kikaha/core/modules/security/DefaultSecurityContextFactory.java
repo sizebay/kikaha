@@ -14,6 +14,7 @@ public class DefaultSecurityContextFactory implements SecurityContextFactory {
 			final AuthenticationRule rule,
 			final SecurityConfiguration securityConfiguration )
 	{
-		return new DefaultSecurityContext(rule, exchange, securityConfiguration, rule != AuthenticationRule.EMPTY);
+		final boolean authenticationRequired = rule != AuthenticationRule.EMPTY && rule.authenticationRequired();
+		return new DefaultSecurityContext(rule, exchange, securityConfiguration, authenticationRequired);
 	}
 }

@@ -29,6 +29,8 @@ server:
 
     rules:
       # Using 'default' as AuthenticationMechanism and IdentityManager
-      - { pattern: "/it/parameters/contextual/*" }
+      - { pattern: "/it/parameters/contextual/*", exclude-patterns: [ "/it/parameters/contextual/auth-not-required" ] }
+      # Same above but no authentication is required
+      - { pattern: "/it/parameters/contextual/auth-not-required", authentication-required: false }
       # Using 'default' as IdentityManager
       - { pattern: "/it/form-auth/*", auth-mechanisms: ["form"] }
