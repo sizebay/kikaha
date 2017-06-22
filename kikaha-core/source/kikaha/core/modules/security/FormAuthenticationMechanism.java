@@ -6,6 +6,7 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormParserFactory;
+import io.undertow.util.Headers;
 import io.undertow.util.Methods;
 import kikaha.core.modules.undertow.Redirect;
 import lombok.Getter;
@@ -86,7 +87,12 @@ public class FormAuthenticationMechanism implements SimplifiedAuthenticationMech
 	}
 
 	private boolean isCurrentRequestTryingToAuthenticate(HttpServerExchange exchange){
-		return isPostLocation(exchange) && exchange.getRequestMethod().equals(Methods.POST);
+		return isPostLocation(exchange) && exchange.getRequestMethod().equals(Methods.POST) && isContentTypeForm(exchange);
+	}
+
+	private boolean isContentTypeForm(HttpServerExchange exchange) {
+		final String contentType = exchange.getRequestHeaders().getFirst(Headers.CONTENT_TYPE);
+		return "multipart/form-data".equals( contentType ) || "application/x-www-form-urlencoded".equals( contentType );
 	}
 
 	private boolean isPostLocation(HttpServerExchange exchange) {
