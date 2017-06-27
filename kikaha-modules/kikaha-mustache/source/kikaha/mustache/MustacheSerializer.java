@@ -57,7 +57,7 @@ public class MustacheSerializer {
 		final File resource = new File(resourcePath);
 		final MustacheResolver mustacheResolver = resource.exists()
 				? new DefaultResolver( resource )
-				: new ClasspathResolver( resourcePath );
+				: new ClasspathResolver( resourcePath.replaceFirst( "^/", "" ) );
 
 		if ( shouldCacheTemplates() )
 			return new DefaultMustacheFactory( mustacheResolver );
