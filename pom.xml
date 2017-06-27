@@ -63,7 +63,7 @@
         <version.junit>4.12</version.junit>
         <version.lombok>1.16.16</version.lombok>
         <version.mockito>1.10.19</version.mockito>
-        <version.jmustache>1.13</version.jmustache>
+        <version.mustache>0.9.4</version.mustache>
         <version.vibur>17.0</version.vibur>
         <version.aws>1.11.125</version.aws>
         <version.metrics>3.1.2</version.metrics>
@@ -289,9 +289,9 @@
                 <version>${version.logback}</version>
             </dependency>
             <dependency>
-                <groupId>com.samskivert</groupId>
-                <artifactId>jmustache</artifactId>
-                <version>${version.jmustache}</version>
+                <groupId>com.github.spullara.mustache.java</groupId>
+                <artifactId>compiler</artifactId>
+                <version>${version.mustache}</version>
             </dependency>
             <dependency>
                 <groupId>org.vibur</groupId>

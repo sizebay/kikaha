@@ -20,7 +20,6 @@
 		<dependency>
 			<groupId>com.github.spullara.mustache.java</groupId>
 			<artifactId>compiler</artifactId>
-			<version>0.9.1</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
