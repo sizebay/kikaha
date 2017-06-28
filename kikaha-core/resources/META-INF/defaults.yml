@@ -108,6 +108,7 @@ server:
       fixed: kikaha.core.modules.security.FixedUserAndPasswordIdentityManager
 
     auth-mechanisms:
+      default: kikaha.core.modules.security.BasicAuthenticationMechanism
       basic: kikaha.core.modules.security.BasicAuthenticationMechanism
       form: kikaha.core.modules.security.FormAuthenticationMechanism
 
