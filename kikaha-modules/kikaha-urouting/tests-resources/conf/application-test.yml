@@ -2,9 +2,6 @@ server:
   http:
     port: 19999
 
-  urouting:
-    content-type-priority: "REQUEST"
-
   smart-routes:
     auth:
       enabled: true

@@ -11,7 +11,6 @@ import io.undertow.util.PathTemplateMatch;
 import kikaha.config.Config;
 import kikaha.urouting.api.*;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PostConstruct;
