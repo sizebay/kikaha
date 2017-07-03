@@ -5,6 +5,7 @@ import javax.inject.*;
 import io.undertow.Undertow;
 import io.undertow.server.*;
 import io.undertow.server.handlers.resource.*;
+import io.undertow.util.AttachmentKey;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
@@ -42,9 +43,9 @@ public class StaticResourceModule implements Module {
 			final String webJarInternalLocation = staticConfig.getString("webjar-location", DEFAULT_WEBJAR_LOCATION);
 			final ResourceManager resourceManager = SystemResource.loadResourceManagerFor( webJarInternalLocation );
 			final HttpHandler webjarHandler = new WebJarHttpHandler(
-				new ResourceHandler(resourceManager, context.rootHandler() ),
+				new ResourceHandler(resourceManager, new WebJarNotFound( context.fallbackHandler() ) ),
 				URLMatcher.compile( urlPrefix + "/{path}" ) );
-			context.rootHandler( webjarHandler );
+			context.fallbackHandler( webjarHandler );
 		}
 	}
 
@@ -70,9 +71,26 @@ class WebJarHttpHandler implements HttpHandler {
 
 	@Override
 	public void handleRequest(HttpServerExchange exchange) throws Exception {
+		exchange.putAttachment( WebJarNotFound.RELATIVE_PATH, exchange.getRelativePath() );
+
 		final LastValueOnlyMap<String,String> matcher = new LastValueOnlyMap<>();
-		uri.matches( exchange.getRelativePath(), matcher );
-		exchange.setRelativePath( matcher.getValue() );
+		if ( uri.matches( exchange.getRelativePath(), matcher ) )
+			exchange.setRelativePath( matcher.getValue() );
+
 		handler.handleRequest( exchange );
+	}
+}
+
+@RequiredArgsConstructor
+class WebJarNotFound implements HttpHandler {
+
+	static final AttachmentKey<String> RELATIVE_PATH = AttachmentKey.create( String.class );
+	final HttpHandler next;
+
+	@Override
+	public void handleRequest(HttpServerExchange exchange) throws Exception {
+		final String relativePath = exchange.getAttachment(RELATIVE_PATH);
+		exchange.setRelativePath( relativePath );
+		next.handleRequest( exchange );
 	}
 }

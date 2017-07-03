@@ -1,20 +1,14 @@
 package kikaha.core.modules.http.it;
 
-import kikaha.core.modules.http.StaticResourceModule;
-import kikaha.core.test.KikahaServerRunner;
-import kikaha.core.util.SystemResource;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import static kikaha.core.modules.http.StaticResourceModule.DEFAULT_WEBJAR_LOCATION;
+import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
-import static kikaha.core.modules.http.StaticResourceModule.DEFAULT_WEBJAR_LOCATION;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import kikaha.core.test.KikahaServerRunner;
+import kikaha.core.util.SystemResource;
+import okhttp3.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * Created by ibratan on 16/06/2017.
@@ -41,5 +35,15 @@ public class WebJarStaticResourceIntegrationTest {
         final String responseAsString  = response.body().string();
         assertNotNull(responseAsString );
         assertEquals( JQUERY_CONTENT, responseAsString );
+    }
+
+    @Test
+    public void ensureThatCanRetrieveLocalFile() throws IOException {
+        final Request.Builder url = new Request.Builder().url("http://localhost:9000/assets/file.js" );
+        final Response response = client.newCall( url.build() ).execute();
+        assertEquals( 200, response.code() );
+        final String responseAsString  = response.body().string();
+        assertNotNull(responseAsString );
+        assertEquals( "file.js", responseAsString );
     }
 }

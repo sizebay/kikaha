@@ -7,9 +7,9 @@ import lombok.*;
 @RequiredArgsConstructor
 public class URLMatcher implements Matcher {
 
-	public static final URLMatcher EMPTY = new URLMatcher( EmptyIterable.instance() );
+	public static final URLMatcher EMPTY = new URLMatcher( Collections.emptyList() );
 
-	final Iterable<Matcher> patternMatchers;
+	final List<Matcher> patternMatchers;
 
 	public boolean matches( final String string, final Map<String, String> foundParameters ) {
 		return matches( new StringCursor( string ), foundParameters );
