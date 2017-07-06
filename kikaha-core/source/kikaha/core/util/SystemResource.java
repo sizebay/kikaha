@@ -12,6 +12,8 @@ import lombok.NonNull;
  */
 public interface SystemResource {
 
+	String OS_NAME = System.getProperty("os.name").toLowerCase();
+
 	static String readFileAsString( String fileName, String encoding) {
 		try ( InputStream file = openFile( fileName ) ) {
 			if ( file == null )
@@ -73,8 +75,10 @@ public interface SystemResource {
 
 	static ResourceManager loadResourceManagerFor(String location) {
 		final File locationAsFile = new File(location);
-		if ( locationAsFile.exists() )
-			return new FileResourceManager( locationAsFile, 100 );
+		if ( locationAsFile.exists() ) {
+			final boolean isCaseSensitive = !OS_NAME.contains("win");
+			return new FileResourceManager(locationAsFile, 100, isCaseSensitive );
+		}
 		final ClassLoader classLoader = SystemResource.class.getClassLoader();
 		return new ClassPathResourceManager( classLoader, location );
 	}
