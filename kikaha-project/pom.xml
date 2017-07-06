@@ -15,14 +15,6 @@
 
     <properties>
         <!-- Configs -->
-        <config.dir.source>${project.basedir}/src/main/java</config.dir.source>
-        <config.dir.source.generated>${project.build.directory}/generated-sources/annotations</config.dir.source.generated>
-        <config.dir.resource>${project.basedir}/src/main/resources</config.dir.resource>
-        <config.dir.test.source>${project.basedir}/src/test/java</config.dir.test.source>
-        <config.dir.test.resource>${project.basedir}/src/test/resources</config.dir.test.resource>
-        <config.dir.test.source.generated>${project.build.directory}/generated-test-sources/annotations</config.dir.test.source.generated>
-        <config.dir.output>${project.basedir}/target</config.dir.output>
-        <config.dir.web>${project.basedir}/src/main/webapp</config.dir.web>
         <config.encoding>UTF-8</config.encoding>
         <!-- Kikaha Maven Plugins -->
         <config.plugins.aws.lambda.force>false</config.plugins.aws.lambda.force>
