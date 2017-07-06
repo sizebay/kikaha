@@ -41,6 +41,11 @@
             <email>miere.teixeira@gmail.com</email>
             <name>Miere Liniel Teixeira</name>
         </developer>
+        <developer>
+            <id>ronei</id>
+            <email>ronei_vinicius@hotmail.com</email>
+            <name>Ronei Vinicius Gebert</name>
+        </developer>
     </developers>
 
     <modules>

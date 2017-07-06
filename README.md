@@ -14,6 +14,7 @@ Kikaha is a micro container writen over the fast Undertow core. It was developed
 - [Cesar Selonke](https://github.com/selonke)
 - [Ricardo Mattiazzi Baumgarter](https://github.com/ladraum)
 - [Miere Liniel Teixeira](https://github.com/miere)
+- [Ronei Vinicius Gebert](https://github.com/roneigebert)
 - [Sizebay](https://github.com/Sizebay) guys
 - [Ibratan](https://github.com/Ibratan) guys
 - [Jay Milagroso](https://github.com/jmilagroso)

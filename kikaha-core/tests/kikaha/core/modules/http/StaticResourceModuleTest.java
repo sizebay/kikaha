@@ -42,7 +42,7 @@ public class StaticResourceModuleTest {
 
 		module.load( null, context );
 		verify( context ).fallbackHandler( any(ResourceHandler.class) );
-		verify( staticConfig).getString( eq("location") );
+		verify( staticConfig, times(2) ).getString( eq("location") );
 	}
 
 	@Test

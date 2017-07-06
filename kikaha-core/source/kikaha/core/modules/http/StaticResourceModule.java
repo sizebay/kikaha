@@ -53,7 +53,7 @@ public class StaticResourceModule implements Module {
 			final WelcomeFileHandler welcomeFileHandler = new WelcomeFileHandler(fileContent, context.fallbackHandler());
 			context.fallbackHandler(welcomeFileHandler);
 		} catch ( Throwable cause ) {
-			log.info( "Could not locate welcome file: " + welcomeFile, cause );
+			log.debug( "Could not locate welcome file: " + welcomeFile, cause );
 		}
 	}
 
