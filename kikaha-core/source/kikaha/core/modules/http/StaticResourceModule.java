@@ -1,18 +1,25 @@
 package kikaha.core.modules.http;
 
-import java.io.IOException;
-import javax.inject.*;
 import io.undertow.Undertow;
-import io.undertow.server.*;
-import io.undertow.server.handlers.resource.*;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.resource.ResourceHandler;
+import io.undertow.server.handlers.resource.ResourceManager;
 import io.undertow.util.AttachmentKey;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
+import kikaha.core.modules.undertow.BodyResponseSender;
 import kikaha.core.url.URLMatcher;
-import kikaha.core.util.*;
-import lombok.*;
+import kikaha.core.util.LastValueOnlyMap;
+import kikaha.core.util.SystemResource;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
 
 /**
  *
@@ -31,8 +38,22 @@ public class StaticResourceModule implements Module {
 	public void load(Undertow.Builder server, DeploymentContext context) throws IOException {
 		final Config staticConfig = config.getConfig("server.static");
 		if ( staticConfig.getBoolean("enabled") ) {
+			deployWelcomeFile(staticConfig, context);
 			deployDefaultStaticRouting(staticConfig, context);
 			deployWebJarStaticRouting(staticConfig, context);
+		}
+	}
+
+	private void deployWelcomeFile(Config staticConfig, DeploymentContext context) {
+		final String welcomeFile = staticConfig.getString("welcome-file", "index.html");
+		try {
+			final String location = staticConfig.getString("location");
+			final String encoding = staticConfig.getString("encoding", "UTF-8");
+			final String fileContent = SystemResource.readFileAsString( location + "/" +  welcomeFile, encoding);
+			final WelcomeFileHandler welcomeFileHandler = new WelcomeFileHandler(fileContent, context.fallbackHandler());
+			context.fallbackHandler(welcomeFileHandler);
+		} catch ( Throwable cause ) {
+			log.info( "Could not locate welcome file: " + welcomeFile, cause );
 		}
 	}
 
@@ -44,7 +65,8 @@ public class StaticResourceModule implements Module {
 			final ResourceManager resourceManager = SystemResource.loadResourceManagerFor( webJarInternalLocation );
 			final HttpHandler webjarHandler = new WebJarHttpHandler(
 				new ResourceHandler(resourceManager, new WebJarNotFound( context.fallbackHandler() ) ),
-				URLMatcher.compile( urlPrefix + "/{path}" ) );
+				URLMatcher.compile( urlPrefix + "/{path}" ),
+					context.fallbackHandler());
 			context.fallbackHandler( webjarHandler );
 		}
 	}
@@ -53,12 +75,10 @@ public class StaticResourceModule implements Module {
 		final String location = staticConfig.getString("location");
 		log.info( "Enabling static routing at folder: " + location );
 		final ResourceManager resourceManager = SystemResource.loadResourceManagerFor( location );
-		setStaticRoutingAsFallbackHandler(resourceManager, context);
-	}
-
-	void setStaticRoutingAsFallbackHandler( ResourceManager resourceManager, DeploymentContext context ){
 		final HttpHandler fallbackHandler = context.fallbackHandler();
 		final ResourceHandler handler = new ResourceHandler(resourceManager, fallbackHandler);
+		final String welcomeFile = staticConfig.getString("welcome-file", "index.html");
+		handler.setWelcomeFiles( welcomeFile );
 		context.fallbackHandler( handler );
 	}
 }
@@ -68,16 +88,18 @@ class WebJarHttpHandler implements HttpHandler {
 
 	final ResourceHandler handler;
 	final URLMatcher uri;
+	final HttpHandler fallbackHandler;
 
 	@Override
 	public void handleRequest(HttpServerExchange exchange) throws Exception {
 		exchange.putAttachment( WebJarNotFound.RELATIVE_PATH, exchange.getRelativePath() );
-
 		final LastValueOnlyMap<String,String> matcher = new LastValueOnlyMap<>();
-		if ( uri.matches( exchange.getRelativePath(), matcher ) )
-			exchange.setRelativePath( matcher.getValue() );
-
-		handler.handleRequest( exchange );
+		if ( uri.matches( exchange.getRelativePath(), matcher ) ) {
+			exchange.setRelativePath(matcher.getValue());
+			handler.handleRequest(exchange);
+		} else {
+			fallbackHandler.handleRequest( exchange );
+		}
 	}
 }
 
@@ -92,5 +114,21 @@ class WebJarNotFound implements HttpHandler {
 		final String relativePath = exchange.getAttachment(RELATIVE_PATH);
 		exchange.setRelativePath( relativePath );
 		next.handleRequest( exchange );
+	}
+}
+
+@RequiredArgsConstructor
+class WelcomeFileHandler implements HttpHandler {
+
+	final String welcomeFileContent;
+	final HttpHandler fallbackHandler;
+
+	@Override
+	public void handleRequest(HttpServerExchange httpServerExchange) throws Exception {
+		if ( httpServerExchange.getRelativePath().equals( "/" ) )
+			BodyResponseSender
+					.response(httpServerExchange, 200, "text/html", welcomeFileContent);
+		else
+			fallbackHandler.handleRequest( httpServerExchange );
 	}
 }
