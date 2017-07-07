@@ -76,7 +76,7 @@
         <versions.rocker>0.20.0</versions.rocker>
         <versions.bcrypt>0.4</versions.bcrypt>
         <!-- Plugin's Versions -->
-        <version.compiler.plugin>3.3</version.compiler.plugin>
+        <version.compiler.plugin>3.6.1</version.compiler.plugin>
         <version.resources.plugin>2.6</version.resources.plugin>
         <version.source.plugin>2.3</version.source.plugin>
         <version.javadoc.plugin>2.10.1</version.javadoc.plugin>
