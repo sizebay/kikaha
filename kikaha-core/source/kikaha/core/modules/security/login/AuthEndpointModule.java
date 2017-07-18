@@ -1,7 +1,7 @@
 package kikaha.core.modules.security.login;
 
-import javax.inject.*;
 import java.io.IOException;
+import javax.inject.*;
 import io.undertow.Undertow.Builder;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
@@ -15,10 +15,10 @@ import kikaha.core.modules.security.DefaultAuthenticationConfiguration;
 public class AuthEndpointModule implements Module {
 
 	@Inject Config config;
-	@Inject
-    DefaultAuthenticationConfiguration formAuthConfiguration;
+	@Inject DefaultAuthenticationConfiguration formAuthConfiguration;
 	@Inject AuthLoginHttpHandler loginHttpHandler;
 	@Inject AuthLogoutHttpHandler logoutHttpHandler;
+	@Inject AuthCallbackVerificationHttpHandler authCallbackVerificationHttpHandler;
 
 	@Override
 	public void load( Builder server, DeploymentContext context ) throws IOException {
@@ -33,6 +33,11 @@ public class AuthEndpointModule implements Module {
 		{
 			final String method = config.getString( "server.smart-routes.auth.logout-http-method", "POST" );
 			context.register( formAuthConfiguration.getLogoutUrl(), method, logoutHttpHandler );
+		}
+
+		if ( !isEmpty( formAuthConfiguration.getCallbackUrl() )
+		&&   config.getBoolean( "server.smart-routes.auth.callback-url-enabled", defaultEnabledState )) {
+			context.register( formAuthConfiguration.getCallbackUrl(), authCallbackVerificationHttpHandler );
 		}
 	}
 
