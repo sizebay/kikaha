@@ -25,7 +25,8 @@ public class AuthenticationRulesDeploymentTest {
 	@Mock HttpHandler nextHandler;
 
 	@Mock SecurityConfiguration securityConfiguration;
-	@Mock DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
+	@Mock
+	AuthenticationEndpoints authenticationEndpoints;
 
 	@Mock AuthenticationRule ruleLowerPriority;
 	@Mock AuthenticationMechanism mechanismLowerPriority;
@@ -37,7 +38,7 @@ public class AuthenticationRulesDeploymentTest {
 		MockitoAnnotations.initMocks( this );
 
 		deployment.securityConfiguration = securityConfiguration;
-		deployment.defaultAuthenticationConfiguration = defaultAuthenticationConfiguration;
+		deployment.authenticationEndpoints = authenticationEndpoints;
 		this.deployment = spy( deployment );
 
 		doReturn( nextHandler ).when( deploymentContext ).rootHandler();
@@ -45,7 +46,7 @@ public class AuthenticationRulesDeploymentTest {
 		doReturn( 0 ).when( mechanismLowerPriority ).priority();
 		doReturn( asList(mechanismHigherPriority) ).when( ruleHigherPriority ).mechanisms();
 		doReturn( asList(mechanismLowerPriority) ).when( ruleLowerPriority ).mechanisms();
-		doReturn( "" ).when( defaultAuthenticationConfiguration ).getPermissionDeniedPage();
+		doReturn( "" ).when(authenticationEndpoints).getPermissionDeniedPage();
 	}
 
 	@Test
@@ -89,7 +90,7 @@ public class AuthenticationRulesDeploymentTest {
 
 		deployment.load( null, deploymentContext );
 
-		verify( mechanismHigherPriority ).configure( eq(securityConfiguration), eq(defaultAuthenticationConfiguration) );
-		verify( mechanismLowerPriority ).configure( eq(securityConfiguration), eq(defaultAuthenticationConfiguration) );
+		verify( mechanismHigherPriority ).configure( eq(securityConfiguration), eq(authenticationEndpoints) );
+		verify( mechanismLowerPriority ).configure( eq(securityConfiguration), eq(authenticationEndpoints) );
 	}
 }

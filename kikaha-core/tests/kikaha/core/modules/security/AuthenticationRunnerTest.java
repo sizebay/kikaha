@@ -19,7 +19,7 @@ public class AuthenticationRunnerTest {
 	@Inject Config config;
 	@Inject CDI provider;
 	@Inject
-    DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
+	AuthenticationEndpoints authenticationEndpoints;
 
 	@Mock SecurityContext securityContext;
 	@Mock HttpHandler rootHandler;
@@ -92,7 +92,7 @@ public class AuthenticationRunnerTest {
 	}
 
 	AuthenticationRuleMatcher mockAuthRuleMatcher() {
-		return spy( new AuthenticationRuleMatcher( provider, config.getConfig("server.auth"), defaultAuthenticationConfiguration) );
+		return spy( new AuthenticationRuleMatcher( provider, config.getConfig("server.auth"), authenticationEndpoints) );
 	}
 
 	Set<String> createExpectedRoles() {

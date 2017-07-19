@@ -32,7 +32,7 @@ public interface AuthenticationMechanism {
 
 	default void configure(
 		SecurityConfiguration securityConfiguration,
-		DefaultAuthenticationConfiguration authenticationConfiguration ) {}
+		AuthenticationEndpoints authenticationConfiguration ) {}
 
 	/**
 	 * Defines the priority for this {@link AuthenticationMechanism}. This value is used to define

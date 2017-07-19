@@ -11,7 +11,7 @@ import kikaha.core.modules.undertow.BodyResponseSender;
 public class AuthCallbackVerificationHttpHandler implements HttpHandler {
 
 	@Inject
-	DefaultAuthenticationConfiguration authenticationConfiguration;
+	AuthenticationEndpoints authenticationConfiguration;
 
 	@Override
 	public void handleRequest(HttpServerExchange exchange) throws Exception {

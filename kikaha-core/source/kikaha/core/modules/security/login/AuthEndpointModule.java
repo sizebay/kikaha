@@ -6,7 +6,7 @@ import io.undertow.Undertow.Builder;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
-import kikaha.core.modules.security.DefaultAuthenticationConfiguration;
+import kikaha.core.modules.security.AuthenticationEndpoints;
 
 /**
  * A module that easily deploy configurable endpoints for 'login' and 'logout' process.
@@ -15,7 +15,7 @@ import kikaha.core.modules.security.DefaultAuthenticationConfiguration;
 public class AuthEndpointModule implements Module {
 
 	@Inject Config config;
-	@Inject DefaultAuthenticationConfiguration formAuthConfiguration;
+	@Inject AuthenticationEndpoints authenticationEndpoints;
 	@Inject AuthLoginHttpHandler loginHttpHandler;
 	@Inject AuthLogoutHttpHandler logoutHttpHandler;
 	@Inject AuthCallbackVerificationHttpHandler authCallbackVerificationHttpHandler;
@@ -24,24 +24,27 @@ public class AuthEndpointModule implements Module {
 	public void load( Builder server, DeploymentContext context ) throws IOException {
 		final boolean defaultEnabledState = config.getBoolean( "server.smart-routes.auth.enabled" );
 
-		if ( !isEmpty( formAuthConfiguration.getLoginPage() )
+		if ( !isEmpty( authenticationEndpoints.getLoginPage() )
 		&&    config.getBoolean( "server.smart-routes.auth.login-form-enabled", defaultEnabledState ) )
-			context.register( formAuthConfiguration.getLoginPage(), "GET", loginHttpHandler );
+			context.register( authenticationEndpoints.getLoginPage(), "GET", loginHttpHandler );
 
-		if ( !isEmpty( formAuthConfiguration.getLogoutUrl() )
+		if ( !isEmpty( authenticationEndpoints.getLogoutUrl() )
 		&&   config.getBoolean( "server.smart-routes.auth.logout-url-enabled", defaultEnabledState ) )
 		{
-			final String method = config.getString( "server.smart-routes.auth.logout-http-method", "POST" );
-			context.register( formAuthConfiguration.getLogoutUrl(), method, logoutHttpHandler );
+			context.register( authenticationEndpoints.getLogoutUrl(),
+				authenticationEndpoints.getLogoutUrlMethod(), logoutHttpHandler );
 		}
 
-		if ( !isEmpty( formAuthConfiguration.getCallbackUrl() )
+		if ( !isEmpty( authenticationEndpoints.getCallbackUrl() )
 		&&   config.getBoolean( "server.smart-routes.auth.callback-url-enabled", defaultEnabledState )) {
-			context.register( formAuthConfiguration.getCallbackUrl(), authCallbackVerificationHttpHandler );
+			context.register(
+				authenticationEndpoints.getCallbackUrl(),
+				authenticationEndpoints.getCallbackUrlMethod(),
+				authCallbackVerificationHttpHandler );
 		}
 	}
 
-	private boolean isEmpty(String logoutUrl) {
-		return logoutUrl == null || logoutUrl.isEmpty();
+	private boolean isEmpty(String string) {
+		return string == null || string.isEmpty();
 	}
 }

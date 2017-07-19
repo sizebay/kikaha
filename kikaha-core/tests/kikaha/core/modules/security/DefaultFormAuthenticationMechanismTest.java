@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 public class DefaultFormAuthenticationMechanismTest {
 
 	@Inject
-    DefaultAuthenticationConfiguration mechanism;
+	AuthenticationEndpoints mechanism;
 
 	@Test
 	public void ensureThatWrappedUpAndFillUpFormAuthenticationMechanismFieldsAsExpected() {

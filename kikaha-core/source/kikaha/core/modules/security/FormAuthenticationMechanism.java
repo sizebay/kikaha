@@ -26,7 +26,8 @@ public class FormAuthenticationMechanism implements SimplifiedAuthenticationMech
 	public static final String LOCATION_ATTRIBUTE = FormAuthenticationMechanism.class.getName() + ".LOCATION";
 	private final FormParserFactory formParserFactory;
 
-	@Inject DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
+	@Inject
+	AuthenticationEndpoints authenticationEndpoints;
 	@Inject FormAuthenticationRequestMatcher matcher;
 
 	public FormAuthenticationMechanism(){
@@ -56,7 +57,7 @@ public class FormAuthenticationMechanism implements SimplifiedAuthenticationMech
 	}
 
 	private void sendRedirectBack(HttpServerExchange exchange) {
-		Redirect.to(exchange, defaultAuthenticationConfiguration.getSuccessPage() );
+		Redirect.to(exchange, authenticationEndpoints.getSuccessPage() );
 	}
 
 	@Override
@@ -80,8 +81,8 @@ public class FormAuthenticationMechanism implements SimplifiedAuthenticationMech
 	@Override
 	public boolean sendAuthenticationChallenge(HttpServerExchange exchange, Session session) {
 		final String newLocation = isCurrentRequestTryingToAuthenticate(exchange)
-				? defaultAuthenticationConfiguration.getErrorPage()
-				: defaultAuthenticationConfiguration.getLoginPage();
+				? authenticationEndpoints.getErrorPage()
+				: authenticationEndpoints.getLoginPage();
 		Redirect.to(exchange, newLocation);
 		return true;
 	}
@@ -96,11 +97,11 @@ public class FormAuthenticationMechanism implements SimplifiedAuthenticationMech
 	}
 
 	private boolean isPostLocation(HttpServerExchange exchange) {
-		return exchange.getRelativePath().equals( defaultAuthenticationConfiguration.getCallbackUrl() );
+		return exchange.getRelativePath().equals( authenticationEndpoints.getCallbackUrl() );
 	}
 
 	@Override
-	public void configure(SecurityConfiguration securityConfiguration, DefaultAuthenticationConfiguration authenticationConfiguration) {
+	public void configure(SecurityConfiguration securityConfiguration, AuthenticationEndpoints authenticationConfiguration) {
 		securityConfiguration.setRequestMatcherIfAbsent( matcher );
 	}
 }

@@ -14,17 +14,18 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 public class FormAuthenticationRequestMatcher implements AuthenticationRequestMatcher {
 
-	@Inject DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
+	@Inject
+	AuthenticationEndpoints authenticationEndpoints;
 
 	@Override
 	public boolean matches( HttpServerExchange exchange ) {
 		final String url = exchange.getRelativePath();
-		return  ( defaultAuthenticationConfiguration.getCallbackUrl().equals( url )
+		return  ( authenticationEndpoints.getCallbackUrl().equals( url )
 			   || ( !isUrlFromAuthenticationResources( url ) ) );
 	}
 
 	private boolean isUrlFromAuthenticationResources( final String url ) {
-		return  defaultAuthenticationConfiguration.getErrorPage().equals( url )
-			||  defaultAuthenticationConfiguration.getLoginPage().equals( url );
+		return  authenticationEndpoints.getErrorPage().equals( url )
+			||  authenticationEndpoints.getLoginPage().equals( url );
 	}
 }

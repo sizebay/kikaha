@@ -1,24 +1,15 @@
 package kikaha.cloud.auth0;
 
-import com.auth0.Auth0Client;
-import com.auth0.Auth0User;
-import com.auth0.QueryParamUtils;
-import com.auth0.Tokens;
+import static kikaha.cloud.auth0.Auth0.*;
+import java.util.Deque;
+import javax.inject.*;
+import com.auth0.*;
 import io.undertow.security.idm.Account;
 import io.undertow.server.HttpServerExchange;
 import kikaha.cloud.auth0.Auth0.*;
-import kikaha.core.modules.security.AuthenticationMechanism;
-import kikaha.core.modules.security.DefaultAuthenticationConfiguration;
-import kikaha.core.modules.security.IdentityManager;
-import kikaha.core.modules.security.Session;
+import kikaha.core.modules.security.*;
 import kikaha.core.modules.undertow.Redirect;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.Deque;
-
-import static kikaha.cloud.auth0.Auth0.*;
 
 /**
  * Extract the credentials from the current request and ask to Auth0 for authorization and authentication.
@@ -27,7 +18,7 @@ import static kikaha.cloud.auth0.Auth0.*;
 @Singleton
 public class Auth0Authentication implements AuthenticationMechanism {
 
-	@Inject DefaultAuthenticationConfiguration formAuthConfig;
+	@Inject kikaha.core.modules.security.AuthenticationEndpoints formAuthConfig;
 	@Inject Auth0Client auth0Client;
 
 	@Override

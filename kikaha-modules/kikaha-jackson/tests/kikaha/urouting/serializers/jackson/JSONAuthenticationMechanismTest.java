@@ -1,11 +1,13 @@
 package kikaha.urouting.serializers.jackson;
 
-import io.undertow.security.idm.Account;
-import io.undertow.security.idm.Credential;
-import io.undertow.server.BlockingHttpExchange;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Headers;
-import io.undertow.util.Methods;
+import static java.util.Collections.singletonList;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import java.io.*;
+import javax.inject.Inject;
+import io.undertow.security.idm.*;
+import io.undertow.server.*;
+import io.undertow.util.*;
 import kikaha.core.modules.security.IdentityManager;
 import kikaha.core.modules.security.*;
 import kikaha.core.test.*;
@@ -13,18 +15,6 @@ import kikaha.urouting.api.Mimes;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
-
-import javax.inject.Inject;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for JSONAuthenticationMechanism.
@@ -56,6 +46,7 @@ public class JSONAuthenticationMechanismTest {
 
 	@Test
 	public void ensureCanReadRequestAndSendUsernameAndPasswordToIdentityManager() throws IOException {
+		exchange.setRequestMethod( Methods.POST );
 		exchange.getRequestHeaders().put(Headers.CONTENT_TYPE, Mimes.JSON );
 		mechanism.authenticate( exchange, singletonList( identityManager ), session );
 		verify( identityManager ).verify( Matchers.eq( expectedCredential ) );
@@ -63,6 +54,7 @@ public class JSONAuthenticationMechanismTest {
 
 	@Test
 	public void ensureCanReturnTheAccountOfAuthenticatedUser() throws IOException {
+		exchange.setRequestMethod( Methods.POST );
 		exchange.getRequestHeaders().put(Headers.CONTENT_TYPE, Mimes.JSON );
 		doReturn( account ).when( identityManager ).verify( Matchers.eq( expectedCredential ) );
 		final Account account = mechanism.authenticate( exchange, singletonList( identityManager ), session );

@@ -22,7 +22,8 @@ public class AuthLoginHttpHandler implements HttpHandler {
 		FAILURE_MSG = "Can't send message: "
 	;
 
-	@Inject DefaultAuthenticationConfiguration config;
+	@Inject
+	AuthenticationEndpoints config;
 
 	@Inject
 	@Typed( ConfigurationHook.class )

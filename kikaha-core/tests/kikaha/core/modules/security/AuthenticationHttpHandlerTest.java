@@ -26,16 +26,17 @@ public class AuthenticationHttpHandlerTest {
 	@Inject SecurityConfiguration securityConfiguration;
 	@Inject CDI provider;
 	@Inject Config config;
-	@Inject DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
+	@Inject
+	AuthenticationEndpoints authenticationEndpoints;
 
 	AuthenticationHttpHandler authenticationHook;
 
 	@Before
 	public void initializeMocks() {
 		MockitoAnnotations.initMocks( this );
-		AuthenticationRuleMatcher authenticationRuleMatcher = new AuthenticationRuleMatcher( provider, config.getConfig("server.auth"), defaultAuthenticationConfiguration);
+		AuthenticationRuleMatcher authenticationRuleMatcher = new AuthenticationRuleMatcher( provider, config.getConfig("server.auth"), authenticationEndpoints);
 		authenticationHook = spy( new AuthenticationHttpHandler(
-				authenticationRuleMatcher, defaultAuthenticationConfiguration.getPermissionDeniedPage(),
+				authenticationRuleMatcher, authenticationEndpoints.getPermissionDeniedPage(),
 				rootHandler, securityConfiguration ) );
 		securityConfiguration.setFactory( factory );
 	}

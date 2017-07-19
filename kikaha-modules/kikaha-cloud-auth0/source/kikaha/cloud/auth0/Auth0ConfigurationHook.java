@@ -1,13 +1,12 @@
 package kikaha.cloud.auth0;
 
 import static kikaha.cloud.auth0.Auth0.STATE;
-
+import java.util.Map;
 import javax.inject.*;
-import java.util.*;
 import io.undertow.server.HttpServerExchange;
-import kikaha.core.util.ChainedMap;
 import kikaha.core.modules.security.*;
 import kikaha.core.modules.security.login.AuthLoginHttpHandler;
+import kikaha.core.util.ChainedMap;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -19,8 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Auth0ConfigurationHook implements AuthLoginHttpHandler.ConfigurationHook {
 
 	@Inject Auth0.AuthConfig authConfig;
-	@Inject
-    DefaultAuthenticationConfiguration formConfig;
+	@Inject kikaha.core.modules.security.AuthenticationEndpoints formConfig;
 
 	@Override
 	public Map<String, Object> getExtraParameters() {

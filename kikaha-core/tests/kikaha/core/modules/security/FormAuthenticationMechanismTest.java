@@ -25,7 +25,7 @@ public class FormAuthenticationMechanismTest {
 	static final String CONTENT_TYPE_FORM_URLENCODED = "application/x-www-form-urlencoded";
 	static final Credential CREDENTIAL = new UsernameAndPasswordCredential("username","password");
 	final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
-	final DefaultAuthenticationConfiguration configuration = new DefaultCDI().load(DefaultAuthenticationConfiguration.class);
+	final AuthenticationEndpoints configuration = new DefaultCDI().load(AuthenticationEndpoints.class);
 	final FormData data = new FormData(2);
 
 	@Mock IdentityManager identityManager;
@@ -121,7 +121,7 @@ public class FormAuthenticationMechanismTest {
 		exchange.setRequestMethod(Methods.POST);
 		exchange.getRequestHeaders().add( Headers.CONTENT_TYPE, contentType );
 		final FormAuthenticationMechanism mechanism = new FormAuthenticationMechanism(formParserFactory);
-		mechanism.defaultAuthenticationConfiguration = configuration;
+		mechanism.authenticationEndpoints = configuration;
 		mechanism.authenticate( exchange, asList(identityManager), session );
 		return mechanism;
 	}

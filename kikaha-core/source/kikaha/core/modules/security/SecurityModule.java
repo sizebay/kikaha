@@ -21,7 +21,8 @@ public class SecurityModule implements Module {
 
 	@Inject CDI provider;
 	@Inject Config config;
-	@Inject DefaultAuthenticationConfiguration defaultAuthenticationConfiguration;
+	@Inject
+	AuthenticationEndpoints authenticationEndpoints;
 	@Inject SecurityConfiguration securityConfiguration;
 
 	@Override
@@ -30,11 +31,11 @@ public class SecurityModule implements Module {
 		if ( !ruleMatcher.rules().isEmpty() ) {
 			log.info( "Configuring authentication rules..." );
 			configureAllAuthenticationMechanismsUsedOnTheApplication( ruleMatcher );
-            defaultAuthenticationConfiguration.logDetailedInformationAboutThisConfig();
+            authenticationEndpoints.logDetailedInformationAboutThisConfig();
 			securityConfiguration.logDetailedInformationAboutThisConfig();
 			final HttpHandler rootHandler = context.rootHandler();
 			final AuthenticationHttpHandler authenticationHandler = new AuthenticationHttpHandler(
-					ruleMatcher, defaultAuthenticationConfiguration.getPermissionDeniedPage(),
+					ruleMatcher, authenticationEndpoints.getPermissionDeniedPage(),
 					rootHandler, securityConfiguration );
 			context.rootHandler(authenticationHandler);
 		}
@@ -42,7 +43,7 @@ public class SecurityModule implements Module {
 
 	void configureAllAuthenticationMechanismsUsedOnTheApplication(AuthenticationRuleMatcher ruleMatcher) {
 		final Collection<AuthenticationMechanism> configurable = getConfigurableMechanisms(ruleMatcher);
-		configurable.forEach( m -> m.configure( securityConfiguration, defaultAuthenticationConfiguration ) );
+		configurable.forEach( m -> m.configure( securityConfiguration, authenticationEndpoints) );
 	}
 
 	Collection<AuthenticationMechanism> getConfigurableMechanisms( AuthenticationRuleMatcher ruleMatcher ){
@@ -56,6 +57,6 @@ public class SecurityModule implements Module {
 	AuthenticationRuleMatcher createRuleMatcher() {
 		return new AuthenticationRuleMatcher(
 			provider, config.getConfig("server.auth"),
-                defaultAuthenticationConfiguration);
+				authenticationEndpoints);
 	}
 }

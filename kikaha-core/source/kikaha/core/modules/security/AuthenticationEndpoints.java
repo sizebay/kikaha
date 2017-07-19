@@ -3,7 +3,6 @@ package kikaha.core.modules.security;
 import javax.annotation.PostConstruct;
 import javax.inject.*;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Methods;
 import kikaha.config.Config;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @Singleton
 @ToString
-public class DefaultAuthenticationConfiguration {
+public class AuthenticationEndpoints {
 
 	@Inject Config config;
 
@@ -25,7 +24,9 @@ public class DefaultAuthenticationConfiguration {
 	private String errorPage;
 	private String successPage;
 	private String callbackUrl;
+	private String callbackUrlMethod;
 	private String logoutUrl;
+	private String logoutUrlMethod;
 	private String permissionDeniedPage;
 
 	@PostConstruct
@@ -36,7 +37,9 @@ public class DefaultAuthenticationConfiguration {
 		errorPage = authConfig.getString( "error-page" );
 		successPage = authConfig.getString( "success-page" );
 		callbackUrl = authConfig.getString( "callback-url" );
+		callbackUrlMethod = config.getString( "callback-url-http-method", "POST" );
 		logoutUrl = authConfig.getString( "logout-url" );
+		logoutUrlMethod = authConfig.getString( "logout-url-http-method", "POST" );
 		permissionDeniedPage = authConfig.getString( "permission-denied-page" );
 	}
 
@@ -50,7 +53,7 @@ public class DefaultAuthenticationConfiguration {
 	}
 
 	public boolean isTryingToLogin(HttpServerExchange exchange) {
-		return Methods.POST.equals( exchange.getRequestMethod() )
+		return getCallbackUrlMethod().equals( exchange.getRequestMethod().toString() )
 				&& getCallbackUrl().equals( exchange.getRelativePath() );
 	}
 }

@@ -1,20 +1,15 @@
 package kikaha.urouting.serializers.jackson;
 
+import java.io.IOException;
+import javax.inject.Inject;
 import io.undertow.security.idm.Credential;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Headers;
-import io.undertow.util.StatusCodes;
-import kikaha.core.util.Tuple;
-import kikaha.core.modules.security.DefaultAuthenticationConfiguration;
-import kikaha.core.modules.security.Session;
-import kikaha.core.modules.security.SimplifiedAuthenticationMechanism;
-import kikaha.core.modules.security.UsernameAndPasswordCredential;
+import io.undertow.util.*;
+import kikaha.core.modules.security.*;
 import kikaha.core.url.URL;
+import kikaha.core.util.Tuple;
 import kikaha.urouting.api.Mimes;
 import lombok.Data;
-
-import javax.inject.Inject;
-import java.io.IOException;
 
 /**
  *
@@ -22,7 +17,7 @@ import java.io.IOException;
 public class JSONAuthenticationMechanism implements SimplifiedAuthenticationMechanism {
 
 	@Inject Jackson jackson;
-	@Inject DefaultAuthenticationConfiguration formAuthConfiguration;
+	@Inject AuthenticationEndpoints formAuthConfiguration;
 
 	@Override
 	public boolean sendAuthenticationChallenge( HttpServerExchange exchange, Session session ) {
