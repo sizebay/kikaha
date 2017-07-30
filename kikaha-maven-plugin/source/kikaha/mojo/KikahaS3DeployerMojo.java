@@ -3,12 +3,16 @@ package kikaha.mojo;
 import java.io.*;
 import java.net.URL;
 import java.security.CodeSource;
+import java.util.concurrent.atomic.AtomicReference;
 import com.amazonaws.auth.*;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.codedeploy.*;
 import com.amazonaws.services.codedeploy.model.*;
 import com.amazonaws.services.s3.*;
+import kikaha.config.*;
+import kikaha.core.util.Lang;
 import kikaha.mojo.packager.*;
+import lombok.RequiredArgsConstructor;
 import org.apache.maven.plugin.*;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.*;
@@ -19,7 +23,17 @@ import org.apache.maven.plugins.annotations.*;
 @Mojo( name = "deploy-on-aws-s3", requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME )
 public class KikahaS3DeployerMojo extends AbstractMojo {
 
-	static final String DEFAULT_DIR = "META-INF/aws-code-deploy/";
+	static final String
+		DEFAULT_DIR = "META-INF/aws-code-deploy/",
+		HEALTH_CHECK_ENABLED = "server.health-check.enabled",
+		HEALTH_CHECK_URL = "server.health-check.url",
+		HTTPS_ENABLED = "server.https.enabled",
+		HTTPS_PORT = "server.https.port",
+		HTTPS_HOST = "server.https.host",
+		HTTP_PORT = "server.http.port",
+		HTTP_HOST = "server.http.host",
+		DEFAULT_HOST = "0.0.0.0"
+	;
 
 	final AWSCredentialsProviderChain credentials = DefaultAWSCredentialsProviderChain.getInstance();
 
@@ -37,6 +51,12 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 
 	@Parameter( defaultValue = "production" )
 	String codeDeployDeploymentGroupName;
+
+	@Parameter( defaultValue = "" )
+	String codeDeployValidationCommand;
+
+	@Parameter( defaultValue = "10", required = true)
+	Integer codeDeployWaitTime;
 
 	@Parameter( defaultValue = "${project.build.finalName}-runnable.jar", required = true )
 	String jarFileName;
@@ -114,10 +134,31 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 	}
 
 	void copyFilesFromPluginJarToZip( final ZipFileWriter zip ) throws MojoExecutionException {
-		final CodeSource codeSource = getClass().getProtectionDomain().getCodeSource();
-		final URL location = codeSource.getLocation();
-		final String jar = location.getPath();
+		final String jar = getMavenPluginJarLocation();
 		copyFilesFromJarToZip( zip, jar );
+		copyAppSpecToZip( zip );
+	}
+
+	private void copyAppSpecToZip(ZipFileWriter zip) throws MojoExecutionException {
+		if ( Lang.isUndefined( codeDeployValidationCommand ) )
+			codeDeployValidationCommand = generateValidationCommand();
+
+		final String sleep = "sleep " + codeDeployWaitTime;
+		final String script = "#!/bin/sh\n"+sleep + "\n" +codeDeployValidationCommand;
+		zip.add( "bin/validate.sh", new ByteArrayInputStream( script.getBytes() ) );
+	}
+
+	String generateValidationCommand() throws MojoExecutionException {
+		final Config config = JarFileConfigReader.read(getJarFile()).getConfig();
+		final boolean healthCheckEnabled = config.getBoolean( HEALTH_CHECK_ENABLED );
+		final String url = healthCheckEnabled ? config.getString( HEALTH_CHECK_URL ) : "/";
+		final boolean httpsEnabled = config.getBoolean( HTTPS_ENABLED );
+		final int port = config.getInteger( httpsEnabled ? HTTPS_PORT : HTTP_PORT );
+		final String host = config.getString( httpsEnabled ? HTTPS_HOST : HTTP_HOST )
+				.replace( DEFAULT_HOST,"localhost" );
+		final String scheme = httpsEnabled ? "https" : "http";
+		final String curl = healthCheckEnabled ? "curl -f " : "curl ";
+		return curl + scheme + "://" + host + ":" + port + url;
 	}
 
 	void copyFilesFromJarToZip( final ZipFileWriter zip, final String path ) throws MojoExecutionException {
@@ -139,10 +180,10 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 	void copyDirectoryFilesToZip( final ZipFileWriter zip, final File directory ) throws MojoExecutionException {
 		if ( directory.exists() )
 			for ( final File file : directory.listFiles() )
-				copyToZip( zip, file );
+				copyFileToZip( zip, file );
 	}
 
-	void copyToZip( final ZipFileWriter zip, final File file ) throws MojoExecutionException {
+	void copyFileToZip(final ZipFileWriter zip, final File file ) throws MojoExecutionException {
 		if ( file.isDirectory() )
 			copyDirectoryFilesToZip( zip, file );
 		else {
@@ -157,6 +198,78 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 			zip.add(fileName, content);
 		} catch ( IOException cause ) {
 			throw new MojoExecutionException( "Failed to copy file to zip", cause );
+		}
+	}
+
+	String getMavenPluginJarLocation(){
+		final CodeSource codeSource = getClass().getProtectionDomain().getCodeSource();
+		final URL location = codeSource.getLocation();
+		return location.getPath();
+	}
+}
+
+@RequiredArgsConstructor(staticName = "read")
+class JarFileConfigReader {
+
+	final MergeableConfig mergeableConfig = MergeableConfig.create();
+	final File jarFile;
+
+	Config getConfig() throws MojoExecutionException {
+		readJarFile( "META-INF/defaults.yml" );
+		readJarFile( "conf/application.yml" );
+		return mergeableConfig;
+	}
+
+	private void readJarFile(String fileName) throws MojoExecutionException {
+		try ( final ZipFileReader reader = new ZipFileReader( jarFile.getAbsolutePath() ) ) {
+			reader.read( (name, content) -> {
+				if ( name.endsWith( fileName ) )
+					mergeableConfig.load( content );
+			});
+		} catch ( IOException cause ) {
+			throw new MojoExecutionException( "Failed to copy file to zip", cause );
+		}
+	}
+
+
+}
+
+@RequiredArgsConstructor(staticName = "with")
+class JarFileReader {
+
+	final String jarFile;
+
+	public String readJarFile(String fileName ) throws MojoExecutionException {
+		final AtomicReference<String> fileContent = new AtomicReference<>();
+		try ( final ZipFileReader reader = new ZipFileReader( jarFile ) ) {
+			reader.read( (name, content) -> {
+				if ( name.endsWith( fileName ) )
+					fileContent.set( readAsString(content) );
+			});
+		} catch ( IOException cause ) {
+			throw new MojoExecutionException( "Failed to copy file to zip", cause );
+		}
+		return fileContent.get();
+	}
+
+	private String readAsString( InputStream file ) {
+		try {
+			final ByteArrayOutputStream output = new ByteArrayOutputStream();
+			copy( file, output );
+			return output.toString("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	private static void copy( InputStream from, OutputStream to ) {
+		try {
+			final byte[] buffer = new byte[1024];
+			int len = 0;
+			while ((len = from.read(buffer)) >= 0)
+				to.write(buffer, 0, len);
+		} catch (IOException e) {
+			throw new IllegalStateException( e );
 		}
 	}
 }
