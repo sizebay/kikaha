@@ -12,7 +12,12 @@ public class ApplicationRunner {
 		loadApplication().run();
 	}
 
-	Application loadApplication(){
+	Application loadApplication() throws ClassNotFoundException {
+		final String applicationClassAsString = System.getProperty("application-class");
+		if ( applicationClassAsString != null && !applicationClassAsString.isEmpty() ) {
+			final Class<?> applicationClass = Class.forName(applicationClassAsString);
+			return (Application) provider.load( applicationClass );
+		}
 		return provider.load( Application.class );
 	}
 

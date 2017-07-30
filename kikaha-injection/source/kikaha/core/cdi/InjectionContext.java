@@ -39,7 +39,7 @@ public class InjectionContext {
 			for ( final CustomClassConstructor constructor : customClassConstructors )
 				if ( constructor.isAbleToInstantiate( clazz, providerContext ) )
 					return constructor.instantiate( clazz, providerContext );
-		} catch ( final IllegalAccessException | InstantiationException cause ) {
+		} catch ( final Exception cause ) {
 			if ( !isAbstract( clazz.getModifiers() ) && !isInterface( clazz.getModifiers() ))
 				log.debug("Can't instantiate " + clazz + ": " + cause.getMessage());
 		}

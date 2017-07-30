@@ -24,5 +24,5 @@ public interface CustomClassConstructor {
 	 * @param providerContext
 	 * @return
 	 */
-	<T> T instantiate(Class<T> clazz, ProviderContext providerContext) throws IllegalAccessException, InstantiationException;
+	<T> T instantiate(Class<T> clazz, ProviderContext providerContext) throws Exception;
 }
