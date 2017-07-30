@@ -32,16 +32,14 @@ stop_server(){
 	if [ ! "$PID" = "" ]; then
 		info "Sending graceful shutdown signal..."
 		kill $PID && info "Signal sent." || exit 1
-		retries=1
-		while [ ! "$PID" = "" -a "$retries" -lt 10 ]; do
+		while [ ! "$PID" = "" ]; do
 			sleep 1
 			PID=$(retrieve_server_pid)
-			retries=`expr $retries + 1`
 		done
 		info "Service was shut down."
 	else
 		warn "Server not running"
-		exit 1
+		#exit 1
 	fi
 }
 
