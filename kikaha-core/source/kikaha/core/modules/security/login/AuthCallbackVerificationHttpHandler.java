@@ -10,14 +10,16 @@ import kikaha.core.modules.undertow.BodyResponseSender;
  */
 public class AuthCallbackVerificationHttpHandler implements HttpHandler {
 
-	@Inject
-	AuthenticationEndpoints authenticationConfiguration;
+	@Inject AuthenticationEndpoints authenticationEndpoints;
+	@Inject SecurityConfiguration securityConfiguration;
 
 	@Override
 	public void handleRequest(HttpServerExchange exchange) throws Exception {
 		final SecurityContext securityContext = (SecurityContext)exchange.getSecurityContext();
-		securityContext.authenticate();
+		final Session currentSession = securityContext.getCurrentSession();
+		securityConfiguration.getSessionStore().invalidateSession( currentSession );
 
+		securityContext.authenticate();
 		if ( !exchange.isResponseStarted() )
 			BodyResponseSender
 				.response( exchange,200, "plain/text","AUTHENTICATED" );
