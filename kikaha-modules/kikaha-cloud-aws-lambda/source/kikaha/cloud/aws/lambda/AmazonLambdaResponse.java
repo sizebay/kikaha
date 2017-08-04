@@ -45,4 +45,8 @@ public class AmazonLambdaResponse {
 	public static AmazonLambdaResponse notFound() {
 		return new AmazonLambdaResponse( 404, Collections.emptyMap(), null );
 	}
+
+    public static AmazonLambdaResponse notAuthenticated() {
+		return new AmazonLambdaResponse( 401, Collections.emptyMap(), null );
+    }
 }

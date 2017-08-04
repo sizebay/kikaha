@@ -16,7 +16,7 @@ final public class {{generatedClassName}} implements AmazonHttpHandler {
     @Inject AmazonLambdaFunctionParameterReader methodDataProvider;
     @Inject {{{type}}} instance;
 
-    public AmazonLambdaResponse handle( AmazonLambdaRequest request ) {
+    public AmazonLambdaResponse handle( AmazonLambdaRequest request ) throws Exception {
     {{#returnType}}
         final {{{returnType}}} response = instance.{{methodName}}( {{{methodParams}}} );
         return AmazonLambdaResponse.with( response );

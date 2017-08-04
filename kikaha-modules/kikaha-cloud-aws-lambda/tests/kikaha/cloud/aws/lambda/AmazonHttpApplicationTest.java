@@ -1,17 +1,22 @@
 package kikaha.cloud.aws.lambda;
 
+import com.amazonaws.services.lambda.runtime.Context;
+import kikaha.core.modules.http.WebResource;
+import lombok.Getter;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
-
-import java.util.*;
-import kikaha.core.modules.http.WebResource;
-import lombok.Getter;
-import org.junit.*;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  * Unit tests for AmazonHttpApplication.
@@ -25,12 +30,13 @@ public class AmazonHttpApplicationTest {
 	MockHandler handler2 = new GetUser();
 	MockHandler handler3 = new IncludeUser();
 
-	@Mock AmazonHttpResponseHook responseHook;
+	@Mock
+	AmazonHttpInterceptor interceptor;
 
 	@Before
 	public void loadHandlers(){
 		application.loadHandlers( asList( handler1, handler2, handler3 ) );
-		application.responseHooks = asList( responseHook );
+		application.interceptors = asList(interceptor);
 	}
 
 	@Test
@@ -44,7 +50,7 @@ public class AmazonHttpApplicationTest {
 	@Test
 	public void ensureCanInvokeHandler1(){
 		final AmazonLambdaRequest request = newRequest( "GET", "/users" );
-		final AmazonLambdaResponse response = application.handleRequest( request, null );
+		final AmazonLambdaResponse response = application.handleRequest( request, (Context) null );
 		assertEquals( 204, response.statusCode );
 		assertTrue( handler1.isInvoked() );
 		assertFalse( handler2.isInvoked() );
@@ -54,7 +60,7 @@ public class AmazonHttpApplicationTest {
 	@Test
 	public void ensureCanInvokeHandler2(){
 		final AmazonLambdaRequest request = newRequest( "GET", "/users/1" );
-		final AmazonLambdaResponse response = application.handleRequest( request, null );
+		final AmazonLambdaResponse response = application.handleRequest( request, (Context) null );
 		assertEquals( 204, response.statusCode );
 		assertFalse( handler1.isInvoked() );
 		assertTrue( handler2.isInvoked() );
@@ -64,7 +70,7 @@ public class AmazonHttpApplicationTest {
 	@Test
 	public void ensureCanInvokeHandler3(){
 		final AmazonLambdaRequest request = newRequest( "POST", "/users" );
-		final AmazonLambdaResponse response = application.handleRequest( request, null );
+		final AmazonLambdaResponse response = application.handleRequest( request, (Context) null );
 		assertEquals( 204, response.statusCode );
 		assertFalse( handler1.isInvoked() );
 		assertFalse( handler2.isInvoked() );
@@ -74,8 +80,9 @@ public class AmazonHttpApplicationTest {
 	@Test
 	public void ensureCanInvokeResponseHook() {
 		final AmazonLambdaRequest request = newRequest("GET", "/users");
-		final AmazonLambdaResponse response = application.handleRequest(request, null);
-		verify( responseHook ).apply( eq(request), eq(response) );
+		final AmazonLambdaResponse response = application.handleRequest(request,(Context)  null);
+        verify(interceptor).validateRequest(eq(request) );
+		verify(interceptor).beforeSendResponse(eq(response) );
 	}
 
 	static AmazonLambdaRequest newRequest( String method, String path ) {

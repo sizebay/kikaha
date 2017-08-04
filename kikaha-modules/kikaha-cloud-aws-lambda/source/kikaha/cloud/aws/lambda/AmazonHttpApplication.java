@@ -19,8 +19,8 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
 	@Inject @Typed( AmazonHttpHandler.class )
 	Iterable<AmazonHttpHandler> amazonHttpHandlers;
 
-	@Inject @Typed( AmazonHttpHandler.class )
-	Iterable<AmazonHttpResponseHook> responseHooks;
+	@Inject @Typed( AmazonHttpInterceptor.class )
+	Iterable<AmazonHttpInterceptor> interceptors;
 
 	Map<String, List<Entry>> entriesMatcher;
 
@@ -34,9 +34,21 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
 		final AmazonHttpHandler httpHandler = retrieveHttpHandler( request );
 		if ( httpHandler == null )
 			return AmazonLambdaResponse.notFound();
+		try {
+			return handleRequest( request, httpHandler );
+		} catch ( AmazonLambdaFunctionInterrumptedException cause ) {
+			return cause.response;
+		} catch ( Exception cause ) {
+			throw new RuntimeException( cause );
+		}
+	}
+
+	AmazonLambdaResponse handleRequest(AmazonLambdaRequest request, AmazonHttpHandler httpHandler) throws Exception {
+		for (AmazonHttpInterceptor hook : interceptors)
+			hook.validateRequest(request);
 		final AmazonLambdaResponse response = httpHandler.handle(request);
-		for ( AmazonHttpResponseHook hook : responseHooks )
-			hook.apply( request, response );
+		for (AmazonHttpInterceptor hook : interceptors)
+			hook.beforeSendResponse(response);
 		return response;
 	}
 
