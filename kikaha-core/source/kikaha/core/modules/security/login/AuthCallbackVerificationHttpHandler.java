@@ -18,9 +18,9 @@ public class AuthCallbackVerificationHttpHandler implements HttpHandler {
 		final SecurityContext securityContext = (SecurityContext)exchange.getSecurityContext();
 		final Session currentSession = securityContext.getCurrentSession();
 		securityConfiguration.getSessionStore().invalidateSession( currentSession );
+		securityContext.setCurrentSession( null );
 
-		securityContext.authenticate();
-		if ( !exchange.isResponseStarted() )
+		if ( securityContext.authenticate() && !exchange.isResponseStarted() )
 			BodyResponseSender
 				.response( exchange,200, "plain/text","AUTHENTICATED" );
 	}
