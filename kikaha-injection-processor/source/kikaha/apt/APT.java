@@ -53,10 +53,10 @@ public interface APT {
 				classes[0].getCanonicalName();
 				return null;
 			}
-			return classElement.asType().toString().replaceAll("<[^>]+>","");
+			return classElement.asType().toString().replaceAll("<[^>]+>+","");
 		} catch ( MirroredTypesException cause ) {
 			final TypeMirror typeMirror = cause.getTypeMirrors().get(0);
-			return typeMirror.toString().replaceAll("<[^>]+>","");
+			return typeMirror.toString().replaceAll("<[^>]+>+","");
 		}
 	}
 
@@ -70,7 +70,7 @@ public interface APT {
 	}
 
 	static String asType( final Element parameter ) {
-		return parameter.asType().toString().replaceAll("<[^>]+>","");
+		return parameter.asType().toString().replaceAll("<[^>]+>+","");
 	}
 
 	static boolean isAnnotatedWith( final VariableElement parameter, final Class<?extends Annotation> annotationClass ) {
@@ -89,7 +89,7 @@ public interface APT {
 		final String returnTypeAsString = method.getReturnType().toString();
 		if ( "void".equals( returnTypeAsString ) )
 			return null;
-		return returnTypeAsString.replaceAll("<[^>]+>","");
+		return returnTypeAsString.replaceAll("<[^>]+>+","");
 	}
 
 	static Function<VariableElement, Boolean> isAnnotatedWith( Class<? extends Annotation> annotationClass ) {
