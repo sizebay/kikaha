@@ -54,13 +54,11 @@ public class MicroWorkersTaskDeploymentModule implements Module {
 		final String listenerName = annotation.value();
 		final EndpointConfig endpointConfig = microWorkersContext.getEndpointConfig( listenerName );
 		final EndpointFactory endpointFactory = endpointConfig.getEndpointFactory();
-		final EndpointInboxSupplier inbox = endpointFactory.createSupplier( endpointConfig );
 
 		if ( microWorkersContext.isRestEnabled )
 			deployHttpEndpoint( context, listener, endpointFactory, endpointConfig, annotation );
 
-		final EndpointInboxConsumer consumer = new EndpointInboxConsumer( isShutdown, inbox, listener, listenerName );
-		runInBackgroundWithParallelism( consumer, endpointConfig.getParallelism() );
+        endpointFactory.listenForMessages( listener, endpointConfig, isShutdown, threads );
 	}
 
 	void deployHttpEndpoint(
@@ -71,11 +69,6 @@ public class MicroWorkersTaskDeploymentModule implements Module {
 		final WorkerRef workerRef = endpointFactory.createWorkerRef(endpointConfig);
 		final HttpHandler restEndpoint = RESTFulMicroWorkersHttpHandler.with( undertowHelper, workerRef );
 		context.register( microWorkersContext.restApiPrefix + "/" + httpListenerName, "POST", restEndpoint );
-	}
-
-	void runInBackgroundWithParallelism( final EndpointInboxConsumer consumer, final int parallelism ){
-		for ( int i=0; i<parallelism; i++ )
-			threads.submit( consumer );
 	}
 
 	@Override

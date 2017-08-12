@@ -3,15 +3,15 @@ package kikaha.uworkers.local;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.*;
-import kikaha.config.Config;
+
 import kikaha.uworkers.core.*;
 
 /**
- * A {@link EndpointFactory} implementation that creates {@link EndpointInboxSupplier}
+ * A {@link EndpointFactory} implementation that creates {@link EndpointInbox}
  * to handle tasks within the same JVM.
  */
 @Singleton
-public class LocalEndpointFactory implements EndpointFactory {
+public class LocalEndpointFactory implements PollingEndpointFactory {
 
 	final Map<String, LocalEndpointInboxSupplier> cachedSuppliers = new ConcurrentHashMap<>();
 

@@ -45,7 +45,6 @@ public class MicroWorkersTaskDeploymentModuleIntegrationTest {
 		MockitoAnnotations.initMocks(this);
 		module = spy( module );
 		microWorkersContext.config = config;
-		doReturn( inbox ).when( inboxSupplierFactory ).createSupplier( any() );
 	}
 
 	@After
@@ -69,20 +68,6 @@ public class MicroWorkersTaskDeploymentModuleIntegrationTest {
 		verify( module, times(2) ).deploy( eq(deploymentContext), any(WorkerEndpointMessageListener.class) );
 		verify( microWorkersContext.config ).getConfig( eq( "server.uworkers.first" ) );
 		verify( microWorkersContext.config ).getConfig( eq( "server.uworkers.second" ) );
-	}
-
-	@Test
-	public void ensureThatUsesDefaultParallelismWhenNoDataIsAvailableForAGivenNamedConsumer() throws IOException {
-		module.consumers = asList( notConfigured );
-		module.load( null, null );
-		verify( module ).runInBackgroundWithParallelism( any(EndpointInboxConsumer.class), eq(1) );
-	}
-
-	@Test
-	public void ensureThatUsesItsOwnParallelismWhenItIsConfiguredOnTheConfigurationFile() throws IOException {
-		module.consumers = asList( configured );
-		module.load( null, null );
-		verify( module ).runInBackgroundWithParallelism( any(EndpointInboxConsumer.class), eq(2) );
 	}
 }
 

@@ -5,7 +5,7 @@ import kikaha.uworkers.api.Exchange;
 /**
  * An {@link Exception} that represents a timeout while retrieving an {@link Exchange}.
  */
-public class EndpointInboxConsumerTimeoutException extends Exception {
+public class EndpointInboxConsumerTimeoutException extends RuntimeException {
 
     public EndpointInboxConsumerTimeoutException(final String message, final Throwable cause ) {
         super( message, cause );
@@ -21,6 +21,6 @@ public class EndpointInboxConsumerTimeoutException extends Exception {
 
     @Override
     public synchronized Throwable fillInStackTrace() {
-        return super.fillInStackTrace();
+        return this;
     }
 }

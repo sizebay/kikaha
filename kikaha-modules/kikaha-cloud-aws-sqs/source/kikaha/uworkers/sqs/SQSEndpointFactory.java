@@ -12,17 +12,18 @@ import kikaha.uworkers.core.*;
  *
  */
 @Singleton
-public class SQSEndpointFactory implements EndpointFactory {
+public class SQSEndpointFactory implements PollingEndpointFactory {
 
 	@Inject AmazonSQS amazonSQS;
 
 	@Override
-	public EndpointInboxSupplier createSupplier( EndpointConfig endpoint ) {
+	public EndpointInbox createSupplier( EndpointConfig endpoint ) {
 		final Config endpointConfig = endpoint.getConfig();
 		final ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
 		return new SQSEndpointInboxSupplier( objectMapper, amazonSQS,
 			endpointConfig.getString( "url" ),
-			endpointConfig.getInteger( "timeout", 1 ));
+			endpointConfig.getInteger( "wait-time-seconds", 60 ),
+            endpointConfig.getInteger( "max-number-of-messages", 10 ));
 	}
 
 	@Override

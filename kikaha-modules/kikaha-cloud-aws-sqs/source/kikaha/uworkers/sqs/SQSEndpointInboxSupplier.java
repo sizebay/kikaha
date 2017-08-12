@@ -1,32 +1,32 @@
 package kikaha.uworkers.sqs;
 
-import java.io.IOException;
-import java.util.List;
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.*;
+import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
+import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kikaha.uworkers.api.Exchange;
-import kikaha.uworkers.core.EndpointInboxSupplier;
+import kikaha.uworkers.core.EndpointInbox;
+import kikaha.uworkers.core.WorkerEndpointMessageListener;
 import lombok.RequiredArgsConstructor;
 
 /**
  *
  */
 @RequiredArgsConstructor
-public class SQSEndpointInboxSupplier implements EndpointInboxSupplier {
+public class SQSEndpointInboxSupplier implements EndpointInbox {
 
 	final ObjectMapper mapper;
 	final AmazonSQS sqs;
 	final String queueUrl;
-	final int timeoutInSeconds;
+	final int waitTimeInSeconds, maxNumberOfMessages;
 
-	@Override
-	public Exchange receiveMessage() throws InterruptedException, IOException {
-		final ReceiveMessageRequest request = new ReceiveMessageRequest( queueUrl )
-				.withMaxNumberOfMessages( 1 )
-				.withWaitTimeSeconds(timeoutInSeconds);
-		final ReceiveMessageResult result = sqs.receiveMessage(request);
-		final List<Message> messages = result.getMessages();
-		return new SQSExchange( mapper, sqs, messages.get(0) );
-	}
+    @Override
+    public void receiveMessages(WorkerEndpointMessageListener listener) throws Exception {
+        final ReceiveMessageRequest request = new ReceiveMessageRequest( queueUrl )
+                .withMaxNumberOfMessages( maxNumberOfMessages )
+                .withWaitTimeSeconds(waitTimeInSeconds);
+        final ReceiveMessageResult result = sqs.receiveMessage(request);
+        for ( Message message : result.getMessages() )
+            notifyListener( listener, new SQSExchange( mapper, sqs, message ) );
+    }
 }

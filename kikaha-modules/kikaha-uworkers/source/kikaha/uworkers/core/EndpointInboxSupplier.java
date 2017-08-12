@@ -6,14 +6,30 @@ import kikaha.uworkers.api.Worker;
 import java.io.IOException;
 
 /**
- * A supplier responsible for the receiving messages that will be forwarded to
- * a given {@link Worker}. This implementation represents the Worker's Inbox.
- * Developers are encouraged to implement this interface in order to allow workers
- * consumer messages from custom external brokers like RabbitMQ, Kafka and ActiveMQ.
+ * A simplified version from {@link EndpointInbox} designed for inbox which consumes a
+ * single message per time.
  */
-public interface EndpointInboxSupplier {
+public interface EndpointInboxSupplier extends EndpointInbox {
 
-	/**
+    @Override
+    default void receiveMessages(WorkerEndpointMessageListener listener) throws Exception {
+        final Exchange exchange = getNextAvailableTask();
+        notifyListener( listener, exchange );
+    }
+
+    default Exchange getNextAvailableTask() throws InterruptedException {
+        try {
+            return receiveMessage();
+        } catch ( final EndpointInboxConsumerTimeoutException e ) {
+            return new EmptyExchange();
+        } catch ( final InterruptedException e ) {
+            throw e;
+        } catch ( final Throwable e ) {
+            return new FailureExchange( e );
+        }
+    }
+
+    /**
 	 * Receives a message, waiting if necessary until an element becomes available.
 	 * @return
 	 * @throws InterruptedException

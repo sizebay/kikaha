@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 public class EndpointInboxConsumer implements Runnable {
 
 	final AtomicBoolean isShutdown;
-	final EndpointInboxSupplier inbox;
+	final EndpointInbox inbox;
 	final WorkerEndpointMessageListener listener;
 	final String name;
 
@@ -22,39 +22,15 @@ public class EndpointInboxConsumer implements Runnable {
 		try {
 			while (!isShutdown.get()) {
 				try {
-					consumeNextMessage();
+					inbox.receiveMessages( listener );
 				} catch (InterruptedException e) {
 					log.debug("Consumer failed to get next message because it was interrupted...", e);
 				} catch (Throwable e){
-					log.error( "The consumer failed", e );
+					log.error( "Worker consumer "+name+" failed", e );
 				}
 			}
 		} finally {
-			log.debug( "Consumer "+name+" finished! Shutdown = " + isShutdown.get() );
-		}
-	}
-
-	private void consumeNextMessage() throws InterruptedException {
-		final Exchange exchange = getNextAvailableTask();
-		try {
-			if ( !EmptyExchange.class.isInstance( exchange ) )
-				listener.onMessage(exchange);
-		} catch ( final Throwable c ) {
-			exchange.reply(c);
-		}
-	}
-
-	private Exchange getNextAvailableTask() throws InterruptedException {
-		try {
-			return inbox.receiveMessage();
-		} catch ( final EndpointInboxConsumerTimeoutException e ) {
-			return new EmptyExchange();
-		} catch ( final InterruptedException e ) {
-			log.debug( "Endpoint finished", e );
-			throw e;
-		} catch ( final Throwable e ) {
-			log.debug( "Could not receive a message", e );
-			return new FailureExchange( e );
+			log.debug( "Worker Consumer "+name+" finished! Shutdown = " + isShutdown.get() );
 		}
 	}
 }

@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
@@ -28,14 +29,14 @@ public class EndpointInboxConsumerTest {
 
 	Threads threads;
 
-	@Mock Exchange exchange;
-	@Mock EndpointInboxSupplier supplier;
+    @Spy StubEndpointInboxSupplier supplier;
+    @Mock Exchange exchange;
 	@Mock WorkerEndpointMessageListener listener;
 
 	EndpointInboxConsumer consumer;
 
 	@Before
-	public void createConsumer(){
+	public void createConsumer() throws Exception {
 		threads = Threads.fixedPool(1);
 		consumer = new EndpointInboxConsumer( isShutdown, supplier, listener, "default" );
 	}
@@ -81,4 +82,12 @@ public class EndpointInboxConsumerTest {
 
 		verify( exchange, never() ).reply( eq( exception ) );
 	}
+}
+
+class StubEndpointInboxSupplier implements EndpointInboxSupplier {
+
+    @Override
+    public Exchange receiveMessage() throws InterruptedException, IOException, EndpointInboxConsumerTimeoutException {
+        return null;
+    }
 }
