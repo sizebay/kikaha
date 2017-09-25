@@ -133,11 +133,11 @@ public class KikahaJarPackagerMojo extends AbstractMojo {
     }
 
     private void copyDirectoryFilesToZip(final JarWriter zip, File directory, final String rootDirectory) throws IOException {
-        if (!directory.exists() && !directory.isAbsolute())
-            throw new IOException( "Web directory should be configured with an absolute path. Current value: " + directory.getPath() );
-
         if (!directory.exists())
-            throw new IOException( "Web directory does not exists. Current value: " + directory.getPath() );
+            return;
+
+        if (!directory.isAbsolute())
+            throw new IOException( "Web directory should be configured with an absolute path. Current value: " + directory.getPath() );
 
         for (final File file : directory.listFiles())
             copyToZip(zip, rootDirectory, file);
