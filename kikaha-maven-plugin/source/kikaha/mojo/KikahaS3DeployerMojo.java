@@ -3,6 +3,8 @@ package kikaha.mojo;
 import java.io.*;
 import java.net.URL;
 import java.security.CodeSource;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import com.amazonaws.auth.*;
 import com.amazonaws.regions.Regions;
@@ -24,7 +26,8 @@ import org.apache.maven.plugins.annotations.*;
 public class KikahaS3DeployerMojo extends AbstractMojo {
 
 	static final String
-		DEFAULT_DIR = "META-INF/aws-code-deploy/",
+		DEFAULT_CODEDEPLOY_DIR = "META-INF/aws-code-deploy/",
+        DEFAULT_CONF_DIR = "conf/",
 		HEALTH_CHECK_ENABLED = "server.health-check.enabled",
 		HEALTH_CHECK_URL = "server.health-check.url",
 		HTTPS_ENABLED = "server.https.enabled",
@@ -43,7 +46,7 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 	@Parameter( defaultValue = "false", required = true )
 	Boolean useCodeDeploy;
 
-	@Parameter( defaultValue = DEFAULT_DIR )
+	@Parameter( defaultValue = DEFAULT_CODEDEPLOY_DIR )
 	String codeDeployFolder;
 
 	@Parameter( defaultValue = "${project.groupId}-${project.artifactId}" )
@@ -72,6 +75,8 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 
 	@Parameter( defaultValue = "${project.groupId}-${project.artifactId}", required = true )
 	String s3Key;
+
+    final Set<String> alreadyInsertedFiles = new HashSet<>();
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -117,8 +122,10 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 
 		final ZipFileWriter zipFile = createZipFile(fileName);
 		copyFileToZip( zipFile, getJarFile(), "lib/application.jar" );
+		getLog().info( "Adding 'conf' files to your packages..." );
+        copyFilesFromJarToZip( zipFile, getJarFile().getAbsolutePath() );
 
-		if ( DEFAULT_DIR.equals(codeDeployFolder) )
+		if ( DEFAULT_CODEDEPLOY_DIR.equals(codeDeployFolder) )
 			copyFilesFromPluginJarToZip(zipFile);
 		else
 			copyCodeDeployFolderFolderToZip( zipFile );
@@ -164,8 +171,10 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 	void copyFilesFromJarToZip( final ZipFileWriter zip, final String path ) throws MojoExecutionException {
 		try ( final ZipFileReader reader = new ZipFileReader( path.replace( "%20", " " ) ) ) {
 			reader.read((name, content) -> {
-				if (name.startsWith(DEFAULT_DIR))
-					zip.add(name, content);
+				if ( !alreadyInsertedFiles.contains( name ) && name.startsWith(DEFAULT_CONF_DIR) || name.startsWith(DEFAULT_CODEDEPLOY_DIR)) {
+				    alreadyInsertedFiles.add( name );
+                    zip.add(name, content);
+                }
 			});
 		} catch ( IOException cause ) {
 			throw new MojoExecutionException( "Can't copy file to zip file", cause );
