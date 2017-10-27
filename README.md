@@ -20,7 +20,7 @@ Kikaha is a micro container writen over the fast Undertow core. It was developed
 Be a contributor and join our team. Kikaha need your help to provide the best to the community. Even simple tasks like testing the micro container, finding typos in docs or reporting improvements feedbacks will be welcome.
 
 ## Community / Support
-* [Documentation](http://kikaha.skullabs.io/)
+* [Documentation](https://github.com/Skullabs/kikaha/wiki)
 * [GitHub Issues](https://github.com/Skullabs/kikaha/issues)
 * [Google Group](https://groups.google.com/forum/#!forum/kikaha)
 
@@ -28,7 +28,7 @@ Be a contributor and join our team. Kikaha need your help to provide the best to
 * [Guide to deploy Kikaha apps at Amazon](https://gist.github.com/miere/346c6f44f4544cacd018e7c55baca4ee) - early draft
 * Guide to deploy Kikaha with Docker, Consul and NGINX - todo
 * Creating smart server applications - todo
-* A JWT guide to Kikaha developers - todo
+* [A JWT guide to Kikaha developers](https://github.com/Skullabs/kikaha-samples/tree/master/jwt) - early draft
 
 ### License
 Kikaha is released under [Apache 2.0 licensed](http://www.apache.org/licenses/LICENSE-2.0.html).
