@@ -15,6 +15,7 @@ public abstract class ConfigLoader {
 
 	public static MergeableConfig loadDefaults() {
 		try {
+		    log.debug( "Loading configuration files..." );
 			final MergeableConfig config = MergeableConfig.create();
 			loadFiles(config, ClassLoader.getSystemResources("META-INF/defaults.yml"));
 			loadFiles(config, ClassLoader.getSystemResources("conf/application.yml"));
@@ -26,6 +27,7 @@ public abstract class ConfigLoader {
 	}
 
 	private static void loadFiles( MergeableConfig config, Enumeration<URL> resources ) throws IOException {
+
 		while( resources.hasMoreElements() ){
 			final URL url = resources.nextElement();
 			try (final InputStream stream = url.openStream() ) {

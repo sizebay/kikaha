@@ -2,16 +2,13 @@ package kikaha.cloud.aws.lambda;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
-import kikaha.core.test.KikahaRunner;
 import lombok.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 /**
@@ -44,7 +41,7 @@ public class AmazonAuthenticationMechanismTest {
         try {
             mechanism.validateRequest(request);
             fail( "It should interrupt the execution when there is a response to send" );
-        } catch ( AmazonLambdaFunctionInterrumptedException c ) {
+        } catch ( AmazonLambdaFunctionInterruptedException c ) {
             verify(mechanism).sendAuthenticationSuccess(eq(request));
         }
     }
@@ -55,7 +52,7 @@ public class AmazonAuthenticationMechanismTest {
         try {
             mechanism.validateRequest(request);
             fail( "It should interrupt the execution when there is a response to send" );
-        } catch ( AmazonLambdaFunctionInterrumptedException c ) {
+        } catch ( AmazonLambdaFunctionInterruptedException c ) {
             verify(mechanism, never()).authenticate(any());
             verify(mechanism, never()).sendAuthenticationSuccess(any());
             verify(mechanism).sendAuthenticationChallenge(eq(request));
@@ -70,7 +67,7 @@ public class AmazonAuthenticationMechanismTest {
         try {
             mechanism.validateRequest(request);
             fail( "It should interrupt the execution when there is a response to send" );
-        } catch ( AmazonLambdaFunctionInterrumptedException c ) {
+        } catch ( AmazonLambdaFunctionInterruptedException c ) {
             verify(mechanism, never()).sendAuthenticationSuccess(any());
             verify(mechanism).sendAuthenticationChallenge(eq(request));
         }

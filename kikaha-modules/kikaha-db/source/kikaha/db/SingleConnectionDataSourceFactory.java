@@ -14,7 +14,12 @@ import lombok.extern.slf4j.Slf4j;
  * connection pool at all. Useful for single threaded environments which
  * is not recommended to open lots of connection up-front like AWS Lambda.
  */
+@Slf4j
 public class SingleConnectionDataSourceFactory implements DataSourceFactory {
+
+    public SingleConnectionDataSourceFactory(){
+        log.debug( "Initializing " + SingleConnectionDataSourceFactory.class );
+    }
 
 	@Override
 	public DataSource newDataSource(String name, Config config) {

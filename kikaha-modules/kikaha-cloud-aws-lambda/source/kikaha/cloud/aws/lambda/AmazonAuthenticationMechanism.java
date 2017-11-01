@@ -6,7 +6,7 @@ package kikaha.cloud.aws.lambda;
 public interface AmazonAuthenticationMechanism<T> extends AmazonHttpInterceptor {
 
     @Override
-    default void validateRequest(AmazonLambdaRequest request) throws AmazonLambdaFunctionInterrumptedException {
+    default void validateRequest(AmazonLambdaRequest request) throws AmazonLambdaFunctionInterruptedException {
         final T credential = readCredentialFrom( request );
 
         AmazonLambdaResponse response;
@@ -16,7 +16,7 @@ public interface AmazonAuthenticationMechanism<T> extends AmazonHttpInterceptor 
             response = sendAuthenticationSuccess( request );
 
         if ( response != null )
-            throw new AmazonLambdaFunctionInterrumptedException( response );
+            throw new AmazonLambdaFunctionInterruptedException( response );
     }
 
     T readCredentialFrom(AmazonLambdaRequest request);
@@ -32,7 +32,7 @@ public interface AmazonAuthenticationMechanism<T> extends AmazonHttpInterceptor 
     }
 
     @Override
-    default void beforeSendResponse(AmazonLambdaResponse response) throws AmazonLambdaFunctionInterrumptedException{
+    default void beforeSendResponse(AmazonLambdaResponse response) throws AmazonLambdaFunctionInterruptedException {
 
     }
 }

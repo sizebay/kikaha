@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
+import static org.hamcrest.CoreMatchers.*;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -24,19 +26,24 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class AmazonHttpApplicationTest {
 
+    static final String
+        EXPECTED_FAILURE_RESPONSE = "java.lang.RuntimeException: Failed",
+        EXPECTED_STACKTRACE_ENTRY = "at kikaha.cloud.aws.lambda.GetProfilesButFails.handle(AmazonHttpApplicationTest.java:";
+
 	final AmazonHttpApplication application = new AmazonHttpApplication();
 
 	MockHandler handler1 = new GetUsers();
 	MockHandler handler2 = new GetUser();
 	MockHandler handler3 = new IncludeUser();
+    GetProfilesButFails handler4 = new GetProfilesButFails();
 
 	@Mock
 	AmazonHttpInterceptor interceptor;
 
 	@Before
 	public void loadHandlers(){
-		application.loadHandlers( asList( handler1, handler2, handler3 ) );
-		application.interceptors = asList(interceptor);
+		application.loadHandlers( asList( handler1, handler2, handler3, handler4 ) );
+		application.interceptors = Collections.singletonList(interceptor);
 	}
 
 	@Test
@@ -77,6 +84,19 @@ public class AmazonHttpApplicationTest {
 		assertTrue( handler3.isInvoked() );
 	}
 
+    @Test
+    public void ensureCanHandlerFailures(){
+        final AmazonLambdaRequest request = newRequest( "GET", "/profiles" );
+        final AmazonLambdaResponse response = application.handleRequest( request, (Context) null );
+        assertEquals( 500, response.statusCode );
+        assertThat( response.body, allOf(startsWith(EXPECTED_FAILURE_RESPONSE), containsString(EXPECTED_STACKTRACE_ENTRY)) );
+
+        assertFalse( handler1.isInvoked() );
+        assertFalse( handler2.isInvoked() );
+        assertFalse( handler3.isInvoked() );
+        assertTrue( handler4.isInvoked() );
+    }
+
 	@Test
 	public void ensureCanInvokeResponseHook() {
 		final AmazonLambdaRequest request = newRequest("GET", "/users");
@@ -113,4 +133,17 @@ class MockHandler implements AmazonHttpHandler {
 		invoked = true;
 		return AmazonLambdaResponse.noContent();
 	}
+}
+
+@WebResource( path = "/profiles" )
+class GetProfilesButFails implements AmazonHttpHandler {
+
+    @Getter
+    boolean invoked = false;
+
+    @Override
+    public AmazonLambdaResponse handle(AmazonLambdaRequest request) throws Exception {
+        invoked = true;
+        throw new RuntimeException( "Failed" );
+    }
 }

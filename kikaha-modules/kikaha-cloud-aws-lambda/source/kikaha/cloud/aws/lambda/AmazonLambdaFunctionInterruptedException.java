@@ -6,7 +6,7 @@ import lombok.*;
  * Created by miere.teixeira on 03/08/2017.
  */
 @RequiredArgsConstructor
-public class AmazonLambdaFunctionInterrumptedException extends RuntimeException {
+public class AmazonLambdaFunctionInterruptedException extends RuntimeException {
 
     @NonNull
     final AmazonLambdaResponse response;

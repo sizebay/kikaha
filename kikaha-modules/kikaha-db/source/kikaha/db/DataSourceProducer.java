@@ -25,6 +25,7 @@ public class DataSourceProducer {
 	@PostConstruct
 	public void initializePool() throws SQLException {
 		final Class<?> clazz = kikahaConf.getClass("server.db.datasource-factory");
+		log.debug( "Configured DataSourceFactory: " + clazz );
 		defaultDataSourceFactory = (DataSourceFactory)cdi.load( clazz );
 	}
 

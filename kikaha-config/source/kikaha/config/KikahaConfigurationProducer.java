@@ -11,7 +11,7 @@ import lombok.Getter;
 @Singleton
 public class KikahaConfigurationProducer {
 
-	final Config defaultConfiguration = ConfigLoader.loadDefaults();
+	static final Config defaultConfiguration = ConfigLoader.loadDefaults();
 
 	@Inject @Typed( ConfigEnrichment.class )
 	Collection<ConfigEnrichment> listOfEnrichment;

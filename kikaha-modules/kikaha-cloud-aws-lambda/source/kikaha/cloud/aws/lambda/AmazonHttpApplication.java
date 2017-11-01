@@ -1,5 +1,9 @@
 package kikaha.cloud.aws.lambda;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.*;
 import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
@@ -8,13 +12,14 @@ import kikaha.core.cdi.*;
 import kikaha.core.modules.http.WebResource;
 import kikaha.core.url.URLMatcher;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  */
+@Slf4j
 public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest, AmazonLambdaResponse> {
 
-	final CDI cdi = DefaultCDI.newInstance();
 
 	@Inject @Typed( AmazonHttpHandler.class )
 	Iterable<AmazonHttpHandler> amazonHttpHandlers;
@@ -25,8 +30,15 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
 	Map<String, List<Entry>> entriesMatcher;
 
 	public AmazonHttpApplication() {
-		cdi.injectOn( this );
-		loadHandlers(amazonHttpHandlers);
+        try {
+            log.debug( "Initializing Lambda Application" );
+            final CDI cdi = DefaultCDI.newInstance();
+            log.debug( "Loaded..." );
+            cdi.injectOn( this );
+            loadHandlers(amazonHttpHandlers);
+        } catch ( Throwable cause ) {
+            throw handledException( cause );
+        }
 	}
 
 	@Override
@@ -36,10 +48,10 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
 			return AmazonLambdaResponse.notFound();
 		try {
 			return handleRequest( request, httpHandler );
-		} catch ( AmazonLambdaFunctionInterrumptedException cause ) {
+		} catch ( AmazonLambdaFunctionInterruptedException cause ) {
 			return cause.response;
-		} catch ( Exception cause ) {
-			throw new RuntimeException( cause );
+		} catch ( Throwable cause ) {
+            return new AmazonLambdaResponse( 500, Collections.emptyMap(), convertToString( cause ) );
 		}
 	}
 
@@ -74,6 +86,19 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
 			entries.add( new Entry( webResource.path().replaceFirst( "/$", "" ), handler ) );
 		}
 	}
+
+	RuntimeException handledException( Throwable cause ) {
+        return new RuntimeException( cause.getMessage() + "\n" + convertToString(cause), cause );
+    }
+
+    String convertToString( Throwable cause ) {
+        try (final Writer writer = new StringWriter() ) {
+            cause.printStackTrace(new PrintWriter(writer));
+            return writer.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 
 @Value
