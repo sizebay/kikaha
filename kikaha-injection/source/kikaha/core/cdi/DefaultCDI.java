@@ -5,6 +5,7 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.function.*;
 import kikaha.core.cdi.helpers.*;
 import kikaha.core.cdi.helpers.filter.*;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -167,7 +168,7 @@ public class DefaultCDI implements CDI {
 			return (Iterable<T>)instances;
 		}
 
-		private <T> Iterable<T> loadServicesFor( final Class<T> serviceClazz, final ProviderContext providerContext ) {
+		private <T> Iterable<T> loadServicesFor(@NonNull final Class<T> serviceClazz, final ProviderContext providerContext ) {
 			final List<Class<T>> iterableInterfaces = injectionContext.loadClassesImplementing( serviceClazz );
 			Iterable<T> instances = null;
 			if ( !iterableInterfaces.isEmpty() ) {

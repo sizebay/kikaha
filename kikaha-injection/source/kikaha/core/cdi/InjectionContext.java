@@ -59,7 +59,7 @@ public class InjectionContext {
 		return providableClass;
 	}
 
-	public <T> List<Class<T>> loadClassesImplementing( final Class<T> interfaceClazz ) {
+	public <T> List<Class<T>> loadClassesImplementing( @NonNull final Class<T> interfaceClazz ) {
 		List<Class<T>> implementations = (List)implementedClasses.get( interfaceClazz );
 		if ( implementations == null )
 			synchronized ( implementedClasses ) {
