@@ -113,7 +113,7 @@ public class KikahaLambdaDeployerMojo extends AbstractMojo {
 		getLog().info( "Pointing the all requests to lambda function '"+ functionArn +"'" );
 		resourceId = aws.createProxyResource(resourceId, restApiID).getId();
 		aws.putMethod(restApiID, resourceId);
-		aws.assignLambdaToResource(restApiID, resourceId, functionArn);
+		aws.assignLambdaToResource(restApiID, resourceId, functionArn, regionName);
 		aws.deployFunction(restApiID);
 		final String sourceArn = "arn:aws:execute-api:"+regionName+":"+accountId+":"+restApiID+"/*/*/*";
 		aws.addPermissionToInvokeLambdaFunctions(projectName, sourceArn);

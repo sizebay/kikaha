@@ -68,11 +68,11 @@ class AWS {
 		}
 	}
 
-	PutIntegrationResult assignLambdaToResource( String restApiID, String resourceId, String functionArn ) {
+	PutIntegrationResult assignLambdaToResource( String restApiID, String resourceId, String functionArn, String regionName ) {
 		try {
 			final PutIntegrationRequest request = new PutIntegrationRequest()
 				.withRestApiId(restApiID).withResourceId(resourceId)
-				.withUri("arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/" + functionArn + "/invocations")
+				.withUri("arn:aws:apigateway:"+ regionName +":lambda:path/2015-03-31/functions/"+ functionArn +"/invocations")
 				.withHttpMethod("ANY").withType(IntegrationType.AWS_PROXY)
 				.withIntegrationHttpMethod("POST");
 			return apiGateway.putIntegration( request );
