@@ -12,34 +12,33 @@ import lombok.*;
  * With the Lambda proxy integration, API Gateway maps the entire client request to the
  * input event parameter of the back-end Lambda function as defined on this class.
  */
-@Getter
-@Setter
 @ToString(exclude = "cookies")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressWarnings("unchecked")
 public class AmazonLambdaRequest {
 
-	String resource;
-	String path;
-	String httpMethod;
-	Map<String, String> headers;
-	Map<String, String> queryStringParameters;
-	Map<String, String> pathParameters;
-	Map<String, String> stageVariables;
-	RequestContext requestContext;
-	String body;
-	boolean isBase64Encoded;
+    @Setter @Getter String resource;
+    @Setter @Getter String path;
+    @Setter @Getter String httpMethod;
+    @Setter @Getter Map<String, String> headers;
+    @Setter @Getter Map<String, String> queryStringParameters;
+    @Setter @Getter Map<String, String> pathParameters;
+    @Setter @Getter Map<String, String> stageVariables;
+    @Setter @Getter RequestContext requestContext;
+    @Setter @Getter String body;
+    @Setter @Getter boolean isBase64Encoded;
 
 	@JsonIgnore
 	@Getter(lazy = true)
 	private final Map<String, Cookie> cookies = parseCookies();
 
     @JsonIgnore
-    private Map<AttachmentKey<?>, Object> attachments;
+    transient private Map<AttachmentKey<?>, Object> attachments;
 
     /**
      * {@inheritDoc}
      */
+    @JsonIgnore
     public <T> T getAttachment(final AttachmentKey<T> key) {
         if (key == null || attachments == null) {
             return null;
@@ -77,6 +76,7 @@ public class AmazonLambdaRequest {
 	@Getter
 	@Setter
 	@ToString
+    @JsonIgnoreProperties(ignoreUnknown = true)
 	public static class RequestContext {
 		String accountId;
 		String resourceId;
@@ -91,6 +91,7 @@ public class AmazonLambdaRequest {
 	@Getter
 	@Setter
 	@ToString
+    @JsonIgnoreProperties(ignoreUnknown = true)
 	public static class RequestContextIdentity {
 		String cognitoIdentityPoolId;
 		String accountId;

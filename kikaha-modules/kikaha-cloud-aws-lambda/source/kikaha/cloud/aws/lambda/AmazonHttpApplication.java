@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest, AmazonLambdaResponse> {
 
-
 	@Inject @Typed( AmazonHttpHandler.class )
 	Iterable<AmazonHttpHandler> amazonHttpHandlers;
 
@@ -33,9 +32,11 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
         try {
             log.debug( "Initializing Lambda Application" );
             final CDI cdi = DefaultCDI.newInstance();
-            log.debug( "Loaded..." );
+            log.debug( "Injecting dependencies..." );
             cdi.injectOn( this );
+            log.debug( "Injection process done!" );
             loadHandlers(amazonHttpHandlers);
+            log.debug( "Handlers loaded and ready!" );
         } catch ( Throwable cause ) {
             throw handledException( cause );
         }
@@ -66,6 +67,7 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
 
 	AmazonHttpHandler retrieveHttpHandler( AmazonLambdaRequest request ) {
 		final String path = request.getPath().replaceFirst( "/$", "" );
+        log.debug( "Retrieving HTTP Handler for request: " + request.httpMethod + " " + path );
 		final List<Entry> list = entriesMatcher.getOrDefault( request.getHttpMethod(), Collections.emptyList() );
 		for ( final Entry entry : list )
 			if ( entry.getMatcher().matches( path, request.pathParameters ) )
@@ -80,10 +82,13 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
 	void loadHandlers( Iterable<AmazonHttpHandler> handlers ) {
 		entriesMatcher = new HashMap<>();
 
+		log.info( "Registering AWS Lambda routes..." );
 		for ( AmazonHttpHandler handler : handlers ) {
 			final WebResource webResource = handler.getClass().getAnnotation( WebResource.class );
 			final List<Entry> entries = entriesMatcher.computeIfAbsent( webResource.method(), k -> new ArrayList<>() );
-			entries.add( new Entry( webResource.path().replaceFirst( "/$", "" ), handler ) );
+			final Entry entry = new Entry( webResource.path().replaceFirst( "/$", "" ), webResource.method(), handler );
+			log.info( "  > " + entry );
+			entries.add( entry );
 		}
 	}
 
@@ -104,12 +109,19 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
 @Value
 class Entry {
 
-	Entry( final String url, final AmazonHttpHandler handler ) {
+	Entry( final String url, final String method, final AmazonHttpHandler handler ) {
+	    this.asString = method + " " + url;
 		this.handler = handler;
 		this.matcher = URLMatcher.compile( url, true );
 	}
 
+	final String asString;
 	final URLMatcher matcher;
 	final AmazonHttpHandler handler;
+
+	@Override
+	public String toString(){
+	    return asString;
+    }
 }
 
