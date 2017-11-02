@@ -3,7 +3,6 @@ package kikaha.urouting;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
-import io.undertow.util.AttachmentKey;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -4,17 +4,21 @@ import java.lang.reflect.*;
 import java.util.*;
 import kikaha.core.cdi.*;
 import kikaha.core.cdi.helpers.filter.AnyObject;
+import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings( "rawtypes" )
+@Slf4j
 public class ProducerFactoryMap {
 
 	final Map<Class<?>, List<Class<ProducerFactory>>> producerImplementationClasses = new HashMap<>();
 	final Map<Class<?>, List<ProducerFactory<?>>> map = new HashMap<>();
 
 	public static ProducerFactoryMap from( final Iterable<Class<ProducerFactory>> iterable ) {
+	    log.debug( "Loading all implementations of ProducerFactory interface..." );
 		final ProducerFactoryMap providers = new ProducerFactoryMap();
 		for ( final Class<ProducerFactory> provider : iterable ) {
 			final Class<?> clazz = getGenericClassFrom( provider );
+			log.debug( "  > " + provider.getCanonicalName() + " -> " + clazz.getCanonicalName() );
 			providers.memorizeProviderForClazz(provider, clazz);
 		}
 		return providers;

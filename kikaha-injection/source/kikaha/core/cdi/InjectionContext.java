@@ -40,8 +40,9 @@ public class InjectionContext {
 				if ( constructor.isAbleToInstantiate( clazz, providerContext ) )
 					return constructor.instantiate( clazz, providerContext );
 		} catch ( final Exception cause ) {
-			if ( !isAbstract( clazz.getModifiers() ) && !isInterface( clazz.getModifiers() ))
-				log.debug("Can't instantiate " + clazz + ": " + cause.getMessage());
+			if ( !isAbstract( clazz.getModifiers() ) && !isInterface( clazz.getModifiers() )) {
+                throw new RuntimeException( "Can't instantiate " + clazz + ": " + cause.getMessage(), cause );
+            }
 		}
 		return null;
 	}

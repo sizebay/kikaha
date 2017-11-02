@@ -22,6 +22,7 @@
         <config.plugins.aws.lambda.create-rest-api>true</config.plugins.aws.lambda.create-rest-api>
         <config.plugins.aws.lambda.bucket>${config.plugins.aws.s3.bucket}</config.plugins.aws.lambda.bucket>
         <config.plugins.aws.lambda.region>us-east-1</config.plugins.aws.lambda.region>
+        <config.plugins.aws.lambda.memory>128</config.plugins.aws.lambda.memory>
         <config.plugins.aws.s3.enabled>${config.plugins.aws.lambda.enabled}</config.plugins.aws.s3.enabled>
         <config.plugins.aws.s3.useCodeDeploy>false</config.plugins.aws.s3.useCodeDeploy>
         <config.plugins.aws.s3.codeDeployFolder>META-INF/aws-code-deploy/</config.plugins.aws.s3.codeDeployFolder>
@@ -96,6 +97,7 @@
                             <createRestAPI>${config.plugins.aws.lambda.create-rest-api}</createRestAPI>
                             <force>${config.plugins.aws.lambda.force}</force>
                             <regionName>${config.plugins.aws.lambda.region}</regionName>
+                            <lambdaMemory>${config.plugins.aws.lambda.memory}</lambdaMemory>
                         </configuration>
                     </execution>
                 </executions>

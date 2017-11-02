@@ -17,9 +17,10 @@ public abstract class ConfigLoader {
 		try {
 		    log.debug( "Loading configuration files..." );
 			final MergeableConfig config = MergeableConfig.create();
-			loadFiles(config, ClassLoader.getSystemResources("META-INF/defaults.yml"));
-			loadFiles(config, ClassLoader.getSystemResources("conf/application.yml"));
-			loadFiles(config, ClassLoader.getSystemResources("conf/application-test.yml"));
+            final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			loadFiles(config, loader.getResources("META-INF/defaults.yml"));
+			loadFiles(config, loader.getResources("conf/application.yml"));
+			loadFiles(config, loader.getResources("conf/application-test.yml"));
 			return config;
 		} catch ( IOException cause ) {
 			throw new IllegalStateException(cause);
@@ -27,7 +28,6 @@ public abstract class ConfigLoader {
 	}
 
 	private static void loadFiles( MergeableConfig config, Enumeration<URL> resources ) throws IOException {
-
 		while( resources.hasMoreElements() ){
 			final URL url = resources.nextElement();
 			try (final InputStream stream = url.openStream() ) {

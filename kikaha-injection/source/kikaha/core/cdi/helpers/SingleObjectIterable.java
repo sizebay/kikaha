@@ -22,14 +22,12 @@ public class SingleObjectIterable<T> implements Iterable<T> {
 
 		@Override
 		public boolean hasNext() {
-			boolean hasNext = firstCall;
-			if ( firstCall )
-				firstCall = false;
-			return hasNext;
+			return firstCall;
 		}
 
 		@Override
 		public T next() {
+            firstCall = false;
 			return object;
 		}
 

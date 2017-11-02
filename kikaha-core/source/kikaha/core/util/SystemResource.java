@@ -51,12 +51,13 @@ public interface SystemResource {
 
 	static InputStream openFile( String fileName ){
 		InputStream stream = open(new File(fileName));
+		final ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		if ( stream == null )
-			stream = ClassLoader.getSystemResourceAsStream( fileName );
+			stream = loader.getResourceAsStream( fileName );
 		if ( stream == null ) {
 			if ( fileName.charAt( 0 ) == '/' )
 				fileName = fileName.substring(1);
-			stream = ClassLoader.getSystemResourceAsStream( fileName );
+			stream = loader.getResourceAsStream( fileName );
 		}
 		return stream;
 	}

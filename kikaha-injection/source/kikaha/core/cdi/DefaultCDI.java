@@ -142,14 +142,20 @@ public class DefaultCDI implements CDI {
 		private <T> T produceFromFactory( final Class<T> serviceClazz, final ProviderContext context )
 		{
 			final ProducerFactory<T> provider = getProducerFor( serviceClazz );
-			if ( provider != null )
-				return provider.provide( context );
+			if ( provider != null ) {
+                final T produced = provider.provide(context);
+                if ( produced == null )
+                    throw new NullPointerException( "The ProducerFactory " + provider.getClass().getCanonicalName() + " returned a null object." );
+                return produced;
+            }
 			return null;
 		}
 
 		public <T> ProducerFactory<T> getProducerFor(final Class<T> serviceClazz ) {
-			if ( producers == null )
-				return null;
+			if ( producers == null ) {
+			    log.debug( "Premature invocation of this method. Ignoring!" );
+                return null;
+            }
 			return (ProducerFactory<T>)producers.get( serviceClazz, this );
 		}
 
