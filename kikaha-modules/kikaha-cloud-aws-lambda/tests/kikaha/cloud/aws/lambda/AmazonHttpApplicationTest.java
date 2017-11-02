@@ -50,7 +50,7 @@ public class AmazonHttpApplicationTest {
 	public void ensureCanDeployAllHandlers(){
 		final Map<String, List<Entry>> entriesMatcher = application.getEntriesMatcher();
 		assertEquals( 2, entriesMatcher.size() );
-		assertEquals( 2, entriesMatcher.get( "GET" ).size() );
+		assertEquals( 3, entriesMatcher.get( "GET" ).size() );
 		assertEquals( 1, entriesMatcher.get( "POST" ).size() );
 	}
 
