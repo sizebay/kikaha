@@ -13,7 +13,7 @@ public class ViburDataSourceFactory implements DataSourceFactory {
 
 	@Override
 	public DataSource newDataSource(String name, Config config) {
-		final ViburDataSourceConfiguration viburConf = ViburDataSourceConfiguration.from(name, config);
+		final DataSourceConfiguration viburConf = DataSourceConfiguration.from(name, config);
 		log.debug( "Starting Vibur DataSource " + viburConf );
 		final ViburDBCPDataSource ds = createDatasource( viburConf );
 		ds.start();
@@ -21,7 +21,7 @@ public class ViburDataSourceFactory implements DataSourceFactory {
 		return ds;
 	}
 
-	private ViburDBCPDataSource createDatasource(final ViburDataSourceConfiguration dsConf ) {
+	private ViburDBCPDataSource createDatasource(final DataSourceConfiguration dsConf ) {
 		final ViburDBCPDataSource ds = new ViburDBCPDataSource();
 		ds.setAcquireRetryAttempts( dsConf.acquireRetryAttempt() );
 		ds.setAcquireRetryDelayInMs( dsConf.acquireRetryDelayInMs() );

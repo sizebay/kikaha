@@ -20,6 +20,10 @@
         </dependency>
         <dependency>
             <groupId>io.skullabs.kikaha</groupId>
+            <artifactId>kikaha-urouting</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.skullabs.kikaha</groupId>
             <artifactId>kikaha-uworkers</artifactId>
         </dependency>
         <dependency>

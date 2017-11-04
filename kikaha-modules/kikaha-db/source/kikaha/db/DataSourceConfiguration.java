@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Accessors( fluent = true )
 @RequiredArgsConstructor
-public class ViburDataSourceConfiguration {
+public class DataSourceConfiguration {
 
 	final String name;
 	final int poolInitialSize;
@@ -48,8 +48,8 @@ public class ViburDataSourceConfiguration {
 		return name + "[" + jdbcUrl + ";" + username + ";" + password + ";" + driverClassName + "]";
 	}
 
-	public static ViburDataSourceConfiguration from(String name, Config config ) {
-		return new ViburDataSourceConfiguration( name,
+	public static DataSourceConfiguration from(String name, Config config ) {
+		return new DataSourceConfiguration( name,
 				config.getInteger( "pool-initial-size", 10 ),
 				config.getInteger( "pool-max-size", 100 ),
 				config.getBoolean( "pool-fair", true ),

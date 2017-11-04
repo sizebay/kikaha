@@ -14,6 +14,10 @@
 
 	<dependencies>
 		<!-- Main Dependencies -->
+        <dependency>
+            <groupId>io.skullabs.kikaha</groupId>
+            <artifactId>kikaha-core</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>io.skullabs.kikaha</groupId>
 			<artifactId>kikaha-urouting</artifactId>

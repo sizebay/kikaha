@@ -13,10 +13,14 @@
 	<name>Kikaha: Cloud Providers: AWS X-Ray</name>
 
 	<dependencies>
-		<dependency>
-			<groupId>io.skullabs.kikaha</groupId>
-			<artifactId>kikaha-cloud</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>io.skullabs.kikaha</groupId>
+            <artifactId>kikaha-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.skullabs.kikaha</groupId>
+            <artifactId>kikaha-cloud</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>io.skullabs.kikaha</groupId>
 			<artifactId>kikaha-cloud-aws-iam</artifactId>

@@ -16,8 +16,11 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>kikaha-urouting</artifactId>
-			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>kikaha-core</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
