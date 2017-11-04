@@ -2,10 +2,11 @@ package kikaha.cloud.aws.lambda;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import java.util.*;
 import javax.inject.Inject;
 import kikaha.core.test.KikahaRunner;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
@@ -66,11 +67,24 @@ public class AmazonLambdaFunctionParameterReaderTest {
 	}
 
 	@Test
-	public void ensureGetBody() throws Exception {
+	public void ensureGetBodyAsMap() throws Exception {
 		request.body = USER_JSON;
 		final Map body = reader.getBody( request, Map.class );
 		assertEquals( USER, body );
 	}
+
+	@Test
+	public void ensureGetBodyAsPOJO() throws Exception {
+		request.body = USER_JSON;
+		final User body = reader.getBody( request, User.class );
+		assertNotNull( body );
+		assertEquals( "Helden", body.name );
+	}
+}
+
+@Getter @Setter
+class User {
+	String name;
 }
 
 @RequiredArgsConstructor

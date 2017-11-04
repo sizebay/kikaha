@@ -1,5 +1,5 @@
 server:
-  http: { port: 9999 }
+  http: { port: 10000 }
 
   auth:
     fixed-auth:

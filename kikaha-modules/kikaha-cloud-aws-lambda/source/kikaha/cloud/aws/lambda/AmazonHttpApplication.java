@@ -1,18 +1,22 @@
 package kikaha.cloud.aws.lambda;
 
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+import kikaha.core.cdi.CDI;
+import kikaha.core.cdi.DefaultCDI;
+import kikaha.core.modules.http.WebResource;
+import kikaha.core.url.URLMatcher;
+import kikaha.urouting.api.Mimes;
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.enterprise.inject.Typed;
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.*;
-import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
-import com.amazonaws.services.lambda.runtime.*;
-import kikaha.core.cdi.*;
-import kikaha.core.modules.http.WebResource;
-import kikaha.core.url.URLMatcher;
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -25,6 +29,9 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
 
 	@Inject @Typed( AmazonHttpInterceptor.class )
 	Iterable<AmazonHttpInterceptor> interceptors;
+
+	@Inject
+    AmazonLambdaSerializer serializer;
 
 	Map<String, List<Entry>> entriesMatcher;
 
@@ -52,7 +59,9 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
 		} catch ( AmazonLambdaFunctionInterruptedException cause ) {
 			return cause.response;
 		} catch ( Throwable cause ) {
-            return new AmazonLambdaResponse( 500, Collections.emptyMap(), convertToString( cause ) );
+            return AmazonLambdaResponse.create( 500 )
+                .setHeaders( Collections.singletonMap( "Content-Type", Mimes.PLAIN_TEXT ) )
+                .setBody( convertToString( cause ) );
 		}
 	}
 
@@ -60,6 +69,7 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
 		for (AmazonHttpInterceptor hook : interceptors)
 			hook.validateRequest(request);
 		final AmazonLambdaResponse response = httpHandler.handle(request);
+		response.serializeAs(serializer);
 		for (AmazonHttpInterceptor hook : interceptors)
 			hook.beforeSendResponse(response);
 		return response;

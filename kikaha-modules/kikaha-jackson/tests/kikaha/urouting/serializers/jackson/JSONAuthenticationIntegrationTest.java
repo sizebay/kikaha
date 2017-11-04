@@ -3,10 +3,16 @@ package kikaha.urouting.serializers.jackson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.undertow.util.Headers;
+import kikaha.core.KikahaUndertowServer;
+import kikaha.core.cdi.DefaultCDI;
+import kikaha.core.test.KikahaRunner;
 import kikaha.core.test.KikahaServerRunner;
 import kikaha.urouting.api.Mimes;
+import lombok.SneakyThrows;
 import lombok.val;
 import okhttp3.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -38,7 +44,7 @@ public class JSONAuthenticationIntegrationTest {
         credentials.setUsername( "username" );
         credentials.setPassword( "password" );
 
-        val url = postJson( "http://localhost:9999/auth/verify", credentials );
+        val url = postJson( "http://localhost:10000/auth/verify", credentials );
         val response = client.newCall(url.build()).execute();
         assertEquals( 200, response.code() );
     }
@@ -49,7 +55,7 @@ public class JSONAuthenticationIntegrationTest {
         credentials.setUsername( "bad-username" );
         credentials.setPassword( "bad-password" );
 
-        val url = postJson( "http://localhost:9999/auth/verify", credentials );
+        val url = postJson( "http://localhost:10000/auth/verify", credentials );
         val response = client.newCall(url.build()).execute();
         assertEquals( 401, response.code() );
     }

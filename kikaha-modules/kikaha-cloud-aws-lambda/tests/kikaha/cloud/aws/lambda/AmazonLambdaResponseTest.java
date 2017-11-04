@@ -11,12 +11,15 @@ import org.junit.Test;
  */
 public class AmazonLambdaResponseTest {
 
+    final AmazonLambdaSerializer jacksonJr = new JacksonJrAmazonLambdaSerializer();
 	final Map<String, String> user = Collections.singletonMap("name", "Helden");
 	final String userAsJson = "{\"name\":\"Helden\"}";
 
 	@Test
 	public void ensureCanCreateAResponseFromObject() throws Exception {
 		final AmazonLambdaResponse response = AmazonLambdaResponse.with( user );
+		assertNull( response.body );
+		response.serializeAs( jacksonJr );
 		assertEquals( userAsJson, response.body );
 		assertEquals( 200, response.statusCode );
 		assertEquals( Mimes.JSON, response.headers.get( "Content-Type" ) );
@@ -26,6 +29,8 @@ public class AmazonLambdaResponseTest {
 	public void ensureCanCreateAResponseFromURoutingResponse() throws Exception {
 		final DefaultResponse defaultResponse = DefaultResponse.ok( user ).statusCode( 201 );
 		final AmazonLambdaResponse response = AmazonLambdaResponse.with( defaultResponse );
+        assertNull( response.body );
+        response.serializeAs( jacksonJr );
 		assertEquals( userAsJson, response.body );
 		assertEquals( 201, response.statusCode );
 		assertFalse( response.headers.isEmpty() );
@@ -35,6 +40,8 @@ public class AmazonLambdaResponseTest {
 	@Test
 	public void ensureNoContent() throws Exception {
 		final AmazonLambdaResponse response = AmazonLambdaResponse.noContent();
+        assertNull( response.body );
+        response.serializeAs( jacksonJr );
 		assertNull( response.body );
 		assertEquals( 204, response.statusCode );
 		assertTrue( response.headers.isEmpty() );

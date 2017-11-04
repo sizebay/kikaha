@@ -1,7 +1,7 @@
 package kikaha.cloud.aws.lambda;
 
 import java.util.*;
-import com.fasterxml.jackson.annotation.*;
+//import com.fasterxml.jackson.annotation.*;
 import io.undertow.UndertowMessages;
 import io.undertow.server.handlers.Cookie;
 import io.undertow.util.*;
@@ -13,7 +13,7 @@ import lombok.*;
  * input event parameter of the back-end Lambda function as defined on this class.
  */
 @ToString(exclude = "cookies")
-@JsonIgnoreProperties(ignoreUnknown = true)
+//@JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressWarnings("unchecked")
 public class AmazonLambdaRequest {
 
@@ -28,17 +28,17 @@ public class AmazonLambdaRequest {
     @Setter @Getter String body;
     @Setter @Getter boolean isBase64Encoded;
 
-	@JsonIgnore
+//	@JsonIgnore
 	@Getter(lazy = true)
 	private final Map<String, Cookie> cookies = parseCookies();
 
-    @JsonIgnore
+//    @JsonIgnore
     transient private Map<AttachmentKey<?>, Object> attachments;
 
     /**
      * {@inheritDoc}
      */
-    @JsonIgnore
+//    @JsonIgnore
     public <T> T getAttachment(final AttachmentKey<T> key) {
         if (key == null || attachments == null) {
             return null;
@@ -76,7 +76,7 @@ public class AmazonLambdaRequest {
 	@Getter
 	@Setter
 	@ToString
-    @JsonIgnoreProperties(ignoreUnknown = true)
+//    @JsonIgnoreProperties(ignoreUnknown = true)
 	public static class RequestContext {
 		String accountId;
 		String resourceId;
@@ -91,7 +91,7 @@ public class AmazonLambdaRequest {
 	@Getter
 	@Setter
 	@ToString
-    @JsonIgnoreProperties(ignoreUnknown = true)
+//    @JsonIgnoreProperties(ignoreUnknown = true)
 	public static class RequestContextIdentity {
 		String cognitoIdentityPoolId;
 		String accountId;

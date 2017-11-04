@@ -1,13 +1,16 @@
 package kikaha.cloud.aws.lambda;
 
-import java.util.*;
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Typed;
-import javax.inject.*;
 import io.undertow.server.handlers.Cookie;
 import kikaha.urouting.Reflection;
-import kikaha.urouting.api.*;
+import kikaha.urouting.api.ConverterFactory;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Typed;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -17,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings( "unchecked" )
 public class AmazonLambdaFunctionParameterReader {
 
+    @Inject AmazonLambdaSerializer serializer;
 	@Inject ConverterFactory converterFactory;
 	@Inject @Typed( AmazonLambdaContextProducer.class )
 	Iterable<AmazonLambdaContextProducer> availableProducers;
@@ -73,7 +77,7 @@ public class AmazonLambdaFunctionParameterReader {
 	}
 
 	public <T> T getBody( AmazonLambdaRequest request, Class<T> userClass ) {
-		return Jackson.fromJsonString( request.body, userClass );
+		return serializer.fromString( request.body, userClass );
 	}
 
 	private Map<Class, AmazonLambdaContextProducer> loadAllProducers() {

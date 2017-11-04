@@ -94,7 +94,10 @@ public class TinyList<T> implements List<T>, RandomAccess {
 
 	@Override
 	public boolean contains(Object o) {
-		throw new UnsupportedOperationException("method 'contains' is unavailable");
+		for ( Object d : data )
+            if (d.equals(o))
+                return true;
+		return false;
 	}
 
 	@Override

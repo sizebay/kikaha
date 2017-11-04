@@ -44,6 +44,12 @@
             <version>2.1.1.Final</version>
             <artifactId>kikaha-injection-processor</artifactId>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.skullabs.kikaha</groupId>
+                    <artifactId>kikaha-injection</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

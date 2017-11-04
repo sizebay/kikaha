@@ -16,12 +16,18 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>kikaha-core</artifactId>
+            <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>kikaha-urouting</artifactId>
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>kikaha-cloud-aws-lambda</artifactId>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
