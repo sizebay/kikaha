@@ -18,6 +18,8 @@ public class ProducerFactoryMap {
 		final ProducerFactoryMap providers = new ProducerFactoryMap();
 		for ( final Class<ProducerFactory> provider : iterable ) {
 			final Class<?> clazz = getGenericClassFrom( provider );
+			if ( clazz == null )
+			    continue;
 			log.debug( "  > " + provider.getCanonicalName() + " -> " + clazz.getCanonicalName() );
 			providers.memorizeProviderForClazz(provider, clazz);
 		}
@@ -25,10 +27,15 @@ public class ProducerFactoryMap {
 	}
 
 	private static Class<?> getGenericClassFrom( Class<? extends ProducerFactory> clazz ) {
-		final Type[] types = clazz.getGenericInterfaces();
-		for ( final Type type : types )
-			if ( ( (ParameterizedType)type ).getRawType().equals( ProducerFactory.class ) )
-				return (Class<?>)( (ParameterizedType)type ).getActualTypeArguments()[0];
+	    try {
+            final Type[] types = clazz.getGenericInterfaces();
+            for ( final Type type : types )
+                if (((ParameterizedType) type).getRawType().equals(ProducerFactory.class))
+                    return (Class<?>) ((ParameterizedType) type).getActualTypeArguments()[0];
+        } catch ( NoClassDefFoundError | TypeNotPresentException cause ) {
+	        log.debug( "Could not get the generic class for " + clazz );
+	        return null;
+        }
 		return null;
 	}
 

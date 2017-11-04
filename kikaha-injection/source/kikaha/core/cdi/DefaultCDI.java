@@ -133,22 +133,19 @@ public class DefaultCDI implements CDI {
 		final Queue<InjectableField> fieldToTryToInjectAgainLater = new ArrayDeque<>();
 
 		public <T> T load( final Class<T> serviceClazz, Condition<T> condition, ProviderContext providerContext ) {
-			final T produced = produceFromFactory( serviceClazz, providerContext );
-			if ( produced != null )
-				return produced;
-			return Filter.first( loadAll( serviceClazz, condition, providerContext ), condition );
+			final Reference<T> produced = produceFromFactory( serviceClazz, providerContext );
+            return produced.getOrElse( () -> Filter.first( loadAll( serviceClazz, condition, providerContext ), condition ) );
 		}
 
-		private <T> T produceFromFactory( final Class<T> serviceClazz, final ProviderContext context )
+		private <T> Reference<T> produceFromFactory( final Class<T> serviceClazz, final ProviderContext context )
 		{
 			final ProducerFactory<T> provider = getProducerFor( serviceClazz );
 			if ( provider != null ) {
                 final T produced = provider.provide(context);
-                if ( produced == null )
-                    throw new NullPointerException( "The ProducerFactory " + provider.getClass().getCanonicalName() + " returned a null object." );
-                return produced;
+                final String optionalFailureMsg = "The ProducerFactory " + provider.getClass().getCanonicalName() + " returned a null object.";
+                return Reference.mandatory( optionalFailureMsg, produced );
             }
-			return null;
+			return Reference.optional();
 		}
 
 		public <T> ProducerFactory<T> getProducerFor(final Class<T> serviceClazz ) {

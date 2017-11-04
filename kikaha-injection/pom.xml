@@ -77,6 +77,12 @@
 						</goals>
 						<configuration>
 							<dependencyReducedPomLocation>${project.build.directory}/reduced-pom.xml</dependencyReducedPomLocation>
+                            <artifactSet>
+                                <includes>
+                                    <include>javax.enterprise:cdi-api</include>
+                                    <include>javax.inject:javax.inject</include>
+                                </includes>
+                            </artifactSet>
 							<filters>
 								<filter>
 									<artifact>javax.inject:javax.inject</artifact>

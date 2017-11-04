@@ -57,7 +57,7 @@ public class ProvidableClass<T> {
 
 	static void populateWithProvidableFields(InjectableDataExtractor extractor, Class<?> targetClazz, List<ProvidableField> providableFields ) {
 		for ( final Field field : targetClazz.getDeclaredFields() ) {
-			final Collection<Class<? extends Annotation>> qualifiers = extractQualifiersFromAvoidingNPEWhenCreatingQualifierExtractor( extractor, field );
+			final Collection<Class<? extends Annotation>> qualifiers = extractQualifiersAvoidingNPEWhenCreatingQualifierExtractorFrom( extractor, field );
 			if ( extractor.isAManyElementsProvider( field ) )
 				providableFields.add( ManyElementsProvidableField.from( qualifiers, field ) );
 			else if ( extractor.isASingleElementProvider( field ) )
@@ -66,7 +66,7 @@ public class ProvidableClass<T> {
 	}
 
 	private static Collection<Class<? extends Annotation>>
-		extractQualifiersFromAvoidingNPEWhenCreatingQualifierExtractor(
+        extractQualifiersAvoidingNPEWhenCreatingQualifierExtractorFrom(
 			final InjectableDataExtractor extractor, final Field field )
 	{
 		if ( null == extractor )
