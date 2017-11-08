@@ -2,7 +2,6 @@ package kikaha.urouting;
 
 import java.io.IOException;
 import java.util.Map;
-import kikaha.core.url.StringCursor;
 import kikaha.core.url.URL;
 import kikaha.urouting.api.*;
 import lombok.RequiredArgsConstructor;

@@ -3,6 +3,7 @@ package kikaha.cloud.aws.lambda;
 import io.undertow.server.handlers.Cookie;
 import kikaha.urouting.Reflection;
 import kikaha.urouting.api.ConverterFactory;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.PostConstruct;
@@ -25,12 +26,8 @@ public class AmazonLambdaFunctionParameterReader {
 	@Inject @Typed( AmazonLambdaContextProducer.class )
 	Iterable<AmazonLambdaContextProducer> availableProducers;
 
-	Map<Class, AmazonLambdaContextProducer> contextProducers;
-
-	@PostConstruct
-	public void loadProducers(){
-		contextProducers = loadAllProducers();
-	}
+	@Getter(lazy = true)
+	private final Map<Class, AmazonLambdaContextProducer> contextProducers = loadAllProducers();
 
 	public <T> T getCookieParam( final AmazonLambdaRequest request, final String cookieParam, final Class<T> clazz) {
 		final Cookie cookie = request.getCookies().get( cookieParam );
@@ -62,7 +59,7 @@ public class AmazonLambdaFunctionParameterReader {
 	}
 
 	public <T> T getContextParam( final AmazonLambdaRequest request, final Class<T> clazz ) {
-		final AmazonLambdaContextProducer<T> producer = contextProducers.get(clazz);
+		final AmazonLambdaContextProducer<T> producer = getContextProducers().get(clazz);
 		if ( producer == null )
 			return null;
 		return producer.produce( request );

@@ -60,7 +60,6 @@ public class AmazonLambdaFunctionParameterReaderTest {
 	public void ensureProduceStringFromRequestContext(){
 		request.headers = Collections.singletonMap( "Cookie", HUGE_COOKIE );
 		reader.availableProducers = asList( new ProducerThatReadsACookie("aws-business-metrics-last-visit") );
-		reader.loadProducers();
 
 		final String param = reader.getContextParam(request, String.class);
 		assertEquals( "1484930233913", param );

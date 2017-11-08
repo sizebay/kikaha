@@ -2,6 +2,7 @@ package kikaha.apt;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.*;
+import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -30,8 +31,10 @@ public abstract class AbstractAnnotatedMethodProcessor extends AnnotationProcess
 			for ( final Class<? extends Annotation> annotation : annotationsThatShouldBePresentOnMethod )
 				generateMethods( roundEnv, annotation );
 			return false;
-		} catch ( IOException e ) {
-			throw new IllegalStateException( e );
+		} catch ( Throwable e ) {
+		    final String message = "Could not process classes: APT Failure: " + e.getMessage();
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message );
+			throw new IllegalStateException( message, e );
 		}
 	}
 

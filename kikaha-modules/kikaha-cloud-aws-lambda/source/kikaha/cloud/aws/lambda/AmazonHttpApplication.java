@@ -7,6 +7,7 @@ import kikaha.core.cdi.DefaultCDI;
 import kikaha.core.modules.http.WebResource;
 import kikaha.core.url.URLMatcher;
 import kikaha.urouting.api.Mimes;
+import lombok.Getter;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,7 +22,7 @@ import java.util.*;
 /**
  *
  */
-@Slf4j
+@Slf4j @Getter
 public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest, AmazonLambdaResponse> {
 
 	@Inject @Typed( AmazonHttpHandler.class )

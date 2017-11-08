@@ -31,7 +31,12 @@ public class ManyElementsProvidableField<T> implements ProvidableField {
 		field.set( instance, value );
 	}
 
-	public static <T> ProvidableField from( Collection<Class<? extends Annotation>> qualifiers, final Field field ) {
+    @Override
+    public String toString() {
+        return field.toString().split( " " )[1];
+    }
+
+    public static <T> ProvidableField from(Collection<Class<? extends Annotation>> qualifiers, final Field field ) {
 		assertFieldTypeIsIterable( field );
 		field.setAccessible( true );
 		final Class collectionType = identifyWhichTypeThisCollectionHas(field);

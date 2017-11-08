@@ -33,7 +33,7 @@ public class ProducerFactoryMap {
                 if (((ParameterizedType) type).getRawType().equals(ProducerFactory.class))
                     return (Class<?>) ((ParameterizedType) type).getActualTypeArguments()[0];
         } catch ( NoClassDefFoundError | TypeNotPresentException cause ) {
-	        log.debug( "Could not get the generic class for " + clazz );
+	        log.debug( "Could not get the generic class for " + clazz, cause );
 	        return null;
         }
 		return null;

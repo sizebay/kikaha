@@ -35,13 +35,16 @@ public class SPIProcessor extends AnnotationProcessor {
 
 	@Override
 	public boolean process( final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv ) {
-		try {
+        try {
 			if ( !roundEnv.processingOver() )
 				process( roundEnv );
 			else
 				flush();
-		} catch ( final IOException e ) {
-			e.printStackTrace();
+		} catch ( final Throwable e ) {
+            e.printStackTrace();
+            final String message = "Could not process classes: APT Failure: " + e.getMessage();
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message );
+            throw new IllegalStateException( message, e );
 		}
 		return false;
 	}
@@ -161,6 +164,7 @@ public class SPIProcessor extends AnnotationProcessor {
 					resource.write(implementation + EOL);
 			}
 		}
+        info( "Done!" );
 	}
 
 	Set<String> readResourceIfExists( final String resourcePath ) throws IOException {
