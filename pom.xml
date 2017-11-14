@@ -149,7 +149,6 @@
                 <groupId>io.skullabs.kikaha</groupId>
                 <version>2.1.2.Final</version>
                 <artifactId>kikaha-core</artifactId>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>io.skullabs.kikaha</groupId>
@@ -161,7 +160,6 @@
                 <groupId>io.skullabs.kikaha</groupId>
                 <version>2.1.2.Final</version>
                 <artifactId>kikaha-urouting</artifactId>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>io.skullabs.kikaha</groupId>
