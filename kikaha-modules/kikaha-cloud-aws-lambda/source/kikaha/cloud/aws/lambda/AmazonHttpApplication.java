@@ -67,12 +67,18 @@ public class AmazonHttpApplication implements RequestHandler<AmazonLambdaRequest
 	}
 
 	AmazonLambdaResponse handleRequest(AmazonLambdaRequest request, AmazonHttpHandler httpHandler) throws Exception {
+        log.debug( "Running interceptors before the request execution..." );
 		for (AmazonHttpInterceptor hook : interceptors)
 			hook.validateRequest(request);
+
+        log.debug( "Executing request..." );
 		final AmazonLambdaResponse response = httpHandler.handle(request);
 		response.serializeAs(serializer);
+
+        log.debug( "Running interceptors before send the response..." );
 		for (AmazonHttpInterceptor hook : interceptors)
 			hook.beforeSendResponse(response);
+
 		return response;
 	}
 
