@@ -20,7 +20,7 @@ Kikaha is a micro container writen over the fast Undertow core. It was developed
 Be a contributor and join our team. Kikaha need your help to provide the best to the community. Even simple tasks like testing the micro container, finding typos in docs or reporting improvements feedbacks will be welcome.
 
 ## Community / Support
-* [Documentation](https://github.com/Skullabs/kikaha/wiki)
+* [Documentation](http://kikaha.io/)
 * [GitHub Issues](https://github.com/Skullabs/kikaha/issues)
 * [Google Group](https://groups.google.com/forum/#!forum/kikaha)
 
