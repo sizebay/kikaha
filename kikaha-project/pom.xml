@@ -35,6 +35,7 @@
         <config.plugins.maven.deploy.skip>true</config.plugins.maven.deploy.skip>
         <config.plugins.rocker.skip>true</config.plugins.rocker.skip>
         <config.plugins.rocker.template-dir>${config.dir.web}</config.plugins.rocker.template-dir>
+        <config.plugins.rocker.output-dir>${project.build.directory}/generated-sources/rocker</config.plugins.rocker.output-dir>
         <config.plugins.aws.lambda.role>arn:invalid</config.plugins.aws.lambda.role>
     </properties>
 
@@ -124,12 +125,32 @@
                         <goals><goal>generate</goal></goals>
                         <configuration>
                             <skip>${config.plugins.rocker.skip}</skip>
-                            <outputDirectory>${config.dir.source.generated}</outputDirectory>
+                            <outputDirectory>${config.plugins.rocker.output-dir}</outputDirectory>
                             <templateDirectory>${config.plugins.rocker.template-dir}</templateDirectory>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration>
+                            <skip>${config.plugins.rocker.skip}</skip>
+                            <sources>
+                                <source>${config.plugins.rocker.output-dir}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
 
         <pluginManagement>
