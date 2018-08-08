@@ -6,6 +6,7 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kikaha.config.Config;
+import kikaha.urouting.serializers.jackson.Jackson;
 import kikaha.uworkers.api.WorkerRef;
 import kikaha.uworkers.core.*;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 public class SQSEndpointFactory implements PollingEndpointFactory {
 
 	@Inject AmazonSQS amazonSQS;
+	@Inject Jackson jackson;
 
 	@Override
 	public EndpointInbox createSupplier( EndpointConfig endpoint ) {
 		final Config endpointConfig = endpoint.getConfig();
-		final ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
+		final ObjectMapper objectMapper = jackson.objectMapper();
 		return new SQSEndpointInboxSupplier( objectMapper, amazonSQS,
 			queueUrl(endpointConfig),
 			endpointConfig.getInteger( "wait-time-seconds", 20 ),

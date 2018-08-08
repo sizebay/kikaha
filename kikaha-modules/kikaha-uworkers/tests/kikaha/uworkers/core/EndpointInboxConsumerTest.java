@@ -1,22 +1,17 @@
 package kikaha.uworkers.core;
 
-import kikaha.core.util.Threads;
-import kikaha.uworkers.api.Exchange;
-import lombok.SneakyThrows;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import static java.lang.Thread.sleep;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import kikaha.core.util.Threads;
+import kikaha.uworkers.api.Exchange;
+import lombok.SneakyThrows;
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.*;
+import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  * Unit tests for {@link EndpointInboxConsumer}.
@@ -64,6 +59,7 @@ public class EndpointInboxConsumerTest {
 		final IOException exception = new IOException();
 		doThrow( exception ).when( listener ).onMessage( eq( exchange ) );
 		doReturn( exchange ).when( supplier ).receiveMessage();
+		doReturn( true ).when( exchange ).isReplySupported();
 
 		threads.submit( consumer );
 		sleep( 200 );
