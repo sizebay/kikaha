@@ -25,7 +25,10 @@ public interface Exchange extends Response {
 	 * Send a response to the sender.
 	 *
 	 * @param response
-	 * @return
+	 * @return this Exchange
+	 * @throws UnsupportedOperationException if this Exchange does not permit
+	 *      send message back to the sender.
+	 * @see Exchange#isReplySupported()
 	 */
 	<RESP> Exchange reply(RESP response);
 
@@ -33,9 +36,22 @@ public interface Exchange extends Response {
 	 * Send an error response to the sender.
 	 *
 	 * @param error
-	 * @return
+	 * @return this Exchange
+	 * @throws UnsupportedOperationException if this Exchange does not permit
+	 *      send message back to the sender.
+	 * @see Exchange#isReplySupported()
 	 */
 	Exchange reply(Throwable error);
+
+	/**
+	 * Returns {@code true} if this Exchange message permits send message
+	 * back to the sender.
+	 *
+	 * @return
+	 */
+	default boolean isReplySupported(){
+		return true;
+	}
 
 	/**
 	 * Send an empty object as response to the send. It is useful to

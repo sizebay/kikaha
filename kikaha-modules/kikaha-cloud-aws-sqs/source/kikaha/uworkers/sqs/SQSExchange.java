@@ -34,6 +34,11 @@ public class SQSExchange implements Exchange {
 	}
 
 	@Override
+	public boolean isReplySupported() {
+		return false;
+	}
+
+	@Override
 	public <REQ> REQ request() {
 		throw new UnsupportedOperationException("request not available on SQS' Exchange!");
 	}
