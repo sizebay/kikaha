@@ -46,6 +46,11 @@
             <email>ronei_vinicius@hotmail.com</email>
             <name>Ronei Vinicius Gebert</name>
         </developer>
+        <developer>
+            <id>jardelnovaes</id>
+            <url>https://github.com/jardelnovaes</url>
+            <name>Jardel Novaes</name>
+        </developer>
     </developers>
 
     <modules>
