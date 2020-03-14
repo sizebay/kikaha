@@ -16,6 +16,7 @@ Kikaha is a micro container writen over the fast Undertow core. It was developed
 - [Sizebay](https://github.com/Sizebay) guys
 - [Ibratan](https://github.com/Ibratan) guys
 - [Jay Milagroso](https://github.com/jmilagroso)
+- [Jardel Novaes](https://github.com/jardelnovaes)
 
 Be a contributor and join our team. Kikaha need your help to provide the best to the community. Even simple tasks like testing the micro container, finding typos in docs or reporting improvements feedbacks will be welcome.
 
