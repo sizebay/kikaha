@@ -89,30 +89,12 @@ public class KikahaRunnerMojo extends AbstractMojo {
 			throws ArtifactResolutionException {
 		val artifactsInClassPath = new ArrayList<String>();
 		for ( val artifact : (Set<Artifact>)this.project.getArtifacts() ) {
-			val artifactAbsolutePath = getArtifactAbsolutePath( artifact );
+			val artifactAbsolutePath = MavenExtension.getArtifactAbsolutePath( project, artifact );
 			if ( !artifactsInClassPath.contains( artifactAbsolutePath ) )
 				artifactsInClassPath.add( artifactAbsolutePath );
 		}
 		artifactsInClassPath.add( compiledClassesDir.getAbsolutePath() );
 		artifactsInClassPath.add( baseDir.getAbsolutePath() );
 		return artifactsInClassPath;
-	}
-
-	private String getArtifactAbsolutePath(final Artifact artifact) throws ArtifactResolutionException {
-		val projectBuildingRequest = project.getProjectBuildingRequest();
-
-		val aetherArtifact = new DefaultArtifact(
-				artifact.getGroupId(),
-				artifact.getArtifactId(),
-				artifact.getClassifier(),
-				artifact.getVersion()
-		);
-
-		val request = new ArtifactRequest()
-				.setArtifact(aetherArtifact)
-				.setRepositories(project.getRemoteProjectRepositories())
-				;
-		resolver.resolveArtifact(projectBuildingRequest.getRepositorySession(), request);
-		return artifact.getFile().getAbsolutePath();
 	}
 }

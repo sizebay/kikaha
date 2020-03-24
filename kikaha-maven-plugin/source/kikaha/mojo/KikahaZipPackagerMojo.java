@@ -118,7 +118,7 @@ public class KikahaZipPackagerMojo extends AbstractMojo {
 			throws MojoExecutionException, IOException, ArtifactResolutionException {
 		final Set<String> namesAlreadyIncludedToZip = new HashSet<>();
 		for ( final Artifact artifact : (Set<Artifact>)project.getArtifacts() ) {
-			final String artifactAbsolutePath = getArtifactAbsolutePath( artifact );
+			final String artifactAbsolutePath = MavenExtension.getArtifactAbsolutePath( project, artifact );
 			if ( !namesAlreadyIncludedToZip.contains( artifactAbsolutePath ) ) {
 				copyDependencyToZip( zip, artifact, artifactAbsolutePath );
 				namesAlreadyIncludedToZip.add( artifactAbsolutePath );
@@ -138,24 +138,6 @@ public class KikahaZipPackagerMojo extends AbstractMojo {
 		final InputStream inputStream = new FileInputStream( artifactAbsolutePath );
 		zip.add( jarName, inputStream );
 		copyFilesFromJarToZip( zip, artifactAbsolutePath );
-	}
-
-	private String getArtifactAbsolutePath(final Artifact artifact) throws ArtifactResolutionException {
-		val projectBuildingRequest = project.getProjectBuildingRequest();
-
-		val aetherArtifact = new DefaultArtifact(
-				artifact.getGroupId(),
-				artifact.getArtifactId(),
-				artifact.getClassifier(),
-				artifact.getVersion()
-		);
-
-		val request = new ArtifactRequest()
-				.setArtifact(aetherArtifact)
-				.setRepositories(project.getRemoteProjectRepositories())
-				;
-		resolver.resolveArtifact(projectBuildingRequest.getRepositorySession(), request);
-		return artifact.getFile().getAbsolutePath();
 	}
 
 	void copyFinalArtifactToZip( final ZipFileWriter zip ) {
