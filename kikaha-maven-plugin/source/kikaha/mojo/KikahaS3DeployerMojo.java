@@ -5,7 +5,6 @@ import java.net.URL;
 import java.security.CodeSource;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import com.amazonaws.auth.*;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.codedeploy.*;
@@ -58,8 +57,11 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 	@Parameter( defaultValue = "" )
 	String codeDeployValidationCommand;
 
-	@Parameter( defaultValue = "10", required = true)
+	@Parameter( defaultValue = "120", required = true)
 	Integer codeDeployWaitTime;
+
+	@Parameter( defaultValue = "false", required = true )
+	Boolean codeDeployIgnoreApplicationStopFailures;
 
 	@Parameter( defaultValue = "${project.build.finalName}-runnable.jar", required = true )
 	String jarFileName;
@@ -106,6 +108,7 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 		final CreateDeploymentRequest createDeploymentRequest = new CreateDeploymentRequest()
 				.withApplicationName( codeDeployApplicationName )
 				.withDeploymentGroupName( codeDeployDeploymentGroupName )
+				.withIgnoreApplicationStopFailures( codeDeployIgnoreApplicationStopFailures )
 				.withRevision(new RevisionLocation().withS3Location(s3Location).withRevisionType(RevisionLocationType.S3));
 		final CreateDeploymentResult result = codeDeploy.createDeployment(createDeploymentRequest);
 		getLog().info( result.toString() );
@@ -143,19 +146,9 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 	void copyFilesFromPluginJarToZip( final ZipFileWriter zip ) throws MojoExecutionException {
 		final String jar = getMavenPluginJarLocation();
 		copyFilesFromJarToZip( zip, jar );
-		copyAppSpecToZip( zip );
 	}
 
-	private void copyAppSpecToZip(ZipFileWriter zip) throws MojoExecutionException {
-		if ( Lang.isUndefined( codeDeployValidationCommand ) )
-			codeDeployValidationCommand = generateValidationCommand();
-
-		final String sleep = "sleep " + codeDeployWaitTime;
-		final String script = "#!/bin/sh\n"+sleep + "\n" +codeDeployValidationCommand;
-		zip.add( "bin/validate.sh", new ByteArrayInputStream( script.getBytes() ) );
-	}
-
-	String generateValidationCommand() throws MojoExecutionException {
+	CodeDeployFilesParser codeDeployFilesParser() throws MojoExecutionException {
 		final Config config = JarFileConfigReader.read(getJarFile()).getConfig();
 		final boolean healthCheckEnabled = config.getBoolean( HEALTH_CHECK_ENABLED );
 		final String url = healthCheckEnabled ? config.getString( HEALTH_CHECK_URL ) : "/";
@@ -165,15 +158,18 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 				.replace( DEFAULT_HOST,"localhost" );
 		final String scheme = httpsEnabled ? "https" : "http";
 		final String curl = healthCheckEnabled ? "curl -f " : "curl ";
-		return curl + scheme + "://" + host + ":" + port + url;
+		final String validationCommand = Lang.isUndefined( codeDeployValidationCommand )
+				? curl + scheme + "://" + host + ":" + port + url : codeDeployValidationCommand;
+		return CodeDeployFilesParser.of( scheme, host, port, url, validationCommand, codeDeployWaitTime );
 	}
 
 	void copyFilesFromJarToZip( final ZipFileWriter zip, final String path ) throws MojoExecutionException {
+		final CodeDeployFilesParser parser = codeDeployFilesParser();
 		try ( final ZipFileReader reader = new ZipFileReader( path.replace( "%20", " " ) ) ) {
 			reader.read((name, content) -> {
 				if ( !alreadyInsertedFiles.contains( name ) && name.startsWith(DEFAULT_CONF_DIR) || name.startsWith(DEFAULT_CODEDEPLOY_DIR)) {
 				    alreadyInsertedFiles.add( name );
-                    zip.add(name, content);
+				    zip.add(name, parser.parse(content));
                 }
 			});
 		} catch ( IOException cause ) {
@@ -183,20 +179,23 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 
 	void copyCodeDeployFolderFolderToZip( final ZipFileWriter zip ) throws MojoExecutionException {
 		final File directory = new File(codeDeployFolder);
-		copyDirectoryFilesToZip( zip, directory );
+		copyDirectoryFilesToZipPreservingRelativePaths( zip, directory, directory );
 	}
 
-	void copyDirectoryFilesToZip( final ZipFileWriter zip, final File directory ) throws MojoExecutionException {
+	void copyDirectoryFilesToZipPreservingRelativePaths( final ZipFileWriter zip, final File rootDir, final File directory ) throws MojoExecutionException {
 		if ( directory.exists() )
 			for ( final File file : directory.listFiles() )
-				copyFileToZip( zip, file );
+				copyFileToZip( zip, rootDir, file );
 	}
 
-	void copyFileToZip(final ZipFileWriter zip, final File file ) throws MojoExecutionException {
+	void copyFileToZip(final ZipFileWriter zip, final File rootDir, final File file ) throws MojoExecutionException {
 		if ( file.isDirectory() )
-			copyDirectoryFilesToZip( zip, file );
+			copyDirectoryFilesToZipPreservingRelativePaths( zip, rootDir, file );
 		else {
-			final String fileName = ( file.getName() ).replaceFirst( "^/", "" );
+			final String fileName = file.getAbsolutePath()
+					.replace( rootDir.getAbsolutePath(), "" )
+					.replaceFirst( "^/", "" )
+					.replaceFirst( "^\\\\", "" );
 			copyFileToZip( zip, file, fileName );
 		}
 	}
@@ -214,6 +213,27 @@ public class KikahaS3DeployerMojo extends AbstractMojo {
 		final CodeSource codeSource = getClass().getProtectionDomain().getCodeSource();
 		final URL location = codeSource.getLocation();
 		return location.getPath();
+	}
+
+	static String readAsString( InputStream file ) {
+		try {
+			final ByteArrayOutputStream output = new ByteArrayOutputStream();
+			copy( file, output );
+			return output.toString("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	static void copy( InputStream from, OutputStream to ) {
+		try {
+			final byte[] buffer = new byte[1024];
+			int len = 0;
+			while ((len = from.read(buffer)) >= 0)
+				to.write(buffer, 0, len);
+		} catch (IOException e) {
+			throw new IllegalStateException( e );
+		}
 	}
 }
 
@@ -243,42 +263,25 @@ class JarFileConfigReader {
 
 }
 
-@RequiredArgsConstructor(staticName = "with")
-class JarFileReader {
+@RequiredArgsConstructor( staticName = "of" )
+class CodeDeployFilesParser {
 
-	final String jarFile;
+	final String scheme;
+	final String host;
+	final Integer port;
+	final String healthCheckUrl;
+	final String validationCommand;
+	final Integer codeDeployWaitTime;
 
-	public String readJarFile(String fileName ) throws MojoExecutionException {
-		final AtomicReference<String> fileContent = new AtomicReference<>();
-		try ( final ZipFileReader reader = new ZipFileReader( jarFile ) ) {
-			reader.read( (name, content) -> {
-				if ( name.endsWith( fileName ) )
-					fileContent.set( readAsString(content) );
-			});
-		} catch ( IOException cause ) {
-			throw new MojoExecutionException( "Failed to copy file to zip", cause );
-		}
-		return fileContent.get();
+	InputStream parse(InputStream content){
+		final String contentAsString = KikahaS3DeployerMojo.readAsString( content )
+				.replace("{{scheme}}", scheme)
+				.replace("{{host}}", host)
+				.replace("{{port}}", port.toString())
+				.replace("{{health-check-url}}", healthCheckUrl)
+				.replace("{{validation-command}}", validationCommand)
+				.replace("{{code-deploy-validate-wait-time}}", codeDeployWaitTime.toString());
+		return new ByteArrayInputStream( contentAsString.getBytes() );
 	}
 
-	private String readAsString( InputStream file ) {
-		try {
-			final ByteArrayOutputStream output = new ByteArrayOutputStream();
-			copy( file, output );
-			return output.toString("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
-	private static void copy( InputStream from, OutputStream to ) {
-		try {
-			final byte[] buffer = new byte[1024];
-			int len = 0;
-			while ((len = from.read(buffer)) >= 0)
-				to.write(buffer, 0, len);
-		} catch (IOException e) {
-			throw new IllegalStateException( e );
-		}
-	}
 }
