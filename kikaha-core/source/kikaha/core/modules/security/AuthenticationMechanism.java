@@ -1,10 +1,7 @@
 package kikaha.core.modules.security;
 
 import io.undertow.security.idm.Account;
-import io.undertow.security.idm.Credential;
 import io.undertow.server.HttpServerExchange;
-
-import java.util.Iterator;
 
 /**
  * Authentication mechanism interface based on {@code io.undertow.security.api.AuthenticationMechanism}
@@ -12,17 +9,41 @@ import java.util.Iterator;
  */
 public interface AuthenticationMechanism {
 
+	/**
+	 * Execute the actual authentication process. This method are in charge to ask {@link IdentityManager}s
+	 * for a verified {@link Account}.
+	 *
+	 * @param exchange
+	 * @param identityManagers
+	 * @param session
+	 * @return
+	 */
 	Account authenticate(
 			final HttpServerExchange exchange,
 			final Iterable<IdentityManager> identityManagers, Session session );
 
-	boolean sendAuthenticationChallenge( final HttpServerExchange exchange, Session session );
+	default boolean sendAuthenticationChallenge( final HttpServerExchange exchange, Session session ) {
+		return true;
+	}
 
-	default Account verify( Iterable<IdentityManager> identityManagers, Credential credential ) {
-		Account account = null;
-		final Iterator<IdentityManager> iterator = identityManagers.iterator();
-		while ( account == null && iterator.hasNext() )
-			account = iterator.next().verify( credential );
-		return account;
+	default boolean sendAuthenticationSuccess( final HttpServerExchange exchange, Session session ) {
+		return true;
+	}
+
+	default void configure(
+		SecurityConfiguration securityConfiguration,
+		AuthenticationEndpoints authenticationConfiguration ) {}
+
+	/**
+	 * Defines the priority for this {@link AuthenticationMechanism}. This value is used to define
+	 * the order {@link AuthenticationMechanism}s will call {@link #configure} method. The mechanism
+	 * with higher priority will be the first one, second higher will be second one, etc...
+	 *
+	 * By default, mechanisms have {@code Integer.MIN_VALUE} as default priority.
+	 *
+	 * @return
+	 */
+	default int priority(){
+		return Integer.MIN_VALUE;
 	}
 }

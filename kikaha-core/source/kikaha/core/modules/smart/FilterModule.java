@@ -1,10 +1,5 @@
 package kikaha.core.modules.smart;
 
-import java.io.IOException;
-import java.util.*;
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Typed;
-import javax.inject.*;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import kikaha.config.Config;
@@ -13,14 +8,20 @@ import kikaha.core.cdi.helpers.TinyList;
 import kikaha.core.modules.Module;
 import lombok.Getter;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Typed;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * A {@link Module} that deploys {@link Filter}s.
  */
 @Getter
 @Singleton
 public class FilterModule implements Module {
-
-	final String name = "filter";
 
 	@Inject
 	Config config;

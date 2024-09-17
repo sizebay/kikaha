@@ -1,0 +1,4 @@
+server:
+  aws:
+    ec2:
+      tag-as-config-enabled: false

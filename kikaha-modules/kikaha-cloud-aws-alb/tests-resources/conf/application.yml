@@ -1,0 +1,10 @@
+server:
+  aws:
+    credentials-factory: kikaha.cloud.aws.iam.AmazonCredentialsFactory$Yml
+
+    default:
+      region: "sa-east-1"
+
+    iam-policy:
+      access-key-id: "AKIAJU5G6WIAKV4II27Q"
+      secret-access-key: "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"

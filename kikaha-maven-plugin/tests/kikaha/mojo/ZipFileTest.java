@@ -6,6 +6,9 @@ import java.io.*;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.*;
+
+import kikaha.mojo.packager.ZipFileReader;
+import kikaha.mojo.packager.ZipFileWriter;
 import lombok.SneakyThrows;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;

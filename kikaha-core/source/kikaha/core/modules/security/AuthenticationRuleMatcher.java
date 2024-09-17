@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import kikaha.config.Config;
-import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.CDI;
 import kikaha.core.cdi.helpers.TinyList;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -16,52 +16,47 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthenticationRuleMatcher {
 
 	final Config authConfig;
-	final ServiceProvider provider;
+	final CDI provider;
 
 	final SecurityContextFactory securityContextFactory;
 	final Map<String, AuthenticationMechanism> mechanisms;
 	final Map<String, IdentityManager> identityManagers;
 	final List<AuthenticationRule> rules;
+	final AuthenticationEndpoints authenticationEndpoints;
 
-	final String loginPage;
-	final String errorPage;
-	final String permissionDeniedPage;
-
-	public AuthenticationRuleMatcher( final ServiceProvider provider, final Config authConfig ) {
+	public AuthenticationRuleMatcher( final CDI provider, final Config authConfig, final AuthenticationEndpoints authenticationEndpoints) {
 		this.authConfig = authConfig;
 		this.provider = provider;
 		mechanisms = instantiateMechanismsFoundOnConfig();
 		identityManagers = instantiateIdentityManagersFoundOnConfig();
 		securityContextFactory = instantiateSecurityContextFactory( authConfig );
 		rules = readRulesFromConfig();
-		loginPage = authConfig.getString( "form-auth.login-page" );
-		errorPage = authConfig.getString( "form-auth.error-page" );
-		permissionDeniedPage = authConfig.getString( "form-auth.permission-denied-page" );
+		this.authenticationEndpoints = authenticationEndpoints;
 	}
 
 	private SecurityContextFactory instantiateSecurityContextFactory( final Config authConfig ) {
 		final String className = authConfig.getString( "security-context-factory" );
-		SecurityContextFactory factory = instantiate( className, SecurityContextFactory.class );
+		final SecurityContextFactory factory = instantiate( className, SecurityContextFactory.class );
 		log.debug("Found SecurityContextFactory: " + factory);
 		return factory;
 	}
 
 	private Map<String, AuthenticationMechanism> instantiateMechanismsFoundOnConfig() {
 		final Map<String, Object> values = authConfig.getConfig("auth-mechanisms").toMap();
-		Map<String, AuthenticationMechanism> mechanisms = convert( values, o->instantiate( (String)o, AuthenticationMechanism.class ) );
-		log.debug("Found Mechanisms: " + mechanisms);
+		final Map<String, AuthenticationMechanism> mechanisms = convert( values, o->instantiate( (String)o, AuthenticationMechanism.class ) );
+		log.debug("Found Authentication Mechanisms: " + mechanisms);
 		return mechanisms;
 	}
 
 	private Map<String, IdentityManager> instantiateIdentityManagersFoundOnConfig() {
 		final Map<String, Object> values = authConfig.getConfig("identity-managers").toMap();
-		Map<String, IdentityManager> identityManagers = convert( values, o->instantiate( (String)o, IdentityManager.class ) );
+		final Map<String, IdentityManager> identityManagers = convert( values, o->instantiate( (String)o, IdentityManager.class ) );
 		log.debug( "Found Identity Managers: " + identityManagers );
 		return identityManagers;
 	}
 
 	private <V,N> Map<String,N> convert( Map<String, V> original, Function<V,N> converter  ) {
-		Map<String,N> newMap = new HashMap<>();
+		final Map<String,N> newMap = new HashMap<>();
 		for ( Map.Entry<String,V> entry : original.entrySet() ) {
 			final N converted = converter.apply( entry.getValue() );
 			newMap.put( entry.getKey(), converted );
@@ -69,6 +64,7 @@ public class AuthenticationRuleMatcher {
 		return newMap;
 	}
 
+	@SuppressWarnings({"unused", "unchecked"})
 	private <T> T instantiate( String className, final Class<T> targetClazz ) {
 		try {
 			Class<T> clazz = (Class<T>) Class.forName( className );
@@ -85,12 +81,27 @@ public class AuthenticationRuleMatcher {
 	}
 
 	private AuthenticationRule convertConfToRule( final Config ruleConf ) {
-		List<IdentityManager> identityManager = getIdentityManagerFor(ruleConf.getStringList("identity-manager"));
-		List<AuthenticationMechanism> mechanisms = extractNeededMechanisms( ruleConf.getStringList("auth-mechanisms") );
+		final List<String> defaultIdentityManagersAndAuthMechanisms = Collections.singletonList("default");
+		final List<String> defaultExcludedPatterns = authConfig.getStringList("default-excluded-patterns");
+		final List<IdentityManager> identityManagers = getIdentityManagerFor( ruleConf, defaultIdentityManagersAndAuthMechanisms );
+		final List<AuthenticationMechanism> mechanisms = extractNeededMechanisms( ruleConf.getStringList("auth-mechanisms", defaultIdentityManagersAndAuthMechanisms) );
+		final List<String> excludedPatterns = ruleConf.getStringList("exclude-patterns", new ArrayList<>());
+		final boolean authenticationRequired = ruleConf.getBoolean( "authentication-required", true );
+		excludedPatterns.addAll( defaultExcludedPatterns );
 		return new AuthenticationRule(
-				ruleConf.getString( "pattern" ), identityManager,
-				mechanisms, ruleConf.getStringList( "expected-roles" ),
-			ruleConf.getStringList( "exclude-patterns" ) );
+				ruleConf.getString( "pattern" ), identityManagers,
+				mechanisms, ruleConf.getStringList( "expected-roles", Collections.emptyList() ),
+				excludedPatterns, authenticationRequired );
+	}
+
+	private List<IdentityManager> getIdentityManagerFor( Config ruleConf, List<String> defaultIdentityManagersAndAuthMechanisms ) {
+		List<String> identityManagers = ruleConf.getStringList("identity-manager");
+		if ( identityManagers != null && !identityManagers.isEmpty() ) {
+			log.warn("The 'identity-manager' entry is deprecated.");
+			log.warn("Consider use 'identity-managers'.");
+		} else
+			identityManagers = ruleConf.getStringList("identity-managers", defaultIdentityManagersAndAuthMechanisms );
+		return getIdentityManagerFor( identityManagers );
 	}
 
 	private List<IdentityManager> getIdentityManagerFor( final List<String> identityManagers ) {
@@ -111,16 +122,9 @@ public class AuthenticationRuleMatcher {
 	}
 
 	public AuthenticationRule retrieveAuthenticationRuleForUrl( final String url ) {
-		if ( !isUrlFromAuthenticationResources( url ) )
-			for ( final AuthenticationRule rule : rules )
-				if ( rule.matches( url ) )
-					return rule;
+		for ( final AuthenticationRule rule : rules )
+			if ( rule.matches( url ) )
+				return rule;
 		return null;
-	}
-
-	private boolean isUrlFromAuthenticationResources( final String url ) {
-		return errorPage.equals( url )
-			|| loginPage.equals( url )
-			|| permissionDeniedPage.equals( url );
 	}
 }

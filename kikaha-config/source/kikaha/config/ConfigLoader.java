@@ -13,12 +13,14 @@ import java.util.Enumeration;
 @Slf4j
 public abstract class ConfigLoader {
 
-	public static Config loadDefaults() {
+	public static MergeableConfig loadDefaults() {
 		try {
+		    log.debug( "Loading configuration files..." );
 			final MergeableConfig config = MergeableConfig.create();
-			loadFiles(config, ClassLoader.getSystemResources("META-INF/defaults.yml"));
-			loadFiles(config, ClassLoader.getSystemResources("conf/application.yml"));
-			loadFiles(config, ClassLoader.getSystemResources("conf/application-test.yml"));
+            final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			loadFiles(config, loader.getResources("META-INF/defaults.yml"));
+			loadFiles(config, loader.getResources("conf/application.yml"));
+			loadFiles(config, loader.getResources("conf/application-test.yml"));
 			return config;
 		} catch ( IOException cause ) {
 			throw new IllegalStateException(cause);

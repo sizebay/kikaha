@@ -1,3 +1,0 @@
-server:
-  hazelcast:
-    config: "conf/hazelcast.xml"

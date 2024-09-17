@@ -7,14 +7,14 @@ import static org.junit.Assert.assertThat;
 import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
 
-import kikaha.core.cdi.DefaultServiceProvider;
-import kikaha.core.cdi.ServiceProviderException;
+import kikaha.core.cdi.*;
+import kikaha.core.cdi.DefaultCDI;
 
 import org.junit.Test;
 
 public class InjectionOfServiceDefinedByItsExposedTypeTest {
 
-	final DefaultServiceProvider provider = new DefaultServiceProvider();
+	final DefaultCDI provider = new DefaultCDI();
 
 	@Inject
 	@Typed( Bean.class )
@@ -28,7 +28,7 @@ public class InjectionOfServiceDefinedByItsExposedTypeTest {
 
 	@Test
 	public void ensureThatCouldProvideSerializableBeanExposedAsSerializable() throws ServiceProviderException {
-		provider.provideOn( this );
+		provider.injectOn( this );
 		assertNotNull( bean );
 		assertThat( bean, instanceOf( SerializableBean.class ) );
 	}

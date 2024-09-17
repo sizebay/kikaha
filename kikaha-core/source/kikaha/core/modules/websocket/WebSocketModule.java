@@ -1,22 +1,33 @@
 package kikaha.core.modules.websocket;
 
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toMap;
-import java.util.*;
-import java.util.concurrent.*;
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Typed;
-import javax.inject.*;
-import io.undertow.*;
+import io.undertow.Handlers;
+import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.websockets.WebSocketConnectionCallback;
 import kikaha.config.Config;
 import kikaha.core.DeploymentContext;
 import kikaha.core.modules.Module;
-import kikaha.core.modules.http.*;
-import kikaha.core.url.*;
-import lombok.*;
+import kikaha.core.modules.http.ContentType;
+import kikaha.core.modules.http.WebResource;
+import kikaha.core.url.URL;
+import kikaha.core.url.URLMatcher;
+import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Typed;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BinaryOperator;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * A module that deploy {@link WebSocketHandler}s.
@@ -24,9 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Singleton
 public class WebSocketModule implements Module {
-
-	@Getter
-	final String name = "websocket";
 
 	@Inject
 	@Typed( WebSocketHandler.class )
@@ -60,12 +68,12 @@ public class WebSocketModule implements Module {
 	private void loadSerializersAndUnserializers(){
 		final Config webSocketConfig = config.getConfig( "server.websocket" );
 
-		final Map<String, WebSocketSession.Serializer> serializers = webSocketSerializers.stream().collect(toMap(this::extractContentType, identity()));
+		final Map<String, WebSocketSession.Serializer> serializers = webSocketSerializers.stream().collect(toMap(this::extractContentType, identity(), (s1,s2) -> s2));
 		serializer = serializers.get( webSocketConfig.getString("default-serializer") );
 		if ( serializer != null )
 			log.debug( "Default WebSocket serializer: " + serializer.getClass().getCanonicalName() );
 
-		final Map<String, WebSocketSession.Unserializer> unserializers = webSocketUnserializers.stream().collect(toMap(this::extractContentType, identity()));
+		final Map<String, WebSocketSession.Unserializer> unserializers = webSocketUnserializers.stream().collect(toMap(this::extractContentType, identity(), (s1,s2) -> s2));
 		unserializer = unserializers.get( webSocketConfig.getString("default-unserializer") );
 		if ( unserializer != null )
 			log.debug( "Default WebSocket unserializer: " + unserializer.getClass().getCanonicalName() );

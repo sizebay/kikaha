@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -24,8 +24,13 @@ public class MergeableConfig implements Config {
 	final Map<String, Object> conf;
 	final String rootPath;
 
+	MergeableConfig(){
+		this.conf = new HashMap<>();
+		this.rootPath = "";
+	}
+
 	public static MergeableConfig create(){
-		return new MergeableConfig( new HashMap<>(), "" );
+		return new MergeableConfig();
 	}
 
 	public MergeableConfig load(File file ) throws IOException {
@@ -42,7 +47,7 @@ public class MergeableConfig implements Config {
 
 	@Override
 	public String toString() {
-		return conf.toString();
+		return yaml.dump( conf );
 	}
 
 	@Override
@@ -68,10 +73,10 @@ public class MergeableConfig implements Config {
 		return read( path, o->o );
 	}
 
-	public Class<?> getClass( String path ) {
+	public Class<?> getClass( String path, Class<?> defaultClass ) {
 		final String clazzName = getString(path);
 		if ( clazzName == null )
-			return null;
+			return defaultClass;
 		return instantiate( clazzName );
 	}
 
@@ -81,11 +86,6 @@ public class MergeableConfig implements Config {
 		} catch ( Throwable cause ) {
 			throw new IllegalStateException( "Can't load " + className, cause);
 		}
-	}
-
-	@Override
-	public byte[] getBytes(String path) {
-		return getBytes( path, null );
 	}
 
 	@Override
@@ -113,21 +113,11 @@ public class MergeableConfig implements Config {
 	}
 
 	@Override
-	public boolean getBoolean(String path) {
-		return getBoolean( path, false );
-	}
-
-	@Override
 	public boolean getBoolean(String path, boolean defaultValue) {
 		final String propertyValue = System.getProperty(rootPath + path);
 		if ( propertyValue != null )
 			return Boolean.valueOf(propertyValue);
 		return read( path, o->ifNull( (Boolean)o , defaultValue) );
-	}
-
-	@Override
-	public int getInteger(String path) {
-		return getInteger( path, 0 );
 	}
 
 	@Override
@@ -139,6 +129,14 @@ public class MergeableConfig implements Config {
 	}
 
 	@Override
+	public long getLong(String path, long defaultValue) {
+		final String propertyValue = System.getProperty(rootPath + path);
+		if ( propertyValue != null )
+			return Long.valueOf( propertyValue );
+		return read( path, o->ifNull( asLong(o), defaultValue ) );
+	}
+
+	@Override
 	public List<Config> getConfigList(String path){
 		final List<Map<String, Object>> current = read(path, o->(List<Map<String,Object>>)o);
 		if ( current == null )
@@ -147,14 +145,14 @@ public class MergeableConfig implements Config {
 	}
 
 	@Override
-	public List<String> getStringList(String path) {
+	public List<String> getStringList( String path, List<String> defaultValues ) {
 		final List<String> current = read(path, o -> (List<String>) o);
 		if ( current == null )
-			return Collections.emptyList();
+			return defaultValues;
 		return current;
 	}
 
-	private <T> T read(String path, Function<Object,T> parser ) {
+	private <T> T read( String path, Function<Object,T> parser ) {
 		final String[] strings = path.split("\\.");
 		Map<String, Object> current = readPath(strings);
 		if ( current == null )
@@ -177,7 +175,7 @@ public class MergeableConfig implements Config {
 	 * @param original
 	 * @param newMap
 	 */
-	private static void deepMerge( Map original, Map newMap) {
+	private static void deepMerge( @NonNull Map original, @NonNull Map newMap) {
 		for (Entry e : (Set<Entry>) newMap.entrySet()) {
 			Object currentKey = e.getKey(), currentValue = e.getValue();
 			if (shouldMergeAnyWay( original, currentKey, currentValue ))
@@ -215,5 +213,13 @@ public class MergeableConfig implements Config {
 
 	private static <T> T ifNull( T value, T defaultValue ) {
 		return value != null ? value : defaultValue;
+	}
+
+	private static long asLong( Object o ) {
+		if ( o instanceof Integer )
+			return (int)o;
+		else if ( o instanceof String )
+			return Long.valueOf( (String)o );
+		return (Long)o;
 	}
 }

@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import javax.enterprise.inject.Typed;
-import kikaha.core.cdi.DefaultServiceProvider.DependencyInjector;
+import kikaha.core.cdi.DefaultCDI.DependencyInjector;
 import kikaha.core.cdi.*;
 import kikaha.core.cdi.helpers.filter.*;
 import lombok.Value;
@@ -26,7 +26,9 @@ public class SingleElementProvidableField<T> implements ProvidableField {
 	{
 		final Object value = provider.load( fieldType, condition, providerContext );
 		if ( value == null )
-			log.warn( "No data found for " + fieldType.getCanonicalName() + ". Condition: " + condition );
+			log.warn( "No data found for " + fieldType.getCanonicalName()
+					+ "; Location: " + instance.getClass().getCanonicalName()
+					+ "; Condition: " + condition );
 		set( instance, value );
 	}
 
@@ -36,7 +38,7 @@ public class SingleElementProvidableField<T> implements ProvidableField {
 
 	@Override
 	public String toString() {
-		return field.toString();
+		return field.toString().split( " " )[1];
 	}
 
 	public static <T> ProvidableField from( Collection<Class<? extends Annotation>> qualifiers, final Field field ) {

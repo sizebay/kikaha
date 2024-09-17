@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.skullabs.kikaha</groupId>
+        <version>2.1.10-SNAPSHOT</version>
+        <artifactId>kikaha-modules</artifactId>
+    </parent>
+
+    <artifactId>kikaha-cloud-aws-cloudwatch</artifactId>
+    <name>Kikaha: Cloud Providers: AWS CloudWatch</name>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <!-- Main Dependencies -->
+        <dependency>
+            <groupId>io.skullabs.kikaha</groupId>
+            <artifactId>kikaha-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.skullabs.kikaha</groupId>
+            <artifactId>kikaha-cloud</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.skullabs.kikaha</groupId>
+            <artifactId>kikaha-cloud-metrics</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.skullabs.kikaha</groupId>
+            <artifactId>kikaha-cloud-aws-iam</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-cloudwatch</artifactId>
+            <version>${version.aws}</version>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,9 +1,10 @@
 package kikaha.urouting.api;
 
+import java.util.List;
 import io.undertow.util.HttpString;
 
 public interface Header {
 	HttpString name();
-	Iterable<String> values();
+	List<String> values();
 	void add( String value );
 }

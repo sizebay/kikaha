@@ -20,7 +20,12 @@ public class PathMatcher implements RequestMatcher {
 		return path.matches( relativePath, properties );
 	}
 
-	public static RequestMatcher from( final String path )
+	@Override
+	public String toString() {
+		return "path=" + path;
+	}
+
+	public static RequestMatcher from(final String path )
 	{
 		return new PathMatcher( URLMatcher.compile( path ) );
 	}

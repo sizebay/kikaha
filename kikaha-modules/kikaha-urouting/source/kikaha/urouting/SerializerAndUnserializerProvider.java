@@ -2,7 +2,7 @@ package kikaha.urouting;
 
 import java.io.IOException;
 import java.util.Map;
-import kikaha.core.url.StringCursor;
+import kikaha.core.url.URL;
 import kikaha.urouting.api.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class SerializerAndUnserializerProvider {
 	 * @throws IOException
 	 */
 	public Unserializer getUnserializerFor( String contentType ) throws IOException{
-		contentType = fixContentType(contentType);
+		contentType = URL.fixContentType(contentType, null).getFirst();
 
 		final Unserializer serializer = unserializerByContentType.get( contentType );
 		if ( serializer == null ) {
@@ -44,11 +44,5 @@ public class SerializerAndUnserializerProvider {
 			throw exception;
 		}
 		return serializer;
-	}
-
-	private String fixContentType( String contentType ){
-		final StringCursor cursor = new StringCursor(contentType);
-		return cursor.shiftCursorToNextChar( ';' )
-			? cursor.substringFromLastMark( 1 ) : contentType;
 	}
 }

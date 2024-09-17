@@ -5,11 +5,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ApplicationRunner {
 
-	final ServiceProvider provider = new DefaultServiceProvider();
-	Application application = provider.load( Application.class );
+	final DefaultCDI provider = new DefaultCDI();
 
 	public void run() throws Exception {
-		application.run();
+		provider.loadAllCustomClassConstructors();
+		loadApplication().run();
+	}
+
+	Application loadApplication() throws ClassNotFoundException {
+		final String applicationClassAsString = System.getProperty("application-class");
+		if ( applicationClassAsString != null && !applicationClassAsString.isEmpty() ) {
+			final Class<?> applicationClass = Class.forName(applicationClassAsString);
+			return (Application) provider.load( applicationClass );
+		}
+		return provider.load( Application.class );
 	}
 
 	public static void main( String[] args ) throws Exception {

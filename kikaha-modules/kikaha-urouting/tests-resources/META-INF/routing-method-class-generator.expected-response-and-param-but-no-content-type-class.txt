@@ -1,4 +1,4 @@
-package package kikaha.urouting.samples;
+package package kikaha.urouting.unit.samples;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -9,31 +9,60 @@ import kikaha.core.modules.http.WebResource;
 import kikaha.urouting.RoutingMethodResponseWriter;
 import kikaha.urouting.RoutingMethodParameterReader;
 import kikaha.urouting.RoutingMethodExceptionHandler;
+import kikaha.urouting.api.Response;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Singleton
 @Typed( HttpHandler.class )
 @WebResource( path="/hello/world", method="GET" )
-public class GeneratedRoutingMethod123 implements HttpHandler {
+final public class GeneratedRoutingMethod123 implements HttpHandler {
 
 	@Inject RoutingMethodResponseWriter responseWriter;
 	@Inject RoutingMethodParameterReader methodDataProvider;
 	@Inject RoutingMethodExceptionHandler exceptionHandler;
-	
-	@Inject kikaha.urouting.samples.RetrieveRoutes provider;
+
+	@Inject kikaha.urouting.unit.samples.RetrieveRoutes provider;
 
 	@Override
-	public void handleRequest( HttpServerExchange exchange ) throws Exception {
-			if ( exchange.isInIoThread() ) {
-				exchange.dispatch(this);
-				return;
-			}
-			else if ( !exchange.isInIoThread() && !exchange.isBlocking() )
-				exchange.startBlocking();
-		try {
-			final String response = instance.renderRelatoMais( true );
-				responseWriter.write( exchange, response );
+	public void handleRequest( final HttpServerExchange exchange ) throws Exception {
+        try {
+			/* Does not require to parse form data. */
+			/* Requires to parse body data. */
+			exchange.getRequestReceiver()
+				.receiveFullBytes( this::runMethod, this::handleException );
+        } catch ( Throwable cause ) {
+            this.handleException( exchange, cause );
+        }
+	}
+
+    private void runMethod( final HttpServerExchange exchange ) {
+        runMethod( exchange, null );
+    }
+
+	private void runMethod( final HttpServerExchange exchange, final byte[] bodyData ){
+		if ( exchange.isInIoThread() )
+			exchange.dispatch( ()-> this.runMethod( exchange, bodyData ) );
+		else try {
+				final String response = instance.renderRelatoMais( true );
+					responseWriter.write( exchange, response );
 		} catch ( Throwable cause ) {
-			responseWriter.write( exchange, exceptionHandler.handle( cause ) );
+			this.handleException( exchange, cause );
 		}
+	}
+
+	private void handleException( final HttpServerExchange exchange, final Throwable cause ){
+        if ( exchange.isInIoThread() ) {
+            exchange.dispatch( ()-> handleException( exchange, cause ) );
+            return;
+        }
+
+        try {
+            final Response response = exceptionHandler.handle( cause );
+            responseWriter.write( exchange, response );
+        } catch ( Throwable newCause ){
+            log.error( "Could not handle the failure." );
+            exchange.endExchange();
+        }
 	}
 }

@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>io.skullabs.kikaha</groupId>
-        <version>2.0.0</version>
+        <version>2.1.10-SNAPSHOT</version>
         <artifactId>kikaha-parent</artifactId>
     </parent>
 
@@ -14,36 +14,45 @@
     <packaging>pom</packaging>
 
     <properties>
-        <!-- -->
-        <version.logback>1.1.7</version.logback>
         <!-- Configs -->
-        <config.dir.source>${project.basedir}/src/main/java</config.dir.source>
-        <config.dir.source.generated>${project.build.directory}/generated-sources/annotations</config.dir.source.generated>
-        <config.dir.resource>${project.basedir}/src/main/resources</config.dir.resource>
-        <config.dir.test.source>${project.basedir}/src/test/java</config.dir.test.source>
-        <config.dir.test.resource>${project.basedir}/src/test/resources</config.dir.test.resource>
-        <config.dir.test.source.generated>${project.build.directory}/generated-test-sources/annotations</config.dir.test.source.generated>
-        <config.dir.output>${project.basedir}/target</config.dir.output>
-        <config.dir.web>${project.basedir}/src/main/webapp</config.dir.web>
         <config.encoding>UTF-8</config.encoding>
+        <!-- Kikaha Maven Plugins -->
+        <config.plugins.aws.lambda.force>false</config.plugins.aws.lambda.force>
+        <config.plugins.aws.lambda.enabled>false</config.plugins.aws.lambda.enabled>
+        <config.plugins.aws.lambda.create-rest-api>true</config.plugins.aws.lambda.create-rest-api>
+        <config.plugins.aws.lambda.bucket>${config.plugins.aws.s3.bucket}</config.plugins.aws.lambda.bucket>
+        <config.plugins.aws.lambda.region>us-east-1</config.plugins.aws.lambda.region>
+        <config.plugins.aws.lambda.memory>128</config.plugins.aws.lambda.memory>
+        <config.plugins.aws.s3.enabled>${config.plugins.aws.lambda.enabled}</config.plugins.aws.s3.enabled>
+        <config.plugins.aws.s3.useCodeDeploy>false</config.plugins.aws.s3.useCodeDeploy>
+        <config.plugins.aws.s3.codeDeployFolder>META-INF/aws-code-deploy/</config.plugins.aws.s3.codeDeployFolder>
+        <config.plugins.aws.s3.codeDeployWaitTime>120</config.plugins.aws.s3.codeDeployWaitTime>
+        <config.plugins.aws.s3.codeDeployIgnoreApplicationStopFailures>false</config.plugins.aws.s3.codeDeployIgnoreApplicationStopFailures>
+        <config.plugins.aws.s3.codeDeployApplicationName>${project.groupId}-${project.artifactId}-${project.version}.zip</config.plugins.aws.s3.codeDeployApplicationName>
+        <config.plugins.aws.s3.codeDeployDeploymentGroupName>production</config.plugins.aws.s3.codeDeployDeploymentGroupName>
+        <config.plugins.aws.s3.region>${config.plugins.aws.lambda.region}</config.plugins.aws.s3.region>
+        <config.plugins.aws.s3.bucket>default-bucket</config.plugins.aws.s3.bucket>
+        <config.plugins.jar.enabled>${config.plugins.aws.s3.enabled}</config.plugins.jar.enabled>
+        <config.plugins.package.enabled>false</config.plugins.package.enabled>
+        <config.plugins.maven.deploy.skip>true</config.plugins.maven.deploy.skip>
+        <config.plugins.rocker.skip>true</config.plugins.rocker.skip>
+        <config.plugins.rocker.template-dir>${config.dir.web}</config.plugins.rocker.template-dir>
+        <config.plugins.rocker.output-dir>${project.build.directory}/generated-sources/rocker</config.plugins.rocker.output-dir>
+        <config.plugins.aws.lambda.role>arn:invalid</config.plugins.aws.lambda.role>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${version.logback}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>io.skullabs.kikaha</groupId>
-            <version>2.0.0</version>
+            <version>2.1.10-SNAPSHOT</version>
             <artifactId>kikaha-injection-processor</artifactId>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.skullabs.kikaha</groupId>
+                    <artifactId>kikaha-injection</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -53,29 +62,130 @@
             <plugin>
                 <groupId>io.skullabs.kikaha</groupId>
                 <artifactId>kikaha-maven-plugin</artifactId>
+                <version>2.1.10-SNAPSHOT</version>
+                <inherited>true</inherited>
                 <executions>
                     <execution>
-                        <id>kikaha-install</id>
+                        <id>kikaha-install-jar</id>
+                        <phase>install</phase>
+                        <goals><goal>jar</goal></goals>
+                        <configuration>
+                            <enabled>${config.plugins.jar.enabled}</enabled>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>kikaha-install-package</id>
                         <phase>install</phase>
                         <goals><goal>package</goal></goals>
+                        <configuration>
+                            <enabled>${config.plugins.package.enabled}</enabled>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>kikaha-deploy-aws-s3</id>
+                        <phase>deploy</phase>
+                        <goals><goal>deploy-on-aws-s3</goal></goals>
+                        <configuration>
+                            <enabled>${config.plugins.aws.s3.enabled}</enabled>
+                            <s3Bucket>${config.plugins.aws.s3.bucket}</s3Bucket>
+                            <regionName>${config.plugins.aws.s3.region}</regionName>
+                            <useCodeDeploy>${config.plugins.aws.s3.useCodeDeploy}</useCodeDeploy>
+                            <codeDeployFolder>${config.plugins.aws.s3.codeDeployFolder}</codeDeployFolder>
+                            <codeDeployWaitTime>${config.plugins.aws.s3.codeDeployWaitTime}</codeDeployWaitTime>
+                            <codeDeployIgnoreApplicationStopFailures>${config.plugins.aws.s3.codeDeployIgnoreApplicationStopFailures}</codeDeployIgnoreApplicationStopFailures>
+                            <codeDeployDeploymentGroupName>${config.plugins.aws.s3.codeDeployDeploymentGroupName}</codeDeployDeploymentGroupName>
+                            <codeDeployApplicationName>${config.plugins.aws.s3.codeDeployApplicationName}</codeDeployApplicationName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>kikaha-deploy-aws-lambda</id>
+                        <phase>deploy</phase>
+                        <goals><goal>deploy-on-aws-lambda</goal></goals>
+                        <configuration>
+                            <enabled>${config.plugins.aws.lambda.enabled}</enabled>
+                            <s3Bucket>${config.plugins.aws.lambda.bucket}</s3Bucket>
+                            <lambdaRole>${config.plugins.aws.lambda.role}</lambdaRole>
+                            <createRestAPI>${config.plugins.aws.lambda.create-rest-api}</createRestAPI>
+                            <force>${config.plugins.aws.lambda.force}</force>
+                            <regionName>${config.plugins.aws.lambda.region}</regionName>
+                            <lambdaMemory>${config.plugins.aws.lambda.memory}</lambdaMemory>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jvmArgs>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArgs>
+                    <webResourcesPath>${config.dir.web}</webResourcesPath>
+                </configuration>
+            </plugin>
+
+            <!-- Rocker Plugin -->
+            <plugin>
+                <groupId>com.fizzed</groupId>
+                <artifactId>rocker-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-rocker-templates</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <skip>${config.plugins.rocker.skip}</skip>
+                            <outputDirectory>${config.plugins.rocker.output-dir}</outputDirectory>
+                            <templateDirectory>${config.plugins.rocker.template-dir}</templateDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration>
+                            <skip>${config.plugins.rocker.skip}</skip>
+                            <sources>
+                                <source>${config.plugins.rocker.output-dir}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
 
         <pluginManagement>
             <plugins>
-                <!-- configure kikaha-maven-plugin -->
                 <plugin>
-                    <groupId>io.skullabs.kikaha</groupId>
-                    <version>2.0.0</version>
-                    <artifactId>kikaha-maven-plugin</artifactId>
-                    <configuration>
-                        <webResourcesPath>${config.dir.web}</webResourcesPath>
-                    </configuration>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.7</version>
+                    <executions>
+                        <execution>
+                            <id>default-deploy</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>deploy</goal>
+                            </goals>
+                            <configuration>
+                                <skip>${config.plugins.maven.deploy.skip}</skip>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
     </build>
+
+    <profiles>
+      <profile>
+        <id>maven-deploy</id>
+        <properties>
+          <config.plugins.maven.deploy.skip>false</config.plugins.maven.deploy.skip>
+        </properties>
+      </profile>
+    </profiles>
 
 </project>

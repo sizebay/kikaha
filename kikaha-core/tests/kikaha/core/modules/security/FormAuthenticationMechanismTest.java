@@ -1,31 +1,19 @@
 package kikaha.core.modules.security;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import io.undertow.security.idm.Account;
-import io.undertow.security.idm.Credential;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.server.handlers.form.FormData;
-import io.undertow.server.handlers.form.FormDataParser;
-import io.undertow.server.handlers.form.FormParserFactory;
-import io.undertow.util.Headers;
-import io.undertow.util.Methods;
-import io.undertow.util.StatusCodes;
-
+import static org.mockito.Mockito.*;
 import java.io.IOException;
-
+import io.undertow.security.idm.*;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.form.*;
+import io.undertow.util.*;
+import kikaha.core.cdi.DefaultCDI;
 import kikaha.core.test.HttpServerExchangeStub;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -33,8 +21,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class FormAuthenticationMechanismTest {
 
+	static final String CONTENT_TYPE_FORM = "multipart/form-data";
+	static final String CONTENT_TYPE_FORM_URLENCODED = "application/x-www-form-urlencoded";
 	static final Credential CREDENTIAL = new UsernameAndPasswordCredential("username","password");
 	final HttpServerExchange exchange = HttpServerExchangeStub.createHttpExchange();
+	final AuthenticationEndpoints configuration = new DefaultCDI().load(AuthenticationEndpoints.class);
 	final FormData data = new FormData(2);
 
 	@Mock IdentityManager identityManager;
@@ -54,26 +45,42 @@ public class FormAuthenticationMechanismTest {
 	public void ensureThatIsAbleToSendCorrectCredentialsToIdentityManagerWhenFormFieldsArePresent(){
 		data.add("j_username", "username");
 		data.add("j_password", "password");
-		final String originalUrl = "original-url.html";
-		doReturn(originalUrl).when( session ).getAttribute(eq(FormAuthenticationMechanism.LOCATION_ATTRIBUTE));
-		final AuthenticationMechanism mechanism = simulateLoginPost();
+		final AuthenticationMechanism mechanism = simulateLoginPost(CONTENT_TYPE_FORM);
 		final Account authenticated = mechanism.authenticate(exchange, singletonList(identityManager), session);
 		assertNotNull(authenticated);
-		assertHaveBeingRedirectedTo( originalUrl );
+		assertHaveBeingRedirectedTo( "/" );
+	}
+
+	@Test
+	public void ensureThatIsAbleToSendCorrectCredentialsToIdentityManagerWhenUsingFormUrlencodedContentType(){
+		data.add("j_username", "username");
+		data.add("j_password", "password");
+		final AuthenticationMechanism mechanism = simulateLoginPost(CONTENT_TYPE_FORM_URLENCODED);
+		final Account authenticated = mechanism.authenticate(exchange, singletonList(identityManager), session);
+		assertNotNull(authenticated);
 	}
 
 	@Test
 	public void ensureThatIsAbleRedirectBackToOriginalURLWhenFormFieldsArePresent(){
 		data.add("j_username", "username");
 		data.add("j_password", "password");
-		final AuthenticationMechanism mechanism = simulateLoginPost();
+		final AuthenticationMechanism mechanism = simulateLoginPost(CONTENT_TYPE_FORM);
 		final Account authenticated = mechanism.authenticate(exchange, singletonList(identityManager), session);
 		assertNotNull(authenticated);
 	}
 
 	@Test
 	public void ensureThatNotSendCredentialsToIdentityManagerWhenNoFormFieldsArePresent(){
-		final AuthenticationMechanism mechanism = simulateLoginPost();
+		final AuthenticationMechanism mechanism = simulateLoginPost(CONTENT_TYPE_FORM);
+		final Account authenticated = mechanism.authenticate(exchange, singletonList(identityManager), session);
+		ensureNeverHaveTriedToAuthenticateThroughIdentityManager(authenticated);
+	}
+
+	@Test
+	public void ensureThatNotSendCredentialsToIdentityManagerWhenNotFormContentTypeIsPresent(){
+		data.add("j_username", "username");
+		data.add("j_password", "password");
+		final AuthenticationMechanism mechanism = simulateLoginPost( "application/json" );
 		final Account authenticated = mechanism.authenticate(exchange, singletonList(identityManager), session);
 		ensureNeverHaveTriedToAuthenticateThroughIdentityManager(authenticated);
 	}
@@ -81,30 +88,22 @@ public class FormAuthenticationMechanismTest {
 	@Test
 	public void ensureThatSendRedirectionToLoginWhenNoFormFieldsArePresent(){
 		final String postLocation = "/some/protected/place.html";
-		final AuthenticationMechanism mechanism = simulateRequestTo(postLocation);
+		final AuthenticationMechanism mechanism = simulateRequestTo(postLocation, CONTENT_TYPE_FORM);
 		assertTrue( mechanism.sendAuthenticationChallenge(exchange, session) );
-		assertHaveBeingRedirectedTo("login.html");
+		assertHaveBeingRedirectedTo("/auth/");
 	}
 
 	private void assertHaveBeingRedirectedTo(String expectedLocation) {
-		assertEquals(exchange.getStatusCode(), StatusCodes.FOUND);
+		assertEquals(exchange.getStatusCode(),  StatusCodes.SEE_OTHER);
 		assertEquals(exchange.getResponseHeaders().get(Headers.LOCATION).getFirst(), expectedLocation);
 	}
 
 	@Test
-	public void ensureThatCanMemorizedCurrentURLWhenNoFormFieldsArePresent(){
-		final String postLocation = "/some/protected/place.html";
-		final AuthenticationMechanism mechanism = simulateRequestTo(postLocation);
-		assertNull( mechanism.authenticate(exchange, singletonList(identityManager), session) );
-		verify( session ).setAttribute(eq(FormAuthenticationMechanism.LOCATION_ATTRIBUTE), eq(postLocation));
-	}
-
-	@Test
 	public void ensureThatSendRedirectionToLoginErrorWhenNoCorrectCredentialsArePresentOnFormPost(){
-		final AuthenticationMechanism mechanism = simulateLoginPost();
+		final AuthenticationMechanism mechanism = simulateLoginPost(CONTENT_TYPE_FORM);
 		assertTrue( mechanism.sendAuthenticationChallenge(exchange, session) );
-		assertEquals(exchange.getStatusCode(), StatusCodes.FOUND);
-		assertEquals(exchange.getResponseHeaders().get(Headers.LOCATION).getFirst(), "login-error.html");
+		assertEquals(exchange.getStatusCode(),  StatusCodes.SEE_OTHER);
+		assertEquals(exchange.getResponseHeaders().get(Headers.LOCATION).getFirst(), "/auth/error/");
 	}
 
 	void ensureNeverHaveTriedToAuthenticateThroughIdentityManager(final Account authenticated) {
@@ -112,15 +111,18 @@ public class FormAuthenticationMechanismTest {
 		verify( identityManager, never() ).verify( any() );
 	}
 
-	AuthenticationMechanism simulateLoginPost(){
-		final String defaultPostLocation = FormAuthenticationMechanism.DEFAULT_POST_LOCATION;
-		return simulateRequestTo(defaultPostLocation);
+	AuthenticationMechanism simulateLoginPost( String contentType ){
+		return simulateRequestTo( "/auth/callback", contentType );
 	}
 
-	AuthenticationMechanism simulateRequestTo(final String defaultPostLocation) {
+	AuthenticationMechanism simulateRequestTo(String defaultPostLocation, String contentType) {
 		exchange.setRelativePath(defaultPostLocation);
 		exchange.setRequestURI(defaultPostLocation);
 		exchange.setRequestMethod(Methods.POST);
-		return new FormAuthenticationMechanism( formParserFactory );
+		exchange.getRequestHeaders().add( Headers.CONTENT_TYPE, contentType );
+		final FormAuthenticationMechanism mechanism = new FormAuthenticationMechanism(formParserFactory);
+		mechanism.authenticationEndpoints = configuration;
+		mechanism.authenticate( exchange, asList(identityManager), session );
+		return mechanism;
 	}
 }

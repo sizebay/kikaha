@@ -75,13 +75,29 @@ public class TinyList<T> implements List<T>, RandomAccess {
 	}
 
 	@Override
-	public boolean contains(Object o) {
-		throw new UnsupportedOperationException("method 'contains' is unavailable");
+	public String toString() {
+		StringBuilder buffer = new StringBuilder('[');
+
+		boolean first = false;
+		for ( int i=0; i<data.length; i++, first = false ){
+			if ( !first ) buffer.append(',');
+			buffer.append( data[i].toString() );
+		}
+
+		return buffer.append(']').toString();
 	}
 
 	@Override
 	public Object[] toArray() {
-		throw new UnsupportedOperationException("method 'toArray' is unavailable");
+		return Arrays.copyOf(data, size);
+	}
+
+	@Override
+	public boolean contains(Object o) {
+		for ( Object d : data )
+            if (d.equals(o))
+                return true;
+		return false;
 	}
 
 	@Override
@@ -157,5 +173,9 @@ public class TinyList<T> implements List<T>, RandomAccess {
 	@Override
 	public List<T> subList(int fromIndex, int toIndex) {
 		throw new UnsupportedOperationException("method 'subList' is unavailable");
+	}
+
+	public static <T> List<T> singleElement( T t ) {
+		return new TinyList<>( t );
 	}
 }

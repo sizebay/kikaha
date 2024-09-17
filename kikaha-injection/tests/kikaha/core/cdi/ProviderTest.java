@@ -11,13 +11,13 @@ import org.junit.Test;
 
 public class ProviderTest {
 
-	final DefaultServiceProvider provider = new DefaultServiceProvider();
+	final DefaultCDI provider = new DefaultCDI();
 	
 	@Before
 	public void grantThatProvidedHasNoCachedData() {
 		Iterable<?> nullIterable = provider.dependencies.get( Printable.class );
 		assertNull(nullIterable);
-		nullIterable = provider.implementedClasses.implementedClasses.get( Printable.class );
+		nullIterable = provider.injectionContext.implementedClasses.get( Printable.class );
 		assertNull(nullIterable);
 	}
 
@@ -25,9 +25,9 @@ public class ProviderTest {
 	public void grantThatInjectTestableResourcesButKeepItCachedAsExpected() throws ServiceProviderException {
 		grantThatRetrieveAllClassesThatImplementsAnInterface();
 
-		final Iterable<Class<?>> implementations = provider.implementedClasses.implementedClasses.get( Printable.class );
+		final Iterable<Class<?>> implementations = provider.injectionContext.implementedClasses.get( Printable.class );
 		grantThatRetrieveAWellImplementedPrintableInstanceAsExpected();
-		assertEquals( implementations, provider.implementedClasses.implementedClasses.get( Printable.class ) );
+		assertEquals( implementations, provider.injectionContext.implementedClasses.get( Printable.class ) );
 
 		final Iterable<?> printableInjectables = provider.dependencies.get( Printable.class );
 		grantThatRetrieveAWellImplementedPrintableInstanceAsExpected();
@@ -35,7 +35,7 @@ public class ProviderTest {
 	}
 
 	private void grantThatRetrieveAllClassesThatImplementsAnInterface() {
-		final Iterable<Class<Printable>> implementations = provider.implementedClasses.loadClassesImplementing( Printable.class );
+		final Iterable<Class<Printable>> implementations = provider.injectionContext.loadClassesImplementing( Printable.class );
 		for ( final Class<Printable> clazz : implementations )
 			if ( PrintableHello.class.equals(clazz) )
 				return;

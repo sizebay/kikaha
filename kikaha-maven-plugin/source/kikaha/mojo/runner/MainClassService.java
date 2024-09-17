@@ -45,6 +45,7 @@ public class MainClassService {
 		logImportantInformation();
 
 		val commandLine = createCommandLine();
+		System.out.println(commandLine);
 		val builder = new ProcessBuilder(commandLine);
 		builder.directory( workingDirectory );
 		builder.redirectErrorStream(true);

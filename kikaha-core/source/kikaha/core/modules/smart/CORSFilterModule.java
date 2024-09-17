@@ -43,11 +43,13 @@ public class CORSFilterModule implements Module {
 	}
 
 	CORSConfig loadCorsConfig(){
+		final List<String> allowedOrigins = config.getStringList("server.smart-routes.cors.allowed-origins");
+
 		return new CORSConfig(
 			config.getBoolean("server.smart-routes.cors.always-allow-origin"),
 			config.getBoolean("server.smart-routes.cors.always-allow-credentials"),
 			asSet(config.getStringList("server.smart-routes.cors.allowed-methods")),
-			asMatcherSet(config.getStringList("server.smart-routes.cors.allowed-origins")));
+			asSet( allowedOrigins ), asMatcherSet( allowedOrigins ));
 	}
 
 	private static <T> Set<T> asSet( List<T> list ) {

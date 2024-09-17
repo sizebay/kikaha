@@ -2,11 +2,10 @@ package {{packageName}};
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-{{#isMultiPart}}
-import io.undertow.server.handlers.form.FormData;
+{{#requiresFormData}}
 import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormParserFactory;
-{{/isMultiPart}}
+{{/requiresFormData}}
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.enterprise.inject.Typed;
@@ -17,68 +16,117 @@ import kikaha.urouting.RoutingMethodExceptionHandler;
 {{#asyncMode}}
 import kikaha.urouting.api.AsyncResponse;
 {{/asyncMode}}
+import kikaha.urouting.api.Response;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Singleton
 @Typed( HttpHandler.class )
 @WebResource( path="{{httpPath}}", method="{{httpMethod}}" )
-public class GeneratedRoutingMethod{{identifier}} implements HttpHandler {
+final public class {{generatedClassName}} implements HttpHandler {
 
 	@Inject RoutingMethodResponseWriter responseWriter;
 	@Inject RoutingMethodParameterReader methodDataProvider;
 	@Inject RoutingMethodExceptionHandler exceptionHandler;
-	
-	{{#serviceInterface}}
-	@Inject {{{serviceInterface}}} instance;
-	{{/serviceInterface}}
-	{{^serviceInterface}}
-	@Inject {{{type}}} provider;
-	{{/serviceInterface}}
+
+	@Inject {{{type}}} instance;
 
 	@Override
-	public void handleRequest( HttpServerExchange exchange ) throws Exception {
-		{{#hasIOBound}}
+	public void handleRequest( final HttpServerExchange exchange ) throws Exception {
+        try {
+        {{#requiresFormData}}
 			if ( exchange.isInIoThread() ) {
-				exchange.dispatch(this);
+				exchange.dispatch( this );
 				return;
 			}
-			else if ( !exchange.isInIoThread() && !exchange.isBlocking() )
-				exchange.startBlocking();
-		{{/hasIOBound}}
-		try {
-		{{#isMultiPart}}
+		{{/requiresFormData}}
+		{{#requiresFormData}}
+		    if ( !exchange.isBlocking() )
+                exchange.startBlocking();
+			/* Requires to parse form data. */
 			final FormDataParser parser = FormParserFactory.builder().build().createParser(exchange);
-			final FormData formData = parser.parseBlocking();
-		{{/isMultiPart}}
-		{{^asyncMode}}
-		{{#returnType}}
-			final {{{returnType}}} response = instance.{{methodName}}( {{{methodParams}}} );
-			{{#responseContentType}}
-				responseWriter.write( exchange, "{{{responseContentType}}}", response );
-			{{/responseContentType}}
-			{{^responseContentType}}
-				responseWriter.write( exchange, response );
-			{{/responseContentType}}
-		{{/returnType}}
-		{{^returnType}}
-			instance.{{methodName}}( {{{methodParams}}} );
-			responseWriter.write( exchange );
-		{{/returnType}}
-		{{/asyncMode}}
-		{{#asyncMode}}
+			parser.parseBlocking();
+			parser.parse( this::runMethod );
+		{{/requiresFormData}}
+		{{^requiresFormData}}
+			/* Does not require to parse form data. */
+		{{#requiresBodyData}}
+			/* Requires to parse body data. */
+			exchange.getRequestReceiver()
+				.receiveFullBytes( this::runMethod, this::handleException );
+		{{/requiresBodyData}}
+        {{^requiresBodyData}}
+            /* Does not require to parse body data. */
+            this.runMethod( exchange );
+        {{/requiresBodyData}}
+		{{/requiresFormData}}
+        } catch ( Throwable cause ) {
+            this.handleException( exchange, cause );
+        }
+	}
+
+    private void runMethod( final HttpServerExchange exchange ) {
+        runMethod( exchange, null );
+    }
+
+	{{^asyncMode}}
+	private void runMethod( final HttpServerExchange exchange, final byte[] bodyData ){
+		{{^requiresFormData}}
+		if ( exchange.isInIoThread() )
+			exchange.dispatch( ()-> this.runMethod( exchange, bodyData ) );
+		else {{/requiresFormData}} try {
+			{{#returnType}}
+				final {{{returnType}}} response = instance.{{methodName}}( {{{methodParams}}} );
+				{{#responseContentType}}
+					responseWriter.write( exchange, "{{{responseContentType}}}", response );
+				{{/responseContentType}}
+				{{^responseContentType}}
+					responseWriter.write( exchange, response );
+				{{/responseContentType}}
+			{{/returnType}}
+			{{^returnType}}
+				instance.{{methodName}}( {{{methodParams}}} );
+				responseWriter.write( exchange );
+			{{/returnType}}
+		} catch ( Throwable cause ) {
+			this.handleException( exchange, cause );
+		}
+	}
+	{{/asyncMode}}{{#asyncMode}}
+	private void runMethod( final HttpServerExchange exchange, final byte[] bodyData ){
+		try {
 			{{#responseContentType}}
 			final AsyncResponse asyncResponse = new AsyncResponse( exchange, responseWriter, exceptionHandler, "{{{responseContentType}}}" );
 			{{/responseContentType}}
 			{{^responseContentType}}
 			final AsyncResponse asyncResponse = new AsyncResponse( exchange, responseWriter, exceptionHandler );
 			{{/responseContentType}}
-			exchange.dispatch();
 			instance.{{methodName}}( {{{methodParams}}} );
-		{{/asyncMode}}
+			exchange.dispatch();
 		} catch ( Throwable cause ) {
-			responseWriter.write( exchange, exceptionHandler.handle( cause ) );
-			{{#asyncMode}}
-			exchange.endExchange();
-			{{/asyncMode}}
+			this.handleException( exchange, cause );
 		}
 	}
+	{{/asyncMode}}
+
+	private void handleException( final HttpServerExchange exchange, final Throwable cause ){
+        if ( exchange.isInIoThread() ) {
+            exchange.dispatch( ()-> handleException( exchange, cause ) );
+            return;
+        }
+
+        try {
+            final Response response = exceptionHandler.handle( cause );
+            responseWriter.write( exchange, response );
+        } catch ( Throwable newCause ){
+            log.error( "Could not handle the failure. Reason: " + newCause.getMessage(), newCause );
+            log.error( "Original failure reason: " + cause.getMessage(), cause );
+            log.error( "Please double check your ExceptionHandler implementations for possible issues..." );
+            exchange.endExchange();
+        }
+	}
+
+    public String toString(){
+        return "{{{type}}}.{{methodName}}";
+    }
 }

@@ -1,0 +1,9 @@
+server:
+
+  metrics:
+    reporter:
+      metric-store: kikaha.cloud.aws.cloudwatch.AWSCloudWatchMetricReporter
+
+  aws:
+    cloudwatch:
+      reporter-namespace: "KikahaMetrics"

@@ -62,6 +62,6 @@ public class CORSFilterModuleTest {
 		module.load( null, context );
 
 		final CORSFilterHttpHandler newHandler = (CORSFilterHttpHandler)context.rootHandler();
-		assertEquals( 2, newHandler.config.allowedOrigins.size() );
+		assertEquals( 2, newHandler.config.allowedOriginMatchers.size() );
 	}
 }

@@ -6,7 +6,8 @@ import java.util.Collection;
 
 import javax.enterprise.inject.Typed;
 
-import kikaha.core.cdi.DefaultServiceProvider.DependencyInjector;
+import kikaha.core.cdi.DefaultCDI.DependencyInjector;
+import kikaha.core.cdi.ProviderContext;
 import kikaha.core.cdi.helpers.filter.Condition;
 import kikaha.core.cdi.helpers.filter.QualifierCondition;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,11 @@ public class ManyElementsProvidableField<T> implements ProvidableField {
 	final Field field;
 	final Class<T> fieldType;
 	final Condition<T> condition;
+	final ProviderContext providerContext;
 
 	@Override
 	public void provide( Object instance, DependencyInjector provider ) throws Throwable {
-		final Object value = provider.loadAll( fieldType, condition );
+		final Object value = provider.loadAll( fieldType, condition, providerContext );
 		set( instance, value );
 	}
 
@@ -29,12 +31,19 @@ public class ManyElementsProvidableField<T> implements ProvidableField {
 		field.set( instance, value );
 	}
 
-	public static <T> ProvidableField from( Collection<Class<? extends Annotation>> qualifiers, final Field field ) {
+    @Override
+    public String toString() {
+        return field.toString().split( " " )[1];
+    }
+
+    public static <T> ProvidableField from(Collection<Class<? extends Annotation>> qualifiers, final Field field ) {
 		assertFieldTypeIsIterable( field );
 		field.setAccessible( true );
 		final Class collectionType = identifyWhichTypeThisCollectionHas(field);
 		return new ManyElementsProvidableField<>(
-				field, (Class<T>)collectionType, new QualifierCondition<>( qualifiers ) );
+				field, (Class<T>)collectionType,
+				new QualifierCondition<>( qualifiers ),
+				new FieldProviderContext( qualifiers, field ) );
 	}
 
 	private static void assertFieldTypeIsIterable( final Field field ) {

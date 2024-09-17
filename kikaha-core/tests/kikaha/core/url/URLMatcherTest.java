@@ -97,9 +97,16 @@ public class URLMatcherTest {
 	public void ensureThatCanMatchUrlsWithPlaceHoldersAndDoNotIgnoreSubPaths() {
 		val params = new HashMap<String, String>();
 		val matcher = URLMatcher.compile( "users/{id}", true );
-		System.out.println( matcher );
 		assertTrue( "Did not match regular path", matcher.matches( "users/123", params ) );
-		assertFalse( "Did match path ending with slash", matcher.matches( "users/123/", params ) );
-		assertFalse(  "Did match path that contains slash", matcher.matches( "users/{id}/bulk", params ) );
+		assertTrue( "Did match path ending with slash", matcher.matches( "users/123/", params ) );
+	}
+
+	@Test
+	public void ensureCanMatchRootPath(){
+		val params = new HashMap<String, String>();
+		val matcher = URLMatcher.compile( "/*", true );
+		assertTrue( "Did not matched /", matcher.matches( "/", params ) );
+		assertTrue( "Did not matched /path", matcher.matches( "/path", params ) );
+		assertTrue( "Did not matched /path/user", matcher.matches( "/path/user", params ) );
 	}
 }

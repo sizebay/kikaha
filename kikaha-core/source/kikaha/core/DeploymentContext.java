@@ -40,6 +40,7 @@ public class DeploymentContext {
 	public DeploymentContext register(String uri, final String method, final HttpHandler handler ) {
 		uri = URL.removeTrailingCharacter( uri );
 		log.info( "Registering route: " + method + ":" + uri );
+		log.debug( "  > " + handler.toString() + " (" + handler.getClass().getCanonicalName() + ")" );
 		this.routingHandler.add( method, uri, handler );
 		return this;
 	}

@@ -8,11 +8,12 @@ import io.undertow.util.*;
 import kikaha.config.Config;
 import kikaha.urouting.api.*;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * A helper class to write responses to the HTTP Client.
  */
-@Singleton
+@Singleton @Slf4j
 public class RoutingMethodResponseWriter {
 
 	@Inject
@@ -98,7 +99,7 @@ public class RoutingMethodResponseWriter {
 		sendStatusCode( exchange, response.statusCode() );
 		sendHeaders( exchange, response );
 		sendContentTypeHeader( exchange, contentType );
-		sendBodyResponse( exchange, response.contentType(), response.encoding(), response.entity() );
+		sendBodyResponse( exchange, contentType, response.encoding(), response.entity() );
 	}
 
 	HttpServerExchange sendStatusCode( final HttpServerExchange exchange, final Integer statusCode ) {
@@ -112,7 +113,6 @@ public class RoutingMethodResponseWriter {
 	{
 		final Serializer serializer = getSerializer( contentType );
 		serializer.serialize( serializable, exchange, encoding );
-		exchange.endExchange();
 	}
 
 	private Serializer getSerializer( final String contentType ) throws IOException {
@@ -121,9 +121,10 @@ public class RoutingMethodResponseWriter {
 
 	private void sendHeaders( final HttpServerExchange exchange, final Response response ) {
 		final HeaderMap responseHeaders = exchange.getResponseHeaders();
-		for ( final Header header : response.headers() )
-			for ( final String value : header.values() )
-				sendHeader(responseHeaders, header, value);
+		if ( response.headers() != null )
+			for ( final Header header : response.headers() )
+				for ( final String value : header.values() )
+					sendHeader(responseHeaders, header, value);
 	}
 
 	void sendHeader(final HeaderMap responseHeaders, final Header header, final String value) {
@@ -133,6 +134,6 @@ public class RoutingMethodResponseWriter {
 	void sendContentTypeHeader( final HttpServerExchange exchange, final String contentType ) {
 		final HeaderMap responseHeaders = exchange.getResponseHeaders();
 		if ( !responseHeaders.contains( Headers.CONTENT_TYPE_STRING ) && contentType != null )
-			responseHeaders.add( new HttpString( Headers.CONTENT_TYPE_STRING ), contentType );
+			responseHeaders.add( Headers.CONTENT_TYPE, contentType );
 	}
 }

@@ -1,5 +1,7 @@
 package kikaha.core.modules.security;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.function.Supplier;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.*;
@@ -9,9 +11,16 @@ import lombok.RequiredArgsConstructor;
  * A helper class to retrieve and store cookies into the {@link HttpServerExchange}.
  */
 @RequiredArgsConstructor
-public class SessionCookie {
+public class SessionCookie implements SessionIdManager {
 
 	final String cookieName;
+
+	/**
+	 * Constructs a SessionCookie named "JSESSIONID".
+	 */
+	public SessionCookie(){
+		cookieName = "JSESSIONID";
+	}
 
 	/**
 	 * Attach a session cookie, identified by {@code sessionId}, into the current request.
@@ -19,8 +28,9 @@ public class SessionCookie {
 	 * @param exchange
 	 * @param sessionId
 	 */
-	public void attachSessionCookie(HttpServerExchange exchange, String sessionId ) {
-		final Cookie cookie = new CookieImpl( this.cookieName, sessionId ).setPath( "/" );
+	@Override
+	public void attachSessionId(HttpServerExchange exchange, String sessionId ) {
+		final Cookie cookie = new CookieImpl( this.cookieName, sessionId ).setPath( "/" ).setHttpOnly( true );
 		exchange.setResponseCookie( cookie );
 	}
 
@@ -30,8 +40,17 @@ public class SessionCookie {
 	 * @param sessionIdCreator
 	 * @return
 	 */
+	@Override
 	public String retrieveSessionIdFrom(HttpServerExchange exchange, Supplier<String> sessionIdCreator ) {
 		final Cookie cookie = exchange.getRequestCookies().get( cookieName );
 		return cookie != null ? cookie.getValue() : sessionIdCreator.get();
+	}
+
+	@Override
+	public void expiresSessionId(HttpServerExchange exchange) {
+		final String sessionId = retrieveSessionIdFrom(exchange);
+		final Cookie cookie = new CookieImpl( this.cookieName, sessionId )
+			.setPath( "/" ).setHttpOnly( true ).setExpires( Date.from( Instant.EPOCH ) );
+		exchange.setResponseCookie( cookie );
 	}
 }

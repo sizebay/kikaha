@@ -1,0 +1,11 @@
+server:
+  aws:
+    credentials-factory: kikaha.cloud.aws.iam.AmazonCredentialsFactory$Yml
+
+    ec2:
+      tag-as-config-enabled: true
+      iam-policy: "default"
+
+    iam-policy:
+      access-key-id: "1234"
+      secret-access-key: "4321"

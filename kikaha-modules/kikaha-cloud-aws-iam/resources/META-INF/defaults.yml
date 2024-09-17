@@ -1,0 +1,5 @@
+server:
+  aws:
+    credentials-factory: kikaha.cloud.aws.iam.AmazonCredentialsFactory$Default
+    default:
+      region: "us-east-1"

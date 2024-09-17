@@ -1,0 +1,8 @@
+server:
+
+  # Configure how the application should communicate with Consul.io
+  consul:
+    # how many minutes should wait before a critical service being de-registered
+    deregister-critical-service-after: 90
+    # interval (in seconds) that consul should check if the server is alive
+    health-check-interval: 1

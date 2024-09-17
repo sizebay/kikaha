@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import kikaha.config.Config;
-import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.CDI;
 import kikaha.urouting.api.ExceptionHandler;
 
 @SuppressWarnings( { "rawtypes", "unchecked" } )
@@ -24,7 +24,7 @@ public class RoutingMethodExceptionHandlerLoader {
 	Config kikahaConf;
 
 	@Inject
-	ServiceProvider provider;
+	CDI provider;
 
 	RoutingMethodExceptionHandler exceptionHandler;
 	ExceptionHandler<Throwable> fallbackHandler;

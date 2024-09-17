@@ -1,20 +1,12 @@
 package kikaha.urouting.serializers;
 
-import io.undertow.server.HttpServerExchange;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.ByteBuffer;
-
-import kikaha.urouting.api.AbstractSerializer;
-import kikaha.core.modules.http.ContentType;
-import kikaha.urouting.api.Mimes;
-import kikaha.urouting.api.RoutingException;
-import kikaha.urouting.api.Serializer;
-
 import javax.enterprise.inject.Typed;
 import javax.inject.Singleton;
+import io.undertow.server.HttpServerExchange;
+import kikaha.core.modules.http.ContentType;
+import kikaha.urouting.api.*;
 
 @ContentType(Mimes.PLAIN_TEXT)
 @Singleton
@@ -34,12 +26,10 @@ public class PlainTextSerializer extends AbstractSerializer {
 
 	void send( HttpServerExchange exchange, ByteBuffer buffer ){
 		exchange.getResponseSender().send( buffer );
-		exchange.dispatch();
 	}
 
 	void send( HttpServerExchange exchange, String string ){
 		exchange.getResponseSender().send( string );
-		exchange.dispatch();
 	}
 
 	@Override

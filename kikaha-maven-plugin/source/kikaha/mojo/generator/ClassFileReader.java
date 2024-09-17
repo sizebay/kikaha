@@ -1,16 +1,17 @@
 package kikaha.mojo.generator;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import static java.lang.String.format;
+
+import java.io.*;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.strobel.decompiler.*;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
 
@@ -32,19 +33,19 @@ public class ClassFileReader {
 		options.put( IFernflowerPreferences.REMOVE_SYNTHETIC, "1" );
 		options.put( IFernflowerPreferences.REMOVE_BRIDGE, "1" );
 		options.put( IFernflowerPreferences.LITERALS_AS_IS, "1" );
-		options.put( IFernflowerPreferences.UNIT_TEST_MODE, "1" );
+		options.put( IFernflowerPreferences.UNIT_TEST_MODE, "0" );
 		return options;
 	}
 
-	public StringJavaSource decompile( File classFile ) {
+	public StringJavaSource decompile( File classFile ) throws MojoExecutionException {
 		final File packageFolder = getOutputLocationFor( classFile.getParentFile() );
-		final File targetDir = new File( rootDir, packageFolder.getPath() );
+		final File targetDir = new File( rootDir.getAbsolutePath(), packageFolder.getPath() );
 		decompile( classFile, targetDir );
 
-		final String className = extractClassFromClassFile( classFile );
-		final File decompiledFile = new File( targetDir, className + ".java" );
+		final String className = extractClassNameFromClassFile( classFile );
+		final File decompiledFile = new File( targetDir.getAbsolutePath(), className + ".java" );
 
-		final String canonicalName = packageFolder.getPath().replace( "/", "." ) + "." + className;
+		final String canonicalName = packageFolder.getPath().replaceAll( "[/\\\\]", "." ) + "." + className;
 		return readFileAndRemove( canonicalName, decompiledFile );
 	}
 
@@ -57,30 +58,41 @@ public class ClassFileReader {
 
 	private File getOutputLocationFor( File file ) {
 		final String s = file.getAbsolutePath()
-				.replaceFirst( "^" + rootDir.getAbsolutePath(), "" )
+				.replaceAll( "\\\\", "/" )
+				.replaceFirst( "^" + rootDir.getAbsolutePath().replaceAll( "\\\\", "/" ), "" )
 				.replaceFirst( "^/", "" );
 		return new File( s );
 	}
 
-	private static String extractClassFromClassFile( File classFile ) {
+	private static String extractClassNameFromClassFile(File classFile ) {
 		final String absolutePath = classFile.getName();
 		return absolutePath.substring( 0, absolutePath.length() - 6 );
 	}
 
 	private StringJavaSource readFileAndRemove( String canonicalName, File decompiledFile ) {
 		try {
-			final byte[] bytes = Files.readAllBytes( Paths.get( decompiledFile.getAbsolutePath() ) );
+			final Path file = Paths.get( decompiledFile.getAbsolutePath() );
+			final byte[] bytes = Files.readAllBytes( file );
 			if ( shouldRemoveFiles && !decompiledFile.delete() )
 				throw new IllegalStateException( "Can't remove the file " + decompiledFile );
-			final String source = new String( bytes );
+			final String source = fixIssuesWithKotlinConstructors( new String( bytes ) );
+			if ( source.contains( "kotlin.jvm.internal.DefaultConstructorMarker" ) )
+				throw new SourceNotCompiledException( "Can't handle Kotlin" );
 			return new StringJavaSource( canonicalName, source );
 		} catch ( final IOException e ) {
 			throw new IllegalStateException( "Can't read the file " + decompiledFile, e );
 		}
 	}
 
+	private String fixIssuesWithKotlinConstructors( String s ) {
+		return s;
+			/*.replaceAll( "[\\t ]+Intrinsics\\.[^;\\n\\r]+;", "" )
+			.replaceAll( "[\\t ]+INSTANCE[^;\\n\\r]+;", "" )
+			.replaceAll( "public static final ([a-zA-Z]+) INSTANCE;", "public static final $1 INSTANCE = null;" );*/
+	}
+
 	private static List<File> collectClasses( File classFile ) {
-		final List<File> files = new ArrayList<File>();
+		final List<File> files = new ArrayList<>();
 		files.add( classFile );
 
 		final File parent = classFile.getParentFile();
@@ -92,6 +104,12 @@ public class ClassFileReader {
 		}
 
 		return files;
+	}
+
+	public static class SourceNotCompiledException extends UnsupportedOperationException {
+		public SourceNotCompiledException( String msg ) {
+			super( msg );
+		}
 	}
 }
 

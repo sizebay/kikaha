@@ -1,0 +1,16 @@
+server:
+  auth:
+    form-auth:
+      login-template: "auth0-login.mustache"
+
+    auth-mechanisms:
+      auth0: kikaha.cloud.auth0.Auth0Authentication
+
+  # Configuration for Auth0
+    auth0:
+      client-domain: "unknown.auth0.com"
+      client-id: "bad-client-id"
+      client-secret: "bad-client-secret"
+      signing-algorithm: "HS512"
+      public-key-path: "/not/configured/path"
+      base64-encoded-secret: false

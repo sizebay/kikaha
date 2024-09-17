@@ -1,0 +1,5 @@
+server:
+  uworkers:
+    configured:
+      parallelism: 2
+      pool-size: 20

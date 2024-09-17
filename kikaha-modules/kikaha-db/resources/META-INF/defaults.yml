@@ -1,0 +1,26 @@
+server:
+
+  auth:
+    # default identity manager to retrieve user account from database
+    identity-managers:
+      db-auth: kikaha.db.DatabaseIdentityManager
+
+    db-auth:
+      datasource: "default"
+
+  db:
+
+    # the DataSourceFactory defines how DataSource will be created and made available
+    # for the application usage.
+    #  - kikaha.db.ViburDataSourceFactory Vibur as connection pool
+    #  - kikaha.db.SingleConnectionDataSourceFactory: will create a
+    #         simple DataSource with no connection pool at all. Useful for AWS Lambda environments.
+    datasource-factory: kikaha.db.ViburDataSourceFactory
+
+    # Entry points for DataSource configurations.
+    datasources:
+      # default datasource configuration.
+      default:
+        #jdbc-url: ""
+        user: "username"
+        password: "password"

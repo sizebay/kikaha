@@ -37,7 +37,7 @@ public class CORSFilterHttpHandler implements HttpHandler {
 		else if ( !isAllowedHttpMethod( method ) || !isHostAllowed( originHost ) )
 			notFound.handleRequest(exchange);
 		else
-			sendRequiredHeaders( exchange, originHost, method );
+			sendRequiredHeaders(exchange, originHost, method);
 	}
 
 	private void allowOrigin( HttpServerExchange exchange, String originHost, String method ) throws Exception {
@@ -51,7 +51,7 @@ public class CORSFilterHttpHandler implements HttpHandler {
 	private boolean isHostAllowed( String originHost ) throws MalformedURLException {
 		if ( config.alwaysAllowOrigin) return true;
 		else
-			for (URLMatcher matcher : config.allowedOrigins )
+			for (URLMatcher matcher : config.allowedOriginMatchers)
 				if ( matcher.matches( originHost, EMPTY_URL_PARAMS ) )
 					return true;
 		return false;
@@ -77,7 +77,6 @@ public class CORSFilterHttpHandler implements HttpHandler {
 	private String getHttpMethod( HttpServerExchange exchange ) {
 		final HeaderValues strings = exchange.getRequestHeaders().get(ACCESS_METHOD);
 		return strings != null ? strings.getFirst() : "";
-
 	}
 
 	private void sendRequiredHeaders(HttpServerExchange exchange, String originHost, String method) {

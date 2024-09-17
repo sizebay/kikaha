@@ -1,34 +1,27 @@
 package kikaha.core.test;
 
-import kikaha.config.Config;
-import kikaha.config.ConfigLoader;
-import kikaha.core.cdi.DefaultServiceProvider;
-import kikaha.core.cdi.ServiceProvider;
-import org.junit.runner.Description;
-import org.junit.runner.Runner;
-import org.junit.runner.manipulation.Filter;
-import org.junit.runner.manipulation.Filterable;
-import org.junit.runner.manipulation.NoTestsRemainException;
+import kikaha.core.cdi.*;
+import org.junit.runner.*;
+import org.junit.runner.manipulation.*;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.InitializationError;
-import org.junit.runners.model.Statement;
+import org.junit.runners.model.*;
 
 /**
  * Implementation based on Mockito's {@code JUnit45AndHigherRunnerImpl}.
  */
 public class KikahaRunner extends Runner implements Filterable {
 
-	private final ServiceProvider cdi = new DefaultServiceProvider();
+	private final CDI cdi;
 	private final BlockJUnit4ClassRunner runner;
 
-	public KikahaRunner( Class<?> klass ) throws InitializationError {
-		cdi.providerFor( Config.class, ConfigLoader.loadDefaults() );
-		runner = new BlockJUnit4ClassRunner( klass ) {
+	public KikahaRunner( Class<?> clazz ) throws InitializationError {
+		cdi = DefaultCDI.newInstance();
+
+		runner = new BlockJUnit4ClassRunner( clazz ) {
 			@Override
 			protected Statement withBefores( FrameworkMethod method, Object target, Statement statement ) {
-				cdi.provideOn( target );
+				cdi.injectOn( target );
 				return super.withBefores( method, target, statement );
 			}
 		};

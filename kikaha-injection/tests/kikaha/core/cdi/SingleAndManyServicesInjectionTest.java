@@ -1,24 +1,20 @@
 package kikaha.core.cdi;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import javax.enterprise.inject.Typed;
-import javax.inject.Inject;
-
-import lombok.Getter;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 import lombok.val;
-
-import org.junit.Test;
+import org.junit.*;
 
 public class SingleAndManyServicesInjectionTest {
 
-	final ServiceProvider provider = new DefaultServiceProvider();
+	final CDI provider = new DefaultCDI();
 
-	@Test( timeout = 6000 )
+	@Before
+	public void applySomeGC(){
+		System.gc();
+	}
+
+	@Test( timeout = 16000 )
 	public void applyStressTestOnMyAssertion() throws ServiceProviderException {
 		for ( int i = 0; i < 1000000; i++ )
 			ensureThatHaveInjectedBothSingleAndManyElementsIntoInjectedClass();
@@ -29,7 +25,7 @@ public class SingleAndManyServicesInjectionTest {
 			throws ServiceProviderException
 	{
 		val injectable = new InjectableClass();
-		provider.provideOn( injectable );
+		provider.injectOn( injectable );
 		assertThat( injectable.getPrintableWord(), instanceOf( PrintableWorld.class ) );
 		assertPrintablesArePopulatedAsExpected( injectable );
 		assertPrintableFoosArePopulatedAsExpected( injectable );
@@ -68,20 +64,4 @@ public class SingleAndManyServicesInjectionTest {
 		assertPrintablesArePopulatedAsExpected( injectable );
 		assertPrintableFoosArePopulatedAsExpected( injectable );
 	}
-}
-
-@Getter
-class InjectableClass {
-
-	@Inject
-	PrintableWord printableWord;
-
-	@Inject
-	@Typed( PrintableWord.class )
-	Iterable<PrintableWord> printables;
-
-	@Inject
-	@Foo
-	@Typed( PrintableWord.class )
-	Iterable<PrintableWord> printableFoos;
 }

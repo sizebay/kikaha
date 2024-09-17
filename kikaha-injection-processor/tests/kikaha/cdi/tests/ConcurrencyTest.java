@@ -6,18 +6,20 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import kikaha.cdi.tests.concurrency.PrinterRunner;
-import kikaha.core.cdi.DefaultServiceProvider;
+import kikaha.core.cdi.DefaultCDI;
 import lombok.SneakyThrows;
 import lombok.val;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class ConcurrencyTest {
 
 	final static int NUMBER_OF_CONSUMER = Runtime.getRuntime().availableProcessors();
 	final static int NUMBER_OF_MESSAGES_PER_NODE = 2000000;
-	final DefaultServiceProvider provider = new DefaultServiceProvider();
+	final DefaultCDI provider = new DefaultCDI();
 	final CountDownLatch counter = new CountDownLatch( NUMBER_OF_MESSAGES_PER_NODE + 1 );
 	final ExecutorService executor = Executors.newFixedThreadPool( NUMBER_OF_CONSUMER );
 

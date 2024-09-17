@@ -2,7 +2,7 @@ package kikaha.urouting.api;
 
 import static io.undertow.util.Headers.LOCATION;
 import java.net.URI;
-import java.util.*;
+import java.util.List;
 import io.undertow.util.*;
 import kikaha.core.cdi.helpers.TinyList;
 import lombok.*;
@@ -12,39 +12,28 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors( fluent=true )
 @NoArgsConstructor
-public class DefaultResponse implements Response {
+public class DefaultResponse implements Response, MutableResponse {
 
-	@NonNull Object entity = "";
-	@NonNull Integer statusCode = 200;
+	int statusCode = 200;
+	Object entity = "";
 	@NonNull String encoding = "UTF-8";
-	@NonNull String contentType = Mimes.PLAIN_TEXT;
 	@NonNull List<Header> headers = new TinyList<>();
 
-	public DefaultResponse header( final String name, final String value ) {
-		return header( new HttpString(name), value );
+	public DefaultResponse headers( final Iterable<Header> headers ) {
+		this.headers = new TinyList<>();
+		for ( final Header header : headers )
+			this.headers.add( header );
+		return this;
 	}
 
-	public DefaultResponse header(final HttpString name, final String value ) {
-		Header header = getHeader( name );
+	public DefaultResponse header(final HttpString name, @NonNull final String value ) {
+		Header header = header( name );
 		if ( header == null ) {
 			header = DefaultHeader.createHeader( name, value );
 			headers.add(header);
 		} else
 			header.add(value);
 		return this;
-	}
-
-	/**
-	 * Good-enough method to retrieve headers.
-	 *
-	 * @param name
-	 * @return
-	 */
-	protected Header getHeader( final HttpString name ) {
-		for ( final Header header : headers )
-			if ( header.name().equals(name) )
-				return header;
-		return null;
 	}
 
 	public static DefaultResponse response() {

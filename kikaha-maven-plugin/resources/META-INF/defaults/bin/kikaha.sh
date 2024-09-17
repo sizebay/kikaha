@@ -30,9 +30,14 @@ if [ -e bin/kikaha.conf ]; then
 	. bin/kikaha.conf
 fi
 
+# CUSTOM JVM OPTS
+if [ -e conf/jvm.conf ]; then
+	. conf/jvm.conf
+fi
+
 # MAIN
 case "`uname`" in
-CYGWIN*) . ./bin/inc.cmds-cygwin.sh;;
+MINGW*|CYGWIN*) . ./bin/inc.cmds-cygwin.sh;;
 *) . ./bin/inc.cmds-unix.sh;;
 esac
 

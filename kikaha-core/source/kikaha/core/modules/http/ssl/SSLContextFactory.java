@@ -1,29 +1,20 @@
 package kikaha.core.modules.http.ssl;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
+import kikaha.config.Config;
+import lombok.extern.slf4j.Slf4j;
+import org.xnio.IoUtils;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-
-import kikaha.config.Config;
-import lombok.extern.slf4j.Slf4j;
-
-import org.xnio.IoUtils;
+import javax.net.ssl.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.*;
+import java.security.cert.CertificateException;
+import java.util.HashSet;
 
 /**
  * Creates SSLContext for SSL environments.
@@ -74,6 +65,7 @@ public class SSLContextFactory {
 			throws IOException {
 		final KeyStore keystore = loadKeyStore( keyStoreName, keystorePassword );
 		final KeyStore truststore = loadKeyStore( trustStoreName, keystorePassword );
+		log.debug( "Keystore and Truststore loaded. Creating SSLContext..." );
 		return createSSLContext( keystore, truststore, keystorePassword );
 	}
 
@@ -93,9 +85,17 @@ public class SSLContextFactory {
 
 	InputStream openFile( final String name ) {
 		try {
-			return new FileInputStream( name );
+			log.debug( "Opening certificate from the ClassPath: " + name );
+			InputStream inputStream = getClass().getClassLoader().getResourceAsStream( name );
+
+			if ( inputStream == null ) {
+				log.debug("Opening certificate from the file system: " + name);
+				inputStream = new FileInputStream(name);
+			}
+
+			return inputStream;
 		} catch ( FileNotFoundException e ) {
-			return getClass().getClassLoader().getResourceAsStream( name );
+			return null;
 		}
 	}
 
@@ -105,10 +105,24 @@ public class SSLContextFactory {
 			loadedKeystore.load( stream, password.toCharArray() );
 			return loadedKeystore;
 		} catch ( KeyStoreException | NoSuchAlgorithmException | CertificateException e ) {
-			throw new IOException( "Unable to load KeyStore", e );
+			showAvailableSecurityProviders();
+			throw new IOException("Unable to load KeyStore", e);
+		} catch ( IOException e ){
+			showAvailableSecurityProviders();
+			throw e;
 		} finally {
 			IoUtils.safeClose( stream );
 		}
+	}
+
+	private void showAvailableSecurityProviders(){
+		HashSet<String> strings = new HashSet<>();
+		for ( Provider provider : Security.getProviders() ) {
+			for ( Provider.Service serviceProvider : provider.getServices() )
+				strings.add( serviceProvider.getAlgorithm() );
+		}
+
+		log.debug( "Available security provides: " + String.join( " " , strings ) );
 	}
 
 	public SSLContext createSSLContext( 

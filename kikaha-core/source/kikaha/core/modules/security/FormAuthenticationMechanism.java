@@ -2,54 +2,36 @@ package kikaha.core.modules.security;
 
 import io.undertow.security.idm.Account;
 import io.undertow.security.idm.Credential;
-import io.undertow.server.DefaultResponseListener;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormParserFactory;
 import io.undertow.util.Headers;
 import io.undertow.util.Methods;
-import io.undertow.util.StatusCodes;
-
-import java.io.IOException;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import kikaha.config.Config;
+import kikaha.core.modules.undertow.Redirect;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
 
 @Getter
 @Slf4j
 @Singleton
 @RequiredArgsConstructor
-public class FormAuthenticationMechanism implements AuthenticationMechanism {
+public class FormAuthenticationMechanism implements SimplifiedAuthenticationMechanism {
 
 	public static final String LOCATION_ATTRIBUTE = FormAuthenticationMechanism.class.getName() + ".LOCATION";
-	public static final String DEFAULT_POST_LOCATION = "/j_security_check";
-
-	@NonNull private String loginPage = "login.html";
-	@NonNull private String errorPage = "login-error.html";
-	@NonNull private String postLocation = DEFAULT_POST_LOCATION;
-
 	private final FormParserFactory formParserFactory;
 
 	@Inject
-	Config config;
+	AuthenticationEndpoints authenticationEndpoints;
+	@Inject FormAuthenticationRequestMatcher matcher;
 
-	public FormAuthenticationMechanism() {
-		this.formParserFactory = FormParserFactory.builder().build();
-	}
-
-	@PostConstruct
-	public void readConfiguration() {
-		this.loginPage = config.getString("server.auth.form-auth.login-page");
-		this.errorPage = config.getString("server.auth.form-auth.error-page");
-		this.postLocation = "j_security_check";
+	public FormAuthenticationMechanism(){
+		formParserFactory = FormParserFactory.builder().build();
 	}
 
 	@Override
@@ -57,35 +39,32 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 		Account account = null;
 		try {
 			if ( isCurrentRequestTryingToAuthenticate(exchange) )
-				account = doAuthentication(exchange, identityManagers, session);
-			else if ( !isPostLocation(exchange) )
-				memorizeCurrentPage( exchange, session );
+				account = doAuthentication(exchange, identityManagers);
 		} catch (final IOException e) {
-			log.error("Failed to authenticate. Skipping form authentication...", e); }
+			log.error("Failed to authenticate. Skipping form authentication...", e);
+		}
 		return account;
 	}
 
-	private Account doAuthentication( HttpServerExchange exchange, Iterable<IdentityManager> identityManagers, Session session) throws IOException {
-		final Credential credential = readCredentialFromRequest(exchange);
+	private Account doAuthentication(HttpServerExchange exchange, Iterable<IdentityManager> identityManagers) throws IOException {
+		final Credential credential = readCredential(exchange);
 		Account account = null;
 		if ( credential != null )
 			account = verify( identityManagers, credential );
 		if ( account != null )
-			sendRedirectBack( exchange, session );
+			sendRedirectBack( exchange );
 		return account;
 	}
 
-	private static void sendRedirectBack(HttpServerExchange exchange, Session session) {
-		final String location = (String)session.getAttribute(LOCATION_ATTRIBUTE);
-		sendRedirect(exchange, location != null && !location.isEmpty() ? location : "/");
+	private void sendRedirectBack(HttpServerExchange exchange) {
+		Redirect.to(exchange, authenticationEndpoints.getSuccessPage() );
 	}
 
-	private static void memorizeCurrentPage( HttpServerExchange exchange, Session session ){
-		final String location = exchange.getRequestURI();
-		session.setAttribute(LOCATION_ATTRIBUTE, location);
-	}
+	@Override
+	public Credential readCredential(HttpServerExchange exchange) throws IOException {
+		if ( !exchange.isBlocking() )
+			exchange.startBlocking();
 
-	private Credential readCredentialFromRequest(HttpServerExchange exchange) throws IOException {
 		Credential credential = null;
 		final FormDataParser parser = formParserFactory.createParser(exchange);
 		final FormData data = parser.parseBlocking();
@@ -102,36 +81,27 @@ public class FormAuthenticationMechanism implements AuthenticationMechanism {
 	@Override
 	public boolean sendAuthenticationChallenge(HttpServerExchange exchange, Session session) {
 		final String newLocation = isCurrentRequestTryingToAuthenticate(exchange)
-				? errorPage : loginPage;
-		sendRedirect(exchange, newLocation);
+				? authenticationEndpoints.getErrorPage()
+				: authenticationEndpoints.getLoginPage();
+		Redirect.to(exchange, newLocation);
 		return true;
 	}
 
 	private boolean isCurrentRequestTryingToAuthenticate(HttpServerExchange exchange){
-		return isPostLocation(exchange) && exchange.getRequestMethod().equals(Methods.POST);
+		return isPostLocation(exchange) && exchange.getRequestMethod().equals(Methods.POST) && isContentTypeForm(exchange);
+	}
+
+	private boolean isContentTypeForm(HttpServerExchange exchange) {
+		final String contentType = exchange.getRequestHeaders().getFirst(Headers.CONTENT_TYPE);
+		return "multipart/form-data".equals( contentType ) || "application/x-www-form-urlencoded".equals( contentType );
 	}
 
 	private boolean isPostLocation(HttpServerExchange exchange) {
-		return exchange.getRelativePath().endsWith(postLocation);
+		return exchange.getRelativePath().equals( authenticationEndpoints.getCallbackUrl() );
 	}
-
-	private static void sendRedirect(HttpServerExchange exchange, final String location) {
-		exchange.addDefaultResponseListener( RedirectBack.to(location) );
-		exchange.endExchange();
-	}
-}
-
-@Slf4j
-@RequiredArgsConstructor(staticName="to")
-class RedirectBack implements DefaultResponseListener {
-
-	final String location;
 
 	@Override
-	public boolean handleDefaultResponse(HttpServerExchange exchange) {
-		exchange.setStatusCode(StatusCodes.FOUND);
-		exchange.getResponseHeaders().put(Headers.LOCATION, location);
-		exchange.endExchange();
-        return true;
+	public void configure(SecurityConfiguration securityConfiguration, AuthenticationEndpoints authenticationConfiguration) {
+		securityConfiguration.setRequestMatcherIfAbsent( matcher );
 	}
 }

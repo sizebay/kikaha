@@ -58,7 +58,7 @@ public class CORSFilterHttpHandlerTest {
 
 		verify( nextHandler, never() ).handleRequest( eq( exchange ) );
 		verify( notFoundHandler, never() ).handleRequest( eq( exchange ) );
-		assertEquals( UNKNOWN, exchange.getResponseHeaders().get( ALLOWED_ORIGIN ).getFirst() );
+		assertEquals( "http://unknown.localhost", exchange.getResponseHeaders().get( ALLOWED_ORIGIN ).getFirst() );
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class CORSFilterHttpHandlerTest {
 
 		verify( nextHandler, never() ).handleRequest( eq( exchange ) );
 		verify( notFoundHandler, never() ).handleRequest( eq( exchange ) );
-		assertEquals( LOCALHOST_9000, exchange.getResponseHeaders().get( ALLOWED_ORIGIN ).getFirst() );
+		assertEquals( "http://localhost:9000", exchange.getResponseHeaders().get( ALLOWED_ORIGIN ).getFirst() );
 	}
 
 	@Test

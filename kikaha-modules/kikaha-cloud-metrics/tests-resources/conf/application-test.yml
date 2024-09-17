@@ -1,0 +1,14 @@
+server:
+
+  metrics:
+
+    reporter:
+      metric-store: kikaha.cloud.metrics.DummyStore
+
+    # Metrics for JVM
+    jvm:
+      memory-usage: true
+      buffer-pool-usage: true
+      thread-usage: true
+      gc-usage: true
+      fd-usage: true

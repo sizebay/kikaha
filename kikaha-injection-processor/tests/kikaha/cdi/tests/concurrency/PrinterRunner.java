@@ -3,15 +3,15 @@ package kikaha.cdi.tests.concurrency;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
-import kikaha.core.cdi.DefaultServiceProvider;
-import kikaha.core.cdi.ServiceProviderException;
+import kikaha.core.cdi.*;
+import kikaha.core.cdi.DefaultCDI;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class PrinterRunner implements Runnable {
 
 	final BlockingQueue<Object> events;
-	final DefaultServiceProvider provider;
+	final DefaultCDI provider;
 	final CountDownLatch couter;
 
 	@Override

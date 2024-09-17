@@ -2,9 +2,9 @@ package kikaha.core.modules.smart;
 
 import java.util.*;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.*;
 import kikaha.core.modules.smart.FilterChainFactory.FilterChain;
 import kikaha.core.url.URLMatcher;
+import kikaha.core.modules.undertow.Redirect;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -21,9 +21,7 @@ public class RedirectionFilter implements Filter {
 		final Map<String, String> properties = new HashMap<>();
 		if ( requestMatcher.apply( exchange, properties ) ) {
 			final String replaced = targetPath.replace(properties);
-			exchange.getResponseHeaders().add(Headers.LOCATION, replaced );
-			exchange.setStatusCode( StatusCodes.SEE_OTHER );
-			exchange.endExchange();
+			Redirect.to( exchange, replaced );
 		} else
 			chain.runNext();
 	}

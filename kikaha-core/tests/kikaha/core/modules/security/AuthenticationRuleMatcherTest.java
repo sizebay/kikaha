@@ -1,35 +1,28 @@
 package kikaha.core.modules.security;
 
+import static org.junit.Assert.*;
+import javax.inject.Inject;
 import kikaha.config.Config;
-import kikaha.config.ConfigLoader;
-import kikaha.core.cdi.DefaultServiceProvider;
-import kikaha.core.cdi.ServiceProvider;
+import kikaha.core.cdi.CDI;
 import kikaha.core.test.KikahaRunner;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import tests.AssertThat;
-
-import javax.inject.Inject;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 @RunWith(KikahaRunner.class)
 public class AuthenticationRuleMatcherTest {
 
 	AuthenticationRuleMatcher matcher;
 
+	@Inject CDI provider;
+	@Inject Config config;
 	@Inject
-	ServiceProvider provider;
-
-	@Inject
-	Config config;
+	AuthenticationEndpoints authenticationEndpoints;
 
 	@Before
 	public void initializeConfigurationAndMatcher() {
-		matcher = new AuthenticationRuleMatcher( provider, config.getConfig( "server.auth" ) );
+		matcher = new AuthenticationRuleMatcher( provider, config.getConfig( "server.auth" ), authenticationEndpoints);
 	}
 
 	@Test
@@ -39,6 +32,18 @@ public class AuthenticationRuleMatcherTest {
 		AssertThat.isInstance( rule.mechanisms().get( 0 ), BasicAuthenticationMechanism.class );
 		AssertThat.isInstance( rule.mechanisms().get( 1 ), BasicAuthenticationMechanism.class );
 		AssertThat.isInstance( rule.identityManagers().get(0), FixedUserAndPasswordIdentityManager.class );
+	}
+
+	@Test
+	public void ensureWillNotRetrieveRuleForExcludedURLAsDefinedInTestConfigurations() {
+		val rule = matcher.retrieveAuthenticationRuleForUrl( "/ignore1/" );
+		assertNull( rule );
+		val secondRule = matcher.retrieveAuthenticationRuleForUrl( "/ignore2/" );
+		assertNull( secondRule );
+		val thirdRule = matcher.retrieveAuthenticationRuleForUrl( "/ignore1" );
+		assertNotNull( thirdRule );
+		val fourthRule = matcher.retrieveAuthenticationRuleForUrl( "/ignore3" );
+		assertNull( fourthRule  );
 	}
 
 	@Test

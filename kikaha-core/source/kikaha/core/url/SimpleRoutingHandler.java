@@ -3,7 +3,6 @@ package kikaha.core.url;
 import java.util.*;
 import io.undertow.server.*;
 import io.undertow.util.*;
-import kikaha.core.cdi.helpers.TinyList;
 import lombok.*;
 
 @Getter
@@ -23,10 +22,9 @@ public class SimpleRoutingHandler implements HttpHandler {
 	public void add( final HttpString method, final String url, final HttpHandler handler ) {
 		List<Entry> list = matchersByMethod.get( method );
 		if ( list == null )
-			matchersByMethod.put( method, list = new TinyList<>() );
-		if ( retrieveEntryThatMatchesUrlFromList( list, url ) != null )
-			throw new UnsupportedOperationException( "Already exists a route defined for " + url );
+			matchersByMethod.put( method, list = new ArrayList<>() );
 		list.add( new Entry( url, handler ) );
+		Collections.sort( list );
 	}
 
 	MatchedEntry retrieveEntryThatMatchesUrlFromList( final List<Entry> list, final String url ) {
@@ -64,15 +62,25 @@ public class SimpleRoutingHandler implements HttpHandler {
 }
 
 @Value
-class Entry {
+class Entry implements Comparable<Entry> {
 
 	public Entry( final String url, final HttpHandler handler ) {
 		this.handler = handler;
 		this.matcher = URLMatcher.compile( url, true );
+		this.url = url;
 	}
 
+	final String url;
 	final URLMatcher matcher;
 	final HttpHandler handler;
+
+	@Override
+	public int compareTo(Entry entry) {
+		return Integer.compare(
+			entry.matcher.patternMatchers.size(),
+			matcher.patternMatchers.size()
+		);
+	}
 }
 
 @Value

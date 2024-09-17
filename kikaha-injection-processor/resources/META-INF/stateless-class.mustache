@@ -1,9 +1,11 @@
 package {{packageName}};
 
 @javax.inject.Singleton
-@javax.enterprise.inject.Typed( {{typeCanonicalName}}.class )
+{{#implementations}}
+@javax.enterprise.inject.Typed( {{.}} )
+{{/implementations}}
 @kikaha.core.cdi.GeneratedFromStatelessService
-public class {{typeName}}Stateless{{identifaction}}
+public class {{generatedClassName}}
 {{#exposedByClass}}
 	extends {{{typeCanonicalName}}} {
 {{/exposedByClass}}
@@ -11,10 +13,11 @@ public class {{typeName}}Stateless{{identifaction}}
 	extends {{{implementationCanonicalName}}} implements {{{typeCanonicalName}}} {
 {{/exposedByClass}}
 
-	@javax.inject.Inject kikaha.core.cdi.ServiceProvider provider;
+	@javax.inject.Inject kikaha.core.cdi.CDI provider;
 	{{#exposedMethods}}
 
-	public {{{returnType}}} {{name}}( {{{parametersWithTypesAsString}}} ) {
+{{#annotations}}    @{{.}}{{/annotations}}
+	public {{{generics}}}{{{returnType}}} {{name}}( {{{parametersWithTypesAsString}}} ) {
 		try {
 			final {{{implementationCanonicalName}}} instance = newInstance();
 			try {
@@ -36,7 +39,7 @@ public class {{typeName}}Stateless{{identifaction}}
 
 	private {{{implementationCanonicalName}}} newInstance() throws kikaha.core.cdi.ServiceProviderException {
 		final {{{implementationCanonicalName}}} instance = new {{{implementationCanonicalName}}}();
-		provider.provideOn( instance );
+		provider.injectOn( instance );
 		return instance;
 	}
 

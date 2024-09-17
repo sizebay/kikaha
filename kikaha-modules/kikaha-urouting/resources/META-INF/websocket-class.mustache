@@ -14,7 +14,7 @@ import javax.enterprise.inject.Typed;
 @Singleton
 @Typed( WebSocketHandler.class )
 @WebResource(  path="{{httpPath}}", method="GET" )
-public class GeneratedWebSocket{{identifier}} implements WebSocketHandler {
+public class {{generatedClassName}} implements WebSocketHandler {
 
 	@Inject kikaha.urouting.WebSocketDataProvider dataProvider;
 	@Inject {{{serviceInterface}}} instance;

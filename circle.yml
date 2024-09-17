@@ -1,0 +1,21 @@
+machine:
+  java:
+    version: oraclejdk8
+  timezone:
+    America/Sao_Paulo
+  services:
+    - docker
+  post:
+    - docker rm -f consul 2>/dev/null || echo "No consul image found. Skipping"
+    - docker run -d -p 8500:8500 --name consul consul
+
+dependencies:
+  override:
+    - mvn -fn dependency:resolve
+
+test:
+  override:
+    - mvn clean test
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/output/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;

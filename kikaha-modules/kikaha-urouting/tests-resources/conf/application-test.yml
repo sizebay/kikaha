@@ -1,0 +1,33 @@
+server:
+  http:
+    port: 19999
+
+  smart-routes:
+    auth:
+      enabled: true
+    cors:
+      enabled: true
+      always-allow-origin: true
+      always-allow-credentials: false
+      allowed-methods:
+       - "GET"
+       - "POST"
+       - "PUT"
+       - "DELETE"
+       - "PATCH"
+
+  auth:
+    auth-mechanisms:
+      default: kikaha.urouting.it.context.FixedAuthenticationMechanism
+
+    endpoints:
+      login-page: "/it/form-auth/login-page"
+      callback-url: "/it/form-auth/callback"
+
+    rules:
+      # Using 'default' as AuthenticationMechanism and IdentityManager
+      - { pattern: "/it/parameters/contextual/*", exclude-patterns: [ "/it/parameters/contextual/auth-not-required" ] }
+      # Same above but no authentication is required
+      - { pattern: "/it/parameters/contextual/auth-not-required", authentication-required: false }
+      # Using 'default' as IdentityManager
+      - { pattern: "/it/form-auth/*", auth-mechanisms: ["form"] }

@@ -19,14 +19,14 @@ import org.junit.Test;
 
 public class QualifierExtractorTest {
 
-	QualifierExtractor extractor;
+	InjectableDataExtractor extractor;
 
 	@MyQualifiedAnn
 	String qualifiedString;
 
 	@Before
 	public void setup(){
-		extractor = new QualifierExtractor( Arrays.asList( new DefaultFieldQualifierExtractor() ) );
+		extractor = new InjectableDataExtractor( Arrays.asList( new DefaultFieldQualifierExtractor() ) );
 	}
 
 	@Test

@@ -40,7 +40,12 @@ public class VirtualHostMatcher implements RequestMatcher {
 		return host;
 	}
 
-	public static RequestMatcher from( final String path )
+	@Override
+	public String toString() {
+		return "virtual-host=" + virtualHost;
+	}
+
+	public static RequestMatcher from(final String path )
 	{
 		return new VirtualHostMatcher( URLMatcher.compile( path ) );
 	}

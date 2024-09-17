@@ -35,10 +35,10 @@ public class WebSocketModuleTest {
 	@Before
 	@SneakyThrows
 	public void setup() {
-		final ServiceProvider provider = new DefaultServiceProvider();
-		provider.providerFor( Config.class, ConfigLoader.loadDefaults() );
-		provider.providerFor( WebSocketHandler.class, new MyFirstWebSocket() );
-		provider.provideOn( this );
+		final CDI provider = new DefaultCDI();
+		provider.dependencyFor( Config.class, ConfigLoader.loadDefaults() );
+		provider.dependencyFor( WebSocketHandler.class, new MyFirstWebSocket() );
+		provider.injectOn( this );
 	}
 
 	@Test

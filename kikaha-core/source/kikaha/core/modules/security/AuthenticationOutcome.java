@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * The AuthenticationOutcome is used by an AuthenticationMechanism (or IdentityManager) to indicate the outcome of the call to authenticate, the
- * overall authentication process will then used this along with the current AuthenticationState to decide how to proceed
+ * overall authentication process will onFinish used this along with the current AuthenticationState to decide how to proceed
  * with the current request.
  */
 @RequiredArgsConstructor

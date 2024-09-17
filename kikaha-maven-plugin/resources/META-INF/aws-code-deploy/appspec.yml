@@ -1,0 +1,19 @@
+version: 0.0
+os: linux
+
+# files that should be deployed
+files:
+  - source: /
+    destination: /opt/application/
+
+# mandatory hooks
+hooks:
+  BeforeInstall:
+    - location: bin/stop.sh
+      timeout: 120
+  ApplicationStart:
+    - location: bin/start.sh
+      timeout: 120
+  ValidateService:
+    - location: bin/validate.sh
+      timeout: {{code-deploy-validate-wait-time}}

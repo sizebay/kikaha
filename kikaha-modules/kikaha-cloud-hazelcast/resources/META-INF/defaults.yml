@@ -1,0 +1,8 @@
+server:
+  hazelcast:
+
+
+    # config: "conf/hazelcast.xml"
+    connect-to-cluster-members: true
+    enable-multicast: true
+

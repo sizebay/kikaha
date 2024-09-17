@@ -4,8 +4,7 @@ import io.undertow.security.idm.Account;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,6 +20,13 @@ public class FixedUsernameAndRolesAccount implements Account, Serializable {
 
 	final Set<String> roles;
 	final Principal principal;
+
+	public FixedUsernameAndRolesAccount( final String username, final Collection<String> roles ) {
+		final Set<String> roleSet = new HashSet<>();
+		roleSet.addAll( roles );
+		this.principal = new FixedUsernamePrincipal( username );
+		this.roles = roleSet;
+	}
 
 	public FixedUsernameAndRolesAccount( final String username, final String role ) {
 		this( createAdminRoles( role ), new FixedUsernamePrincipal( username ) );

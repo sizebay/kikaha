@@ -1,0 +1,29 @@
+package {{packageName}};
+
+import kikaha.uworkers.core.*;
+import kikaha.uworkers.api.*;
+import javax.inject.*;
+
+@Singleton
+@Worker( "{{endpointURL}}" )
+@SuppressWarnings("unchecked")
+public class {{generatedClassName}} implements WorkerEndpointMessageListener {
+
+	@Inject {{type}} listener;
+
+	@Override
+	public void onMessage( final Exchange exchange ) throws Throwable {
+		try {
+			listener.{{methodName}}(
+				{{#rawObject}}exchange.requestAs({{parameterType}}.class){{/rawObject}}{{^rawObject}}exchange{{/rawObject}}
+			);
+		} catch ( Throwable cause ) {
+			exchange.reply( cause );
+		} finally { {{#rawObject}}exchange.acknowledge();{{/rawObject}} }
+	}
+
+    @Override
+    public String getHttpEndpoint(){
+        return "{{type}}.{{methodName}}";
+    }
+}

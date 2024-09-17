@@ -20,7 +20,9 @@ public abstract class ServiceLoader {
 		final List<Class<T>> list = new TinyList<>();
 		while ( reader.hasNext() )
 			try {
-				list.add( reader.next() );
+                Class<T> c = reader.next();
+                if ( !list.contains(c) )
+				    list.add( c );
 			} catch ( IllegalStateException cause ) {
 				continue;
 			}
